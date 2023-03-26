@@ -114,27 +114,12 @@ final class Configuration
             }
         }
 
-        $ip = $_SERVER['REMOTE_ADDR'];
         if (file_exists(__DIR__ . '/../DEBUG')) {
             // The debug mode has been moved to config. Preserve existing installs which has this DEBUG file.
+            self::setConfig('system', 'enable_debug_mode', true);
             $debug = trim(file_get_contents(__DIR__ . '/../DEBUG'));
             if ($debug) {
-                $debugModeWhitelist = explode("\n", str_replace("\r", '', $debug));
-                self::setConfig('system', 'debug_mode_whitelist', $debugModeWhitelist);
-                if (in_array($ip, $debugModeWhitelist)) {
-                    self::setConfig('system', 'enable_debug_mode', true);
-                }
-            } else {
-                self::setConfig('system', 'enable_debug_mode', true);
-                self::setConfig('system', 'debug_mode_whitelist', []);
-            }
-        } else {
-            $enableDebugMode = self::getConfig('system', 'enable_debug_mode');
-            $debugModeWhitelist = self::getConfig('system', 'debug_mode_whitelist') ?: [];
-            if (
-                !$enableDebugMode || !($debugModeWhitelist === [] || in_array($ip, $debugModeWhitelist))
-            ) {
-                self::setConfig('system', 'enable_debug_mode', false);
+                self::setConfig('system', 'debug_mode_whitelist', explode("\n", str_replace("\r", '', $debug)));
             }
         }
 

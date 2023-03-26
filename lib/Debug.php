@@ -7,7 +7,13 @@ class Debug
      */
     public static function isEnabled(): bool
     {
-        return Configuration::getConfig('system', 'enable_debug_mode') === true;
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $enableDebugMode = Configuration::getConfig('system', 'enable_debug_mode');
+        $debugModeWhitelist = Configuration::getConfig('system', 'debug_mode_whitelist') ?: [];
+        if ($enableDebugMode && ($debugModeWhitelist === [] || in_array($ip, $debugModeWhitelist))) {
+            return true;
+        }
+        return false;
     }
 
     public static function log($message)
