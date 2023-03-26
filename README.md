@@ -185,7 +185,7 @@ Add the bridge name to `whitelist.txt`:
 
 Set in `config.ini.php`:
 
-    debug = true
+    enable_debug_mode = true
 
 Learn more in [debug mode](https://rss-bridge.github.io/rss-bridge/For_Developers/Debug_mode.html).
 
