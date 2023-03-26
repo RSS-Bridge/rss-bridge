@@ -7,7 +7,12 @@ Enabling debug mode on a public server may result in malicious clients retrievin
 Debug mode enables error reporting and prevents loading data from the cache (data is still written to the cache).
 To enable debug mode, set in `config.ini.php`:
 
-    debug = true
+    enable_debug_mode = true
+
+Allow only explicit ip addresses:
+
+    debug_mode_whitelist[] = 127.0.0.1
+    debug_mode_whitelist[] = 192.168.1.10
 
 _Notice_:
 
