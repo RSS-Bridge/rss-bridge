@@ -76,7 +76,7 @@ class InternationalInstituteForStrategicStudiesBridge extends BridgeAbstract
                 $result .= '<p>' . $args->Content . '</p>';
             } elseif (str_contains($script_text, 'ReactDOM.render(React.createElement(Components.List')) {
                 $args = $this->getRenderArguments($script_text);
-                foreach($args->Items as $item) {
+                foreach ($args->Items as $item) {
                     if ($item->Url != null) {
                         $match = preg_match('/\\"(.*)\\"/', $item->Url, $matches);
                         if ($match > 0) {
