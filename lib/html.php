@@ -10,10 +10,24 @@ function render(string $template, array $context = []): string
     }
     $context['messages'] = $context['messages'] ?? [];
     if (Configuration::getConfig('system', 'message')) {
-        $context['messages'][] = Configuration::getConfig('system', 'message');
+        $context['messages'][] = [
+            'body' => Configuration::getConfig('system', 'message'),
+            'level' => 'info',
+        ];
     }
     if (Debug::isEnabled()) {
-        $context['messages'][] = 'Debug mode is enabled';
+        $debugModeWhitelist = Configuration::getConfig('system', 'debug_mode_whitelist') ?: [];
+        if ($debugModeWhitelist === []) {
+            $context['messages'][] = [
+                'body' => 'Warning : Debug mode is active from any location, make sure only you can access RSS-Bridge.',
+                'level' => 'error'
+            ];
+        } else {
+            $context['messages'][] = [
+                'body' => 'Warning : Debug mode is active from your IP address, your requests will bypass the cache.',
+                'level' => 'warning'
+            ];
+        }
     }
     $context['page'] = render_template($template, $context);
     return render_template('base.html.php', $context);

@@ -18,8 +18,8 @@
         </header>
 
         <?php foreach ($messages as $message): ?>
-            <div class="alert">
-                <?= raw($message) ?>
+            <div class="alert-<?= raw($message['level'] ?? 'info') ?>">
+                <?= raw($message['body']) ?>
             </div>
         <?php endforeach; ?>
 
