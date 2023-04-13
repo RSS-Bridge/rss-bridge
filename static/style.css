@@ -79,6 +79,7 @@ header {
     background-color: rgb(33, 150, 243);
     padding: 15px;
     border-radius: 4px;
+    text-align: center;
 }
 
 .alert-warning {
@@ -88,6 +89,7 @@ header {
     font-weight: bold;
     padding: 15px;
     border-radius: 4px;
+    text-align: center;
 }
 
 .alert-error {
@@ -97,6 +99,7 @@ header {
     margin-bottom: 15px;
     padding: 15px;
     border-radius: 4px;
+    text-align: center;
 }
 
 select,
