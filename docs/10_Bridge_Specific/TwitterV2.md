@@ -12,7 +12,7 @@ Configuration
 
 	- I will not detail exactly how to do this, as the specific process will likely change over time. You should easily be able to find guides using your search engine of choice.
 
-	- A basic free developer account grants Essential access to the Twitter API v2, which should be sufficient for this bridge.
+	- Note: as of April 2023, the "Free" access level no longer allows read access. The cheapest access level with read access is called "Basic".
 
 2. Create a Twitter Project and App, get Bearer Token
 
