@@ -67,7 +67,7 @@ class ZeitBridge extends FeedExpander
 
         $headers = [
             'Cookie: zonconsent=' . date('Y-m-d\TH:i:s.v\Z'),
-            'User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'];
+        ];
 
         // one-page article
         $article = getSimpleHTMLDOM($item['uri'], $headers);
