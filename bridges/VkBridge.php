@@ -22,9 +22,18 @@ class VkBridge extends BridgeAbstract
             ]
         ]
     ];
+    const TEST_DETECT_PARAMETERS = [
+        'https://vk.com/id1' => ['u' => 'id1'],
+        'https://vk.com/groupname' => ['u' => 'groupname'],
+        'https://m.vk.com/groupname' => ['u' => 'groupname'],
+        'https://vk.com/groupname/anythingelse' => ['u' => 'groupname'],
+        'https://vk.com/groupname?w=somethingelse' => ['u' => 'groupname'],
+        'https://vk.com/with_underscore' => ['u' => 'with_underscore'],
+    ];
 
     protected $pageName;
     protected $tz = 0;
+    private $urlRegex = '/vk\.com\/([\w]+)/';
 
     public function getURI()
     {
@@ -42,6 +51,15 @@ class VkBridge extends BridgeAbstract
         }
 
         return parent::getName();
+    }
+
+    public function detectParameters($url)
+    {
+        if (preg_match($this->urlRegex, $url, $matches)) {
+            return ['u' => $matches[1]];
+        }
+
+        return null;
     }
 
     public function collectData()
