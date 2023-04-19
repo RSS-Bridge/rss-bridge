@@ -47,7 +47,7 @@ class ScribbleHubBridge extends FeedExpander
 
         //For series, filter out other series from 'All' feed
         if ($this->queriedContext === 'Series' &&
-            preg_match('/' . $this->getInput('sid') . '/', $item['uri']) !== 1) {
+            preg_match('/read\/' . $this->getInput('sid') . '-/', $item['uri']) !== 1) {
             return [];
         }
 
