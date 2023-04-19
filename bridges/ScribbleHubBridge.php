@@ -3,7 +3,7 @@
 class ScribbleHubBridge extends FeedExpander
 {
     const MAINTAINER = 'phantop';
-    const NAME = 'ScribbleHub';
+    const NAME = 'Scribble Hub';
     const URI = 'https://scribblehub.com/';
     const DESCRIPTION = 'Returns chapters from Scribble Hub.';
     const PARAMETERS = [
@@ -70,5 +70,24 @@ class ScribbleHubBridge extends FeedExpander
         }
 
         return $item;
+    }
+
+    public function getName()
+    {
+        $name = parent::getName() . " $this->queriedContext";
+        switch ($this->queriedContext) {
+        case 'Author':
+            $page = getSimpleHTMLDOMCached(self::URI . 'profile/' . $this->getInput('uid'));
+            $title = $page->find('.p_m_username.fp_authorname', 0)->plaintext;
+            break;
+        case 'Series':
+            $page = getSimpleHTMLDOMCached(self::URI . 'series/' . $this->getInput('sid'));
+            $title = $page->find('.fic_title', 0)->plaintext;
+            break;
+        }
+        if (isset($title)) {
+            $name .= " - $title";
+        }
+        return $name;
     }
 }
