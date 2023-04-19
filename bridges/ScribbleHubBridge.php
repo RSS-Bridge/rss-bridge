@@ -34,10 +34,11 @@ class ScribbleHubBridge extends FeedExpander
     public function collectData()
     {
         $url = 'https://rssscribblehub.com/rssfeed.php?type=';
-        if ($this->queriedContext === 'Author')
+        if ($this->queriedContext === 'Author') {
             $url = $url . 'author&uid=' . $this->getInput('uid');
-        else //All and Series use the same source feed
+        } else { //All and Series use the same source feed
             $url = $url . 'main';
+        }
         $this->collectExpandableDatas($url);
     }
 
@@ -46,8 +47,10 @@ class ScribbleHubBridge extends FeedExpander
         $item = parent::parseItem($newItem);
 
         //For series, filter out other series from 'All' feed
-        if ($this->queriedContext === 'Series' &&
-            preg_match('/read\/' . $this->getInput('sid') . '-/', $item['uri']) !== 1) {
+        if (
+            $this->queriedContext === 'Series'
+            && preg_match('/read\/' . $this->getInput('sid') . '-/', $item['uri']) !== 1
+        ) {
             return [];
         }
 
@@ -56,7 +59,7 @@ class ScribbleHubBridge extends FeedExpander
             $item['content'] = $item_html->find('#chp_raw', 0);
 
             //Retrieve image for thumbnail
-            $item_image = $item_html->find('.s_novel_img > img',0)->src;
+            $item_image = $item_html->find('.s_novel_img > img', 0)->src;
             $item['enclosures'] = [$item_image];
 
             //Restore lost categories
@@ -76,14 +79,14 @@ class ScribbleHubBridge extends FeedExpander
     {
         $name = parent::getName() . " $this->queriedContext";
         switch ($this->queriedContext) {
-        case 'Author':
-            $page = getSimpleHTMLDOMCached(self::URI . 'profile/' . $this->getInput('uid'));
-            $title = $page->find('.p_m_username.fp_authorname', 0)->plaintext;
-            break;
-        case 'Series':
-            $page = getSimpleHTMLDOMCached(self::URI . 'series/' . $this->getInput('sid') . '/a');
-            $title = $page->find('.fic_title', 0)->plaintext;
-            break;
+            case 'Author':
+                $page = getSimpleHTMLDOMCached(self::URI . 'profile/' . $this->getInput('uid'));
+                $title = $page->find('.p_m_username.fp_authorname', 0)->plaintext;
+                break;
+            case 'Series':
+                $page = getSimpleHTMLDOMCached(self::URI . 'series/' . $this->getInput('sid') . '/a');
+                $title = $page->find('.fic_title', 0)->plaintext;
+                break;
         }
         if (isset($title)) {
             $name .= " - $title";
@@ -95,14 +98,13 @@ class ScribbleHubBridge extends FeedExpander
     {
         $uri = parent::getURI();
         switch ($this->queriedContext) {
-        case 'Author':
-            $uri = self::URI . 'profile/' . $this->getInput('uid');
-            break;
-        case 'Series':
-            $uri = self::URI . 'series/' . $this->getInput('sid') . '/a';
-            break;
+            case 'Author':
+                $uri = self::URI . 'profile/' . $this->getInput('uid');
+                break;
+            case 'Series':
+                $uri = self::URI . 'series/' . $this->getInput('sid') . '/a';
+                break;
         }
         return $uri;
     }
-
 }
