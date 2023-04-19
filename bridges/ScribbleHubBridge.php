@@ -63,7 +63,7 @@ class ScribbleHubBridge extends FeedExpander
             $item['enclosures'] = [$item_image];
 
             //Restore lost categories
-            $item_story = $item_html->find('.chp_byauthor > a', 0)->innertext;
+            $item_story = html_entity_decode($item_html->find('.chp_byauthor > a', 0)->innertext);
             $item_sid   = $item_html->find('#mysid', 0)->value;
             $item['categories'] = [$item_story, $item_sid];
 
@@ -81,11 +81,11 @@ class ScribbleHubBridge extends FeedExpander
         switch ($this->queriedContext) {
             case 'Author':
                 $page = getSimpleHTMLDOMCached(self::URI . 'profile/' . $this->getInput('uid'));
-                $title = $page->find('.p_m_username.fp_authorname', 0)->plaintext;
+                $title = html_entity_decode($page->find('.p_m_username.fp_authorname', 0)->plaintext);
                 break;
             case 'Series':
                 $page = getSimpleHTMLDOMCached(self::URI . 'series/' . $this->getInput('sid') . '/a');
-                $title = $page->find('.fic_title', 0)->plaintext;
+                $title = html_entity_decode($page->find('.fic_title', 0)->plaintext);
                 break;
         }
         if (isset($title)) {
