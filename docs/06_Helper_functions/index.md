@@ -53,7 +53,7 @@ $html = getContents($url, $header, $opts);
 ```
 
 # getSimpleHTMLDOM
-The `getSimpleHTMLDOM` function is a wrapper for the [simple_html_dom](http://simplehtmldom.sourceforge.net/) [file_get_html](http://simplehtmldom.sourceforge.net/manual_api.htm#api) function in order to provide context by design.
+The `getSimpleHTMLDOM` function is a wrapper for the [simple_html_dom](https://simplehtmldom.sourceforge.io/) [file_get_html](https://simplehtmldom.sourceforge.io/docs/1.9/api/file_get_html/) function in order to provide context by design.
 
 ```PHP
 $html = getSimpleHTMLDOM('your URI');
