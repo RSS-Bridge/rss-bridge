@@ -81,7 +81,7 @@ class ScribbleHubBridge extends FeedExpander
             $title = $page->find('.p_m_username.fp_authorname', 0)->plaintext;
             break;
         case 'Series':
-            $page = getSimpleHTMLDOMCached(self::URI . 'series/' . $this->getInput('sid'));
+            $page = getSimpleHTMLDOMCached(self::URI . 'series/' . $this->getInput('sid') . '/a');
             $title = $page->find('.fic_title', 0)->plaintext;
             break;
         }
@@ -90,4 +90,19 @@ class ScribbleHubBridge extends FeedExpander
         }
         return $name;
     }
+
+    public function getURI()
+    {
+        $uri = parent::getURI();
+        switch ($this->queriedContext) {
+        case 'Author':
+            $uri = self::URI . 'profile/' . $this->getInput('uid');
+            break;
+        case 'Series':
+            $uri = self::URI . 'series/' . $this->getInput('sid') . '/a';
+            break;
+        }
+        return $uri;
+    }
+
 }
