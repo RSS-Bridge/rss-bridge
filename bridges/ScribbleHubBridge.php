@@ -55,6 +55,8 @@ class ScribbleHubBridge extends FeedExpander
         }
 
         if ($item_html = getSimpleHTMLDOMCached($item['uri'])) {
+            $item_html = defaultLinkTo($item_html, self::URI);
+
             //Retrieve full description from page contents
             $item['content'] = $item_html->find('#chp_raw', 0);
 
