@@ -94,7 +94,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         );
 
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]', 0);
+        $noresult = $html->find('h3[class=size--all-l]', 0);
         if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
             $this->items = [];
         } else {
