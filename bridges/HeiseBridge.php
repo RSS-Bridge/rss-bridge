@@ -118,12 +118,22 @@ class HeiseBridge extends FeedExpander
     protected function parseItem($feedItem)
     {
         $item = parent::parseItem($feedItem);
-        $item['uri'] = explode('?', $item['uri'])[0] . '?seite=all';
 
+        // strip rss parameter
+        $item['uri'] = explode('?', $item['uri'])[0];
+
+        // ignore TechStage articles
         if (strpos($item['uri'], 'https://www.heise.de') !== 0) {
             return $item;
         }
 
+        // abort on heise+ articles and link to archive.ph for full-text content
+        if (str_starts_with($item['title'], 'heise+ |')) {
+            $item['uri'] = 'https://archive.ph/?run=1&url=' . urlencode($item['uri']);
+            return $item;
+        }
+
+        $item['uri'] .= '?seite=all';
         $article = getSimpleHTMLDOMCached($item['uri']);
 
         if ($article) {
