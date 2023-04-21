@@ -115,7 +115,7 @@ function getContents(
         'Sec-Fetch-Mode' => 'navigate',
         'Sec-Fetch-Site' => 'none',
         'Sec-Fetch-User' => '?1',
-        'TE' => 'Trailers',
+        'TE' => 'trailers',
     ];
     $httpHeadersNormalized = [];
     foreach ($httpHeaders as $httpHeader) {
