@@ -1,4 +1,4 @@
-FROM rssbridge/rss-bridge:latest
+FROM ngeorger/rssbridge:latest
 
 RUN  apt-get update && \
     apt-get install --yes --no-install-recommends \

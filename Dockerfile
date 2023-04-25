@@ -1,10 +1,12 @@
-FROM lwthiker/curl-impersonate:0.5-ff-slim-buster AS curlimpersonate
+FROM lwthiker/curl-impersonate:latest AS curlimpersonate
 
-FROM php:8.0.27-fpm-buster AS rssbridge
+FROM ngeorger/php8fpm AS rssbridge
 
 LABEL description="RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one."
 LABEL repository="https://github.com/RSS-Bridge/rss-bridge"
 LABEL website="https://github.com/RSS-Bridge/rss-bridge"
+
+ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
