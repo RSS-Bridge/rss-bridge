@@ -414,7 +414,8 @@ abstract class XPathAbstract extends BridgeAbstract
                     continue;
                 }
 
-                $item->__set($param, $this->formatParamValue($param, $this->getItemValueOrNodeValue($typedResult)));
+                $value = $this->getItemValueOrNodeValue($typedResult, $param === 'content');
+                $item->__set($param, $this->formatParamValue($param, $value));
             }
 
             $itemId = $this->generateItemId($item);
@@ -569,21 +570,33 @@ abstract class XPathAbstract extends BridgeAbstract
      * @param $typedResult
      * @return string
      */
-    protected function getItemValueOrNodeValue($typedResult)
+    protected function getItemValueOrNodeValue($typedResult, $returnXML = false)
     {
         if ($typedResult instanceof \DOMNodeList) {
             $item = $typedResult->item(0);
             if ($item instanceof \DOMElement) {
-                return trim($item->nodeValue);
+                // Don't escape XML
+                if ($returnXML) {
+                    return ($item->ownerDocument ?? $item)->saveXML($item);
+                }
+                $text = $item->nodeValue;
             } elseif ($item instanceof \DOMAttr) {
-                return trim($item->value);
+                $text = $item->value;
             } elseif ($item instanceof \DOMText) {
-                return trim($item->wholeText);
+                $text = $item->wholeText;
             }
         } elseif (is_string($typedResult) && strlen($typedResult) > 0) {
-            return trim($typedResult);
+            $text = $typedResult;
+        } else {
+            throw new \Exception('Unknown type of XPath expression result.');
         }
-        throw new \Exception('Unknown type of XPath expression result.');
+
+        $text = trim($text);
+
+        if ($returnXML) {
+            return htmlspecialchars($text);
+        }
+        return $text;
     }
 
     /**
