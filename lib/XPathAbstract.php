@@ -348,7 +348,7 @@ abstract class XPathAbstract extends BridgeAbstract
     {
         $title = $xpath->query($this->getParam('feed_title'));
         if (count($title) === 1) {
-            return $this->getItemValueOrNodeValue($title);
+            return $this->fixEncoding($this->getItemValueOrNodeValue($title));
         }
     }
 
