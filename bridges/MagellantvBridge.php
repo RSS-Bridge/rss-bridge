@@ -37,6 +37,17 @@ class MagellantvBridge extends BridgeAbstract
 		return 'https://www.magellantv.com/favicon-32x32.png';
 	}
 
+    private function retrieve_tags($article){
+        // Retrieve all tags from an article and store in array
+        $article_tags_list = $article->find('div.articleCategory_article-category-tag__uEAXz > a');
+        $tags = [];
+        foreach($article_tags_list as $tag){
+            array_push($tags, $tag->plaintext);
+        }
+
+        return $tags;
+    }
+
     public function collectData()
     {
         // Determine URL based on topic
@@ -55,18 +66,18 @@ class MagellantvBridge extends BridgeAbstract
         }
         
         // Loop over each article and store article information
-        // $dom = defaultLinkTo($dom, $this->getURI());
         foreach ($article_list as $article) {
             $article = defaultLinkTo($article, $this->getURI());
-            Debug::log($article);
             $meta_information = $article->find('div.articlePreview_article-metas__kD1i7', 0);
             $title = $article->find('div.articlePreview_article-title___Ci5V > h2 > a', 0);
+            $tags_list = $this->retrieve_tags($article);
 
             $item = [
                 'title' => $title->plaintext,
                 'uri' => $title->href,
-                'timestamp' => strtotime($meta_information->find('div.articlePreview_article-date__8Jyfn', 0)->datetime),
-                'author' => $meta_information->find("div.articlePreview_article-author__Ie0_u > span", 1)->plaintext
+                'timestamp' => strtotime($meta_information->find('div.articlePreview_article-date__8Jyfn', 0)->plaintext),
+                'author' => $meta_information->find('div.articlePreview_article-author__Ie0_u > span', 1)->plaintext,
+                'categories' => $tags_list
             ];
 
             $this->items[] = $item;
