@@ -33,15 +33,17 @@ class MagellantvBridge extends BridgeAbstract
         ]
     ];
     
-    public function getIcon(){
-		return 'https://www.magellantv.com/favicon-32x32.png';
+    public function getIcon()
+    {
+	    return 'https://www.magellantv.com/favicon-32x32.png';
 	}
 
-    private function retrieve_tags($article){
+    private function RetrieveTags($article)
+    {
         // Retrieve all tags from an article and store in array
         $article_tags_list = $article->find('div.articleCategory_article-category-tag__uEAXz > a');
         $tags = [];
-        foreach($article_tags_list as $tag){
+        foreach ($article_tags_list as $tag){
             array_push($tags, $tag->plaintext);
         }
 
@@ -70,7 +72,7 @@ class MagellantvBridge extends BridgeAbstract
             $article = defaultLinkTo($article, $this->getURI());
             $meta_information = $article->find('div.articlePreview_article-metas__kD1i7', 0);
             $title = $article->find('div.articlePreview_article-title___Ci5V > h2 > a', 0);
-            $tags_list = $this->retrieve_tags($article);
+            $tags_list = $this->RetrieveTags($article);
 
             $item = [
                 'title' => $title->plaintext,
