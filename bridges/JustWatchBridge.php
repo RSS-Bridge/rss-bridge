@@ -155,11 +155,9 @@ class JustWatchBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $basehtml = getSimpleHTMLDOM($this->getURI());
-        $basehtml = defaultLinkTo($basehtml, self::URI);
-        $overviewhtml = getSimpleHTMLDOM($basehtml->find('.navbar__button__link', 1)->href);
-        $overviewhtml = defaultLinkTo($overviewhtml, self::URI);
-        $html = getSimpleHTMLDOM($overviewhtml->find('.filter-bar-content-type__item', $this->getInput('mediatype'))->find('a', 0)->href);
+        $type_fragment = array('','/movies','/tv-series');
+        $url = $this->getURI() . $type_fragment[$this->getInput('mediatype')] . '/new';
+        $html = getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, self::URI);
         $today = $html->find('div.title-timeline', 0);
         $providers = $today->find('div.provider-timeline');
