@@ -165,7 +165,7 @@ class JustWatchBridge extends BridgeAbstract
         $providers = $today->find('div.provider-timeline');
 
         foreach ($providers as $provider) {
-            $titles = $html->find('div.horizontal-title-list__item');
+            $titles = $provider->find('div.horizontal-title-list__item');
             foreach ($titles as $title) {
                 $item = [];
                 $item['uri'] = $title->find('a', 0)->href;
