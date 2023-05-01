@@ -35,8 +35,8 @@ class MagellantvBridge extends BridgeAbstract
 
     public function getIcon()
     {
-	    return 'https://www.magellantv.com/favicon-32x32.png';
-	}
+        return 'https://www.magellantv.com/favicon-32x32.png';
+    }
 
     private function retrieveTags($article)
     {
