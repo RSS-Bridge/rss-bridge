@@ -149,6 +149,12 @@ class JustWatchBridge extends BridgeAbstract
                     'Movies' => 1,
                     'Series' => 2
                 ]
+            ],
+            'providers' => [
+                'name' => 'Provider IDs',
+                'exampleValue' => 'nfx,dnp,bbc',
+                'title' => 'Comma separated list of content provider ids. (find these in your cookies under jw/user/settings/providers)',
+                'defaultValue' => 'nfx,dnp,bbc'            
             ]
         ]
     ];
@@ -156,7 +162,8 @@ class JustWatchBridge extends BridgeAbstract
     public function collectData()
     {
         $type_fragment = array('','/movies','/tv-series');
-        $url = $this->getURI() . $type_fragment[$this->getInput('mediatype')] . '/new';
+        $myproviders = '?providers=' . $this->getInput('providers');
+        $url = $this->getURI() . $type_fragment[$this->getInput('mediatype')] . '/new' . $myproviders;
         $html = getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, self::URI);
         $today = $html->find('div.title-timeline', 0);
