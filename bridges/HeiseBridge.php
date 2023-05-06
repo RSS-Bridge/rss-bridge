@@ -173,7 +173,7 @@ class HeiseBridge extends FeedExpander
         foreach ($categories as $category) {
             $item['categories'][] = trim($category->plaintext);
         }
-        
+
         $content = $article->find('.article-content', 0);
         if ($content) {
             $contentElements = $content->find(
