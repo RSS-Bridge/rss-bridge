@@ -161,7 +161,7 @@ class HeiseBridge extends FeedExpander
             $headerElements = $header->find('p, figure img, noscript img');
             $item['content'] = implode('', $headerElements);
 
-            $authors = $header->find('.a-creator__names .a-creator__name');
+            $authors = $header->find('.creator__names .creator__name');
             if ($authors) {
                 $item['author'] = implode(', ', array_map(function ($e) {
                     return $e->plaintext;
@@ -169,6 +169,11 @@ class HeiseBridge extends FeedExpander
             }
         }
 
+        $categories = $article->find('.article-footer__topics ul.topics li.topics__item');
+        foreach ($categories as $category) {
+            $item['categories'][] = trim($category->plaintext);
+        }
+        
         $content = $article->find('.article-content', 0);
         if ($content) {
             $contentElements = $content->find(
