@@ -89,7 +89,7 @@ class GolemBridge extends FeedExpander
             }
 
             $categories = $articlePage->find('ul.tags__list li');
-	    foreach ($categories as $category) {
+            foreach ($categories as $category) {
                 $item['categories'][] = trim(html_entity_decode($category->plaintext));
             }
 
