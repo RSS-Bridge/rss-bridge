@@ -88,6 +88,11 @@ class GolemBridge extends FeedExpander
                 $item['author'] = $author->plaintext;
             }
 
+            $categories = $articlePage->find('ul.tags__list li');
+	    foreach ($categories as $category) {
+                $item['categories'][] = trim(html_entity_decode($category->plaintext));
+            }
+
             $item['content'] .= $this->extractContent($articlePage);
 
             // next page
