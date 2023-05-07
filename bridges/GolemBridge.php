@@ -90,7 +90,10 @@ class GolemBridge extends FeedExpander
 
             $categories = $articlePage->find('ul.tags__list li');
             foreach ($categories as $category) {
-                $item['categories'][] = trim(html_entity_decode($category->plaintext));
+                $trimmedcategories[] = trim(html_entity_decode($category->plaintext));
+            }
+            if (isset($trimmedcategories)) {
+                $item['categories'] = array_unique($trimmedcategories);
             }
 
             $item['content'] .= $this->extractContent($articlePage);
