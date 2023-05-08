@@ -61,6 +61,11 @@ class CaschyBridge extends FeedExpander
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 
+        $categories = $article->find('div.post-category a');
+        foreach ($categories as $category) {
+            $item['categories'][] = $category->plaintext;
+        }
+
         $content = $article->find('div.entry-inner', 0);
         $item['content'] = $content;
 
