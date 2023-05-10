@@ -223,7 +223,9 @@ EOD
         // Try to get all tweets
         switch ($this->queriedContext) {
             case 'By username':
-                $cache = new FileCache();
+                $cacheFactory = new CacheFactory();
+                $cache = $cacheFactory->create();
+
                 $cache->setScope('twitter');
                 $cache->setKey(['cache']);
                 $cache->purgeCache(60 * 60 * 3); // 3h
