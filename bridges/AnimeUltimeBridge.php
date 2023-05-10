@@ -25,10 +25,7 @@ class AnimeUltimeBridge extends BridgeAbstract
     public function collectData()
     {
         //Add type filter if provided
-        $typeFilter = array_search(
-            $this->getInput('type'),
-            self::PARAMETERS[$this->queriedContext]['type']['values']
-        );
+        $typeFilter = $this->getKey('type');
 
         //Build date and filters for making requests
         $thismonth = date('mY') . $typeFilter;
@@ -128,12 +125,7 @@ class AnimeUltimeBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('type'))) {
-            $typeFilter = array_search(
-                $this->getInput('type'),
-                self::PARAMETERS[$this->queriedContext]['type']['values']
-            );
-
-            return 'Latest ' . $typeFilter . ' - Anime-Ultime Bridge';
+            return 'Latest ' . $this->getKey('type') . ' - Anime-Ultime Bridge';
         }
 
         return parent::getName();

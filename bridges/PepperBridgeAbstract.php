@@ -71,7 +71,6 @@ class PepperBridgeAbstract extends BridgeAbstract
         $selectorHot = implode(
             ' ', /* Notice this is a space! */
             [
-                'cept-vote-box',
                 'vote-box'
             ]
         );
@@ -95,7 +94,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         );
 
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]', 0);
+        $noresult = $html->find('h3[class=size--all-l]', 0);
         if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
             $this->items = [];
         } else {
@@ -119,7 +118,7 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
                     . $deal->find('div[class*=' . $selectorHot . ']', 0)
-                        ->find('span', 1)->outertext
+                        ->find('span', 0)->outertext
                     . '</td></table>';
 
                 // Check if a clock icon is displayed on the deal
@@ -593,9 +592,7 @@ HEREDOC;
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-keyword') . ' : ' . $this->getInput('q');
                 break;
             case $this->i8n('context-group'):
-                $values = $this->getParameters()[$this->i8n('context-group')]['group']['values'];
-                $group = array_search($this->getInput('group'), $values);
-                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $group;
+                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $this->getKey('group');
                 break;
             case $this->i8n('context-talk'):
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-talk') . ' : ' . $this->getTalkTitle();

@@ -16,17 +16,9 @@ rssbridge/rss-bridge:latest
 docker start rss-bridge
 ```
 
-And access it using `http://IP_Address:3000`. If you'd like to run a specific version, you can run it by:
+Access it using `http://IP_Address:3000`. If you'd like to run a specific version, you can run it by changing the ':latest' on the image to a tag listed [here](https://hub.docker.com/r/rssbridge/rss-bridge/tags/)
 
-```bash
-docker create \
---name=rss-bridge \
---volume </local/custom/path>:/config \
---publish 3000:80 \
-rssbridge/rss-bridge:$version
-```
-
-Where you can get the versions published to Docker Hub at https://hub.docker.com/r/rssbridge/rss-bridge/tags/. The server runs on port 80 internally, and you can publish it on a different port (change 3000 to your choice).
+The server runs on port 80 internally, map any port of your choice (in this example 3000).
 
 You can run it using a `docker-compose.yml` as well:
 
@@ -50,9 +42,8 @@ services:
 |Realtime container logs|`docker logs -f rss-bridge`|
 
 # Adding custom bridges and configurations
-If you want to add a bridge that is not part of [`/bridges`](https://github.com/RSS-Bridge/rss-bridge/tree/master/bridges), you can specify an additional folder to copy necessary files to the `rss-bridge` container.
+If you want to add a bridge that is not part of [`/bridges`](https://github.com/RSS-Bridge/rss-bridge/tree/master/bridges), you can map a folder to the `/config` folder of the `rss-bridge` container.
 
-_Here **root** is folder where `docker-compose.yml` resides._
-1. Create `custom` folder in root. 
-2. Copy your [bridges files](../05_Bridge_API/01_How_to_create_a_new_bridge.md) to the `custom` folder. You can also add your custom [whitelist.txt](../03_For_Hosts/05_Whitelisting.md) file and your custom [config.ini.php](../03_For_Hosts/08_Custom_Configuration.md) to this folder.
-3. Run `docker-compose up` to recreate service.
+1. Create a folder in the location of your docker-compose.yml or your general docker working area (in this example it will be `/home/docker/rssbridge/config` ). 
+2. Copy your [custom bridges](../05_Bridge_API/01_How_to_create_a_new_bridge.md) to the `/home/docker/rssbridge/config` folder. You can also add your custom [whitelist.txt](../03_For_Hosts/05_Whitelisting.md) file and your custom [config.ini.php](../03_For_Hosts/08_Custom_Configuration.md) to this folder.
+3. Map the folder to `/config` inside the container. To do that, replace the `</local/custom/path>` from the previous examples with `/home/docker/rssbridge/config`

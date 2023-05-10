@@ -85,7 +85,7 @@ class BugzillaBridge extends BridgeAbstract
     protected function getTitle($url)
     {
         // Only request the summary for a faster request
-        $json = json_decode(getContents($url . '?include_fields=summary'), true);
+        $json = self::getJSON($url . '?include_fields=summary');
         $this->title = 'Bug ' . $this->bugid . ' - ' .
                      $json['bugs'][0]['summary'] . ' - ' .
                      // Remove https://
@@ -94,7 +94,7 @@ class BugzillaBridge extends BridgeAbstract
 
     protected function collectComments($url)
     {
-        $json = json_decode(getContents($url), true);
+        $json = self::getJSON($url);
 
         // Array of comments is here
         if (!isset($json['bugs'][$this->bugid]['comments'])) {
@@ -127,7 +127,7 @@ class BugzillaBridge extends BridgeAbstract
 
     protected function collectUpdates($url)
     {
-        $json = json_decode(getContents($url), true);
+        $json = self::getJSON($url);
 
         // Array of changesets which contain an array of changes
         if (!isset($json['bugs']['0']['history'])) {
@@ -159,7 +159,7 @@ class BugzillaBridge extends BridgeAbstract
     protected function getUser($user)
     {
         // Check if the user endpoint is available
-        if ($this->loadCacheValue($this->instance . 'userEndpointClosed')) {
+        if ($this->loadCacheValue($this->instance . 'userEndpointClosed', 86400)) {
             return $user;
         }
 
@@ -170,7 +170,7 @@ class BugzillaBridge extends BridgeAbstract
 
         $url = $this->instance . '/rest/user/' . $user . '?include_fields=real_name';
         try {
-            $json = json_decode(getContents($url), true);
+            $json = self::getJSON($url);
             if (isset($json['error']) and $json['error']) {
                 throw new Exception();
             }
@@ -186,5 +186,13 @@ class BugzillaBridge extends BridgeAbstract
         }
         $this->saveCacheValue($this->instance . $user, $username);
         return $username;
+    }
+
+    protected static function getJSON($url)
+    {
+        $headers = [
+            'Accept: application/json',
+        ];
+        return json_decode(getContents($url, $headers), true);
     }
 }

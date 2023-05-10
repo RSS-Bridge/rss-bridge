@@ -181,11 +181,11 @@ class NineGagBridge extends BridgeAbstract
     public function getName()
     {
         if ($this->getInput('d')) {
-            $name = sprintf('%s - %s', '9GAG', $this->getParameterKey('d'));
+            $name = sprintf('%s - %s', '9GAG', $this->getKey('d'));
         } elseif ($this->getInput('g')) {
-            $name = sprintf('%s - %s', '9GAG', $this->getParameterKey('g'));
+            $name = sprintf('%s - %s', '9GAG', $this->getKey('g'));
             if ($this->getInput('t')) {
-                $name = sprintf('%s [%s]', $name, $this->getParameterKey('t'));
+                $name = sprintf('%s [%s]', $name, $this->getKey('t'));
             }
         }
         if (!empty($name)) {
@@ -234,23 +234,6 @@ class NineGagBridge extends BridgeAbstract
         }
 
         return $this->p;
-    }
-
-    protected function getParameterKey($input = '')
-    {
-        $params = $this->getParameters();
-        $tab = 'Sections';
-        if ($input === 'd') {
-            $tab = 'Popular';
-        }
-        if (!isset($params[$tab][$input])) {
-            return '';
-        }
-
-        return array_search(
-            $this->getInput($input),
-            $params[$tab][$input]['values']
-        );
     }
 
     protected static function getContent($post)

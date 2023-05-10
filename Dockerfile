@@ -1,6 +1,6 @@
 FROM lwthiker/curl-impersonate:0.5-ff-slim-buster AS curlimpersonate
 
-FROM php:7.4.29-fpm AS rssbridge
+FROM php:8.0.27-fpm-buster AS rssbridge
 
 LABEL description="RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one."
 LABEL repository="https://github.com/RSS-Bridge/rss-bridge"

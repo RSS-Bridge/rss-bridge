@@ -99,8 +99,11 @@ class YoutubeBridge extends BridgeAbstract
         }
 
         $jsonData = $this->getJSONData($html);
-        $jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
+        if (! isset($jsonData->contents)) {
+            return;
+        }
 
+        $jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
         $videoSecondaryInfo = null;
         foreach ($jsonData as $item) {
             if (isset($item->videoSecondaryInfoRenderer)) {

@@ -147,10 +147,7 @@ EOD;
     public function getName()
     {
         if (!is_null($this->getInput('country'))) {
-            $parameters = $this->getParameters();
-            $values = array_flip($parameters[0]['country']['values']);
-
-            return $values[$this->getInput('country')] . ' - TwitScoop';
+            return $this->getKey('country') . ' - TwitScoop';
         }
 
         return parent::getName();

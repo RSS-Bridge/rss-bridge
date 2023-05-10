@@ -34,8 +34,8 @@ final class Logger
             unset($context['e']);
             $context['type'] = get_class($e);
             $context['code'] = $e->getCode();
-            $context['message'] = $e->getMessage();
-            $context['file'] = trim_path_prefix($e->getFile());
+            $context['message'] = sanitize_root($e->getMessage());
+            $context['file'] = sanitize_root($e->getFile());
             $context['line'] = $e->getLine();
             $context['url'] = get_current_url();
             $context['trace'] = trace_to_call_points(trace_from_exception($e));
@@ -58,6 +58,7 @@ final class Logger
                 }
             }
         }
+        // Intentionally not sanitizing $message
         $text = sprintf(
             "[%s] rssbridge.%s %s %s\n",
             now()->format('Y-m-d H:i:s'),
@@ -65,6 +66,7 @@ final class Logger
             $message,
             $context ? Json::encode($context) : ''
         );
+        // Log to stderr/stdout whatever that is
         error_log($text);
     }
 }
