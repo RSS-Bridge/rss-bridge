@@ -191,7 +191,8 @@ function getContents(
             $cloudflareTitles = [
                 '<title>Just a moment...',
                 '<title>Please Wait...',
-                '<title>Attention Required!'
+                '<title>Attention Required!',
+                '<title>Security | Glassdoor',
             ];
             foreach ($cloudflareTitles as $cloudflareTitle) {
                 if (str_contains($result['body'], $cloudflareTitle)) {
