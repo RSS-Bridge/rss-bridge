@@ -123,7 +123,7 @@ EOD
 
     private $apiKey     = null;
     private $guestToken = null;
-    private $authHeader = [];
+    private $authHeaders = [];
 
     public function detectParameters($url)
     {
@@ -219,25 +219,23 @@ EOD
         $tweets = [];
 
         // Get authentication information
-        $this->getApiKey();
 
         // Try to get all tweets
         switch ($this->queriedContext) {
             case 'By username':
-                $user = $this->makeApiCall('/1.1/users/show.json', ['screen_name' => $this->getInput('u')]);
-                if (!$user) {
-                    returnServerError('Requested username can\'t be found.');
-                }
+                $cacheFactory = new CacheFactory();
+                $cache = $cacheFactory->create();
 
-                $params = [
-                'user_id'       => $user->id_str,
-                'tweet_mode'    => 'extended'
-                ];
+                $cache->setScope('twitter');
+                $cache->setKey(['cache']);
+                $cache->purgeCache(60 * 60 * 3); // 3h
+                $api = new TwitterClient($cache);
 
-                $data = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
+                $data = $api->fetchUserTweets($this->getInput('u'));
                 break;
 
             case 'By keyword or hashtag':
+                // Does not work with the recent twitter changes
                 $params = [
                 'q'                 => urlencode($this->getInput('q')),
                 'tweet_mode'        => 'extended',
@@ -248,6 +246,7 @@ EOD
                 break;
 
             case 'By list':
+                // Does not work with the recent twitter changes
                 $params = [
                 'slug'              => strtolower($this->getInput('list')),
                 'owner_screen_name' => strtolower($this->getInput('user')),
@@ -258,6 +257,7 @@ EOD
                 break;
 
             case 'By list ID':
+                // Does not work with the recent twitter changes
                 $params = [
                 'list_id'           => $this->getInput('listid'),
                 'tweet_mode'        => 'extended',
@@ -284,7 +284,10 @@ EOD
         }
 
         // Filter out unwanted tweets
-        foreach ($data as $tweet) {
+        foreach ($data->tweets as $tweet) {
+            if (!$tweet) {
+                continue;
+            }
             // Filter out retweets to remove possible duplicates of original tweet
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
@@ -333,9 +336,9 @@ EOD
                 $realtweet = $tweet->retweeted_status;
             }
 
-            $item['username']  = $realtweet->user->screen_name;
-            $item['fullname']  = $realtweet->user->name;
-            $item['avatar']    = $realtweet->user->profile_image_url_https;
+            $item['username']  = $data->user_info->legacy->screen_name;
+            $item['fullname']  = $data->user_info->legacy->name;
+            $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
             $item['timestamp'] = $realtweet->created_at;
             $item['id']        = $realtweet->id_str;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
