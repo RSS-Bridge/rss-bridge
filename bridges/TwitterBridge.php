@@ -232,8 +232,11 @@ EOD
                 $api = new TwitterClient($cache);
 
                 $screenName = $this->getInput('u');
+                $screenName = trim($screenName);
                 $screenName = ltrim($screenName, '@');
+
                 $data = $api->fetchUserTweets($screenName);
+
                 break;
 
             case 'By keyword or hashtag':
