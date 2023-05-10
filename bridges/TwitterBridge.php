@@ -123,7 +123,7 @@ EOD
 
     private $apiKey     = null;
     private $guestToken = null;
-    private $authHeader = [];
+    private $authHeaders = [];
 
     public function detectParameters($url)
     {
@@ -235,7 +235,7 @@ EOD
                 break;
 
             case 'By keyword or hashtag':
-                die('Not implemented');
+                // Does not work with the recent twitter changes
                 $params = [
                 'q'                 => urlencode($this->getInput('q')),
                 'tweet_mode'        => 'extended',
@@ -246,7 +246,7 @@ EOD
                 break;
 
             case 'By list':
-                die('Not implemented');
+                // Does not work with the recent twitter changes
                 $params = [
                 'slug'              => strtolower($this->getInput('list')),
                 'owner_screen_name' => strtolower($this->getInput('user')),
@@ -257,7 +257,7 @@ EOD
                 break;
 
             case 'By list ID':
-                die('Not implemented');
+                // Does not work with the recent twitter changes
                 $params = [
                 'list_id'           => $this->getInput('listid'),
                 'tweet_mode'        => 'extended',
