@@ -65,7 +65,39 @@ class TwitterClient
             if (!isset($entry->content->itemContent->tweet_results->result->legacy)) {
                 continue;
             }
-            $tweets[] = $entry->content->itemContent->tweet_results->result->legacy;
+            $tweet = $entry->content->itemContent->tweet_results->result->legacy;
+            if (mb_substr($tweet->full_text, -1) === '…') {
+                $ruxContext = $entry->content->itemContent->ruxContext ?: '';
+                Debug::Log($ruxContext);
+                try {
+                    $fulltweet = $this->fetchTweetDetails($tweet->id_str);
+                } catch (HttpException $e) {
+                    if ($e->getCode === 403) {
+                        Logger::info('The guest token has expired');
+                        $this->data['guest_token'] = null;
+                        $this->fetchGuestToken();
+                        $fulltweet = fetchTweetDetails($tweet->id_str, $ruxContext);
+                    } else {
+                        throw $e;
+                    }
+                }
+                $instruction = $fulltweet->data->{'threaded_conversation_with_injections_v2'}->instructions[0];
+                if ($instruction->type !== 'TimelineAddEntries') {
+                    throw new \Exception(sprintf('Unexpected instruction type: %s', $instruction->type));
+                }
+                foreach ($instruction->entries as $entry) {
+                    if ($entry->content->entryType !== 'TimelineTimelineItem') {
+                        continue;
+                    }
+                    if (!isset($entry->content->itemContent->tweet_results->result->legacy)) {
+                        continue;
+                    }
+                    $tweet = $entry->content->itemContent->tweet_results->result->legacy;
+                    Debug::Log(json_encode($tweet->full_text));
+                    break;
+                }
+            }
+            $tweets[] = $tweet;
         }
         return (object) [
             'user_info' => $userInfo,
@@ -147,6 +179,59 @@ class TwitterClient
         ];
         $url = sprintf(
             'https://twitter.com/i/api/graphql/WZT7sCTrLvSOaWOXLDsWbQ/UserTweets?variables=%s&features=%s',
+            urlencode(json_encode($variables)),
+            urlencode(json_encode($features))
+        );
+        $response = json_decode(getContents($url, $this->createHttpHeaders()));
+        return $response;
+    }
+
+    private function fetchTweetDetails($tweetId, $ruxContext = '')
+    {
+        $variables = [
+            'focalTweetId' => $tweetId,
+            'referrer' => 'profile',
+            'rux_context' => $ruxContext,
+            'includePromotedContent' => true,
+            'withCommunity' => true,
+            'withQuickPromoteEligibilityTweetFields' => true,
+            'withBirdwatchNotes' => false,
+            'withVoice' => true,
+            'withV2Timeline' => true,
+            'withDownvotePerspective' => false,
+            'withReactionsMetadata' => false,
+            'withReactionsPerspective' => false,
+            'withSuperFollowsTweetFields' => true,
+            'withSuperFollowsUserFields' => true,
+        ];
+        $features = [
+            'responsive_web_twitter_blue_verified_badge_is_enabled' => true,
+            'rweb_lists_timeline_redesign_enabled' => false,
+            'blue_business_profile_image_shape_enabled' => true,
+            'responsive_web_graphql_exclude_directive_enabled' => true,
+            'verified_phone_label_enabled' => false,
+            'creator_subscriptions_tweet_preview_api_enabled' => false,
+            'responsive_web_graphql_timeline_navigation_enabled' => true,
+            'responsive_web_graphql_skip_user_profile_image_extensions_enabled' => false,
+            'tweetypie_unmention_optimization_enabled' => true,
+            'vibe_api_enabled' => true,
+            'responsive_web_edit_tweet_api_enabled' => true,
+            'graphql_is_translatable_rweb_tweet_is_translatable_enabled' => true,
+            'view_counts_everywhere_api_enabled' => true,
+            'longform_notetweets_consumption_enabled' => true,
+            'tweet_awards_web_tipping_enabled' => false,
+            'freedom_of_speech_not_reach_fetch_enabled' => true,
+            'standardized_nudges_misinfo' => true,
+            'tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled' => false,
+            'interactive_text_enabled' => true,
+            'responsive_web_text_conversations_enabled' => false,
+            'longform_notetweets_rich_text_read_enabled' => true,
+            'longform_notetweets_richtext_consumption_enabled' => true,
+            'longform_notetweets_inline_media_enabled' => false,
+            'responsive_web_enhance_cards_enabled' => false,
+        ];
+        $url = sprintf(
+            'https://twitter.com/i/api/graphql/zXaXQgfyR4GxE21uwYQSyA/TweetDetail?variables=%s&features=%s',
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
