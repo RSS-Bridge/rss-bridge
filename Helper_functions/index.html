@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Helper_functions/index.html">Helper functions</a></h1>
                 <span class="ModifiedDate">
-            April 19, 2023 at 8:53 AM        </span>
+            May 11, 2023 at 12:24 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/06_Helper_functions/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -272,7 +272,58 @@ $cleaned = stripRecursiveHTMLSection($string, $tag_name, $tag_start);
 </code></pre>
 <h1><a id="markdowntohtml" href="#markdowntohtml" class="Permalink" aria-hidden="true" title="Permalink">#</a>markdownToHtml</h1>
 <p>Converts markdown input to HTML using <a href="https://parsedown.org/" class="Link--external" rel="noopener noreferrer">Parsedown</a>.</p>
-<pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">markdownToHtml</span><span class="hljs-params">(string $string)</span> : <span class="hljs-title">string</span>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>string</code></td>
+<td>string</td>
+<td><em>required</em></td>
+<td>The URL of the contents to acquire</td>
+</tr>
+<tr>
+<td><code>config</code></td>
+<td>array</td>
+<td><em>optional</em></td>
+<td>An array of Parsedown options in the format <code>['breaksEnabled' =&gt; true]</code></td>
+</tr>
+</tbody>
+</table>
+<p>Valid options:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>breaksEnabled</code></td>
+<td><code>false</code></td>
+<td>Enable automatic line breaks</td>
+</tr>
+<tr>
+<td><code>markupEscaped</code></td>
+<td><code>false</code></td>
+<td>Escape inline markup (HTML)</td>
+</tr>
+<tr>
+<td><code>urlsLinked</code></td>
+<td><code>true</code></td>
+<td>Automatically convert URLs to links</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">markdownToHtml</span><span class="hljs-params">(string $string, array $config = [])</span> : <span class="hljs-title">string</span>
 </span></code></pre>
 <p><strong>Example</strong></p>
 <pre><code class="hljs php">$input = <span class="hljs-string">&lt;&lt;&lt;EOD
