@@ -361,10 +361,22 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start)
  * @link https://parsedown.org/ Parsedown
  *
  * @param string $string Input string in Markdown format
+ * @param array $config Parsedown options to control output
  * @return string output string in HTML format
  */
-function markdownToHtml($string)
+function markdownToHtml($string, $config = [])
 {
     $Parsedown = new Parsedown();
+    foreach ($config as $option => $value) {
+        if ($option === 'breaksEnabled') {
+            $Parsedown->setBreaksEnabled($value);
+        } elseif ($option === 'markupEscaped') {
+            $Parsedown->setMarkupEscaped($value);
+        } elseif ($option === 'urlsLinked') {
+            $Parsedown->setUrlsLinked($value);
+        } else {
+            throw new \InvalidArgumentException("Invalid Parsedown option \"$option\"");
+        }
+    }
     return $Parsedown->text($string);
 }
