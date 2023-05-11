@@ -194,8 +194,20 @@ $cleaned = stripRecursiveHTMLSection($string, $tag_name, $tag_start);
 # markdownToHtml
 Converts markdown input to HTML using [Parsedown](https://parsedown.org/).
 
+| Parameter | Type   | Optional   | Description
+| --------- | ------ | ---------- | ----------
+| `string`  | string | *required* | The URL of the contents to acquire
+| `config`  | array  | *optional* | An array of Parsedown options in the format `['breaksEnabled' => true]`
+
+Valid options:
+| Option          | Default | Description
+| --------------- | ------- | -----------
+| `breaksEnabled` | `false` | Enable automatic line breaks
+| `markupEscaped` | `false` | Escape inline markup (HTML)
+| `urlsLinked`    | `true`  | Automatically convert URLs to links
+
 ```php
-function markdownToHtml(string $string) : string
+function markdownToHtml(string $string, array $config = []) : string
 ```
 
 **Example**
