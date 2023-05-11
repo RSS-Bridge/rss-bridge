@@ -55,7 +55,10 @@ class CaschyBridge extends FeedExpander
     private function addArticleToItem($item, $article)
     {
         // remove unwanted stuff
-        foreach ($article->find('div.video-container, div.aawp, p.aawp-disclaimer, iframe.wp-embedded-content, div.wp-embed, p.wp-caption-text') as $element) {
+        foreach (
+            $article->find('div.video-container, div.aawp, p.aawp-disclaimer, iframe.wp-embedded-content, 
+            div.wp-embed, p.wp-caption-text, script') as $element
+        ) {
             $element->remove();
         }
         // reload html, as remove() is buggy
