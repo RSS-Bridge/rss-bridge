@@ -150,7 +150,7 @@ class HeiseBridge extends FeedExpander
         $article = defaultLinkTo($article, $item['uri']);
 
         // remove unwanted stuff
-        foreach ($article->find('figure.branding, a-ad, div.ho-text, a-img, .opt-in__content-container, .a-toc__list') as $element) {
+        foreach ($article->find('figure.branding, a-ad, div.ho-text, a-img, .opt-in__content-container, .a-toc__list, a-collapse') as $element) {
             $element->remove();
         }
         // reload html, as remove() is buggy
