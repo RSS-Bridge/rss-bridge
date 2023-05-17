@@ -577,7 +577,8 @@ abstract class XPathAbstract extends BridgeAbstract
             if ($item instanceof \DOMElement) {
                 // Don't escape XML
                 if ($returnXML) {
-                    return ($item->ownerDocument ?? $item)->saveXML($item);
+                    $text = ($item->ownerDocument ?? $item)->saveXML($item);
+                    return defaultLinkTo($text, $this->getSourceUrl());
                 }
                 $text = $item->nodeValue;
             } elseif ($item instanceof \DOMAttr) {
