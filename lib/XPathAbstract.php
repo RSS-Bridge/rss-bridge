@@ -387,6 +387,9 @@ abstract class XPathAbstract extends BridgeAbstract
         libxml_clear_errors();
         libxml_use_internal_errors(false);
 
+        // fix relative links
+        defaultLinkTo($webPageHtml, $this->feedUri);
+
         $xpath = new \DOMXPath($webPageHtml);
 
         $this->feedName = $this->provideFeedTitle($xpath);
