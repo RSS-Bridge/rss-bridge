@@ -90,3 +90,103 @@ $html = defaultLinkTo($html, $this->getURI()); // Using bridge URL
 // Output
 // <img src="https://www.github.com/rss-bridge/rss-bridge/blob/master/README.md">
 ```
+
+# backgroundToImg
+Replaces tags with styles of `backgroud-image` by `<img />` tags.
+
+```php
+backgroundToImg(mixed $htmlContent) : object
+```
+
+Returns a DOM object (even if provided a string).
+
+# extractFromDelimiters
+Extract the first part of a string matching the specified start and end delimiters.
+```php
+function extractFromDelimiters(string $string, string $start, string $end) : mixed
+```
+
+Returns the extracted string if delimiters were found and false otherwise.
+
+**Example**
+
+```php
+$string = '<div>Post author: John Doe</div>';
+$start = 'author: ';
+$end = '<';
+$extracted = extractFromDelimiters($string, $start, $end);
+
+// Output
+// 'John Doe'
+```
+
+# stripWithDelimiters
+Remove one or more part(s) of a string using a start and end delmiters.
+It is the inverse of `extractFromDelimiters`.
+
+```php
+function stripWithDelimiters(string $string, string $start, string $end) : string
+```
+
+Returns the cleaned string, even if no delimiters were found.
+
+**Example**
+
+```php
+$string = 'foo<script>superscript()</script>bar';
+$start = '<script>';
+$end = '</script>';
+$cleaned = stripWithDelimiters($string, $start, $end);
+
+// Output
+// 'foobar'
+```
+
+# stripRecursiveHTMLSection
+Remove HTML sections containing one or more sections using the same HTML tag.
+
+```php
+function stripRecursiveHTMLSection(string $string, string $tag_name, string $tag_start) : string
+```
+
+**Example**
+
+```php
+$string = 'foo<div class="ads"><div>ads</div>ads</div>bar';
+$tag_name = 'div';
+$tag_start = '<div class="ads">';
+$cleaned = stripRecursiveHTMLSection($string, $tag_name, $tag_start);
+
+// Output
+// 'foobar'
+```
+
+# markdownToHtml
+Converts markdown input to HTML using [Parsedown](https://parsedown.org/).
+
+```php
+function markdownToHtml(string $string) : string
+```
+
+**Example**
+```php
+$input = <<<EOD
+RELEASE-2.8
+ * Share QR code of a token
+ * Dark mode improvemnet
+ * Fix some layout issues
+ * Add shortcut to launch the app with screenshot mode on
+ * Translation improvements
+EOD;
+$html = markdownToHtml($input);
+
+// Output:
+// <p>RELEASE-2.8</p>
+// <ul>
+// <li>Share QR code of a token</li>
+// <li>Dark mode improvemnet</li>
+// <li>Fix some layout issues</li>
+// <li>Add shortcut to launch the app with screenshot mode on</li>
+// <li>Translation improvements</li>
+// </ul>
+```

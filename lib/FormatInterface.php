@@ -27,13 +27,6 @@ interface FormatInterface {
 	public function stringify();
 
 	/**
-	 * Display the current data to the user
-	 *
-	 * @return self The format object
-	 */
-	public function display();
-
-	/**
 	 * Set items
 	 *
 	 * @param array $bridges The items

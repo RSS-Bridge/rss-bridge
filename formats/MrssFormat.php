@@ -27,6 +27,9 @@
 class MrssFormat extends FormatAbstract {
 	const MIME_TYPE = 'application/rss+xml';
 
+	protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
+	protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
+
 	const ALLOWED_IMAGE_EXT = array(
 		'.gif', '.jpg', '.png'
 	);
@@ -37,24 +40,67 @@ class MrssFormat extends FormatAbstract {
 		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
 		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
-		$feedUrl = $this->xml_encode($urlPrefix . $urlHost . $urlRequest);
+		$feedUrl = $urlPrefix . $urlHost . $urlRequest;
 
 		$extraInfos = $this->getExtraInfos();
-		$title = $this->xml_encode($extraInfos['name']);
-		$icon = $extraInfos['icon'];
+		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : REPOSITORY;
 
-		if(!empty($extraInfos['uri'])) {
-			$uri = $this->xml_encode($extraInfos['uri']);
-		} else {
-			$uri = REPOSITORY;
+		$document = new DomDocument('1.0', $this->getCharset());
+		$document->formatOutput = true;
+		$feed = $document->createElement('rss');
+		$document->appendChild($feed);
+		$feed->setAttribute('version', '2.0');
+		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:atom', self::ATOM_NS);
+		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
+
+		$channel = $document->createElement('channel');
+		$feed->appendChild($channel);
+
+		$title = $extraInfos['name'];
+		$channelTitle = $document->createElement('title');
+		$channel->appendChild($channelTitle);
+		$channelTitle->appendChild($document->createTextNode($title));
+
+		$link = $document->createElement('link');
+		$channel->appendChild($link);
+		$link->appendChild($document->createTextNode($uri));
+
+		$description = $document->createElement('description');
+		$channel->appendChild($description);
+		$description->appendChild($document->createTextNode($extraInfos['name']));
+
+		$icon = $extraInfos['icon'];
+		if (!empty($icon) && in_array(substr($icon, -4), self::ALLOWED_IMAGE_EXT)) {
+			$feedImage = $document->createElement('image');
+			$channel->appendChild($feedImage);
+			$iconUrl = $document->createElement('url');
+			$iconUrl->appendChild($document->createTextNode($icon));
+			$feedImage->appendChild($iconUrl);
+			$iconTitle = $document->createElement('title');
+			$iconTitle->appendChild($document->createTextNode($title));
+			$feedImage->appendChild($iconTitle);
+			$iconLink = $document->createElement('link');
+			$iconLink->appendChild($document->createTextNode($uri));
+			$feedImage->appendChild($iconLink);
 		}
 
-		$items = '';
+		$linkAlternate = $document->createElementNS(self::ATOM_NS, 'link');
+		$channel->appendChild($linkAlternate);
+		$linkAlternate->setAttribute('rel', 'alternate');
+		$linkAlternate->setAttribute('type', 'text/html');
+		$linkAlternate->setAttribute('href', $uri);
+
+		$linkSelf = $document->createElementNS(self::ATOM_NS, 'link');
+		$channel->appendChild($linkSelf);
+		$linkSelf->setAttribute('rel', 'self');
+		$linkSelf->setAttribute('type', 'application/atom+xml');
+		$linkSelf->setAttribute('href', $feedUrl);
+
 		foreach($this->getItems() as $item) {
 			$itemTimestamp = $item->getTimestamp();
-			$itemTitle = $this->xml_encode($item->getTitle());
-			$itemUri = $this->xml_encode($item->getURI());
-			$itemContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
+			$itemTitle = $item->getTitle();
+			$itemUri = $item->getURI();
+			$itemContent = $this->sanitizeHtml($item->getContent());
 			$entryID = $item->getUid();
 			$isPermaLink = 'false';
 
@@ -66,99 +112,58 @@ class MrssFormat extends FormatAbstract {
 			if (empty($entryID)) // Fallback to title and content
 				$entryID = hash('sha1', $itemTitle . $itemContent);
 
-			$entryTitle = '';
-			if (!empty($itemTitle))
-				$entryTitle = '<title>' . $itemTitle . '</title>';
+			$entry = $document->createElement('item');
+			$channel->appendChild($entry);
 
-			$entryLink = '';
-			if (!empty($itemUri))
-				$entryLink = '<link>' . $itemUri . '</link>';
-
-			$entryPublished = '';
-			if (!empty($itemTimestamp)) {
-				$entryPublished = '<pubDate>'
-				. $this->xml_encode(gmdate(DATE_RFC2822, $itemTimestamp))
-				. '</pubDate>';
+			if (!empty($itemTitle)) {
+				$entryTitle = $document->createElement('title');
+				$entry->appendChild($entryTitle);
+				$entryTitle->appendChild($document->createTextNode($itemTitle));
 			}
 
-			$entryDescription = '';
-			if (!empty($itemContent))
-				$entryDescription = '<description>' . $itemContent . '</description>';
+			if (!empty($itemUri)) {
+				$entryLink = $document->createElement('link');
+				$entry->appendChild($entryLink);
+				$entryLink->appendChild($document->createTextNode($itemUri));
+			}
 
-			$entryEnclosures = '';
+			$entryGuid = $document->createElement('guid');
+			$entryGuid->setAttribute('isPermaLink', $isPermaLink);
+			$entry->appendChild($entryGuid);
+			$entryGuid->appendChild($document->createTextNode($entryID));
+
+			if (!empty($itemTimestamp)) {
+				$entryPublished = $document->createElement('pubDate');
+				$entry->appendChild($entryPublished);
+				$entryPublished->appendChild($document->createTextNode(gmdate(DATE_RFC2822, $itemTimestamp)));
+			}
+
+			if (!empty($itemContent)) {
+				$entryDescription = $document->createElement('description');
+				$entry->appendChild($entryDescription);
+				$entryDescription->appendChild($document->createTextNode($itemContent));
+			}
+
 			foreach($item->getEnclosures() as $enclosure) {
-				$entryEnclosures .= '<media:content url="'
-				. $this->xml_encode($enclosure)
-				. '" type="' . getMimeType($enclosure) . '"/>'
-				. PHP_EOL;
+				$entryEnclosure = $document->createElementNS(self::MRSS_NS, 'content');
+				$entry->appendChild($entryEnclosure);
+				$entryEnclosure->setAttribute('url', $enclosure);
+				$entryEnclosure->setAttribute('type', getMimeType($enclosure));
 			}
 
 			$entryCategories = '';
 			foreach($item->getCategories() as $category) {
-				$entryCategories .= '<category>'
-				. $category . '</category>'
-				. PHP_EOL;
+				$entryCategory = $document->createElement('category');
+				$entry->appendChild($entryCategory);
+				$entryCategory->appendChild($document->createTextNode($category));
 			}
-
-			$items .= <<<EOD
-
-	<item>
-		{$entryTitle}
-		{$entryLink}
-		<guid isPermaLink="{$isPermaLink}">{$entryID}</guid>
-		{$entryPublished}
-		{$entryDescription}
-		{$entryEnclosures}
-		{$entryCategories}
-	</item>
-
-EOD;
 		}
 
-		$charset = $this->getCharset();
-
-		$feedImage = '';
-		if (!empty($icon) && in_array(substr($icon, -4), self::ALLOWED_IMAGE_EXT)) {
-			$feedImage .= <<<EOD
-		<image>
-			<url>{$icon}</url>
-			<title>{$title}</title>
-			<link>{$uri}</link>
-		</image>
-EOD;
-		}
-
-		/* Data are prepared, now let's begin the "MAGIE !!!" */
-		$toReturn = <<<EOD
-<?xml version="1.0" encoding="{$charset}"?>
-<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
-	<channel>
-		<title>{$title}</title>
-		<link>{$uri}</link>
-		<description>{$title}</description>
-		{$feedImage}
-		<atom:link rel="alternate" type="text/html" href="{$uri}"/>
-		<atom:link rel="self" href="{$feedUrl}" type="application/atom+xml"/>
-		{$items}
-	</channel>
-</rss>
-EOD;
+		$toReturn = $document->saveXML();
 
 		// Remove invalid non-UTF8 characters
 		ini_set('mbstring.substitute_character', 'none');
 		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
 		return $toReturn;
-	}
-
-	public function display(){
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
-
-		return parent::display();
-	}
-
-	private function xml_encode($text){
-		return htmlspecialchars($text, ENT_XML1);
 	}
 }

@@ -2,7 +2,7 @@
 class BrutBridge extends BridgeAbstract {
 	const NAME = 'Brut Bridge';
 	const URI = 'https://www.brut.media';
-	const DESCRIPTION = 'Returns 5 newest videos by category and edition';
+	const DESCRIPTION = 'Returns 10 newest videos by category and edition';
 	const MAINTAINER = 'VerifiedJoseph';
 	const PARAMETERS = array(array(
 			'category' => array(
@@ -38,9 +38,7 @@ class BrutBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 1800; // 30 mins
 
-	private $videoId = '';
-	private $videoType = '';
-	private $videoImage = '';
+	private $jsonRegex = '/window\.__PRELOADED_STATE__ = ((?:.*)});/';
 
 	public function collectData() {
 
@@ -48,36 +46,38 @@ class BrutBridge extends BridgeAbstract {
 
 		$results = $html->find('div.results', 0);
 
-		foreach($results->find('li.col-6.col-sm-4.col-md-3.col-lg-2.px-2.pb-4') as $index => $li) {
+		foreach($results->find('li.col-6.col-sm-4.col-md-3.col-lg-2.px-2.pb-4') as $li) {
 			$item = array();
 
 			$videoPath = self::URI . $li->children(0)->href;
-
 			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600);
 
-			$this->videoImage = $videoPageHtml->find('meta[name="twitter:image"]', 0)->content;
-
-			$this->processTwitterImage();
-
-			$description = $videoPageHtml->find('div.description', 0);
+			$json = $this->extractJson($videoPageHtml);
+			$id = array_keys((array) $json->media->index)[0];
 
 			$item['uri'] = $videoPath;
-			$item['title'] = $description->find('h1', 0)->plaintext;
+			$item['title'] = $json->media->index->$id->title;
+			$item['timestamp'] = $json->media->index->$id->published_at;
+			$item['enclosures'][] = $json->media->index->$id->media->thumbnail;
 
-			if ($description->find('div.date', 0)->children(0)) {
-				$description->find('div.date', 0)->children(0)->outertext = '';
+			$description = $json->media->index->$id->description;
+			$article = '';
+
+			if (is_null($json->media->index->$id->media->seo_article) === false) {
+				$article = markdownToHtml($json->media->index->$id->media->seo_article);
 			}
 
-			$item['content'] = $this->processContent(
-				$description
-			);
-
-			$item['timestamp'] = $this->processDate($description);
-			$item['enclosures'][] = $this->videoImage;
+			$item['content'] = <<<EOD
+			<video controls poster="{$json->media->index->$id->media->thumbnail}" preload="none">
+				<source src="{$json->media->index->$id->media->mp4_url}" type="video/mp4">
+			</video>
+			<p>{$description}</p>
+			{$article}
+EOD;
 
 			$this->items[] = $item;
 
-			if (count($this->items) >= 5) {
+			if (count($this->items) >= 10) {
 				break;
 			}
 		}
@@ -107,51 +107,21 @@ class BrutBridge extends BridgeAbstract {
 		return parent::getName();
 	}
 
-	private function processDate($description) {
+	/**
+	 * Extract JSON from page
+	 */
+   private function extractJson($html) {
 
-		if ($this->getInput('edition') === 'uk') {
-			$date = DateTime::createFromFormat('d/m/Y H:i', $description->find('div.date', 0)->innertext);
-			return strtotime($date->format('Y-m-d H:i:s'));
+		if (!preg_match($this->jsonRegex, $html, $parts)) {
+			returnServerError('Failed to extract data from page');
 		}
 
-		return strtotime($description->find('div.date', 0)->innertext);
-	}
+		$data = json_decode($parts[1]);
 
-	private function processContent($description) {
-
-		$content = '<video controls poster="' . $this->videoImage . '" preload="none">
-			<source src="https://content.brut.media/video/' . $this->videoId . '-' . $this->videoType . '-web.mp4"
-            type="video/mp4">
-			</video>';
-		$content .= '<p>' . $description->find('h2.mb-1', 0)->innertext . '</p>';
-
-		if ($description->find('div.text.pb-3', 0)->children(1)->class != 'date') {
-			$content .= '<p>' . $description->find('div.text.pb-3', 0)->children(1)->innertext . '</p>';
+		if ($data === false) {
+			returnServerError('Failed to decode extracted data');
 		}
 
-		return $content;
-	}
-
-	private function processTwitterImage() {
-		/**
-		 * Extract video ID + type from twitter image
-		 *
-		 * Example (wrapped):
-		 *  https://img.brut.media/thumbnail/
-		 *  the-life-of-rita-moreno-2cce75b5-d448-44d2-a97c-ca50d6470dd4-square.jpg
-		 *  ?ts=1559337892
-		 */
-		$fpath = parse_url($this->videoImage, PHP_URL_PATH);
-		$fname = basename($fpath);
-		$fname = substr($fname, 0, strrpos($fname, '.'));
-		$parts = explode('-', $fname);
-
-		if (end($parts) === 'auto') {
-			$key = array_search('auto', $parts);
-			unset($parts[$key]);
-		}
-
-		$this->videoId = implode('-', array_splice($parts, -6, 5));
-		$this->videoType = end($parts);
+		return $data;
 	}
 }

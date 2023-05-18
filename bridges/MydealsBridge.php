@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/DealabsBridge.php');
 class MydealsBridge extends PepperBridgeAbstract {
 
 	const NAME = 'Mydeals bridge';
@@ -12,7 +11,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Stichworten',
 				'type' => 'text',
-				'exampleValue' => 'watch',
+				'exampleValue' => 'lamp',
 				'required' => true
 			),
 			'hide_expired' => array(
@@ -2002,8 +2001,8 @@ class MydealsBridge extends PepperBridgeAbstract {
 				'name' => 'URL der Diskussion',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL-Diskussion zu überwachen:  https://www.mydealz.de/diskussion/title-123',
-				'exampleValue' => '://www.mydealz.de/diskussion/title-123',
+				'title' => 'URL-Diskussion zu überwachen: https://www.mydealz.de/diskussion/title-123',
+				'exampleValue' => 'https://www.mydealz.de/diskussion/anleitung-wie-schreibe-ich-einen-deal-1658317',
 				),
 			'only_with_url' => array(
 				'name' => 'Kommentare ohne URL ausschließen',

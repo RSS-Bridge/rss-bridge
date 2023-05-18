@@ -20,7 +20,7 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 			'name' => 'Country',
 			'type' => 'list',
 			'values' => array(
-				'Australia' 	=> 'com.au',
+				'Australia' 		=> 'com.au',
 				'Brazil' 		=> 'com.br',
 				'Canada' 		=> 'ca',
 				'China' 		=> 'cn',
@@ -30,9 +30,10 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 				'Italy' 		=> 'it',
 				'Japan' 		=> 'co.jp',
 				'Mexico' 		=> 'com.mx',
-				'Netherlands'	=> 'nl',
+				'Netherlands'		=> 'nl',
 				'Spain' 		=> 'es',
 				'Sweden' 		=> 'se',
+				'Turkey'		=> 'com.tr',
 				'United Kingdom'	=> 'co.uk',
 				'United States'		=> 'com',
 			),
@@ -48,6 +49,8 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 		'span.offer-price',
 		'.a-color-price',
 	);
+
+	const WHITESPACE = " \t\n\r\0\x0B\xC2\xA0";
 
 	protected $title;
 
@@ -154,6 +157,22 @@ EOT;
 		return false;
 	}
 
+	private function scrapePriceTwister($html) {
+		$str = $html->find('.twister-plus-buying-options-price-data', 0);
+
+		$data = json_decode($str->innertext, true);
+		if(count($data) === 1) {
+			$data = $data[0];
+			return array(
+				'displayPrice' => $data['displayPrice'],
+				'currency' => $data['currency'],
+				'shipping' => '0',
+			);
+		}
+
+		return false;
+	}
+
 	private function scrapePriceGeneric($html) {
 		$priceDiv = null;
 
@@ -168,12 +187,11 @@ EOT;
 			return false;
 		}
 
-		$priceString = $priceDiv->plaintext;
-
-		preg_match('/[\d.,]+/', $priceString, $matches);
+		$priceString = str_replace(str_split(self::WHITESPACE), '', $priceDiv->plaintext);
+		preg_match('/(\d+\.\d{0,2})/', $priceString, $matches);
 
 		$price = $matches[0];
-		$currency = trim(str_replace($price, '', $priceString), " \t\n\r\0\x0B\xC2\xA0");
+		$currency = str_replace($price, '', $priceString);
 
 		if ($price != null && $currency != null) {
 			return array(
@@ -186,6 +204,21 @@ EOT;
 		return false;
 	}
 
+	private function renderContent($image, $data) {
+		$price = $data['displayPrice'];
+		if (!$price) {
+			$price = "{$data['price']} {$data['currency']}";
+		}
+
+		$html = "$image<br>Price: $price";
+
+		if ($data['shipping'] !== '0') {
+			$html .= "<br>Shipping: {$data['shipping']} {$data['currency']}</br>";
+		}
+
+		return $html;
+	}
+
 	/**
 	 * Scrape method for Amazon product page
 	 * @return [type] [description]
@@ -195,19 +228,15 @@ EOT;
 		$this->title = $this->getTitle($html);
 		$imageTag = $this->getImage($html);
 
-		$data = $this->scrapePriceFromMetrics($html) ?: $this->scrapePriceGeneric($html);
+		$data = $this->scrapePriceGeneric($html);
 
 		$item = array(
 			'title' 	=> $this->title,
 			'uri' 		=> $this->getURI(),
-			'content' 	=> "$imageTag<br/>Price: {$data['price']} {$data['currency']}",
+			'content' 	=> $this->renderContent($imageTag, $data),
 			// This is to ensure that feed readers notice the price change
 			'uid'		=> md5($data['price'])
 		);
-
-		if ($data['shipping'] !== '0') {
-			$item['content'] .= "<br>Shipping: {$data['shipping']} {$data['currency']}</br>";
-		}
 
 		$this->items[] = $item;
 	}

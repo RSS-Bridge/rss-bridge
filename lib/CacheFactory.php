@@ -54,8 +54,6 @@ class CacheFactory extends FactoryAbstract {
 			throw new \Exception('Cache file ' . $filePath . ' does not exist!');
 		}
 
-		require_once $filePath;
-
 		if((new \ReflectionClass($name))->isInstantiable()) {
 			return new $name();
 		}

@@ -10,7 +10,7 @@ class ScribdBridge extends BridgeAbstract {
 			'type' => 'text',
 			'required' => true,
 			'title' => 'Profile URL. Example: https://www.scribd.com/user/164147088/Ars-Technica',
-			'exampleValue' => 'https://www.scribd.com/user/'
+			'exampleValue' => 'https://www.scribd.com/user/164147088/Ars-Technica'
 		),
 	));
 

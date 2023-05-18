@@ -9,6 +9,9 @@
 class AtomFormat extends FormatAbstract{
 	const MIME_TYPE = 'application/atom+xml';
 
+	protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
+	protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
+
 	const LIMIT_TITLE = 140;
 
 	public function stringify(){
@@ -17,26 +20,66 @@ class AtomFormat extends FormatAbstract{
 		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
 		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
-		$feedUrl = $this->xml_encode($urlPrefix . $urlHost . $urlRequest);
+		$feedUrl = $urlPrefix . $urlHost . $urlRequest;
 
 		$extraInfos = $this->getExtraInfos();
-		$title = $this->xml_encode($extraInfos['name']);
 		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : REPOSITORY;
+
+		$document = new DomDocument('1.0', $this->getCharset());
+		$document->formatOutput = true;
+		$feed = $document->createElementNS(self::ATOM_NS, 'feed');
+		$document->appendChild($feed);
+		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
+
+		$title = $document->createElement('title');
+		$feed->appendChild($title);
+		$title->setAttribute('type', 'text');
+		$title->appendChild($document->createTextNode($extraInfos['name']));
+
+		$id = $document->createElement('id');
+		$feed->appendChild($id);
+		$id->appendChild($document->createTextNode($feedUrl));
+
+		$uriparts = parse_url($uri);
+		if(!empty($extraInfos['icon'])) {
+			$iconUrl = $extraInfos['icon'];
+		} else {
+			$iconUrl = $uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico';
+		}
+		$icon = $document->createElement('icon');
+		$feed->appendChild($icon);
+		$icon->appendChild($document->createTextNode($iconUrl));
+
+		$logo = $document->createElement('logo');
+		$feed->appendChild($logo);
+		$logo->appendChild($document->createTextNode($iconUrl));
+
+		$feedTimestamp = gmdate(DATE_ATOM, $this->lastModified);
+		$updated = $document->createElement('updated');
+		$feed->appendChild($updated);
+		$updated->appendChild($document->createTextNode($feedTimestamp));
 
 		// since we can't guarantee that all items have an author,
 		// a global feed author is mandatory
 		$feedAuthor = 'RSS-Bridge';
+		$author = $document->createElement('author');
+		$feed->appendChild($author);
+		$authorName = $document->createElement('name');
+		$author->appendChild($authorName);
+		$authorName->appendChild($document->createTextNode($feedAuthor));
 
-		$uriparts = parse_url($uri);
-		if(!empty($extraInfos['icon'])) {
-			$icon = $extraInfos['icon'];
-		} else {
-			$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico');
-		}
+		$linkAlternate = $document->createElement('link');
+		$feed->appendChild($linkAlternate);
+		$linkAlternate->setAttribute('rel', 'alternate');
+		$linkAlternate->setAttribute('type', 'text/html');
+		$linkAlternate->setAttribute('href', $uri);
 
-		$uri = $this->xml_encode($uri);
+		$linkSelf = $document->createElement('link');
+		$feed->appendChild($linkSelf);
+		$linkSelf->setAttribute('rel', 'self');
+		$linkSelf->setAttribute('type', 'application/atom+xml');
+		$linkSelf->setAttribute('href', $feedUrl);
 
-		$entries = '';
 		foreach($this->getItems() as $item) {
 			$entryTimestamp = $item->getTimestamp();
 			$entryTitle = $item->getTitle();
@@ -48,7 +91,7 @@ class AtomFormat extends FormatAbstract{
 				$entryID = 'urn:sha1:' . $item->getUid();
 
 			if (empty($entryID)) // Fallback to provided URI
-				$entryID = $this->xml_encode($entryUri);
+				$entryID = $entryUri;
 
 			if (empty($entryID)) // Fallback to title and content
 				$entryID = 'urn:sha1:' . hash('sha1', $entryTitle . $entryContent);
@@ -65,102 +108,76 @@ class AtomFormat extends FormatAbstract{
 			}
 
 			if (empty($entryContent))
-				$entryContent = $entryTitle;
+				$entryContent = ' ';
 
-			$entryAuthor = $this->xml_encode($item->getAuthor());
-			$entryTitle = $this->xml_encode($entryTitle);
-			$entryUri = $this->xml_encode($entryUri);
-			$entryTimestamp = $this->xml_encode(gmdate(DATE_ATOM, $entryTimestamp));
-			$entryContent = $this->xml_encode($this->sanitizeHtml($entryContent));
+			$entry = $document->createElement('entry');
+			$feed->appendChild($entry);
 
-			$entryEnclosures = '';
-			foreach($item->getEnclosures() as $enclosure) {
-				$entryEnclosures .= '<link rel="enclosure" href="'
-				. $this->xml_encode($enclosure)
-				. '" type="' . getMimeType($enclosure) . '" />'
-				. PHP_EOL;
-			}
+			$title = $document->createElement('title');
+			$entry->appendChild($title);
+			$title->setAttribute('type', 'html');
+			$title->appendChild($document->createTextNode($entryTitle));
 
-			$entryCategories = '';
-			foreach($item->getCategories() as $category) {
-				$entryCategories .= '<category term="'
-				. $this->xml_encode($category)
-				. '"/>'
-				. PHP_EOL;
-			}
+			$entryTimestamp = gmdate(DATE_ATOM, $entryTimestamp);
+			$published = $document->createElement('published');
+			$entry->appendChild($published);
+			$published->appendChild($document->createTextNode($entryTimestamp));
 
-			$entryThumbnail = $item->thumbnail;
-			if (!empty($entryThumbnail))
-				$entryThumbnail = '<media:thumbnail url="' . $this->xml_encode($entryThumbnail) . '"/>';
+			$updated = $document->createElement('updated');
+			$entry->appendChild($updated);
+			$updated->appendChild($document->createTextNode($entryTimestamp));
 
-			$entryLinkAlternate = '';
+			$id = $document->createElement('id');
+			$entry->appendChild($id);
+			$id->appendChild($document->createTextNode($entryID));
+
 			if (!empty($entryUri)) {
-				$entryLinkAlternate = '<link rel="alternate" type="text/html" href="'
-				. $entryUri
-				. '"/>';
+				$entryLinkAlternate = $document->createElement('link');
+				$entry->appendChild($entryLinkAlternate);
+				$entryLinkAlternate->setAttribute('rel', 'alternate');
+				$entryLinkAlternate->setAttribute('type', 'text/html');
+				$entryLinkAlternate->setAttribute('href', $entryUri);
 			}
 
-			if (!empty($entryAuthor)) {
-				$entryAuthor = '<author><name>'
-				. $entryAuthor
-				. '</name></author>';
+			if (!empty($item->getAuthor())) {
+				$author = $document->createElement('author');
+				$entry->appendChild($author);
+				$authorName = $document->createElement('name');
+				$author->appendChild($authorName);
+				$authorName->appendChild($document->createTextNode($item->getAuthor()));
 			}
 
-			$entries .= <<<EOD
+			$content = $document->createElement('content');
+			$content->setAttribute('type', 'html');
+			$content->appendChild($document->createTextNode($this->sanitizeHtml($entryContent)));
+			$entry->appendChild($content);
 
-	<entry>
-		<title type="html">{$entryTitle}</title>
-		<published>{$entryTimestamp}</published>
-		<updated>{$entryTimestamp}</updated>
-		<id>{$entryID}</id>
-		{$entryLinkAlternate}
-		{$entryAuthor}
-		<content type="html">{$entryContent}</content>
-		{$entryEnclosures}
-		{$entryCategories}
-		{$entryThumbnail}
-	</entry>
+			foreach($item->getEnclosures() as $enclosure) {
+				$entryEnclosure = $document->createElement('link');
+				$entry->appendChild($entryEnclosure);
+				$entryEnclosure->setAttribute('rel', 'enclosure');
+				$entryEnclosure->setAttribute('type', getMimeType($enclosure));
+				$entryEnclosure->setAttribute('href', $enclosure);
+			}
 
-EOD;
+			foreach($item->getCategories() as $category) {
+				$entryCategory = $document->createElement('category');
+				$entry->appendChild($entryCategory);
+				$entryCategory->setAttribute('term', $category);
+			}
+
+			if (!empty($item->thumbnail)) {
+				$thumbnail = $document->createElementNS(self::MRSS_NS, 'thumbnail');
+				$entry->appendChild($thumbnail);
+				$thumbnail->setAttribute('url', $item->thumbnail);
+			}
 		}
 
-		$feedTimestamp = gmdate(DATE_ATOM, $this->lastModified);
-		$charset = $this->getCharset();
-
-		/* Data are prepared, now let's begin the "MAGIE !!!" */
-		$toReturn = <<<EOD
-<?xml version="1.0" encoding="{$charset}"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
-
-	<title type="text">{$title}</title>
-	<id>{$feedUrl}</id>
-	<icon>{$icon}</icon>
-	<logo>{$icon}</logo>
-	<updated>{$feedTimestamp}</updated>
-	<author>
-		<name>{$feedAuthor}</name>
-	</author>
-	<link rel="alternate" type="text/html" href="{$uri}" />
-	<link rel="self" type="application/atom+xml" href="{$feedUrl}" />
-{$entries}
-</feed>
-EOD;
+		$toReturn = $document->saveXML();
 
 		// Remove invalid characters
 		ini_set('mbstring.substitute_character', 'none');
 		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
 		return $toReturn;
-	}
-
-	public function display(){
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
-
-		return parent::display();
-	}
-
-	private function xml_encode($text){
-		return htmlspecialchars($text, ENT_XML1);
 	}
 }

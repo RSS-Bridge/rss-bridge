@@ -4,7 +4,7 @@ class GithubIssueBridge extends BridgeAbstract {
 	const MAINTAINER = 'Pierre Mazière';
 	const NAME = 'Github Issue';
 	const URI = 'https://github.com/';
-	const CACHE_TIMEOUT = 600; // 10min
+	const CACHE_TIMEOUT = 0; // 10min
 	const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
 	const PARAMETERS = array(
@@ -24,6 +24,11 @@ class GithubIssueBridge extends BridgeAbstract {
 			'c' => array(
 				'name' => 'Show Issues Comments',
 				'type' => 'checkbox'
+			),
+			'q' => array(
+				'name' => 'Search Query',
+				'defaultValue' => 'is:issue is:open sort:updated-desc',
+				'required' => true
 			)
 		),
 		'Issue comments' => array(
@@ -40,7 +45,6 @@ class GithubIssueBridge extends BridgeAbstract {
 	const BRIDGE_OPTIONS = array(0 => 'Project Issues', 1 => 'Issue comments');
 	const URL_PATH = 'issues';
 	const SEARCH_QUERY_PATH = 'issues';
-	const SEARCH_QUERY = '?q=is%3Aissue+sort%3Aupdated-desc';
 
 	public function getName(){
 		$name = $this->getInput('u') . '/' . $this->getInput('p');
@@ -67,7 +71,7 @@ class GithubIssueBridge extends BridgeAbstract {
 			if($this->queriedContext === static::BRIDGE_OPTIONS[1]) {
 				$uri .= static::URL_PATH . '/' . $this->getInput('i');
 			} else {
-				$uri .= static::SEARCH_QUERY_PATH . static::SEARCH_QUERY;
+				$uri .= static::SEARCH_QUERY_PATH . '?q=' . urlencode($this->getInput('q'));
 			}
 			return $uri;
 		}
@@ -128,9 +132,8 @@ class GithubIssueBridge extends BridgeAbstract {
 
 		$author = $comment->find('.author', 0)->plaintext;
 
-		$title .= ' / ' . trim(
-			$comment->find('.timeline-comment-header-text', 0)->plaintext
-		);
+		$header = $comment->find('.timeline-comment-header > h3', 0);
+		$title .= ' / ' . ($header ? $header->plaintext : 'Activity');
 
 		$time = $comment->find('relative-time', 0);
 		if ($time === null) {

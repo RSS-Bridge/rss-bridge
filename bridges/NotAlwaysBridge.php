@@ -12,7 +12,7 @@ class NotAlwaysBridge extends BridgeAbstract {
 						'type' => 'list',
 						'name' => 'Filter',
 						'values' => array(
-								'All' => 'all',
+								'All' => '',
 								'Right' => 'right',
 								'Working' => 'working',
 								'Romantic' => 'romantic',

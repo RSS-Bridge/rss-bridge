@@ -67,7 +67,13 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = self::URI . $identity->href;
 			$item['title'] = $identity->plaintext;
-			$item['timestamp'] = DateTime::createFromFormat('d/m/y H:i', $creadate)->format('U');
+
+			// todo: parse date strings such as '1Hr ago' etc.
+			$createdAt = DateTime::createFromFormat('d/m/y H:i', $creadate);
+			if ($createdAt) {
+				$item['timestamp'] = $createdAt->format('U');
+			}
+
 			$item['author'] = $authorid->plaintext;
 			$item['content'] = <<<HTML
 <h1>{$identity->plaintext}</h1>

@@ -94,6 +94,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 
 		$headers = array(
 			"Authorization: Bearer $token",
+			'Origin: https://apps.apple.com',
 		);
 
 		$json = json_decode(getContents($uri, $headers), true);

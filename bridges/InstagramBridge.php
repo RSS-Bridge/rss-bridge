@@ -160,6 +160,11 @@ class InstagramBridge extends BridgeAbstract {
 				$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
 			}
 
+			$pattern = array('/\@([\w\.]+)/', '/#([\w\.]+)/');
+			$replace = array(
+				'<a href="https://www.instagram.com/$1">@$1</a>',
+				'<a href="https://www.instagram.com/explore/tags/$1">#$1</a>');
+
 			switch($media->__typename) {
 				case 'GraphSidecar':
 					$data = $this->getInstagramSidecarData($item['uri'], $item['title'], $media, $textContent);
@@ -169,7 +174,7 @@ class InstagramBridge extends BridgeAbstract {
 				case 'GraphImage':
 					$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
 					$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
-					$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
+					$item['content'] .= '</a><br><br>' . nl2br(preg_replace($pattern, $replace, htmlentities($textContent)));
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':

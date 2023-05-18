@@ -63,7 +63,6 @@ EOD;
 		$inactiveBridges = '';
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 		$bridgeList = $bridgeFac->getBridgeNames();
 
 		$formatFac = new FormatFactory();

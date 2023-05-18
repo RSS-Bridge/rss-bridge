@@ -18,7 +18,7 @@ class FSecureBlogBridge extends BridgeAbstract {
 			),
 			'oldest_date' => array(
 				'name' => 'Oldest article date',
-				'exampleValue' => '-2 months',
+				'exampleValue' => '-6 months',
 			),
 		)
 	);

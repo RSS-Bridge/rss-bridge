@@ -147,7 +147,7 @@ function extractFromDelimiters($string, $start, $end) {
  * Remove one or more part(s) of a string using a start and end delmiters
  *
  * @param string $string Input string, e.g. `foo<script>superscript()</script>bar`
- * @param string $start Start delimiter, e.g. `<script`
+ * @param string $start Start delimiter, e.g. `<script>`
  * @param string $end End delimiter, e.g. `</script>`
  * @return string Cleaned string, e.g. `foobar`
  */
@@ -197,8 +197,7 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
 /**
  * Convert Markdown into HTML with Parsedown.
  *
- * @link https://daringfireball.net/projects/markdown/ Markdown
- * @link https://github.github.com/gfm/ GitHub Flavored Markdown Spec
+ * @link https://parsedown.org/ Parsedown
  *
  * @param string $string Input string in Markdown format
  * @return string output string in HTML format

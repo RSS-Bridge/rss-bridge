@@ -149,10 +149,11 @@ class XenForoBridge extends BridgeAbstract {
 				break;
 		}
 
-		while(count($this->items) > $this->getInput('limit')) {
-			array_shift($this->items);
-		}
+		usort($this->items, function($a, $b) {
+			return $b['timestamp'] <=> $a['timestamp'];
+		});
 
+		$this->items = array_slice($this->items, 0, $this->getInput('limit'));
 	}
 
 	/**
@@ -268,7 +269,7 @@ class XenForoBridge extends BridgeAbstract {
 			$item['uri'] = $url . '#' . $post->getAttribute('id');
 
 			$title = $post->find('div[class~="message-content"] article', 0)->plaintext;
-			$end = strpos($title, ' ', 70);
+			$end = strpos($title, ' ', min(70, strlen($title)));
 			$item['title'] = substr($title, 0, $end);
 
 			if ($post->find('time[datetime]', 0)) {

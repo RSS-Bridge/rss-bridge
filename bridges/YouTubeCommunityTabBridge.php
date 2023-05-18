@@ -30,7 +30,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	private $itemTitle = '';
 
 	private $urlRegex = '/youtube\.com\/(channel|user|c)\/([\w]+)\/community/';
-	private $jsonRegex = '/var ytInitialData = (.*);<\/script><link rel="canonical"/';
+	private $jsonRegex = '/var ytInitialData = (.*);<\/script>/';
 
 	public function detectParameters($url) {
 		$params = array();
@@ -153,7 +153,9 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	private function hasCommunityTab($json) {
 
 		foreach ($json->contents->twoColumnBrowseResultsRenderer->tabs as $tab) {
-			if (isset($tab->tabRenderer) && $tab->tabRenderer->title === 'Community') {
+			if (isset($tab->tabRenderer)
+				&& str_ends_with($tab->tabRenderer->endpoint->commandMetadata->webCommandMetadata->url, 'community')) {
+
 				return true;
 			}
 		}
@@ -167,7 +169,9 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	private function getCommunityPosts($json) {
 
 		foreach ($json->contents->twoColumnBrowseResultsRenderer->tabs as $tab) {
-			if ($tab->tabRenderer->title === 'Community') {
+			if (isset($tab->tabRenderer)
+				&& str_ends_with($tab->tabRenderer->endpoint->commandMetadata->webCommandMetadata->url, 'community')) {
+
 				return $tab->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer->contents;
 			}
 		}

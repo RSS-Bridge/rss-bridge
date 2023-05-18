@@ -28,7 +28,6 @@ class DisplayAction extends ActionAbstract {
 			or returnClientError('You must specify a format!');
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		// whitelist control
 		if(!$bridgeFac->isWhitelisted($bridge)) {
@@ -245,8 +244,14 @@ class DisplayAction extends ActionAbstract {
 			$format = $formatFac->create($format);
 			$format->setItems($items);
 			$format->setExtraInfos($infos);
-			$format->setLastModified($cache->getTime());
-			$format->display();
+			$lastModified = $cache->getTime();
+			$format->setLastModified($lastModified);
+			if ($lastModified) {
+				header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $lastModified) . 'GMT');
+			}
+			header('Content-Type: ' . $format->getMimeType() . '; charset=' . $format->getCharset());
+
+			echo $format->stringify();
 		} catch(Error $e) {
 			error_log($e);
 			header('Content-Type: text/html', true, $e->getCode());

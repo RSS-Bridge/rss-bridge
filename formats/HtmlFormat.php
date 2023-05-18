@@ -67,13 +67,11 @@ class HtmlFormat extends FormatAbstract {
 				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
 
 				foreach($item->getEnclosures() as $enclosure) {
+					$template = '<li class="enclosure"><a href="%s" rel="noopener noreferrer nofollow">%s</a></li>';
 					$url = $this->sanitizeHtml($enclosure);
+					$anchorText = substr($url, strrpos($url, '/') + 1);
 
-					$entryEnclosures .= '<li class="enclosure"><a href="'
-					. $url
-					. '">'
-					. substr($url, strrpos($url, '/') + 1)
-					. '</a></li>';
+					$entryEnclosures .= sprintf($template, $url, $anchorText);
 				}
 
 				$entryEnclosures .= '</div>';
@@ -137,14 +135,6 @@ EOD;
 		ini_set('mbstring.substitute_character', 'none');
 		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
 		return $toReturn;
-	}
-
-	public function display() {
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
-
-		return parent::display();
 	}
 
 	private function buildButton($format, $query) {

@@ -1,10 +1,9 @@
 <?php
-require_once('DanbooruBridge.php');
 
 class Shimmie2Bridge extends DanbooruBridge {
 
 	const NAME = 'Shimmie v2';
-	const URI = 'https://shimmie.shishnet.org/v2/';
+	const URI = 'https://shimmie.shishnet.org/';
 	const DESCRIPTION = 'Returns images from given page';
 
 	const PATHTODATA = '.shm-thumb-link';

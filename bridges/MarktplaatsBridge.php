@@ -17,12 +17,14 @@ class MarktplaatsBridge extends BridgeAbstract {
 				'name' => 'zipcode',
 				'type' => 'text',
 				'required' => false,
+				'exampleValue' => '1013AA',
 				'title' => 'Zip code for location limited searches',
 			),
 			'd' => array(
 				'name' => 'distance',
 				'type' => 'number',
 				'required' => false,
+				'exampleValue' => '100000',
 				'title' => 'The distance in meters from the zipcode',
 			),
 			'f' => array(
@@ -77,7 +79,7 @@ class MarktplaatsBridge extends BridgeAbstract {
 			}
 		}
 		$url = 'https://www.marktplaats.nl/lrp/api/search?query=' . urlencode($this->getInput('q')) . $query;
-		$jsonString = getSimpleHTMLDOM($url, 900);
+		$jsonString = getSimpleHTMLDOM($url);
 		$jsonObj = json_decode($jsonString);
 		foreach($jsonObj->listings as $listing) {
 			if(!$excludeGlobal || $listing->location->distanceMeters >= 0) {
