@@ -187,13 +187,24 @@ function defaultLinkTo($dom, $url)
 
     // Use long method names for compatibility with simple_html_dom and DOMDocument
 
-    // foreach ($dom->getElementsByTagName('img', null) as $image) {
-    //     $image->setAttribute('src', urljoin($url, $image->getAttribute('src')));
-    // }
+    // Work around bug in simple_html_dom->getElementsByTagName
+    if ($dom instanceof simple_html_dom) {
+        $findByTag = function ($name) use ($dom) {
+            return $dom->getElementsByTagName($name, null);
+        };
+    } else {
+        $findByTag = function ($name) use ($dom) {
+            return $dom->getElementsByTagName($name);
+        };
+    }
 
-    // foreach ($dom->getElementsByTagName('a', null) as $anchor) {
-    //     $anchor->setAttribute('href', urljoin($url, $anchor->getAttribute('href')));
-    // }
+    foreach ($findByTag('img') as $image) {
+        $image->setAttribute('src', urljoin($url, $image->getAttribute('src')));
+    }
+
+    foreach ($findByTag('a') as $anchor) {
+        $anchor->setAttribute('href', urljoin($url, $anchor->getAttribute('href')));
+    }
 
     // Will never be true for DOMDocument
     if ($string_convert) {
