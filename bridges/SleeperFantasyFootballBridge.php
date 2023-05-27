@@ -42,4 +42,3 @@ class SleeperFantasyFootballBridge extends BridgeAbstract
         ];
     }
 }
-
