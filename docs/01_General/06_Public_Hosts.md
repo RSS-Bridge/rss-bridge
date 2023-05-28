@@ -19,6 +19,7 @@
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss-bridge.mediani.de | ![](https://img.shields.io/website/https/rss-bridge.mediani.de.svg) | [@sokai](https://github.com/sokai) | Hosted with Netcup, Germany |
 | ![](https://iplookup.flagfox.net/images/h16/US.png) | http://rb.vern.cc/ | ![](https://img.shields.io/website/https/rb.vern.cc.svg) | [@vern.cc](https://vern.cc/en/admin) | Hosted with Hetzner, US |
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://rssbridge.flossboxin.org.in/ | ![](https://img.shields.io/badge/website-up-brightgreen) | [@vdbhb59](https://github.com/vdbhb59) | Hosted with OVH SAS (Maintained in India)
+| ![](https://iplookup.flagfox.net/images/h16/PL.png) | https://rss.foxhaven.cyou| ![](https://img.shields.io/badge/website-up-brightgreen) | [@Aysilu](https://foxhaven.cyou) | Hosted with Timeweb (Maintained in Poland)
 
 ## Inactive instances
 
