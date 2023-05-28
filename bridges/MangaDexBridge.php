@@ -21,6 +21,18 @@ class MangaDexBridge extends BridgeAbstract
                 'exampleValue' => 'en,jp',
                 'required' => false
             ],
+            'images' => [
+                'name' => 'Fetch chapter page images',
+                'type' => 'list',
+                'title' => 'Places chapter images in feed contents. Entries will consume more bandwidth.',
+                'defaultValue' => 'no',
+                'values' => [
+                    'None' => 'no',
+                    'Data Saver' => 'saver',
+                    'Full Quality' => 'yes'
+                ]
+            ]
+
         ],
         'Title Chapters' => [
             'url' => [
@@ -239,6 +251,27 @@ class MangaDexBridge extends BridgeAbstract
                 $item['content'] .= '<br>Other Users: ' . implode(', ', $users);
             }
 
+            // Fetch chapter page images if desired and add to content
+            if ($this->getInput('images') !== 'no') {
+                $api_uri = self::API_ROOT . 'at-home/server/' . $item['uid'];
+                $header = [ 'Content-Type: application/json' ];
+                $pages = json_decode(getContents($api_uri, $header), true);
+                if ($pages['result'] != 'ok') {
+                    returnServerError('Could not retrieve API results');
+                }
+
+                if ($this->getInput('images') == 'saver') {
+                    $page_base = $pages['baseUrl'] . '/data-saver/' . $pages['chapter']['hash'] . '/';
+                    foreach ($pages['chapter']['dataSaver'] as $image) {
+                        $item['content'] .= '<br><img src="' . $page_base . $image . '"/>';
+                    }
+                } else {
+                    $page_base = $pages['baseUrl'] . '/data/' . $pages['chapter']['hash'] . '/';
+                    foreach ($pages['chapter']['data'] as $image) {
+                        $item['content'] .= '<br><img src="' . $page_base . $image . '"/>';
+                    }
+                }
+            }
             $this->items[] = $item;
         }
     }
