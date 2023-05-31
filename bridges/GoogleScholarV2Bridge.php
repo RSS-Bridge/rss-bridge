@@ -39,7 +39,7 @@ class GoogleScholarV2Bridge extends BridgeAbstract
                 'name' => 'Minimum Citations',
                 'required' => false,
                 'type' => 'number',
-                'default' => 0,
+                'default' => '0',
                 'title' => 'Parameter defines the minimum number of citations in order for the results to be included.'
             ],
 
@@ -47,7 +47,7 @@ class GoogleScholarV2Bridge extends BridgeAbstract
                 'name' => 'Since Year',
                 'required' => false,
                 'type' => 'number',
-                'default' => 0,
+                'default' => '0',
                 'title' => 'Parameter defines the year from which you want the results to be included.'
             ],
 
@@ -55,9 +55,17 @@ class GoogleScholarV2Bridge extends BridgeAbstract
                 'name' => 'Until Year',
                 'required' => false,
                 'type' => 'number',
-                'default' => 0,
+                'default' => '0',
                 'title' => 'Parameter defines the year until which you want the results to be included.'
             ],
+
+            'sortBy' => [
+                'name' => 'Sort By Date',
+                'type' => 'checkbox',
+                'default' => false,
+                'title' => 'Parameter defines articles added in the last year, sorted by date. Alternatively sorts by relevance. This overrides Since-Until Year values.',
+            ],
+
             'includePatents' => [
                 'name' => 'Include Patents',
                 'type' => 'checkbox',
@@ -85,18 +93,8 @@ class GoogleScholarV2Bridge extends BridgeAbstract
                 'default' => 10,
                 'exampleValue' => 10,
                 'title' => 'Number of results to return'
-            ],
-
-            'sortBy' => [
-                'name' => 'Sort By',
-                'type' => 'list',
-                'title' => 'Sort By',
-                'values' => [
-                    'Relevance' => 'relevance',
-                    'Date' => 'date'
-                ],
-                'defaultValue' => 'Date'
             ]
+
         ],
     ];
 
@@ -115,7 +113,7 @@ class GoogleScholarV2Bridge extends BridgeAbstract
         $language = $this->getInput('language');
         $sinceYear = $this->getInput('sinceYear');
         $untilYear = $this->getInput('untilYear');
-        $minCitations = $this->getInput('minCitations');
+        $minCitations = (int)$this->getInput('minCitations');
 		$includeCitations = $this->getInput('includeCitations');
 		$includePatents = $this->getInput('includePatents');
         $reviewArticles = $this->getInput('reviewArticles');
@@ -153,13 +151,15 @@ class GoogleScholarV2Bridge extends BridgeAbstract
 			$uri = $uri . '&as_rr=1';
 		}
 		
-		if ($sortBy == 'date') {
+		if ($sortBy) {
 			$uri = $uri . '&scisbd=1';
 		}
 
 		if ($numResults) {
 			$uri = $uri . '&num=' . $numResults;
 		}
+
+        echo $uri;
 
         $html = getSimpleHTMLDOM($uri)
             or returnServerError('Could not fetch Google Scholar data.');
@@ -183,16 +183,21 @@ class GoogleScholarV2Bridge extends BridgeAbstract
 
             $bottomRowElement = $publication->find('div[class="gs_fl"]', 0);
 
-            $citedBy = 0 
+            $citedBy = 0; 
             if ($bottomRowElement) {
                 $anchorTags = $bottomRowElement->find('a');
                 foreach ($anchorTags as $anchorTag) {
                     if (strpos($anchorTag->plaintext, 'Cited') !== false) {
-                        $citedBy = $anchorTag->plaintext;
+                        $parts = explode('Cited by ', $anchorTag->plaintext);
+                        if (isset($parts[1])) {
+                            $citedBy = (int)$parts[1];
+                        }
                         break;
                     }
                 }
             }
+            
+            echo $citedBy . ' >= ' . $minCitations . ' ? -- ';
 
             if ($citedBy >= $minCitations) {
 
