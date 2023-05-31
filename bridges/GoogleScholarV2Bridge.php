@@ -159,8 +159,6 @@ class GoogleScholarV2Bridge extends BridgeAbstract
 			$uri = $uri . '&num=' . $numResults;
 		}
 
-        echo $uri;
-
         $html = getSimpleHTMLDOM($uri)
             or returnServerError('Could not fetch Google Scholar data.');
 
@@ -196,8 +194,6 @@ class GoogleScholarV2Bridge extends BridgeAbstract
                     }
                 }
             }
-            
-            echo $citedBy . ' >= ' . $minCitations . ' ? -- ';
 
             if ($citedBy >= $minCitations) {
 
