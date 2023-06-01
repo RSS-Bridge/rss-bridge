@@ -2,7 +2,7 @@
 
 class GoogleScholarBridge extends BridgeAbstract
 {
-    const NAME = 'Google Scholar v2';
+    const NAME = 'Google Scholar';
     const URI = 'https://scholar.google.com/';
     const DESCRIPTION = 'Search for publications or follow authors on Google Scholar.';
     const MAINTAINER = 'nicholasmccarthy@github';
