@@ -71,15 +71,34 @@ header {
     text-align: center;
 }
 
-section.warning {
-    background-color: #ffc600;
-    color: #5f5f5f;
+.alert-info {
+    margin-bottom: 15px;
+    color: white;
+    font-weight: bold;
+    background-color: rgb(33, 150, 243);
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
 }
 
-section.critical-warning {
+.alert-warning {
+    background-color: #ffc600;
+    color: #5f5f5f;
+    margin-bottom: 15px;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.alert-error {
     background-color: #cf3e3e;
     font-weight: bold;
     color: white;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
 }
 
 select,
@@ -340,15 +359,6 @@ button {
     background: #2196F3 none repeat scroll 0% 0%;
     cursor: pointer;
     width: 200px;
-}
-
-.alert {
-    margin-bottom: 15px;
-    color: white;
-    font-weight: bold;
-    background-color: rgb(33, 150, 243);
-    padding: 15px;
-    border-radius: 4px;
 }
 
 @media screen and (max-width: 767px) {

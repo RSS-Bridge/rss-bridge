@@ -15,6 +15,13 @@ timezone = "UTC"
 ; Display a system message to users.
 message = ""
 
+; Whether to enable debug mode.
+enable_debug_mode = false
+
+; Enable debug mode only for these permitted ip addresses
+; debug_mode_whitelist[] = 127.0.0.1
+; debug_mode_whitelist[] = 192.168.1.10
+
 [http]
 timeout = 60
 useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"

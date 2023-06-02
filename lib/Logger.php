@@ -6,9 +6,7 @@ final class Logger
 {
     public static function debug(string $message, array $context = [])
     {
-        if (Debug::isEnabled()) {
-            self::log('DEBUG', $message, $context);
-        }
+        self::log('DEBUG', $message, $context);
     }
 
     public static function info(string $message, array $context = []): void
@@ -28,6 +26,11 @@ final class Logger
 
     private static function log(string $level, string $message, array $context = []): void
     {
+        if (!Debug::isEnabled() && $level === 'DEBUG') {
+            // Don't log this debug log record because debug mode is disabled
+            return;
+        }
+
         if (isset($context['e'])) {
             /** @var \Throwable $e */
             $e = $context['e'];
@@ -66,7 +69,13 @@ final class Logger
             $message,
             $context ? Json::encode($context) : ''
         );
+
         // Log to stderr/stdout whatever that is
+        // todo: extract to log handler
         error_log($text);
+
+        // Log to file
+        // todo: extract to log handler
+        //file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND);
     }
 }

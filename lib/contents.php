@@ -438,14 +438,17 @@ function getSimpleHTMLDOMCached(
         $time !== false
         && (time() - $duration < $time)
         && !Debug::isEnabled()
-    ) { // Contents within duration
+    ) {
+        // Contents within duration and debug mode is disabled
         $content = $cache->loadData();
-    } else { // Content not within duration
+    } else {
+        // Contents not within duration, or debug mode is enabled
         $content = getContents(
             $url,
             $header ?? [],
             $opts ?? []
         );
+        // todo: fix bad if statement
         if ($content !== false) {
             $cache->saveData($content);
         }

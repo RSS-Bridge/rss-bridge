@@ -4,20 +4,6 @@
     document.addEventListener('DOMContentLoaded', rssbridge_list_search);
 </script>
 
-<?php if (Debug::isEnabled()): ?>
-    <?php if (!Debug::isSecure()): ?>
-        <section class="critical-warning">
-            Warning : Debug mode is active from any location,
-            make sure only you can access RSS-Bridge.
-        </section>
-    <?php else: ?>
-        <section class="warning">
-            Warning : Debug mode is active from your IP address,
-            your requests will bypass the cache.
-        </section>
-    <?php endif; ?>
-<?php endif; ?>
-
 <section class="searchbar">
     <h3>Search</h3>
     <input

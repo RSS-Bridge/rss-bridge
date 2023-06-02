@@ -1,23 +1,34 @@
 <?php
 
 /**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
+ * Render template using base.html.php as base
  */
-
 function render(string $template, array $context = []): string
 {
     if ($template === 'base.html.php') {
         throw new \Exception('Do not render base.html.php into itself');
     }
-    $context['system_message'] = Configuration::getConfig('system', 'message');
+    $context['messages'] = $context['messages'] ?? [];
+    if (Configuration::getConfig('system', 'message')) {
+        $context['messages'][] = [
+            'body' => Configuration::getConfig('system', 'message'),
+            'level' => 'info',
+        ];
+    }
+    if (Debug::isEnabled()) {
+        $debugModeWhitelist = Configuration::getConfig('system', 'debug_mode_whitelist') ?: [];
+        if ($debugModeWhitelist === []) {
+            $context['messages'][] = [
+                'body' => 'Warning : Debug mode is active from any location, make sure only you can access RSS-Bridge.',
+                'level' => 'error'
+            ];
+        } else {
+            $context['messages'][] = [
+                'body' => 'Warning : Debug mode is active from your IP address, your requests will bypass the cache.',
+                'level' => 'warning'
+            ];
+        }
+    }
     $context['page'] = render_template($template, $context);
     return render_template('base.html.php', $context);
 }

@@ -114,11 +114,27 @@ final class Configuration
             }
         }
 
+        if (file_exists(__DIR__ . '/../DEBUG')) {
+            // The debug mode has been moved to config. Preserve existing installs which has this DEBUG file.
+            self::setConfig('system', 'enable_debug_mode', true);
+            $debug = trim(file_get_contents(__DIR__ . '/../DEBUG'));
+            if ($debug) {
+                self::setConfig('system', 'debug_mode_whitelist', explode("\n", str_replace("\r", '', $debug)));
+            }
+        }
+
         if (
             !is_string(self::getConfig('system', 'timezone'))
             || !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC))
         ) {
             self::throwConfigError('system', 'timezone');
+        }
+
+        if (!is_bool(self::getConfig('system', 'enable_debug_mode'))) {
+            self::throwConfigError('system', 'enable_debug_mode', 'Is not a valid Boolean');
+        }
+        if (!is_array(self::getConfig('system', 'debug_mode_whitelist') ?: [])) {
+            self::throwConfigError('system', 'debug_mode_whitelist', 'Is not a valid array');
         }
 
         if (!is_string(self::getConfig('proxy', 'url'))) {
