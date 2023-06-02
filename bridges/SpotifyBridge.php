@@ -47,71 +47,122 @@ class SpotifyBridge extends BridgeAbstract
         ]
     ] ];
 
-    const TOKEN_URI = 'https://accounts.spotify.com/api/token';
-    const API_URI = 'https://api.spotify.com/v1/';
-
-    const TYPE_ALBUM = 'artist';
-    const TYPE_PLAYLIST = 'playlist';
-    const TYPE_PODCAST = 'show';
-
-    const ENTRY_ALBUM = 'album';
-    const ENTRY_PLAYLIST = 'track';
-    const ENTRY_PODCAST = 'episode';
-
-    const NOT_SUPPORTED = 'Spotify URI not supported';
-
     private $uri = '';
     private $name = '';
     private $token = '';
-    private $uris = [];
-    private $entries = [];
 
-    public function getURI()
+    public function collectData()
     {
-        if (empty($this->uri)) {
-            $this->getFirstEntry();
+        $entries = $this->getAllEntries();
+        usort($entries, function ($entry1, $entry2) {
+            return $this->getDate($entry2) <=> $this->getDate($entry1);
+        });
+
+        foreach ($entries as $entry) {
+            if (! isset($entry['type'])) {
+                $item = $this->getTrackData($entry);
+            } elseif ($entry['type'] === 'album') {
+                $item = $this->getAlbumData($entry);
+            } elseif ($entry['type'] === 'episode') {
+                $item = $this->getEpisodeData($entry);
+            } else {
+                throw new \Exception('Spotify URI not supported');
+            }
+
+            $this->items[] = $item;
+
+            if ($this->getInput('limit') > 0 && count($this->items) >= $this->getInput('limit')) {
+                break;
+            }
         }
-
-        return $this->uri;
     }
 
-    public function getName()
+    private function getAllEntries()
     {
-        if (empty($this->name)) {
-            $this->getFirstEntry();
+        $entries = [];
+        $uris = explode(',', $this->getInput('spotifyuri'));
+
+        foreach ($uris as $uri) {
+            $type = explode(':', $uri)[1];
+            $spotifyId = explode(':', $uri)[2];
+
+            $types = [
+                'artist' => 'album',
+                'playlist' => 'track',
+                'show' => 'episode',
+            ];
+            if (!isset($types[$type])) {
+                throw new \Exception('Spotify URI not supported');
+            }
+            $entry_type = $types[$type];
+
+            $url = 'https://api.spotify.com/v1/' . $type . 's/' . $spotifyId . '/' . $entry_type . 's';
+            $query = [
+                'limit' => 50,
+            ];
+
+            if ($type === 'artist') {
+                $query['country'] = $this->getInput('country');
+                $query['include_groups'] = $this->getInput('albumtype');
+            } else {
+                $query['market'] = $this->getInput('country');
+            }
+
+            $offset = 0;
+            while (true) {
+                $query['offset'] = $offset;
+                $partial = $this->fetchContent($url . '?' . http_build_query($query));
+                if (empty($partial['items'])) {
+                    break;
+                }
+                $entries = array_merge($entries, $partial['items']);
+                $offset += 50;
+            }
         }
-
-        return $this->name;
+        return $entries;
     }
 
-    public function getIcon()
+    private function getAlbumData($album)
     {
-        return 'https://www.scdn.co/i/_global/favicon.png';
-    }
-
-    private function getUriType($uri)
-    {
-        return explode(':', $uri)[1];
-    }
-
-    private function getId($uri)
-    {
-        return explode(':', $uri)[2];
-    }
-
-    private function getEntryType($type)
-    {
-        $entry_types = [
-            self::TYPE_ALBUM => self::ENTRY_ALBUM,
-            self::TYPE_PLAYLIST => self::ENTRY_PLAYLIST,
-            self::TYPE_PODCAST => self::ENTRY_PODCAST,
-        ];
-
-        if (isset($entry_types[$type])) {
-            return $entry_types[$type];
-        } else {
-            throw new \Exception(self::NOT_SUPPORTED);
+        $item = [];
+        $item['title'] = $album['name'];
+        $item['uri'] = $album['external_urls']['spotify'];
+        $item['timestamp'] = $this->getDate($album);
+        $item['author'] = $album['artists'][0]['name'];
+        $item['categories'] = [$album['album_type']];
+        $item['content'] = '<img style="width: 256px" src="' . $album['images'][0]['url'] . '">';
+        if ($album['total_tracks'] > 1) {
+            $item['content'] .= '<p>Total tracks: ' . $album['total_tracks'] . '</p>';
         }
+        return $item;
+    }
+
+    private function getTrackData($track)
+    {
+        $item = [];
+        $item['title'] = $track['track']['name'];
+        $item['uri'] = $track['track']['external_urls']['spotify'];
+        $item['timestamp'] = $this->getDate($track);
+        $item['author'] = $track['track']['artists'][0]['name'];
+        $item['categories'] = ['track'];
+        $item['content'] = '<img style="width: 256px" src="' . $track['track']['album']['images'][0]['url'] . '">';
+        return $item;
+    }
+
+    private function getEpisodeData($episode)
+    {
+        $item = [];
+        $item['title'] = $episode['name'];
+        $item['uri'] = $episode['external_urls']['spotify'];
+        $item['timestamp'] = $this->getDate($episode);
+        $item['content'] = '<img style="width: 256px" src="' . $episode['images'][0]['url'] . '">';
+        if (isset($episode['description'])) {
+            $item['content'] = $item['content'] . '<p>' . $episode['description'] . '</p>';
+        }
+        if (isset($episode['audio_preview_url'])) {
+            $item['content'] = $item['content'] . '<audio controls src="' . $episode['audio_preview_url'] . '"></audio>';
+        }
+        return $item;
     }
 
     private function getDate($entry)
@@ -137,107 +188,26 @@ class SpotifyBridge extends BridgeAbstract
         return DateTime::createFromFormat('Y-m-d', $date)->getTimestamp();
     }
 
-    private function getAlbumType()
-    {
-        return $this->getInput('albumtype');
-    }
-
-    private function getCountry()
-    {
-        return $this->getInput('country');
-    }
-
     private function getToken()
     {
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
         $cache->setScope('SpotifyBridge');
-        $cache->setKey(['token']);
 
+        $cacheKey = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
+        $cache->setKey($cacheKey);
+
+        $time = null;
         if ($cache->getTime()) {
             $time = (new DateTime())->getTimestamp() - $cache->getTime();
-            Debug::log('Token time: ' . $time);
         }
 
         if ($cache->getTime() == false || $time >= 3600) {
-            Debug::log('Fetching token from Spotify');
             $this->fetchToken();
             $cache->saveData($this->token);
         } else {
-            Debug::log('Loading token from cache');
             $this->token = $cache->loadData();
-        }
-
-        Debug::log('Token: ' . $this->token);
-    }
-
-    private function getFirstEntry()
-    {
-        if (!is_null($this->getInput('spotifyuri')) && strpos($this->getInput('spotifyuri'), ',') === false) {
-            $type = $this->getUriType($this->uris[0]);
-            $uri = self::API_URI . $type . 's/' . $this->getId($this->uris[0]);
-
-            if ($type === self::TYPE_PODCAST) {
-                $uri = $uri . '?market=' . $this->getCountry();
-            }
-
-            $item = $this->fetchContent($uri);
-
-            $this->uri = $item['external_urls']['spotify'];
-            $this->name = $item['name'] . ' - Spotify';
-        } else {
-            $this->uri = parent::getURI();
-            $this->name = parent::getName();
-        }
-    }
-
-    private function getAllUris()
-    {
-        Debug::log('Parsing all uris');
-        $this->uris = explode(',', $this->getInput('spotifyuri'));
-    }
-
-    private function getAllEntries()
-    {
-        $this->entries = [];
-
-        $this->getAllUris();
-
-        Debug::log('Fetching all entries');
-        foreach ($this->uris as $uri) {
-            $type = $this->getUriType($uri);
-            $entry_type = $this->getEntryType($type);
-            $fetch = true;
-            $offset = 0;
-
-            $api_url = self::API_URI . $type . 's/'
-                . $this->getId($uri)
-                . '/' . $entry_type
-                . 's?limit=50';
-
-            if ($type === self::TYPE_ALBUM) {
-                $api_url = $api_url . '&country=' . $this->getCountry() . '&include_groups=' . $this->getAlbumType();
-            } else {
-                $api_url = $api_url . '&market=' . $this->getCountry();
-            }
-
-            while ($fetch) {
-                $partial = $this->fetchContent($api_url
-                    . '&offset='
-                    . $offset);
-
-                if (!empty($partial['items'])) {
-                    $this->entries = array_merge(
-                        $this->entries,
-                        $partial['items']
-                    );
-                } else {
-                    $fetch = false;
-                }
-
-                $offset += 50;
-            }
         }
     }
 
@@ -245,14 +215,13 @@ class SpotifyBridge extends BridgeAbstract
     {
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, self::TOKEN_URI);
+        curl_setopt($curl, CURLOPT_URL, 'https://accounts.spotify.com/api/token');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Basic '
-            . base64_encode($this->getInput('clientid')
-            . ':'
-            . $this->getInput('clientsecret'))]);
+
+        $basic = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Basic ' . base64_encode($basic)]);
 
         $json = curl_exec($curl);
         $json = json_decode($json)->access_token;
@@ -265,124 +234,59 @@ class SpotifyBridge extends BridgeAbstract
     {
         $this->getToken();
         $curl = curl_init();
-
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer '
-            . $this->token]);
-
-        Debug::log('Fetching content from ' . $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $this->token]);
         $json = curl_exec($curl);
         $json = json_decode($json, true);
         curl_close($curl);
-
         return $json;
     }
 
-    private function sortEntries()
+    public function getURI()
     {
-        Debug::log('Sorting entries');
-        usort($this->entries, function ($entry1, $entry2) {
-            if ($this->getDate($entry1) < $this->getDate($entry2)) {
-                return 1;
-            } else {
-                return -1;
-            }
-        });
-    }
-
-    private function getAlbumData($album)
-    {
-        $item = [];
-        $item['title'] = $album['name'];
-        $item['uri'] = $album['external_urls']['spotify'];
-
-        $item['timestamp'] = $this->getDate($album);
-        $item['author'] = $album['artists'][0]['name'];
-        $item['categories'] = [$album['album_type']];
-
-        $item['content'] = '<img style="width: 256px" src="'
-            . $album['images'][0]['url']
-            . '">';
-
-        if ($album['total_tracks'] > 1) {
-            $item['content'] .= '<p>Total tracks: '
-                . $album['total_tracks']
-                . '</p>';
+        if (empty($this->uri)) {
+            $this->getFirstEntry();
         }
 
-        return $item;
+        return $this->uri;
     }
 
-    private function getTrackData($track)
+    public function getName()
     {
-        $item = [];
-
-        $item['title'] = $track['track']['name'];
-        $item['uri'] = $track['track']['external_urls']['spotify'];
-
-        $item['timestamp'] = $this->getDate($track);
-        $item['author'] = $track['track']['artists'][0]['name'];
-        $item['categories'] = ['track'];
-
-        $item['content'] = '<img style="width: 256px" src="'
-            . $track['track']['album']['images'][0]['url']
-            . '">';
-
-        return $item;
-    }
-
-    private function getEpisodeData($episode)
-    {
-        $item = [];
-
-        $item['title'] = $episode['name'];
-        $item['uri'] = $episode['external_urls']['spotify'];
-        $item['timestamp'] = $this->getDate($episode);
-
-        $item['content'] = '<img style="width: 256px" src="'
-            . $episode['images'][0]['url']
-            . '">';
-
-        if (isset($episode['description'])) {
-            $item['content'] = $item['content'] . '<p>'
-                . $episode['description']
-                . '</p>';
+        if (empty($this->name)) {
+            $this->getFirstEntry();
         }
 
-        if (isset($episode['audio_preview_url'])) {
-            $item['content'] = $item['content'] . '<audio controls src="'
-                . $episode['audio_preview_url']
-                . '"></audio>';
-        }
-
-        return $item;
+        return $this->name;
     }
 
-    public function collectData()
+    private function getFirstEntry()
     {
-        $offset = 0;
+        $uris = explode(',', $this->getInput('spotifyuri'));
+        if (!is_null($this->getInput('spotifyuri')) && strpos($this->getInput('spotifyuri'), ',') === false) {
+            $firstUri = $uris[0];
+            $type = explode(':', $firstUri)[1];
+            $spotifyId = explode(':', $firstUri)[2];
 
-        $this->getAllEntries();
-        $this->sortEntries();
-
-        Debug::log('Building RSS feed');
-        foreach ($this->entries as $entry) {
-            if (! isset($entry['type'])) {
-                $item = $this->getTrackData($entry);
-            } else if ($entry['type'] === self::ENTRY_ALBUM) {
-                $item = $this->getAlbumData($entry);
-            } else if ($entry['type'] === self::ENTRY_PODCAST) {
-                $item = $this->getEpisodeData($entry);
-            } else {
-                throw new \Exception(self::NOT_SUPPORTED);
+            $uri = 'https://api.spotify.com/v1/' . $type . 's/' . $spotifyId;
+            $query = [];
+            if ($type === 'show') {
+                $query['market'] = $this->getInput('country');
             }
 
-            $this->items[] = $item;
+            $item = $this->fetchContent($uri . '?' . http_build_query($query));
 
-            if ($this->getInput('limit') > 0 && count($this->items) >= $this->getInput('limit')) {
-                break;
-            }
+            $this->uri = $item['external_urls']['spotify'];
+            $this->name = $item['name'] . ' - Spotify';
+        } else {
+            $this->uri = parent::getURI();
+            $this->name = parent::getName();
         }
+    }
+
+    public function getIcon()
+    {
+        return 'https://www.scdn.co/i/_global/favicon.png';
     }
 }
