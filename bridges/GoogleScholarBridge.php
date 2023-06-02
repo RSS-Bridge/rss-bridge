@@ -1,8 +1,8 @@
 <?php
 
-class GoogleScholarBridge extends BridgeAbstract
+class GoogleScholarV2Bridge extends BridgeAbstract
 {
-    const NAME = 'Google Scholar';
+    const NAME = 'Google Scholar v2';
     const URI = 'https://scholar.google.com/';
     const DESCRIPTION = 'Search for publications or follow authors on Google Scholar.';
     const MAINTAINER = 'nicholasmccarthy@github';
@@ -17,20 +17,23 @@ class GoogleScholarBridge extends BridgeAbstract
             ]
         ],
         'query' => [
-	        'q' => [
-	        	'name' => 'Search Query',
-	            'title' => 'Search Query',
-	            'required' => true,
-	            'exampleValue' => 'machine learning'
-	        ],
-        	'cites' => [
+            tab
+            'q' => [
+                'name' => 'Search Query',
+                'title' => 'Search Query',
+                'required' => true,
+                'exampleValue' => 'machine learning'
+            ],
+            'cites' => [
                 'name' => 'Cites',
                 'required' => false,
                 'default' => '',
                 'exampleValue' => '1275980731835430123',
-                'title' => 'Parameter defines unique ID for an article to trigger Cited By searches. Usage of cites will bring up a list of citing documents in Google Scholar. Example value: cites=1275980731835430123. Usage of cites and q parameters triggers search within citing articles.'
+                'title' => 'Parameter defines unique ID for an article to trigger Cited By searches. Usage of cites
+                will bring up a list of citing documents in Google Scholar. Example value: cites=1275980731835430123.
+                Usage of cites and q parameters triggers search within citing articles.'
             ],
-        	'language' => [
+            'language' => [
                 'name' => 'Language',
                 'required' => false,
                 'default' => '',
@@ -80,7 +83,8 @@ class GoogleScholarBridge extends BridgeAbstract
                 'name' => 'Only Review Articles',
                 'type' => 'checkbox',
                 'default' => false,
-                'title' => 'Parameter defines whether you would like to show only review articles or not (these articles consist of topic reviews, or discuss the works or authors you have searched for).',
+                'title' => 'Parameter defines whether you would like to show only review articles or not (these
+                articles consist of topic reviews, or discuss the works or authors you have searched for).',
             ],
             'numResults' => [
                 'name' => 'Number of Results (max 20)',
@@ -101,12 +105,10 @@ class GoogleScholarBridge extends BridgeAbstract
 
     public function collectData()
     {
-        switch($this->queriedContext) {
-
+        switch ($this->queriedContext) {
             case 'user':
-
-                $uri = self::URI . '/citations?hl=en&view_op=list_works&sortby=pubdate&user=' . $this->getInput('userId');
-
+                $userId = $this->getInput('userId')
+                $uri = self::URI . '/citations?hl=en&view_op=list_works&sortby=pubdate&user=' . $userId;
                 $html = getSimpleHTMLDOM($uri) or returnServerError('Could not fetch Google Scholar data.');
 
                 $publications = $html->find('tr[class="gsc_a_tr"]');
@@ -130,11 +132,11 @@ class GoogleScholarBridge extends BridgeAbstract
 
                         if ($field == 'Publication date') {
                             $articleDate = $value;
-                        } else if ($field == 'Description') {
+                        } elseif ($field == 'Description') {
                             $articleAbstract = $value;
-                        } else if ($field == 'Authors') {
+                        } elseif ($field == 'Authors') {
                             $articleAuthor = $value;
-                        } else if ($field == 'Scholar articles' || $field == 'Total citations') {
+                        } elseif ($field == 'Scholar articles' || $field == 'Total citations') {
                             continue;
                         } else {
                             $content = $content . $field . ': ' . $value . '<br><br>';
@@ -158,9 +160,7 @@ class GoogleScholarBridge extends BridgeAbstract
                     }
                 }
                 break;
-
             case 'query':
-
                 $query = urlencode($this->getInput('q'));
                 $cites = $this->getInput('cites');
                 $language = $this->getInput('language');
@@ -179,8 +179,7 @@ class GoogleScholarBridge extends BridgeAbstract
                 $uri .= $untilYear != 0 ? '&as_yhi=' . $untilYear : '';
                 $uri .= $language != '' ? '&hl=' . $language : '';
                 $uri .= $includePatents ? '&as_vis=7' : '&as_vis=0';
-                $uri .= $includeCitations ? '&as_vis=0'
-                      : ($includePatents ? '&as_vis=1' : '');
+                $uri .= $includeCitations ? '&as_vis=0' : ($includePatents ? '&as_vis=1' : '');
                 $uri .= $reviewArticles ? '&as_rr=1' : '';
                 $uri .= $sortBy ? '&scisbd=1' : '';
                 $uri .= $numResults ? '&num=' . $numResults : '';
@@ -190,7 +189,6 @@ class GoogleScholarBridge extends BridgeAbstract
                 $publications = $html->find('div[class="gs_r gs_or gs_scl"]');
 
                 foreach ($publications as $publication) {
-
                     $articleTitleElement = $publication->find('h3[class="gs_rt"]', 0);
                     $articleUrl = $articleTitleElement->find('a', 0)->href;
                     $articleTitle = $articleTitleElement->plaintext;
@@ -214,7 +212,7 @@ class GoogleScholarBridge extends BridgeAbstract
                         'content' => $articleAbstract
                     ];
 
-                    switch($this->queriedContext) {
+                    switch ($this->queriedContext) {
                         case 'user':
                             $this->items[] = $item;
                             break;
