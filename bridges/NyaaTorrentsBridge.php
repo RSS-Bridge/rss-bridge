@@ -65,7 +65,7 @@ class NyaaTorrentsBridge extends FeedExpander
     {
         return self::URI . 'static/favicon.png';
     }
-    
+
     public function getURI()
     {
         return self::URI . '?page=rss&s=id&o=desc&'
@@ -84,11 +84,11 @@ class NyaaTorrentsBridge extends FeedExpander
         $rssContent = simplexml_load_string(trim($content));
         $this->collectRss2($rssContent, self::MAX_ITEMS);
     }
-    
+
     private function fixCustomFields($content)
     {
-        $broken = ["nyaa:seeders", "nyaa:leechers", "nyaa:downloads", "nyaa:infoHash", "nyaa:categoryId", "nyaa:category", "nyaa:size", "nyaa:comments", "nyaa:trusted", "nyaa:remake"];
-        $fixed = ["seeders", "leechers", "downloads", "infoHash", "categoryId", "category", "size", "comments", "trusted", "remake"];
+        $broken = ['nyaa:seeders', 'nyaa:leechers', 'nyaa:downloads', 'nyaa:infoHash', 'nyaa:categoryId', 'nyaa:category', 'nyaa:size', 'nyaa:comments', 'nyaa:trusted', 'nyaa:remake'];
+        $fixed = ['seeders', 'leechers', 'downloads', 'infoHash', 'categoryId', 'category', 'size', 'comments', 'trusted', 'remake'];
         return str_replace($broken, $fixed, $content);
     }
 
