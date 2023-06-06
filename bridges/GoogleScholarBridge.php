@@ -1,6 +1,6 @@
 <?php
 
-class GoogleScholarV2Bridge extends BridgeAbstract
+class GoogleScholarBridge extends BridgeAbstract
 {
     const NAME = 'Google Scholar v2';
     const URI = 'https://scholar.google.com/';
@@ -17,7 +17,6 @@ class GoogleScholarV2Bridge extends BridgeAbstract
             ]
         ],
         'query' => [
-            tab
             'q' => [
                 'name' => 'Search Query',
                 'title' => 'Search Query',
