@@ -88,16 +88,16 @@ class NyaaTorrentsBridge extends FeedExpander
     private function fixCustomFields($content)
     {
         $broken = [
-            "nyaa:seeders",
-            "nyaa:leechers",
-            "nyaa:downloads",
-            "nyaa:infoHash",
-            "nyaa:categoryId",
-            "nyaa:category",
-            "nyaa:size",
-            "nyaa:comments",
-            "nyaa:trusted",
-            "nyaa:remake"
+            'nyaa:seeders',
+            'nyaa:leechers',
+            'nyaa:downloads',
+            'nyaa:infoHash',
+            'nyaa:categoryId',
+            'nyaa:category',
+            'nyaa:size',
+            'nyaa:comments',
+            'nyaa:trusted',
+            'nyaa:remake'
         ];
         $fixed = ['seeders', 'leechers', 'downloads', 'infoHash', 'categoryId', 'category', 'size', 'comments', 'trusted', 'remake'];
         return str_replace($broken, $fixed, $content);
