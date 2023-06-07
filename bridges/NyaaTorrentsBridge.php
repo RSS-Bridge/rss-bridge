@@ -7,6 +7,19 @@ class NyaaTorrentsBridge extends FeedExpander
     const URI = 'https://nyaa.si/';
     const DESCRIPTION = 'Returns the newest torrents, with optional search criteria.';
     const MAX_ITEMS = 20;
+    const CUSTOM_FIELD_PREFIX = 'nyaa:';
+    const CUSTOM_FIELDS = [
+        self::CUSTOM_FIELD_PREFIX . 'seeders' => 'seeders',
+        self::CUSTOM_FIELD_PREFIX . 'leechers' => 'leechers',
+        self::CUSTOM_FIELD_PREFIX . 'downloads' => 'downloads',
+        self::CUSTOM_FIELD_PREFIX . 'infoHash' => 'infoHash',
+        self::CUSTOM_FIELD_PREFIX . 'categoryId' => 'categoryId',
+        self::CUSTOM_FIELD_PREFIX . 'category' => 'category',
+        self::CUSTOM_FIELD_PREFIX . 'size' => 'size',
+        self::CUSTOM_FIELD_PREFIX . 'comments' => 'comments',
+        self::CUSTOM_FIELD_PREFIX . 'trusted' => 'trusted',
+        self::CUSTOM_FIELD_PREFIX . 'remake' => 'remake'
+    ];
     const PARAMETERS = [
         [
             'f' => [
@@ -87,19 +100,8 @@ class NyaaTorrentsBridge extends FeedExpander
 
     private function fixCustomFields($content)
     {
-        $broken = [
-            'nyaa:seeders',
-            'nyaa:leechers',
-            'nyaa:downloads',
-            'nyaa:infoHash',
-            'nyaa:categoryId',
-            'nyaa:category',
-            'nyaa:size',
-            'nyaa:comments',
-            'nyaa:trusted',
-            'nyaa:remake'
-        ];
-        $fixed = ['seeders', 'leechers', 'downloads', 'infoHash', 'categoryId', 'category', 'size', 'comments', 'trusted', 'remake'];
+        $broken = array_keys(self::CUSTOM_FIELDS);
+        $fixed = array_values(self::CUSTOM_FIELDS);
         return str_replace($broken, $fixed, $content);
     }
 
@@ -109,19 +111,13 @@ class NyaaTorrentsBridge extends FeedExpander
 
         // Add nyaa custom fields
         $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
-        $item['seeders'] = (string) $newItem->{'seeders'};
-        $item['leechers'] = (string) $newItem->{'leechers'};
-        $item['downloads'] = (string) $newItem->{'downloads'};
-        $item['infoHash'] = (string) $newItem->{'infoHash'};
-        $item['categoryId'] = (string) $newItem->{'categoryId'};
-        $item['category'] = (string) $newItem->{'category'};
-        $item['size'] = (string) $newItem->{'size'};
-        $item['comments'] = (string) $newItem->{'comments'};
-        $item['trusted'] = (string) $newItem->{'trusted'};
-        $item['remake'] = (string) $newItem->{'remake'};
+        foreach (array_values(self::CUSTOM_FIELDS) as $value) {
+            $item[$value] = (string) $newItem->$value;
+        }
 
         //Convert URI from torrent file to web page
-        $item['uri'] = str_replace(['/download/', '.torrent'], ['/view/', ''], $item['uri']);
+        $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
+        $item['uri'] = str_replace('.torrent', '', $item['uri']);
 
         if ($item_html = getSimpleHTMLDOMCached($item['uri'])) {
             //Retrieve full description from page contents
