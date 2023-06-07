@@ -108,6 +108,7 @@ class NyaaTorrentsBridge extends FeedExpander
         $item = parent::parseRss2Item($newItem);
 
         // Add nyaa custom fields
+        $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
         $item['seeders'] = (string) $newItem->{'seeders'};
         $item['leechers'] = (string) $newItem->{'leechers'};
         $item['downloads'] = (string) $newItem->{'downloads'};
@@ -120,8 +121,7 @@ class NyaaTorrentsBridge extends FeedExpander
         $item['remake'] = (string) $newItem->{'remake'};
 
         //Convert URI from torrent file to web page
-        $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
-        $item['uri'] = str_replace('.torrent', '', $item['uri']);
+        $item['uri'] = str_replace(['/download/', '.torrent'], ['/view/', ''], $item['uri']);
 
         if ($item_html = getSimpleHTMLDOMCached($item['uri'])) {
             //Retrieve full description from page contents
