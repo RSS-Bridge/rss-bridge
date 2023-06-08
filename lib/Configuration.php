@@ -98,21 +98,6 @@ final class Configuration
                 self::setConfig($header, $key, $value);
             }
         }
-        foreach ($env as $envName => $envValue) {
-            $nameParts = explode('_', $envName);
-            if ($nameParts[0] === 'RSSBRIDGE') {
-                if (count($nameParts) < 3) {
-                    // Invalid env name
-                    continue;
-                }
-                $header = $nameParts[1];
-                $key = $nameParts[2];
-                if ($envValue === 'true' || $envValue === 'false') {
-                    $envValue = filter_var($envValue, FILTER_VALIDATE_BOOLEAN);
-                }
-                self::setConfig($header, $key, $envValue);
-            }
-        }
 
         if (file_exists(__DIR__ . '/../DEBUG')) {
             // The debug mode has been moved to config. Preserve existing installs which has this DEBUG file.
@@ -129,6 +114,26 @@ final class Configuration
                 self::setConfig('system', 'enabled_bridges', ['*']);
             } else {
                 self::setConfig('system', 'enabled_bridges', explode("\n", $whitelist));
+            }
+        }
+
+        foreach ($env as $envName => $envValue) {
+            $nameParts = explode('_', $envName);
+            if ($nameParts[0] === 'RSSBRIDGE') {
+                if (count($nameParts) < 3) {
+                    // Invalid env name
+                    continue;
+                }
+                $header = $nameParts[1];
+                $key = $nameParts[2];
+                if ($envValue === 'true' || $envValue === 'false') {
+                    $envValue = filter_var($envValue, FILTER_VALIDATE_BOOLEAN);
+                }
+
+                // todo: add support for RSSBRIDGE_ENABLED_BRIDGES
+                // todo: add support for RSSBRIDGE_DEBUG_MODE
+
+                self::setConfig($header, $key, $envValue);
             }
         }
 
