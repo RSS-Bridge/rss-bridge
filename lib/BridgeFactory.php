@@ -2,18 +2,16 @@
 
 final class BridgeFactory
 {
-    private $folder;
     /** @var array<class-string<BridgeInterface>> */
     private $bridgeClassNames = [];
+
     /** @var array<class-string<BridgeInterface>> */
     private $whitelist = [];
 
-    public function __construct(string $folder = PATH_LIB_BRIDGES)
+    public function __construct()
     {
-        $this->folder = $folder;
-
         // create names
-        foreach (scandir($this->folder) as $file) {
+        foreach (scandir(__DIR__ . '/../bridges/') as $file) {
             if (preg_match('/^([^.]+Bridge)\.php$/U', $file, $m)) {
                 $this->bridgeClassNames[] = $m[1];
             }
@@ -27,6 +25,7 @@ final class BridgeFactory
         } else {
             $contents = '';
         }
+
         if ($contents === '*') {
             // Whitelist all bridges
             $this->whitelist = $this->getBridgeClassNames();
