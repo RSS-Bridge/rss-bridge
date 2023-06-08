@@ -15,7 +15,7 @@ final class FrontpageAction implements ActionInterface
 
         $body = '';
         foreach ($bridgeClassNames as $bridgeClassName) {
-            if ($bridgeFactory->isWhitelisted($bridgeClassName)) {
+            if ($bridgeFactory->isEnabled($bridgeClassName)) {
                 $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats);
                 $activeBridges++;
             } elseif ($showInactive) {

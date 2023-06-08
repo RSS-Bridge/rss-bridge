@@ -29,7 +29,7 @@ class DetectAction implements ActionInterface
         $bridgeFactory = new BridgeFactory();
 
         foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
-            if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
+            if (!$bridgeFactory->isEnabled($bridgeClassName)) {
                 continue;
             }
 

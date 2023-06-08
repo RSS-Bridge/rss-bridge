@@ -23,17 +23,10 @@ class SetBridgeCacheAction implements ActionInterface
 
         $bridgeFactory = new BridgeFactory();
 
-        $bridgeClassName = null;
-        if (isset($request['bridge'])) {
-            $bridgeClassName = $bridgeFactory->sanitizeBridgeName($request['bridge']);
-        }
-
-        if ($bridgeClassName === null) {
-            throw new \InvalidArgumentException('Bridge name invalid!');
-        }
+        $bridgeClassName = $bridgeFactory->createBridgeClassName($request['bridge'] ?? '');
 
         // whitelist control
-        if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
+        if (!$bridgeFactory->isEnabled($bridgeClassName)) {
             throw new \Exception('This bridge is not whitelisted', 401);
             die;
         }
