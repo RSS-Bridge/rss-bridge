@@ -6,6 +6,11 @@ use PHPUnit\Framework\TestCase;
 
 class BridgeFactoryTest extends TestCase
 {
+    public function setUp(): void
+    {
+        \Configuration::loadConfiguration();
+    }
+
     public function testNormalizeBridgeName()
     {
         $this->assertSame('TwitterBridge', \BridgeFactory::normalizeBridgeName('TwitterBridge'));

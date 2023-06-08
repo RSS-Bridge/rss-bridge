@@ -123,6 +123,19 @@ final class Configuration
             }
         }
 
+        if (file_exists(__DIR__ . '/../whitelist.txt')) {
+            $whitelist = trim(file_get_contents(__DIR__ . '/../whitelist.txt'));
+            if ($whitelist === '*') {
+                self::setConfig('system', 'enabled_bridges', ['*']);
+            } else {
+                self::setConfig('system', 'enabled_bridges', explode("\n", $whitelist));
+            }
+        }
+
+        if (!is_array(self::getConfig('system', 'enabled_bridges'))) {
+            self::throwConfigError('system', 'enabled_bridges', 'Is not an array');
+        }
+
         if (
             !is_string(self::getConfig('system', 'timezone'))
             || !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC))

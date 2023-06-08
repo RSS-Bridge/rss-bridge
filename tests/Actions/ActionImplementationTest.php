@@ -10,6 +10,11 @@ class ActionImplementationTest extends TestCase
     private $class;
     private $obj;
 
+    public function setUp(): void
+    {
+        \Configuration::loadConfiguration();
+    }
+
     /**
      * @dataProvider dataActionsProvider
      */

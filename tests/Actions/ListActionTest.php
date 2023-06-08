@@ -7,6 +7,11 @@ use PHPUnit\Framework\TestCase;
 
 class ListActionTest extends TestCase
 {
+    public function setUp(): void
+    {
+        \Configuration::loadConfiguration();
+    }
+
     public function testHeaders()
     {
         $action = new \ListAction();

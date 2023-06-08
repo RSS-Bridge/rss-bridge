@@ -5,38 +5,32 @@ final class BridgeFactory
     private $bridgeClassNames = [];
     private $enabledBridges = [];
 
-    public function __construct()
+    public function __construct(array $bridgeClassNames = [])
     {
-        // Create all possible bridge class names from fs
-        foreach (scandir(__DIR__ . '/../bridges/') as $file) {
-            if (preg_match('/^([^.]+Bridge)\.php$/U', $file, $m)) {
-                $this->bridgeClassNames[] = $m[1];
+        if ($bridgeClassNames === []) {
+            // Create all possible bridge class names from fs
+            foreach (scandir(__DIR__ . '/../bridges/') as $file) {
+                if (preg_match('/^([^.]+Bridge)\.php$/U', $file, $m)) {
+                    $this->bridgeClassNames[] = $m[1];
+                }
             }
+        } else {
+            $this->bridgeClassNames = $bridgeClassNames;
         }
 
-        // Create enabled bridges from whitelist file
-        if (file_exists(WHITELIST)) {
-            $whitelist = trim(file_get_contents(WHITELIST));
-        } elseif (file_exists(WHITELIST_DEFAULT)) {
-            $whitelist = trim(file_get_contents(WHITELIST_DEFAULT));
-        } else {
-            $whitelist = '';
+        $enabledBridges = Configuration::getConfig('system', 'enabled_bridges');
+        if ($enabledBridges === null) {
+            throw new \Exception('No bridges are enabled... wtf?');
         }
-
-        if ($whitelist === '*') {
-            // Enable all bridges
-            $this->enabledBridges = $this->getBridgeClassNames();
-        } else {
-            $bridgeNames = explode("\n", $whitelist);
-            foreach ($bridgeNames as $bridgeName) {
-                $this->enabledBridges[] = $this->createBridgeClassName($bridgeName);
+        foreach ($enabledBridges as $enabledBridge) {
+            if ($enabledBridge === '*') {
+                $this->enabledBridges = $this->bridgeClassNames;
+                break;
             }
+            $this->enabledBridges[] = $this->createBridgeClassName($enabledBridge);
         }
     }
 
-    /**
-     * @param class-string<BridgeInterface> $name
-     */
     public function create(string $name): BridgeInterface
     {
         return new $name();
@@ -64,21 +58,15 @@ final class BridgeFactory
 
     public static function normalizeBridgeName(string $name)
     {
-        // Trim trailing '.php' if exists
         if (preg_match('/(.+)(?:\.php)/', $name, $matches)) {
             $name = $matches[1];
         }
-
-        // Append 'Bridge' suffix if not present.
         if (!preg_match('/(Bridge)$/i', $name)) {
             $name = sprintf('%sBridge', $name);
         }
         return $name;
     }
 
-    /**
-     * @return array<class-string<BridgeInterface>>
-     */
     public function getBridgeClassNames(): array
     {
         return $this->bridgeClassNames;
