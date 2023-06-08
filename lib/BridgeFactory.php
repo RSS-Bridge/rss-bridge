@@ -5,17 +5,13 @@ final class BridgeFactory
     private $bridgeClassNames = [];
     private $enabledBridges = [];
 
-    public function __construct(array $bridgeClassNames = [])
+    public function __construct()
     {
-        if ($bridgeClassNames === []) {
-            // Create all possible bridge class names from fs
-            foreach (scandir(__DIR__ . '/../bridges/') as $file) {
-                if (preg_match('/^([^.]+Bridge)\.php$/U', $file, $m)) {
-                    $this->bridgeClassNames[] = $m[1];
-                }
+        // Create all possible bridge class names from fs
+        foreach (scandir(__DIR__ . '/../bridges/') as $file) {
+            if (preg_match('/^([^.]+Bridge)\.php$/U', $file, $m)) {
+                $this->bridgeClassNames[] = $m[1];
             }
-        } else {
-            $this->bridgeClassNames = $bridgeClassNames;
         }
 
         $enabledBridges = Configuration::getConfig('system', 'enabled_bridges');

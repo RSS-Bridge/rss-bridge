@@ -21,6 +21,7 @@ class BridgeFactoryTest extends TestCase
     public function testSanitizeBridgeName()
     {
         $sut = new \BridgeFactory();
+
         $this->assertSame('TwitterBridge', $sut->createBridgeClassName('twitterbridge'));
         $this->assertSame('TwitterBridge', $sut->createBridgeClassName('twitter'));
         $this->assertSame('TwitterBridge', $sut->createBridgeClassName('tWitTer'));
