@@ -53,10 +53,10 @@
                     <time datetime="<?= date('Y-m-d H:i:s', $item['timestamp']) ?>">
                         <?= date('Y-m-d H:i:s', $item['timestamp']) ?>
                     </time>
+                    <p></p>
                 <?php endif; ?>
 
                 <?php if ($item['author']): ?>
-                    <br/>
                     <p class="author">by: <?= e($item['author']) ?></p>
                 <?php endif; ?>
 
