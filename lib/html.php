@@ -124,7 +124,7 @@ function sanitize(
     return $htmlContent;
 }
 
-function sanitize_html(string $html): string
+function break_annoying_html_tags(string $html): string
 {
     $html = str_replace('<script', '<&zwnj;script', $html); // Disable scripts, but leave them visible.
     $html = str_replace('<iframe', '<&zwnj;iframe', $html);

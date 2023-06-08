@@ -60,7 +60,8 @@
                     <p class="author">by: <?= e($item['author']) ?></p>
                 <?php endif; ?>
 
-                <?= sanitize_html($item['content']) ?>
+                <!-- Intentionally not escaping for html context -->
+                <?= break_annoying_html_tags($item['content']) ?>
 
                 <?php if ($item['enclosures']): ?>
                     <div class="attachments">

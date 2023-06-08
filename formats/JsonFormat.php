@@ -47,7 +47,7 @@ class JsonFormat extends FormatAbstract
             $entryTitle = $item->getTitle();
             $entryUri = $item->getURI();
             $entryTimestamp = $item->getTimestamp();
-            $entryContent = $item->getContent() ? sanitize_html($item->getContent()) : '';
+            $entryContent = $item->getContent() ? break_annoying_html_tags($item->getContent()) : '';
             $entryEnclosures = $item->getEnclosures();
             $entryCategories = $item->getCategories();
 
