@@ -16,7 +16,6 @@
 const PATH_ROOT = __DIR__ . '/../';
 
 /** Path to the bridges library */
-const PATH_LIB_BRIDGES = __DIR__ . '/../bridges/';
 
 /** Path to the formats library */
 const PATH_LIB_FORMATS = __DIR__ . '/../formats/';

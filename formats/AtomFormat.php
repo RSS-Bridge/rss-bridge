@@ -158,7 +158,7 @@ class AtomFormat extends FormatAbstract
 
             $content = $document->createElement('content');
             $content->setAttribute('type', 'html');
-            $content->appendChild($document->createTextNode(sanitize_html($entryContent)));
+            $content->appendChild($document->createTextNode(break_annoying_html_tags($entryContent)));
             $entry->appendChild($content);
 
             foreach ($item->getEnclosures() as $enclosure) {

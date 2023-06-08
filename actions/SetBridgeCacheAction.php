@@ -21,7 +21,7 @@ class SetBridgeCacheAction implements ActionInterface
 
         $key = $request['key'] or returnClientError('You must specify key!');
 
-        $bridgeFactory = new \BridgeFactory();
+        $bridgeFactory = new BridgeFactory();
 
         $bridgeClassName = null;
         if (isset($request['bridge'])) {
