@@ -60,9 +60,7 @@
                     <p class="author">by: <?= e($item['author']) ?></p>
                 <?php endif; ?>
 
-                <div class="content">
-                    <?= sanitize_html($item['content']) ?>
-                </div>
+                <?= sanitize_html($item['content']) ?>
 
                 <?php if ($item['enclosures']): ?>
                     <div class="attachments">
