@@ -58,17 +58,26 @@ class PicalaBridge extends BridgeAbstract
     {
         $fullhtml = getSimpleHTMLDOM($this->getURI());
         foreach ($fullhtml->find('.list-container-category a') as $article) {
-            $srcsets = explode(',', $article->find('img', 0)->getAttribute('srcset'));
-            $image = explode(' ', trim(array_shift($srcsets)))[0];
+            $firstImage = $article->find('img', 0);
+            $image = null;
+            if ($firstImage !== null) {
+                $srcsets = explode(',', $firstImage->getAttribute('srcset'));
+                $image = explode(' ', trim(array_shift($srcsets)))[0];
+            }
 
             $item = [];
             $item['uri'] = self::URI . $article->href;
             $item['title'] = $article->find('h2', 0)->plaintext;
-            $item['content'] = sprintf(
-                '<img src="%s" /><br>%s',
-                $image,
-                $article->find('.teaser__text', 0)->plaintext
-            );
+            if ($image === null) {
+                $item['content'] = $article->find('.teaser__text', 0)->plaintext;
+            } else {
+                $item['content'] = sprintf(
+                    '<img src="%s" /><br>%s',
+                    $image,
+                    $article->find('.teaser__text', 0)->plaintext
+                );
+            }
+
             $this->items[] = $item;
         }
     }
