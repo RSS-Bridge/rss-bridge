@@ -124,14 +124,22 @@ final class Configuration
                     // Invalid env name
                     continue;
                 }
+
+                // The variable is named $header but it's actually the section in config.ini.php
                 $header = $nameParts[1];
-                $key = $nameParts[2];
+
+                // Recombine the key if it had multiple underscores
+                $key = implode('_', array_slice($nameParts, 2));
+
+                // Handle this specifically because it's an array
+                if ($key === 'enabled_bridges') {
+                    $envValue = explode(',', $envValue);
+                    $envValue = array_map('trim', $envValue);
+                }
+
                 if ($envValue === 'true' || $envValue === 'false') {
                     $envValue = filter_var($envValue, FILTER_VALIDATE_BOOLEAN);
                 }
-
-                // todo: add support for RSSBRIDGE_ENABLED_BRIDGES
-                // todo: add support for RSSBRIDGE_DEBUG_MODE
 
                 self::setConfig($header, $key, $envValue);
             }
