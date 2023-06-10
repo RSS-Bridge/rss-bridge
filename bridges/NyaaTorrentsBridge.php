@@ -2,10 +2,24 @@
 
 class NyaaTorrentsBridge extends FeedExpander
 {
-    const MAINTAINER = 'ORelio';
+    const MAINTAINER = 'ORelio & Jisagi';
     const NAME = 'NyaaTorrents';
     const URI = 'https://nyaa.si/';
     const DESCRIPTION = 'Returns the newest torrents, with optional search criteria.';
+    const MAX_ITEMS = 20;
+    const CUSTOM_FIELD_PREFIX = 'nyaa:';
+    const CUSTOM_FIELDS = [
+        self::CUSTOM_FIELD_PREFIX . 'seeders' => 'seeders',
+        self::CUSTOM_FIELD_PREFIX . 'leechers' => 'leechers',
+        self::CUSTOM_FIELD_PREFIX . 'downloads' => 'downloads',
+        self::CUSTOM_FIELD_PREFIX . 'infoHash' => 'infoHash',
+        self::CUSTOM_FIELD_PREFIX . 'categoryId' => 'categoryId',
+        self::CUSTOM_FIELD_PREFIX . 'category' => 'category',
+        self::CUSTOM_FIELD_PREFIX . 'size' => 'size',
+        self::CUSTOM_FIELD_PREFIX . 'comments' => 'comments',
+        self::CUSTOM_FIELD_PREFIX . 'trusted' => 'trusted',
+        self::CUSTOM_FIELD_PREFIX . 'remake' => 'remake'
+    ];
     const PARAMETERS = [
         [
             'f' => [
@@ -65,23 +79,41 @@ class NyaaTorrentsBridge extends FeedExpander
         return self::URI . 'static/favicon.png';
     }
 
-    public function collectData()
+    public function getURI()
     {
-        $this->collectExpandableDatas(
-            self::URI . '?page=rss&s=id&o=desc&'
+        return self::URI . '?page=rss&s=id&o=desc&'
             . http_build_query([
                 'f' => $this->getInput('f'),
                 'c' => $this->getInput('c'),
                 'q' => $this->getInput('q'),
                 'u' => $this->getInput('u')
-            ]),
-            20
-        );
+            ]);
+    }
+
+    public function collectData()
+    {
+        $content = getContents($this->getURI());
+        $content = $this->fixCustomFields($content);
+        $rssContent = simplexml_load_string(trim($content));
+        $this->collectRss2($rssContent, self::MAX_ITEMS);
+    }
+
+    private function fixCustomFields($content)
+    {
+        $broken = array_keys(self::CUSTOM_FIELDS);
+        $fixed = array_values(self::CUSTOM_FIELDS);
+        return str_replace($broken, $fixed, $content);
     }
 
     protected function parseItem($newItem)
     {
-        $item = parent::parseItem($newItem);
+        $item = parent::parseRss2Item($newItem);
+
+        // Add nyaa custom fields
+        $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
+        foreach (array_values(self::CUSTOM_FIELDS) as $value) {
+            $item[$value] = (string) $newItem->$value;
+        }
 
         //Convert URI from torrent file to web page
         $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
