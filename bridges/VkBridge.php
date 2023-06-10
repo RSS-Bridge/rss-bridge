@@ -311,6 +311,44 @@ class VkBridge extends BridgeAbstract
                 $copy_quote->outertext = "<br>Reposted ($copy_quote_author): <br>$copy_quote_content";
             }
 
+            foreach ($post->find('.SecondaryAttachment') as $sa) {
+                $sa_href = $sa->getAttribute('href');
+                if (!$sa_href) {
+                    $sa_href = '';
+                }
+                $sa_task_click = $sa->getAttribute('data-task-click');
+
+                if (str_starts_with($sa_href, 'https://vk.com/doc')) {
+                    // document
+                    $doc_title = $sa->find('.SecondaryAttachment__childrenText', 0)->innertext;
+                    $doc_size = $sa->find('.SecondaryAttachmentSubhead', 0)->innertext;
+                    $doc_link = $sa_href;
+                    $content_suffix .= "<br>Doc: <a href='$doc_link'>$doc_title</a> ($doc_size)";
+                    $sa->outertext = '';
+                } else if (str_starts_with($sa_href, 'https://vk.com/@')) {
+                    // article
+                    $article_title = $sa->find('.SecondaryAttachment__childrenText', 0)->innertext;
+                    $article_author = explode('Article · from ', $sa->find('.SecondaryAttachmentSubhead', 0)->innertext)[1];
+                    $article_link = $sa_href;
+                    $content_suffix .= "<br>Article: <a href='$article_link'>$article_title ($article_author)</a>";
+                    $sa->outertext = '';
+                } else if ($sa_task_click == 'SecondaryAttachment/playAudio') {
+                    // audio
+                    $audio_json = json_decode(html_entity_decode($sa->getAttribute('data-audio')));
+                    $audio_link = $audio_json->url;
+                    $audio_title = $sa->find('.SecondaryAttachment__childrenText', 0)->innertext;
+                    $audio_author = $sa->find('.SecondaryAttachmentSubhead', 0)->innertext;
+                    $content_suffix .= "<br>Audio: <a href='$audio_link'>$audio_title ($audio_author)</a>";
+                    $sa->outertext = '';
+                } else if ($sa_task_click == 'SecondaryAttachment/playPlaylist') {
+                    // playlist link
+                    $playlist_title = $sa->find('.SecondaryAttachment__childrenText', 0)->innertext;
+                    $playlist_link = $sa->find('.SecondaryAttachment__link', 0)->getAttribute('href');
+                    $content_suffix .= "<br>Playlist: <a href='$playlist_link'>$playlist_title</a>";
+                    $sa->outertext = '';
+                }
+            }
+
             $item = [];
             $content = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<a><br><img>');
             $content .= $content_suffix;
