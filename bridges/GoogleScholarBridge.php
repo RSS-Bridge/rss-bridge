@@ -64,8 +64,8 @@ class GoogleScholarBridge extends BridgeAbstract
                 'name' => 'Sort By Date',
                 'type' => 'checkbox',
                 'default' => false,
-                'title' => 'Parameter defines articles added in the last year, sorted by date. Alternatively sorts by
-                relevance. This overrides Since-Until Year values.',
+                'title' => 'Parameter defines articles added in the last year, sorted by date. Alternatively sorts
+                by relevance. This overrides Since-Until Year values.',
             ],
             'includePatents' => [
                 'name' => 'Include Patents',
@@ -107,7 +107,7 @@ class GoogleScholarBridge extends BridgeAbstract
     {
         switch ($this->queriedContext) {
             case 'user':
-                $userId = $this->getInput('userId')
+                $userId = $this->getInput('userId');
                 $uri = self::URI . '/citations?hl=en&view_op=list_works&sortby=pubdate&user=' . $userId;
                 $html = getSimpleHTMLDOM($uri) or returnServerError('Could not fetch Google Scholar data.');
 
