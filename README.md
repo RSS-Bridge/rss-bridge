@@ -51,9 +51,6 @@ chown www-data:www-data /var/www/rss-bridge/cache
 
 # Optionally copy over the default config file
 cp config.default.ini.php config.ini.php
-
-# Optionally copy over the default whitelist file
-cp whitelist.default.txt whitelist.txt
 ```
 
 Example config for nginx:
@@ -169,21 +166,16 @@ Learn more in [bridge api](https://rss-bridge.github.io/rss-bridge/Bridge_API/in
 
 ### How to enable all bridges
 
-Write an asterisks to `whitelist.txt`:
+    enabled_bridges[] = *
 
-    echo '*' > whitelist.txt
+### How to enable some bridges
 
-Learn more in [enabling briges](https://rss-bridge.github.io/rss-bridge/For_Hosts/Whitelisting.html)
-
-### How to enable a bridge
-
-Add the bridge name to `whitelist.txt`:
-
-    echo 'FirefoxAddonsBridge' >> whitelist.txt
+```
+enabled_bridges[] = TwitchBridge
+enabled_bridges[] = GettrBridge
+```
 
 ### How to enable debug mode
-
-Set in `config.ini.php`:
 
     enable_debug_mode = true
 

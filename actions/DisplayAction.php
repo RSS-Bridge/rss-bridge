@@ -18,20 +18,13 @@ class DisplayAction implements ActionInterface
     {
         $bridgeFactory = new BridgeFactory();
 
-        $bridgeClassName = null;
-        if (isset($request['bridge'])) {
-            $bridgeClassName = $bridgeFactory->sanitizeBridgeName($request['bridge']);
-        }
-
-        if ($bridgeClassName === null) {
-            throw new \InvalidArgumentException('Bridge name invalid!');
-        }
+        $bridgeClassName = $bridgeFactory->createBridgeClassName($request['bridge'] ?? '');
 
         $format = $request['format'] ?? null;
         if (!$format) {
             throw new \Exception('You must specify a format!');
         }
-        if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
+        if (!$bridgeFactory->isEnabled($bridgeClassName)) {
             throw new \Exception('This bridge is not whitelisted');
         }
 

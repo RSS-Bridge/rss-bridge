@@ -41,18 +41,14 @@ class ConnectivityAction implements ActionInterface
             return render_template('connectivity.html.php');
         }
 
-        $bridgeClassName = $this->bridgeFactory->sanitizeBridgeName($request['bridge']);
-
-        if ($bridgeClassName === null) {
-            throw new \InvalidArgumentException('Bridge name invalid!');
-        }
+        $bridgeClassName = $this->bridgeFactory->createBridgeClassName($request['bridge']);
 
         return $this->reportBridgeConnectivity($bridgeClassName);
     }
 
     private function reportBridgeConnectivity($bridgeClassName)
     {
-        if (!$this->bridgeFactory->isWhitelisted($bridgeClassName)) {
+        if (!$this->bridgeFactory->isEnabled($bridgeClassName)) {
             throw new \Exception('Bridge is not whitelisted!');
         }
 

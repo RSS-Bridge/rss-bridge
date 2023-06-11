@@ -26,7 +26,7 @@ class ListAction implements ActionInterface
             $bridge = $bridgeFactory->create($bridgeClassName);
 
             $list->bridges[$bridgeClassName] = [
-                'status' => $bridgeFactory->isWhitelisted($bridgeClassName) ? 'active' : 'inactive',
+                'status' => $bridgeFactory->isEnabled($bridgeClassName) ? 'active' : 'inactive',
                 'uri' => $bridge->getURI(),
                 'donationUri' => $bridge->getDonationURI(),
                 'name' => $bridge->getName(),
