@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Hosts/index.html">For Hosts</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Hosts/Docker_Installation.html">Docker Installation</a></h1>
                 <span class="ModifiedDate">
-            June 8, 2023 at 2:37 PM        </span>
+            June 10, 2023 at 6:16 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/03_For_Hosts/03_Docker_Installation.md" target="_blank">
                 Edit on GitHub            </a>
@@ -156,7 +156,7 @@ rssbridge/rss-bridge:latest
 <p>If you want to add a bridge that is not part of <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/bridges" class="Link--external" rel="noopener noreferrer"><code>/bridges</code></a>, you can map a folder to the <code>/config</code> folder of the <code>rss-bridge</code> container.</p>
 <ol>
 <li>Create a folder in the location of your docker-compose.yml or your general docker working area (in this example it will be <code>/home/docker/rssbridge/config</code> ).</li>
-<li>Copy your <a href="../Bridge_API/How_to_create_a_new_bridge.html">custom bridges</a> to the <code>/home/docker/rssbridge/config</code> folder. You can also add your custom <a href="Whitelisting.html">whitelist.txt</a> file and your custom <a href="Custom_Configuration.html">config.ini.php</a> to this folder.</li>
+<li>Copy your <a href="../Bridge_API/How_to_create_a_new_bridge.html">custom bridges</a> to the <code>/home/docker/rssbridge/config</code> folder. Applies also to <a href="Custom_Configuration.html">config.ini.php</a>.</li>
 <li>Map the folder to <code>/config</code> inside the container. To do that, replace the <code>&lt;/local/custom/path&gt;</code> from the previous examples with <code>/home/docker/rssbridge/config</code>
 </li>
 </ol>
