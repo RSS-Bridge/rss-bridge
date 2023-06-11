@@ -60,8 +60,12 @@ Example config for nginx:
 server {
     listen 80;
     server_name example.com;
-    root /var/www/rss-bridge;
+    root /var/www/rss-bridge/public;
     index index.php;
+
+    location /static {
+        alias /var/www/rss-bridge/static;
+    }
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
@@ -70,6 +74,9 @@ server {
     }
 }
 ```
+
+For legacy reasons it is possible to straight up clone this repo into a folder in a shared hosting environment.
+It's advised against due to the security risk of all files being directly accessible by the web server.
 
 ### Install with Docker:
 
