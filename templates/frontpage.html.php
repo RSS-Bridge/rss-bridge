@@ -1,4 +1,5 @@
 <script src="static/rss-bridge.js"></script>
+<script src="static/detectbridge.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', rssbridge_toggle_bridge);
     document.addEventListener('DOMContentLoaded', rssbridge_list_search);
@@ -15,6 +16,14 @@
         onkeyup="rssbridge_list_search()"
         value=""
     >
+    <input
+        type="button"
+	value="Detect Feed from URL"
+	id="detectfeed"
+        name="detectfeede"
+    />
+    <section id="detectresults">
+    </section>
 </section>
 
 <?= raw($bridges) ?>

@@ -18,6 +18,7 @@ class DetectAction implements ActionInterface
     {
         $targetURL = $request['url'] ?? null;
         $format = $request['format'] ?? null;
+        $output = $request['output'] ?? 'redirect';
 
         if (!$targetURL) {
             throw new \Exception('You must specify a url!');
@@ -44,8 +45,18 @@ class DetectAction implements ActionInterface
             $bridgeParams['bridge'] = $bridgeClassName;
             $bridgeParams['format'] = $format;
 
-            $url = '?action=display&' . http_build_query($bridgeParams);
-            return new Response('', 301, ['Location' => $url]);
+            if($output == 'json') {
+                $content = array(
+                'url' => '?action=display&' . http_build_query($bridgeParams),
+                'bridgeParams' => $bridgeParams
+                );
+                $contentJson = json_encode($content);
+                return new Response($contentJson, 200, ['Content-Type' => 'application/json']);
+            }
+            else if($output == 'redirect') {
+                $url = '?action=display&' . http_build_query($bridgeParams);
+                return new Response('', 301, ['Location' => $url]);
+            }
         }
 
         throw new \Exception('No bridge found for given URL: ' . $targetURL);
