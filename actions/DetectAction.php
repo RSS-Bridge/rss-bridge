@@ -45,15 +45,14 @@ class DetectAction implements ActionInterface
             $bridgeParams['bridge'] = $bridgeClassName;
             $bridgeParams['format'] = $format;
 
-            if($output == 'json') {
-                $content = array(
-                'url' => '?action=display&' . http_build_query($bridgeParams),
-                'bridgeParams' => $bridgeParams
-                );
+            if ($output == 'json') {
+                $content = [
+                    'url' => '?action=display&' . http_build_query($bridgeParams),
+                    'bridgeParams' => $bridgeParams
+                ];
                 $contentJson = json_encode($content);
                 return new Response($contentJson, 200, ['Content-Type' => 'application/json']);
-            }
-            else if($output == 'redirect') {
+            } else if ($output == 'redirect') {
                 $url = '?action=display&' . http_build_query($bridgeParams);
                 return new Response('', 301, ['Location' => $url]);
             }
