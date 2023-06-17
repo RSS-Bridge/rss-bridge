@@ -61,7 +61,7 @@ class PresidenciaPTBridge extends BridgeAbstract
                     $item = [];
 
                     $link = $element->find('a', 0);
-                    $etitle = $element->find('.content-box h2', 0);
+                    $etitle = $element->find('.article-title', 0);
                     $edts = $element->find('p', 1);
                     $edt = html_entity_decode($edts->innertext, ENT_HTML5);
 
