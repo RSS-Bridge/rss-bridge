@@ -5,7 +5,7 @@ class ABolaBridge extends BridgeAbstract
     const URI = 'https://abola.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese sports newspaper A BOLA.PT';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 3600; // 5 minutes
+    const CACHE_TIMEOUT = 300; // 5 minutes
     const PARAMETERS = [
         [
             'feed' => [
@@ -71,12 +71,22 @@ class ABolaBridge extends BridgeAbstract
         $dom = defaultLinkTo($dom, $this->getURI());
 
         foreach ($dom->find('div.media.mt-15') as $article) {
+
+            //Get thumbnail
+            $image = $article->find('.media-img',0)->style;
+            $image = preg_replace('/background-image: url\(/i', '', $image);
+            $image = substr_replace($image ,"", -4);
+            $image = preg_replace('/https:\/\//i', '', $image);
+            $image = preg_replace('/www\./i', '', $image);
+            $image = preg_replace('/\/\//', '', $image);
+            $image =  substr($image, 7);
+            $image = 'https://'.$image;
+
             $a = $article->find('.media-body > a', 0);
             $this->items[] = [
                 'title' => $a->find('h4 span',0)->plaintext,
                 'uri' => $a->href,
-                'content' => $article->find('.media-texto > span', 0)->plaintext,
-                'timestamp' => strtotime($article->find('time', 0)->datetime),
+                'content' => "<p>".$article->find('.media-texto > span', 0)->plaintext . "</p><br><img src='".$image."' alt='".$article->find('h2', 0)->plaintext." thumbnail' />",
             ];
         }
     }
