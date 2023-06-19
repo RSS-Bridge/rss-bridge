@@ -1,11 +1,12 @@
 <?php
+
 class VideoCardzBridge extends BridgeAbstract
 {
     const NAME = 'VideoCardz';
     const URI = 'https://videocardz.com/';
     const DESCRIPTION = 'Returns news from VideoCardz.com';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 3600; // 5 minutes
+    const CACHE_TIMEOUT = 10; // 5 minutes
     const PARAMETERS = [
         [
             'feed' => [
@@ -33,7 +34,7 @@ class VideoCardzBridge extends BridgeAbstract
     {
         switch ($this->queriedContext) {
             case 'feed':
-                $url = self::URI . $this->getInput('feed')[0] . '.html';
+                $url = self::URI . $this->getInput('feed');
                 break;
             default:
                 $url = self::URI;
@@ -52,13 +53,26 @@ class VideoCardzBridge extends BridgeAbstract
         $dom = defaultLinkTo($dom, $this->getURI());
 
         foreach ($dom->find('article') as $article) {
-            $a = $article->find('div.main-index-article-datetitle', 0);
 
-            var_dump($a);
+            //Get thumbnail
+            $image = $article -> style;
+            $image = preg_replace('/background-image:url\(/i', '', $image);
+            $image = substr_replace($image ,"", -3);
+
+            //Get date and time of publishing
+            $datetime = date_parse($article->find('.main-index-article-datetitle-date > a', 0)->plaintext);
+            $year = $datetime['year'];
+            $month = $datetime['month'];
+            $day = $datetime['day'];
+            $hour = $datetime['hour'];
+            $minute = $datetime['minute'];
+            $timestamp = mktime($hour, $minute, 0, $month, $day, $year);
 
             $this->items[] = [
-                'title' => $a->find('a.main-index-article-datetitle-title > h2',0)->plaintext,
-                'uri' => $a->find('a.main-index-article-datetitle-title',0)->href,
+                'title' => $article->find('h2', 0)->plaintext,
+                'uri' => $article->find('p.main-index-article-datetitle-date > a', 0)->href,
+                'content' => "<img src='".$image."' alt='".$article->find('h2', 0)->plaintext." thumbnail' />",
+                'timestamp' => $timestamp,
             ];
         }
     }
