@@ -1,4 +1,5 @@
 <?php
+
 class ABolaBridge extends BridgeAbstract
 {
     const NAME = 'A Bola';
@@ -69,24 +70,26 @@ class ABolaBridge extends BridgeAbstract
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-
         foreach ($dom->find('div.media.mt-15') as $article) {
 
             //Get thumbnail
-            $image = $article->find('.media-img',0)->style;
+            $image = $article->find('.media-img', 0)->style;
             $image = preg_replace('/background-image: url\(/i', '', $image);
-            $image = substr_replace($image ,"", -4);
+            $image = substr_replace($image, '', -4);
             $image = preg_replace('/https:\/\//i', '', $image);
             $image = preg_replace('/www\./i', '', $image);
             $image = preg_replace('/\/\//', '', $image);
-            $image =  substr($image, 7);
-            $image = 'https://'.$image;
+            $image = substr($image, 7);
+            $image = 'https://' . $image;
+
+            $content = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
+            $content = $content . '<br><img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . '" />';
 
             $a = $article->find('.media-body > a', 0);
             $this->items[] = [
-                'title' => $a->find('h4 span',0)->plaintext,
+                'title' => $a->find('h4 span', 0)->plaintext,
                 'uri' => $a->href,
-                'content' => "<p>".$article->find('.media-texto > span', 0)->plaintext . "</p><br><img src='".$image."' alt='".$article->find('h2', 0)->plaintext." thumbnail' />",
+                'content' => $content
             ];
         }
     }
