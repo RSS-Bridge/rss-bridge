@@ -55,9 +55,9 @@ class VideoCardzBridge extends BridgeAbstract
         foreach ($dom->find('article') as $article) {
 
             //Get thumbnail
-            $image = $article -> style;
-            $image = preg_replace('/background-image:url\(/i', '', $image);
-            $image = substr_replace($image ,"", -3);
+            $image = $article->style;
+            $image = preg_replace('/background-image:url\(/i','',$image);
+            $image = substr_replace($image,"",-3);
 
             //Get date and time of publishing
             $datetime = date_parse($article->find('.main-index-article-datetitle-date > a', 0)->plaintext);
@@ -68,10 +68,12 @@ class VideoCardzBridge extends BridgeAbstract
             $minute = $datetime['minute'];
             $timestamp = mktime($hour, $minute, 0, $month, $day, $year);
 
+            $content = '<img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . ' thumbnail" />';
+
             $this->items[] = [
                 'title' => $article->find('h2', 0)->plaintext,
                 'uri' => $article->find('p.main-index-article-datetitle-date > a', 0)->href,
-                'content' => "<img src='".$image."' alt='".$article->find('h2', 0)->plaintext." thumbnail' />",
+                'content' => $content,
                 'timestamp' => $timestamp,
             ];
         }
