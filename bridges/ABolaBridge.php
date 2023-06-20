@@ -52,26 +52,25 @@ class ABolaBridge extends BridgeAbstract
     {
         $feed = $this->getInput('feed');
         if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
-
             $name = explode('/', $feed);
             if ($name[0] === 'Selecao') {
                 $name = 'Seleção';
-            }elseif ($name[0] === 'Nnh') {
+            } elseif ($name[0] === 'Nnh') {
                 $name = 'Últimas';
-            }elseif ($name[0] === 'Mercado') {
+            } elseif ($name[0] === 'Mercado') {
                 $name = $name[0];
-            }elseif ($name[0] === 'Modalidades') {
+            } elseif ($name[0] === 'Modalidades') {
                 $name = $name[0];
-            }elseif ($name[0] === 'Motores') {
+            } elseif ($name[0] === 'Motores') {
                 $name = $name[0];
-            }else {
+            } else {
                 $name = $name[1];
                 $concatName = '';
 
                 if (str_contains($name, '-')) {
                     $name = explode('-', $name);
                     foreach ($name as $item) {
-                        $concatName .= ucfirst($item) . " ";
+                        $concatName .= ucfirst($item) . ' ';
                     }
                     $name = $concatName;
                 }
@@ -92,7 +91,7 @@ class ABolaBridge extends BridgeAbstract
         $dom = getSimpleHTMLDOM($url);
         if ($this->getInput('feed') !== 'Mercado') {
             $dom = $dom->find('div#body_Todas1_upNoticiasTodas', 0);
-        }else {
+        } else {
             $dom = $dom->find('div#body_NoticiasMercado_upNoticiasTodas', 0);
         }
         if (!$dom) {
