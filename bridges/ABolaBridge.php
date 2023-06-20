@@ -6,7 +6,6 @@ class ABolaBridge extends BridgeAbstract
     const URI = 'https://abola.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese sports newspaper A BOLA.PT';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 300; // 5 minutes
     const PARAMETERS = [
         [
             'feed' => [
@@ -49,16 +48,20 @@ class ABolaBridge extends BridgeAbstract
         return 'https://abola.pt/img/icons/favicon-96x96.png';
     }
 
+    public function getName()
+    {
+        $feed = $this->getInput('feed');
+        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
+            $name = explode('/', $feed);
+            $name = $name[1];
+            return self::NAME . ' | ' . ucfirst($name);
+        }
+        return self::NAME;
+    }
+
     public function getURI()
     {
-        switch ($this->queriedContext) {
-            case 'feed':
-                $url = self::URI . $this->getInput('feed')[0] . '.html';
-                break;
-            default:
-                $url = self::URI;
-        }
-        return $url;
+        return self::URI . $this->getInput('feed');
     }
 
     public function collectData()
