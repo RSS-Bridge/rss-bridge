@@ -6,7 +6,6 @@ class VideoCardzBridge extends BridgeAbstract
     const URI = 'https://videocardz.com/';
     const DESCRIPTION = 'Returns news from VideoCardz.com';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 300;
     const PARAMETERS = [
         [
             'feed' => [
@@ -16,7 +15,7 @@ class VideoCardzBridge extends BridgeAbstract
                 'values' => [
                     'News' => 'sections/news',
                     'Featured' => 'sections/featured',
-                    'Leak' => 'sections/leak',
+                    'Leaks' => 'sections/leaks',
                     'Press Releases' => 'sections/press-releases',
                     'Preview Roundup' => 'sections/review-roundup',
                     'Rumour' => 'sections/rumor',
@@ -30,16 +29,26 @@ class VideoCardzBridge extends BridgeAbstract
         return 'https://videocardz.com/favicon-32x32.png?x66580';
     }
 
+    public function getName()
+    {
+        $feed = $this->getInput( 'feed');
+        $feed = explode('/', $feed);
+        $feed = $feed[1];
+        if (str_contains($feed, '-')) {
+            $feed = explode('-', $feed);
+            $word1 = $feed[0];
+            $word2 = $feed[1];
+            $feed = ucfirst($word1) . ' ' . ucfirst($word2);
+        }
+        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
+            return self::NAME . ' | ' . $feed;
+        }
+        return self::NAME;
+    }
+
     public function getURI()
     {
-        switch ($this->queriedContext) {
-            case 'feed':
-                $url = self::URI . $this->getInput('feed');
-                break;
-            default:
-                $url = self::URI;
-        }
-        return $url;
+        return self::URI . $this->getInput('feed');
     }
 
     public function collectData()
