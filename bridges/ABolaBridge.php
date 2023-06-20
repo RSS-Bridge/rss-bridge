@@ -66,12 +66,13 @@ class ABolaBridge extends BridgeAbstract
         $url = sprintf('https://abola.pt/%s', $this->getInput('feed'));
         $dom = getSimpleHTMLDOM($url);
         $dom = $dom->find('div#body_Todas1_upNoticiasTodas', 0);
-        if (!$dom) {
+        if (!$dom)
+        {
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-        foreach ($dom->find('div.media.mt-15') as $article){
-
+        foreach ($dom->find('div.media.mt-15') as $article)
+        {
             //Get thumbnail
             $image = $article->find('.media-img', 0)->style;
             $image = preg_replace('/background-image: url\(/i', '', $image);
@@ -81,10 +82,9 @@ class ABolaBridge extends BridgeAbstract
             $image = preg_replace('/\/\//', '', $image);
             $image = substr($image, 7);
             $image = 'https://' . $image;
-
+            //Content
             $content = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
             $content = $content . '<br><img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . '" />';
-
             $a = $article->find('.media-body > a', 0);
             $this->items[] = [
                 'title' => $a->find('h4 span', 0)->plaintext,
