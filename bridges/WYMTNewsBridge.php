@@ -14,7 +14,7 @@ class WYMTNewsBridge extends BridgeAbstract
 
         $articles = $html->find('.card-body');
 
-        foreach($articles as $article) {
+        foreach ($articles as $article) {
             $item = [];
             $url = $article->find('.headline a', 0);
             $item['uri'] = $url->href;
