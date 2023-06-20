@@ -34,16 +34,18 @@ class CorreioDaFeiraBridge extends BridgeAbstract
         return 'https://www.correiodafeira.pt/wp-content/uploads/base_reporter-200x200.jpg';
     }
 
+    public function getName()
+    {
+        $feed = $this->getInput('feed');
+        if($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
+            return self::NAME . ' | ' . ucfirst($feed);
+        }
+        return self::NAME;
+    }
+
     public function getURI()
     {
-        switch ($this->queriedContext) {
-            case 'feed':
-                $url = self::URI . $this->getInput('feed')[0] . '.html';
-                break;
-            default:
-                $url = self::URI;
-        }
-        return $url;
+        return self::URI . $this->getInput('feed');
     }
 
     public function collectData()
@@ -57,11 +59,19 @@ class CorreioDaFeiraBridge extends BridgeAbstract
         $dom = defaultLinkTo($dom, $this->getURI());
         foreach ($dom->find('div.post') as $article) {
             $a = $article->find('div.blog-box', 0);
+            //Get date and time of publishing
+            $time = $a->find('.post-date > :nth-child(2)', 0)->plaintext;
+            $datetime = explode('/', $time);
+            $year = $datetime[2];
+            $month = $datetime[1];
+            $day = $datetime[0];
+            $timestamp = mktime(0, 0, 0, $month, $day, $year);
             $this->items[] = [
                 'title' => $a->find('h2.entry-title > a', 0)->plaintext,
                 'uri' => $a->find('h2.entry-title > a', 0)->href,
                 'author' => $a->find('li.post-author > a', 0)->plaintext,
                 'content' => $a->find('.entry-content > p', 0)->plaintext,
+                'timestamp' => $timestamp,
             ];
         }
     }
