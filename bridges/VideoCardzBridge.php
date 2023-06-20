@@ -32,7 +32,7 @@ class VideoCardzBridge extends BridgeAbstract
 
     public function getName()
     {
-        $feed = $this->getInput( 'feed');
+        $feed = $this->getInput('feed');
         if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
             $feed = explode('/', $feed);
             $feed = $feed[1];
