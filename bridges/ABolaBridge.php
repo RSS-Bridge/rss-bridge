@@ -6,7 +6,6 @@ class ABolaBridge extends BridgeAbstract
     const URI = 'https://abola.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese sports newspaper A BOLA.PT';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 300; // 5 minutes
     const PARAMETERS = [
         [
             'feed' => [
@@ -49,37 +48,69 @@ class ABolaBridge extends BridgeAbstract
         return 'https://abola.pt/img/icons/favicon-96x96.png';
     }
 
+    public function getName()
+    {
+        $feed = $this->getInput('feed');
+        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
+            $name = explode('/', $feed);
+            if ($name[0] === 'Selecao') {
+                $name = 'Seleção';
+            } elseif ($name[0] === 'Nnh') {
+                $name = 'Últimas';
+            } elseif ($name[0] === 'Mercado') {
+                $name = $name[0];
+            } elseif ($name[0] === 'Modalidades') {
+                $name = $name[0];
+            } elseif ($name[0] === 'Motores') {
+                $name = $name[0];
+            } else {
+                $name = $name[1];
+                $concatName = '';
+
+                if (str_contains($name, '-')) {
+                    $name = explode('-', $name);
+                    foreach ($name as $item) {
+                        $concatName .= ucfirst($item) . ' ';
+                    }
+                    $name = $concatName;
+                }
+            }
+            return self::NAME . ' | ' . ucfirst($name);
+        }
+        return self::NAME;
+    }
+
     public function getURI()
     {
-        switch ($this->queriedContext) {
-            case 'feed':
-                $url = self::URI . $this->getInput('feed')[0] . '.html';
-                break;
-            default:
-                $url = self::URI;
-        }
-        return $url;
+        return self::URI . $this->getInput('feed');
     }
 
     public function collectData()
     {
         $url = sprintf('https://abola.pt/%s', $this->getInput('feed'));
         $dom = getSimpleHTMLDOM($url);
-        $dom = $dom->find('div#body_Todas1_upNoticiasTodas', 0);
+        if ($this->getInput('feed') !== 'Mercado') {
+            $dom = $dom->find('div#body_Todas1_upNoticiasTodas', 0);
+        } else {
+            $dom = $dom->find('div#body_NoticiasMercado_upNoticiasTodas', 0);
+        }
         if (!$dom) {
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-        foreach ($dom->find('div.media.mt-15') as $article) {
+        foreach ($dom->find('div.media') as $article) {
             //Get thumbnail
             $image = $article->find('.media-img', 0)->style;
             $image = preg_replace('/background-image: url\(/i', '', $image);
             $image = substr_replace($image, '', -4);
             $image = preg_replace('/https:\/\//i', '', $image);
             $image = preg_replace('/www\./i', '', $image);
-            $image = preg_replace('/\/\//', '', $image);
+            $image = preg_replace('/\/\//', '/', $image);
+            $image = preg_replace('/\/\/\//', '//', $image);
             $image = substr($image, 7);
             $image = 'https://' . $image;
+            $image = preg_replace('/ptimg/', 'pt/img', $image);
+            $image = preg_replace('/\/\/bola/', 'www.abola', $image);
             //Content
             $content = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
             $content = $content . '<br><img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . '" />';
