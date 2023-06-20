@@ -98,7 +98,7 @@ class ABolaBridge extends BridgeAbstract
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-        foreach ($dom->find('div.media') as $article) {
+        foreach ($dom->find('div.media') as $key=>$article) {
             //Get thumbnail
             $image = $article->find('.media-img', 0)->style;
             $image = preg_replace('/background-image: url\(/i', '', $image);
@@ -111,6 +111,22 @@ class ABolaBridge extends BridgeAbstract
             $image = 'https://' . $image;
             $image = preg_replace('/ptimg/', 'pt/img', $image);
             $image = preg_replace('/\/\/bola/', 'www.abola', $image);
+            //Timestamp
+            $date = $article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0)->plaintext;
+            $time = $article->find("span#body_Todas1_rptNoticiasTodas_lblHora_$key", 0)->plaintext;
+            if ($date === null) {
+                $date = date('Y/m/d');
+            } else {
+                $date = preg_replace('/\./', '/', $date);
+            }
+            $date = explode('/', $date);
+            $time = explode(':', $time);
+            $year = $date[0];
+            $month = $date[1];
+            $day = $date[2];
+            $hour = $time[0];
+            $minute = $time[1];
+            $timestamp = mktime($hour, $minute, 0, $month, $day, $year);
             //Content
             $content = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
             $content = $content . '<br><img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . '" />';
@@ -118,7 +134,8 @@ class ABolaBridge extends BridgeAbstract
             $this->items[] = [
                 'title' => $a->find('h4 span', 0)->plaintext,
                 'uri' => $a->href,
-                'content' => $content
+                'content' => $content,
+                'timestamp' => $timestamp,
             ];
         }
     }
