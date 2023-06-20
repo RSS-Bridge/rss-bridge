@@ -66,13 +66,11 @@ class ABolaBridge extends BridgeAbstract
         $url = sprintf('https://abola.pt/%s', $this->getInput('feed'));
         $dom = getSimpleHTMLDOM($url);
         $dom = $dom->find('div#body_Todas1_upNoticiasTodas', 0);
-        if (!$dom)
-        {
+        if (!$dom) {
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-        foreach ($dom->find('div.media.mt-15') as $article)
-        {
+        foreach ($dom->find('div.media.mt-15') as $article) {
             //Get thumbnail
             $image = $article->find('.media-img', 0)->style;
             $image = preg_replace('/background-image: url\(/i', '', $image);
