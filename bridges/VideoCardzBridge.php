@@ -52,12 +52,12 @@ class VideoCardzBridge extends BridgeAbstract
         }
         $dom = defaultLinkTo($dom, $this->getURI());
 
-        foreach ($dom->find('article') as $article) {
+        foreach ($dom->find('article') as $article){
 
             //Get thumbnail
             $image = $article->style;
-            $image = preg_replace('/background-image:url\(/i','',$image);
-            $image = substr_replace($image,"",-3);
+            $image = preg_replace('/background-image:url\(/i', '', $image);
+            $image = substr_replace($image, '', -3);
 
             //Get date and time of publishing
             $datetime = date_parse($article->find('.main-index-article-datetitle-date > a', 0)->plaintext);
