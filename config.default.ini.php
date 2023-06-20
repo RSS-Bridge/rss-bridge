@@ -7,15 +7,7 @@
 [system]
 
 ; Only these bridges are available for feed production
-enabled_bridges[] = Youtube
-enabled_bridges[] = Twitter
-enabled_bridges[] = Telegram
-enabled_bridges[] = Reddit
-enabled_bridges[] = Filter
-enabled_bridges[] = Vk
-enabled_bridges[] = FeedMerge
-enabled_bridges[] = Twitch
-enabled_bridges[] = ThePirateBay
+enabled_bridges[] = *
 
 ; Defines the timezone used by RSS-Bridge
 ; Find a list of supported timezones at
