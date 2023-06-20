@@ -37,7 +37,7 @@ class CorreioDaFeiraBridge extends BridgeAbstract
     public function getName()
     {
         $feed = $this->getInput('feed');
-        if($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
+        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
             return self::NAME . ' | ' . ucfirst($feed);
         }
         return self::NAME;
