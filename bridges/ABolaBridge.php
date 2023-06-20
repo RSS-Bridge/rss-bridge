@@ -70,7 +70,7 @@ class ABolaBridge extends BridgeAbstract
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-        foreach ($dom->find('div.media.mt-15') as $article) {
+        foreach ($dom->find('div.media.mt-15') as $article){
 
             //Get thumbnail
             $image = $article->find('.media-img', 0)->style;
