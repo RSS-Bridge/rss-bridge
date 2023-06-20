@@ -6,6 +6,7 @@ class VideoCardzBridge extends BridgeAbstract
     const URI = 'https://videocardz.com/';
     const DESCRIPTION = 'Returns news from VideoCardz.com';
     const MAINTAINER = 'rmscoelho';
+    const CACHE_TIMEOUT = 10;
     const PARAMETERS = [
         [
             'feed' => [
@@ -32,16 +33,16 @@ class VideoCardzBridge extends BridgeAbstract
     public function getName()
     {
         $feed = $this->getInput( 'feed');
-        $feed = explode('/', $feed);
-        $feed = $feed[1];
-        if (str_contains($feed, '-')) {
-            $feed = explode('-', $feed);
-            $word1 = $feed[0];
-            $word2 = $feed[1];
-            $feed = ucfirst($word1) . ' ' . ucfirst($word2);
-        }
         if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
-            return self::NAME . ' | ' . $feed;
+            $feed = explode('/', $feed);
+            $feed = $feed[1];
+            if (str_contains($feed, '-')) {
+                $feed = explode('-', $feed);
+                $word1 = $feed[0];
+                $word2 = $feed[1];
+                $feed = ucfirst($word1) . ' ' . ucfirst($word2);
+            }
+            return self::NAME . ' | ' . ucfirst($feed);
         }
         return self::NAME;
     }
