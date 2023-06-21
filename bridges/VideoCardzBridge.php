@@ -32,19 +32,7 @@ class VideoCardzBridge extends BridgeAbstract
 
     public function getName()
     {
-        $feed = $this->getInput('feed');
-        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
-            $feed = explode('/', $feed);
-            $feed = $feed[1];
-            if (str_contains($feed, '-')) {
-                $feed = explode('-', $feed);
-                $word1 = $feed[0];
-                $word2 = $feed[1];
-                $feed = ucfirst($word1) . ' ' . ucfirst($word2);
-            }
-            return self::NAME . ' | ' . ucfirst($feed);
-        }
-        return self::NAME;
+        return !is_null($this->getKey('feed')) ? self::NAME . ' | ' . $this->getKey('feed') : self::NAME;
     }
 
     public function getURI()
@@ -63,6 +51,7 @@ class VideoCardzBridge extends BridgeAbstract
         $dom = defaultLinkTo($dom, $this->getURI());
 
         foreach ($dom->find('article') as $article) {
+            $title = preg_replace('/\(PR\) /i', '', $article->find('h2', 0)->plaintext);
             //Get thumbnail
             $image = $article->style;
             $image = preg_replace('/background-image:url\(/i', '', $image);
@@ -75,11 +64,9 @@ class VideoCardzBridge extends BridgeAbstract
             $hour = $datetime['hour'];
             $minute = $datetime['minute'];
             $timestamp = mktime($hour, $minute, 0, $month, $day, $year);
-
             $content = '<img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . ' thumbnail" />';
-
             $this->items[] = [
-                'title' => $article->find('h2', 0)->plaintext,
+                'title' => $title,
                 'uri' => $article->find('p.main-index-article-datetitle-date > a', 0)->href,
                 'content' => $content,
                 'timestamp' => $timestamp,
