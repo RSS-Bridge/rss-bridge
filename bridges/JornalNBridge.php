@@ -52,16 +52,7 @@ class JornalNBridge extends BridgeAbstract
 
     public function getName()
     {
-        $feed = $this->getInput('feed');
-        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
-            if ($feed === 'santa-maria-da-feira') {
-                $name = 'Santa Maria da Feira';
-            } else {
-                $name = ucfirst($feed);
-            }
-            return self::NAME . ' | ' . $name;
-        }
-        return self::NAME;
+        return !is_null($this->getKey('feed')) ? self::NAME . ' | ' . $this->getKey('feed') : self::NAME;
     }
 
     public function getURI()
