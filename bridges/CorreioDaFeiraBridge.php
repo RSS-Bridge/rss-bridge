@@ -6,6 +6,7 @@ class CorreioDaFeiraBridge extends BridgeAbstract
     const URI = 'https://www.correiodafeira.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese local newspaper Correio da Feira';
     const MAINTAINER = 'rmscoelho';
+    const CACHE_TIMEOUT = 43200;
     const PARAMETERS = [
         [
             'feed' => [
