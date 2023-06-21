@@ -83,7 +83,7 @@ class JornalNBridge extends BridgeAbstract
             //Get thumbnail
             $image = $article->find('img', 0)->src;
             //Timestamp
-            $date = $article->find('.elementor-post-date',0)->plaintext;
+            $date = $article->find('.elementor-post-date', 0)->plaintext;
             $date = preg_replace('/ de /i', '/', $date);
             $date = preg_replace('/, /', '/', $date);
             $date = explode('/', $date);
