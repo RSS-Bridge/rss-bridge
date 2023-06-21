@@ -114,7 +114,7 @@ class ABolaBridge extends BridgeAbstract
             $image = preg_replace('/\/\/bola/', 'www.abola', $image);
             //Timestamp
             $date = date('Y/m/d');
-            if(!is_null($article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0))) {
+            if (!is_null($article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0))) {
                 $date = $article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0)->plaintext;
                 $date = preg_replace('/\./', '/', $date);
             }
