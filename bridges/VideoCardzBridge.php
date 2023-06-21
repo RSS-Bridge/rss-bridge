@@ -6,6 +6,7 @@ class VideoCardzBridge extends BridgeAbstract
     const URI = 'https://videocardz.com/';
     const DESCRIPTION = 'Returns news from VideoCardz.com';
     const MAINTAINER = 'rmscoelho';
+    const CACHE_TIMEOUT = 3600;
     const PARAMETERS = [
         [
             'feed' => [
