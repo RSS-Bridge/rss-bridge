@@ -6,6 +6,7 @@ class ABolaBridge extends BridgeAbstract
     const URI = 'https://abola.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese sports newspaper A BOLA.PT';
     const MAINTAINER = 'rmscoelho';
+    const CACHE_TIMEOUT = 3600;
     const PARAMETERS = [
         [
             'feed' => [
