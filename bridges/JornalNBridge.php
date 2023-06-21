@@ -6,7 +6,6 @@ class JornalNBridge extends BridgeAbstract
     const URI = 'https://www.jornaln.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese local newspaper Jornal N';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 10;
     const PARAMETERS = [
         [
             'feed' => [
