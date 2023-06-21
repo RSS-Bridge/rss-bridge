@@ -6,7 +6,7 @@ class JornalNBridge extends BridgeAbstract
     const URI = 'https://www.jornaln.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese local newspaper Jornal N';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 10;
+    const CACHE_TIMEOUT = 86400;
     const PARAMETERS = [
         [
             'feed' => [
@@ -72,7 +72,7 @@ class JornalNBridge extends BridgeAbstract
     public function collectData()
     {
         $url = sprintf('https://www.jornaln.pt/%s', $this->getInput('feed'));
-        $dom = getSimpleHTMLDOM($url);
+        $dom = getSimpleHTMLDOMCached($url);
         $domSelector = '.elementor-widget-container > .elementor-posts-container';
         $dom = $dom->find($domSelector, 0);
         if (!$dom) {
