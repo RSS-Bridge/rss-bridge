@@ -51,34 +51,7 @@ class ABolaBridge extends BridgeAbstract
 
     public function getName()
     {
-        $feed = $this->getInput('feed');
-        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
-            $name = explode('/', $feed);
-            if ($name[0] === 'Selecao') {
-                $name = 'Seleção';
-            } elseif ($name[0] === 'Nnh') {
-                $name = 'Últimas';
-            } elseif ($name[0] === 'Mercado') {
-                $name = $name[0];
-            } elseif ($name[0] === 'Modalidades') {
-                $name = $name[0];
-            } elseif ($name[0] === 'Motores') {
-                $name = $name[0];
-            } else {
-                $name = $name[1];
-                $concatName = '';
-
-                if (str_contains($name, '-')) {
-                    $name = explode('-', $name);
-                    foreach ($name as $item) {
-                        $concatName .= ucfirst($item) . ' ';
-                    }
-                    $name = $concatName;
-                }
-            }
-            return self::NAME . ' | ' . ucfirst($name);
-        }
-        return self::NAME;
+        return !is_null($this->getKey('feed')) ? self::NAME . ' | ' . $this->getKey('feed') : self::NAME;
     }
 
     public function getURI()
