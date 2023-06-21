@@ -113,13 +113,12 @@ class ABolaBridge extends BridgeAbstract
             $image = preg_replace('/ptimg/', 'pt/img', $image);
             $image = preg_replace('/\/\/bola/', 'www.abola', $image);
             //Timestamp
-            $date = $article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0)->plaintext;
-            $time = $article->find("span#body_Todas1_rptNoticiasTodas_lblHora_$key", 0)->plaintext;
-            if ($date === null) {
-                $date = date('Y/m/d');
-            } else {
+            $date = date('Y/m/d');
+            if(!is_null($article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0))) {
+                $date = $article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0)->plaintext;
                 $date = preg_replace('/\./', '/', $date);
             }
+            $time = $article->find("span#body_Todas1_rptNoticiasTodas_lblHora_$key", 0)->plaintext;
             $date = explode('/', $date);
             $time = explode(':', $time);
             $year = $date[0];
@@ -129,8 +128,9 @@ class ABolaBridge extends BridgeAbstract
             $minute = $time[1];
             $timestamp = mktime($hour, $minute, 0, $month, $day, $year);
             //Content
-            $content = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
-            $content = $content . '<br><img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . '" />';
+            $image = '<img src="' . $image . '" alt="' . $article->find('h4 span', 0)->plaintext . '" />';
+            $description = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
+            $content = $image . '</br>' . $description;
             $a = $article->find('.media-body > a', 0);
             $this->items[] = [
                 'title' => $a->find('h4 span', 0)->plaintext,
