@@ -6,7 +6,7 @@ class JornalNBridge extends BridgeAbstract
     const URI = 'https://www.jornaln.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese local newspaper Jornal N';
     const MAINTAINER = 'rmscoelho';
-    const CACHE_TIMEOUT = 86400;
+    const CACHE_TIMEOUT = 3600;
     const PARAMETERS = [
         [
             'feed' => [
@@ -19,12 +19,12 @@ class JornalNBridge extends BridgeAbstract
                         'Ovar' => 'ovar',
                         'Santa Maria da Feira' => 'santa-maria-da-feira',
                     ],
-                    'Cultura' => 'cultura',
+                    'Cultura' => 'ovar/cultura',
                     'Desporto' => 'desporto',
-                    'Economia' => 'economia',
-                    'Política' => 'politica',
-                    'Opinião' => 'opiniao',
-                    'Sociedade' => 'sociedade',
+                    'Economia' => 'santa-maria-da-feira/economia',
+                    'Política' => 'santa-maria-da-feira/politica',
+                    'Opinião' => 'santa-maria-da-feira/opiniao',
+                    'Sociedade' => 'santa-maria-da-feira/sociedade',
                 ]
             ]
         ]
@@ -62,7 +62,7 @@ class JornalNBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = sprintf('https://www.jornaln.pt/%s', $this->getInput('feed'));
+        $url = sprintf(self::URI . '/%s', $this->getInput('feed'));
         $dom = getSimpleHTMLDOMCached($url);
         $domSelector = '.elementor-widget-container > .elementor-posts-container';
         $dom = $dom->find($domSelector, 0);
@@ -72,7 +72,7 @@ class JornalNBridge extends BridgeAbstract
         $dom = defaultLinkTo($dom, $this->getURI());
         foreach ($dom->find('article') as $article) {
             //Get thumbnail
-            $image = $article->find('img', 0)->src;
+            $image = $article->find('.elementor-post__thumbnail img', 0)->src;
             //Timestamp
             $date = $article->find('.elementor-post-date', 0)->plaintext;
             $date = preg_replace('/ de /i', '/', $date);
