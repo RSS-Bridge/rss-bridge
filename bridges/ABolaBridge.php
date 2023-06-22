@@ -6,6 +6,7 @@ class ABolaBridge extends BridgeAbstract
     const URI = 'https://abola.pt/';
     const DESCRIPTION = 'Returns news from the Portuguese sports newspaper A BOLA.PT';
     const MAINTAINER = 'rmscoelho';
+    const CACHE_TIMEOUT = 3600;
     const PARAMETERS = [
         [
             'feed' => [
@@ -50,34 +51,7 @@ class ABolaBridge extends BridgeAbstract
 
     public function getName()
     {
-        $feed = $this->getInput('feed');
-        if ($this->getInput('feed') !== null && $this->getInput('feed') !== '') {
-            $name = explode('/', $feed);
-            if ($name[0] === 'Selecao') {
-                $name = 'Seleção';
-            } elseif ($name[0] === 'Nnh') {
-                $name = 'Últimas';
-            } elseif ($name[0] === 'Mercado') {
-                $name = $name[0];
-            } elseif ($name[0] === 'Modalidades') {
-                $name = $name[0];
-            } elseif ($name[0] === 'Motores') {
-                $name = $name[0];
-            } else {
-                $name = $name[1];
-                $concatName = '';
-
-                if (str_contains($name, '-')) {
-                    $name = explode('-', $name);
-                    foreach ($name as $item) {
-                        $concatName .= ucfirst($item) . ' ';
-                    }
-                    $name = $concatName;
-                }
-            }
-            return self::NAME . ' | ' . ucfirst($name);
-        }
-        return self::NAME;
+        return !is_null($this->getKey('feed')) ? self::NAME . ' | ' . $this->getKey('feed') : self::NAME;
     }
 
     public function getURI()
@@ -112,13 +86,12 @@ class ABolaBridge extends BridgeAbstract
             $image = preg_replace('/ptimg/', 'pt/img', $image);
             $image = preg_replace('/\/\/bola/', 'www.abola', $image);
             //Timestamp
-            $date = $article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0)->plaintext;
-            $time = $article->find("span#body_Todas1_rptNoticiasTodas_lblHora_$key", 0)->plaintext;
-            if ($date === null) {
-                $date = date('Y/m/d');
-            } else {
+            $date = date('Y/m/d');
+            if (!is_null($article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0))) {
+                $date = $article->find("span#body_Todas1_rptNoticiasTodas_lblData_$key", 0)->plaintext;
                 $date = preg_replace('/\./', '/', $date);
             }
+            $time = $article->find("span#body_Todas1_rptNoticiasTodas_lblHora_$key", 0)->plaintext;
             $date = explode('/', $date);
             $time = explode(':', $time);
             $year = $date[0];
@@ -128,8 +101,9 @@ class ABolaBridge extends BridgeAbstract
             $minute = $time[1];
             $timestamp = mktime($hour, $minute, 0, $month, $day, $year);
             //Content
-            $content = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
-            $content = $content . '<br><img src="' . $image . '" alt="' . $article->find('h2', 0)->plaintext . '" />';
+            $image = '<img src="' . $image . '" alt="' . $article->find('h4 span', 0)->plaintext . '" />';
+            $description = '<p>' . $article->find('.media-texto > span', 0)->plaintext . '</p>';
+            $content = $image . '</br>' . $description;
             $a = $article->find('.media-body > a', 0);
             $this->items[] = [
                 'title' => $a->find('h4 span', 0)->plaintext,
