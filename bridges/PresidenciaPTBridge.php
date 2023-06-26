@@ -62,8 +62,8 @@ class PresidenciaPTBridge extends BridgeAbstract
 
                     $link = $element->find('a', 0);
                     $etitle = $element->find('.article-title', 0);
-                    $edts = $element->find('p', 1);
-                    $edt = html_entity_decode($edts->innertext, ENT_HTML5);
+                    $edts = $element->find('.date', 0);
+                    $edt = $edts->innertext;
 
                     $item['title'] = strip_tags($etitle->innertext);
                     $item['uri'] = self::URI . $link->href;
