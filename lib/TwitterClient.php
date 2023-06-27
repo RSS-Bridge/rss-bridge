@@ -48,17 +48,29 @@ class TwitterClient
         if ($result->__typename === 'UserUnavailable') {
             throw new \Exception('UserUnavailable');
         }
-        $instructionTypes = ['TimelineAddEntries', 'TimelineClearCache'];
+        $instructionTypes = [
+            'TimelineAddEntries',
+            'TimelineClearCache',
+            'TimelinePinEntry', // unclear purpose, maybe pinned tweet?
+        ];
         $instructions = $result->timeline_v2->timeline->instructions;
         if (!isset($instructions[1])) {
             throw new \Exception('The account exists but has not tweeted yet?');
         }
-        $instruction = $instructions[1];
-        if ($instruction->type !== 'TimelineAddEntries') {
-            throw new \Exception(sprintf('Unexpected instruction type: %s', $instruction->type));
+
+        $entries = null;
+        foreach ($instructions as $instruction) {
+            if ($instruction->type === 'TimelineAddEntries') {
+                $entries = $instruction->entries;
+                break;
+            }
         }
+        if (!$entries) {
+            throw new \Exception(sprintf('Unable to find time line tweets in: %s', implode(',', array_column($instructions, 'type'))));
+        }
+
         $tweets = [];
-        foreach ($instruction->entries as $entry) {
+        foreach ($entries as $entry) {
             if ($entry->content->entryType !== 'TimelineTimelineItem') {
                 continue;
             }
