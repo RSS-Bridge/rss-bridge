@@ -19,8 +19,10 @@ class NotAlwaysBridge extends BridgeAbstract
                                 'Romantic' => 'romantic',
                                 'Related' => 'related',
                                 'Learning' => 'learning',
-                                'Friendly' => 'friendly',
                                 'Hopeless' => 'hopeless',
+                                'Healthy' => 'healthy',
+                                'Legal' => 'legal',
+                                'Friendly' => 'friendly',
                                 'Unfiltered' => 'unfiltered'
                         ]
                 ]
