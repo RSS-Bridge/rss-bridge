@@ -38,11 +38,18 @@ class CacheFactory
             case NullCache::class:
                 return new NullCache();
             case FileCache::class:
-                return new FileCache([
-                    // Intentionally checking for "truthy" value
+                $fileCacheConfig = [
+                    // Intentionally checking for truthy value because the historic default value is the empty string
                     'path' => Configuration::getConfig('FileCache', 'path') ?: PATH_CACHE,
                     'enable_purge' => Configuration::getConfig('FileCache', 'enable_purge'),
-                ]);
+                ];
+                if (!is_dir($fileCacheConfig['path'])) {
+                    throw new \Exception(sprintf('The FileCache path does not exists: %s', $fileCacheConfig['path']));
+                }
+                if (!is_writable($fileCacheConfig['path'])) {
+                    throw new \Exception(sprintf('The FileCache path is not writable: %s', $fileCacheConfig['path']));
+                }
+                return new FileCache($fileCacheConfig);
             case SQLiteCache::class:
                 return new SQLiteCache();
             case MemcachedCache::class:
