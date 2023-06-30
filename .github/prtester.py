@@ -52,10 +52,14 @@ def testBridges(bridges,status):
                 for listing in lists:
                     selectionvalue = ''
                     listname = listing.get('name')
-                    if 'optgroup' in listing.contents[0].name:
-                        listing = list(itertools.chain.from_iterable(listing))
+                    cleanlist = []
+                    for option in listing.contents:
+                        if 'optgroup' in option.name:
+                            cleanlist.extend(option)
+                        else:
+                            cleanlist.append(option)
                     firstselectionentry = 1
-                    for selectionentry in listing:
+                    for selectionentry in cleanlist:
                         if firstselectionentry:
                             selectionvalue = selectionentry.get('value')
                             firstselectionentry = 0
