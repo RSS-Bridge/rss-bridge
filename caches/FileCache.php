@@ -8,22 +8,35 @@ class FileCache implements CacheInterface
 
     public function __construct(array $config = [])
     {
-        $this->config = $config;
+        $default = [
+            'path' => null,
+            'enable_purge' => true,
+        ];
+        $this->config = array_merge($default, $config);
+        if (!$this->config['path']) {
+            throw new \Exception('The FileCache needs a path value');
+        }
+        // Normalize with a single trailing slash
+        $this->config['path'] = rtrim($this->config['path'], '/') . '/';
+    }
 
-        if (!is_dir($this->config['path'])) {
-            throw new \Exception('The cache path does not exists. You probably want: mkdir cache && chown www-data:www-data cache');
-        }
-        if (!is_writable($this->config['path'])) {
-            throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
-        }
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     public function loadData()
     {
-        if (file_exists($this->getCacheFile())) {
-            return unserialize(file_get_contents($this->getCacheFile()));
+        if (!file_exists($this->getCacheFile())) {
+            return null;
         }
-        return null;
+        $data = unserialize(file_get_contents($this->getCacheFile()));
+        if ($data === false) {
+            // Intentionally not throwing an exception
+            Logger::warning(sprintf('Failed to unserialize: %s', $this->getCacheFile()));
+            return null;
+        }
+        return $data;
     }
 
     public function saveData($data)
