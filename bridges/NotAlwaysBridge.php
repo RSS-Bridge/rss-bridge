@@ -19,8 +19,10 @@ class NotAlwaysBridge extends BridgeAbstract
                                 'Romantic' => 'romantic',
                                 'Related' => 'related',
                                 'Learning' => 'learning',
-                                'Friendly' => 'friendly',
                                 'Hopeless' => 'hopeless',
+                                'Healthy' => 'healthy',
+                                'Legal' => 'legal',
+                                'Friendly' => 'friendly',
                                 'Unfiltered' => 'unfiltered'
                         ]
                 ]
@@ -38,7 +40,9 @@ class NotAlwaysBridge extends BridgeAbstract
             #print_r($post);
             $item = [];
             $item['uri'] = $post->find('h1', 0)->find('a', 0)->href;
-            $item['content'] = $post;
+            $postHeader = $post->find('.post_header', 0);
+            $storyContent = $post->find('.storycontent', 0);
+            $item['content'] = $postHeader . '<br/><br/>' . $storyContent;
             $item['title'] = $post->find('h1', 0)->find('a', 0)->innertext;
             $this->items[] = $item;
         }
