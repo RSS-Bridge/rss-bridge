@@ -41,7 +41,7 @@ class NotAlwaysBridge extends BridgeAbstract
             $item = [];
             $item['uri'] = $post->find('h1', 0)->find('a', 0)->href;
             $postHeader = $post->find('.post_header', 0);
-            $storyContent = $post->find('.storycontent',0);
+            $storyContent = $post->find('.storycontent', 0);
             $item['content'] = $postHeader . '<br/><br/>' . $storyContent;
             $item['title'] = $post->find('h1', 0)->find('a', 0)->innertext;
             $this->items[] = $item;
