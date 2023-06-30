@@ -27,10 +27,16 @@ class FileCache implements CacheInterface
 
     public function loadData()
     {
-        if (file_exists($this->getCacheFile())) {
-            return unserialize(file_get_contents($this->getCacheFile()));
+        if (!file_exists($this->getCacheFile())) {
+            return null;
         }
-        return null;
+        $data = unserialize(file_get_contents($this->getCacheFile()));
+        if ($data === false) {
+            // Intentionally not throwing an exception
+            Logger::warning(sprintf('Failed to unserialize: %s', $this->getCacheFile()));
+            return null;
+        }
+        return $data;
     }
 
     public function saveData($data)
