@@ -78,7 +78,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
             returnServerError('Channel does not have a community tab');
         }
 
-        foreach ($this->getCommunityPosts($json) as $post) {
+        foreach ($this->getCommunityPosts($json) as $key => $post) {
             $this->itemTitle = '';
 
             if (!isset($post->backstagePostThreadRenderer)) {
@@ -101,6 +101,12 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
 
             $item['content'] .= $this->getAttachments($details);
             $item['title'] = $this->itemTitle;
+
+            $date = strtotime(str_replace(' (edited)', '', $details->publishedTimeText->runs[0]->text));
+            if (is_int($date)) {
+                // subtract an increasing multiple of 60 seconds to always preserve the original order
+                $item['timestamp'] = $date - $key * 60;
+            }
 
             $this->items[] = $item;
         }
