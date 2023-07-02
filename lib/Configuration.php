@@ -130,6 +130,7 @@ final class Configuration
 
                 // Recombine the key if it had multiple underscores
                 $key = implode('_', array_slice($nameParts, 2));
+                $key = strtolower($key);
 
                 // Handle this specifically because it's an array
                 if ($key === 'enabled_bridges') {
