@@ -342,15 +342,12 @@ class ReutersBridge extends BridgeAbstract
     {
         $img_placeholder = '';
 
-        foreach ($images as $image) { // Add more image to article.
+        foreach ($images as $image) {
+            // Add more image to article.
             $image_url = $image['url'];
-            $image_caption = $image['caption'];
+            $image_caption = $image['caption'] ?? $image['alt_text'] ?? $image['subtitle'] ?? '';
             $image_alt_text = '';
-            if (isset($image['alt_text'])) {
-                $image_alt_text = $image['alt_text'];
-            } else {
-                $image_alt_text = $image_caption;
-            }
+            $image_alt_text = $image['alt_text'] ?? $image_caption;
             $img = "<img src=\"$image_url\" alt=\"$image_alt_text\">";
             $img_caption = "<figcaption style=\"text-align: center;\"><i>$image_caption</i></figcaption>";
             $figure = "<figure>$img \t $img_caption</figure>";
@@ -557,7 +554,11 @@ EOD;
                     $image_placeholder = $this->handleImage([$story['thumbnail']]);
                 }
                 $content = $story['description'] . $image_placeholder;
-                $category = [$story['primary_section']['name']];
+                if (isset($story['primary_section']['name'])) {
+                    $category = [$story['primary_section']['name']];
+                } else {
+                    $category = [];
+                }
             } else {
                 $content_detail = $this->getArticle($article_uri);
                 $description = $content_detail['content'];
