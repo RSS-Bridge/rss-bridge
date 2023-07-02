@@ -57,8 +57,7 @@ class TikTokBridge extends BridgeAbstract
             $a = $div->find('a', 1);
             if ($a) {
                 $item['title'] = $a->plaintext;
-            }
-            else {
+            } else {
                 $item['title'] = $this->getName();
             }
             $item['enclosures'][] = $image;

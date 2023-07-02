@@ -43,6 +43,7 @@ final class Logger
             $context['url'] = get_current_url();
             $context['trace'] = trace_to_call_points(trace_from_exception($e));
             // Don't log these exceptions
+            // todo: this logic belongs in log handler
             $ignoredExceptions = [
                 'You must specify a format',
                 'Format name invalid',
