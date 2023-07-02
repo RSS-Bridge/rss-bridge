@@ -481,12 +481,12 @@ HEREDOC;
             ]
         );
         if ($deal->find('span[class*=' . $selector . ']', 0) != null) {
-            return '<div>'
-                . $deal->find('span[class*=' . $selector . ']', 0)->children(2)->plaintext
-                . '</div>';
-        } else {
-            return '';
+            $children = $deal->find('span[class*=' . $selector . ']', 0)->children(2);
+            if ($children) {
+                return '<div>' . $children->plaintext . '</div>';
+            }
         }
+        return '';
     }
 
     /**
