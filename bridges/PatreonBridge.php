@@ -100,12 +100,14 @@ class PatreonBridge extends BridgeAbstract
             );
             $item['author'] = $user->full_name;
 
-            if (isset($post->attributes->image)) {
-                $item['content'] .= '<p><a href="'
-                    . $post->attributes->url
-                    . '"><img src="'
-                    . $post->attributes->image->thumb_url
-                    . '" /></a></p>';
+            $image = $post->attributes->image ?? null;
+            if ($image) {
+                $logo = sprintf(
+                    '<p><a href="%s"><img src="%s" /></a></p>',
+                    $post->attributes->url,
+                    $image->thumb_url ?? $image->url ?? $this->getURI()
+                );
+                $item['content'] .= $logo;
             }
 
             if (isset($post->attributes->content)) {
