@@ -53,7 +53,13 @@ class TikTokBridge extends BridgeAbstract
             $views = $div->find('strong.video-count', 0)->plaintext;
 
             $item['uri'] = $link;
-            $item['title'] = $div->find('a', 1)->plaintext;
+
+            $a = $div->find('a', 1);
+            if ($a) {
+                $item['title'] = $a->plaintext;
+            } else {
+                $item['title'] = $this->getName();
+            }
             $item['enclosures'][] = $image;
 
             $item['content'] = <<<EOD

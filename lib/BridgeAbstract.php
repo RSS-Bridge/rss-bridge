@@ -316,7 +316,9 @@ abstract class BridgeAbstract implements BridgeInterface
         }
         $needle = $this->inputs[$this->queriedContext][$input]['value'];
         foreach (static::PARAMETERS[$context][$input]['values'] as $first_level_key => $first_level_value) {
-            if ($needle === (string)$first_level_value) {
+            // todo: this cast emits error if it's an array
+            $valueString = (string) $first_level_value;
+            if ($needle === $valueString) {
                 return $first_level_key;
             } elseif (is_array($first_level_value)) {
                 foreach ($first_level_value as $second_level_key => $second_level_value) {

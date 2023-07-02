@@ -84,7 +84,12 @@ class EBayBridge extends BridgeAbstract
 
             $sellerInfo = $listing->find('.s-item__seller-info-text', 0)->plaintext ?? '';
 
-            $item['enclosures'] = [ $listing->find('.s-item__image-wrapper > img', 0)->src . '#.image' ];
+            $image = $listing->find('.s-item__image-wrapper > img', 0);
+            if ($image) {
+                // Not quite sure why append fragment here
+                $imageUrl = $image->src . '#.image';
+                $item['enclosures'] = [$imageUrl];
+            }
 
             $item['content'] = <<<CONTENT
 <p>$sellerInfo $location</p>

@@ -169,10 +169,17 @@ class JustWatchBridge extends BridgeAbstract
             foreach ($titles as $title) {
                 $item = [];
                 $item['uri'] = $title->find('a', 0)->href;
-                $item['title'] = $provider->find('picture > img', 0)->alt . ' - ' . $title->find('.title-poster__image > img', 0)->alt;
-                $image = $title->find('.title-poster__image > img', 0)->attr['src'];
-                if (str_starts_with($image, 'data')) {
-                    $image = $title->find('.title-poster__image > img', 0)->attr['data-src'];
+
+                $itemTitle = sprintf(
+                    '%s - %s',
+                    $provider->find('picture > img', 0)->alt ?? '',
+                    $title->find('.title-poster__image > img', 0)->alt ?? ''
+                );
+                $item['title'] = $itemTitle;
+
+                $imageUrl = $title->find('.title-poster__image > img', 0)->attr['src'] ?? '';
+                if (str_starts_with($imageUrl, 'data')) {
+                    $imageUrl = $title->find('.title-poster__image > img', 0)->attr['data-src'];
                 }
 
                 $content  = '<b>Provider:</b> '
@@ -190,7 +197,7 @@ class JustWatchBridge extends BridgeAbstract
                 $content .= '<b>Poster:</b><br><a href="'
                     . $title->find('a', 0)->href
                     . '"><img src="'
-                    . $image
+                    . $imageUrl
                     . '"></a>';
 
                 $item['content'] = $content;

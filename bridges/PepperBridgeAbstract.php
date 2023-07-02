@@ -129,7 +129,7 @@ class PepperBridgeAbstract extends BridgeAbstract
 
                     // Find the text corresponding to the clock
                     $spanDateDiv = $clock->parent()->find('span[class=hide--toW3]', 0);
-                    $itemDate = $spanDateDiv->plaintext;
+                    $itemDate = $spanDateDiv->plaintext ?? '';
                     // In case of a Local deal, there is no date, but we can use
                     // this case for other reason (like date not in the last field)
                     if ($this->contains($itemDate, $this->i8n('localdeal'))) {
@@ -481,12 +481,12 @@ HEREDOC;
             ]
         );
         if ($deal->find('span[class*=' . $selector . ']', 0) != null) {
-            return '<div>'
-                . $deal->find('span[class*=' . $selector . ']', 0)->children(2)->plaintext
-                . '</div>';
-        } else {
-            return '';
+            $children = $deal->find('span[class*=' . $selector . ']', 0)->children(2);
+            if ($children) {
+                return '<div>' . $children->plaintext . '</div>';
+            }
         }
+        return '';
     }
 
     /**
