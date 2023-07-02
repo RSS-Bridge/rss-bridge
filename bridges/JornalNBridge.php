@@ -75,15 +75,16 @@ class JornalNBridge extends BridgeAbstract
             $image = $article->find('.elementor-post__thumbnail img', 0)->src;
             //Timestamp
             $date = $article->find('.elementor-post-date', 0)->plaintext;
+            $date = trim($date, "\t ");
             $date = preg_replace('/ de /i', '/', $date);
             $date = preg_replace('/, /', '/', $date);
             $date = explode('/', $date);
-            $year = $date[2];
-            $month = $date[1];
-            $day = $date[0];
+            $year = (int) $date[2];
+            $month = (int) $date[1];
+            $day = (int) $date[0];
             foreach (self::PT_MONTH_NAMES as $key => $item) {
                 if ($key === strtolower($month)) {
-                    $month = $item;
+                    $month = (int) $item;
                 }
             }
             $timestamp = mktime(0, 0, 0, $month, $day, $year);
