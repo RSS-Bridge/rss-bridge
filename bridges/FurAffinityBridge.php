@@ -900,10 +900,16 @@ class FurAffinityBridge extends BridgeAbstract
                 $submissionHTML = $this->getFASimpleHTMLDOM($submissionURL, $cache);
 
                 $stats = $submissionHTML->find('.stats-container', 0);
-                $item['timestamp'] = strtotime($stats->find('.popup_date', 0)->title);
-                $item['enclosures'] = [
-                    $submissionHTML->find('.actions a[href^=https://d.facdn]', 0)->href
-                ];
+                $popupDate = $stats->find('.popup_date', 0);
+                if ($popupDate) {
+                    $item['timestamp'] = strtotime($popupDate->title);
+                }
+
+                $var = $submissionHTML->find('.actions a[href^=https://d.facdn]', 0);
+                if ($var) {
+                    $item['enclosures'] = [$var->href];
+                }
+
                 foreach ($stats->find('#keywords a') as $keyword) {
                     $item['categories'][] = $keyword->plaintext;
                 }
