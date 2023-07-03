@@ -82,10 +82,10 @@ class Releases3DSBridge extends BridgeAbstract
             $item = [];
             $item['title'] = $name;
             $item['author'] = $publisher;
-            $item['timestamp'] = $ignDate;
-            $item['enclosures'] = [$ignCoverArt];
+            //$item['timestamp'] = $ignDate;
+            //$item['enclosures'] = [$ignCoverArt];
             $item['uri'] = empty($ignLink) ? $searchLinkDuckDuckGo : $ignLink;
-            $item['content'] = $ignDescription . $releaseDescription . $releaseSearchLinks;
+            $item['content'] = $releaseDescription . $releaseSearchLinks;
             $this->items[] = $item;
             $limit++;
         }
