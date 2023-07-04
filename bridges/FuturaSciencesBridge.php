@@ -90,7 +90,7 @@ class FuturaSciencesBridge extends FeedExpander
         $item = parent::parseItem($newsItem);
         $item['uri'] = str_replace('#xtor%3DRSS-8', '', $item['uri']);
         $article = getSimpleHTMLDOMCached($item['uri']);
-        $item['content'] = $this->extractArticleContent($article);
+        //$item['content'] = $this->extractArticleContent($article);
         $author = $this->extractAuthor($article);
         if (!empty($author)) {
             $item['author'] = $author;
