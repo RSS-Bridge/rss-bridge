@@ -114,8 +114,8 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
 
     public function getURI()
     {
-        if (!empty($this->feedUri)) {
-            return $this->feedUri;
+        if (!empty($this->feedUrl)) {
+            return $this->feedUrl;
         }
 
         return parent::getURI();
