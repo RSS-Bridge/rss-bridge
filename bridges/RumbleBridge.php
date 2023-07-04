@@ -40,9 +40,12 @@ class RumbleBridge extends BridgeAbstract
 
         $dom = getSimpleHTMLDOM($url);
         foreach ($dom->find('li.video-listing-entry') as $video) {
+            $datetime = $video->find('time', 0)->getAttribute('datetime');
+
             $this->items[] = [
                 'title'     => $video->find('h3', 0)->plaintext,
                 'uri'       => self::URI . $video->find('a', 0)->href,
+                'timestamp' => (new \DateTimeImmutable($datetime))->getTimestamp(),
                 'author'    => $account . '@rumble.com',
                 'content'   => defaultLinkTo($video, self::URI)->innertext,
             ];
