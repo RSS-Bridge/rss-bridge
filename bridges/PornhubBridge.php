@@ -67,7 +67,9 @@ class PornhubBridge extends BridgeAbstract
 
         $show_images = $this->getInput('show_images');
 
-        $html = getSimpleHTMLDOM($uri);
+        $html = getSimpleHTMLDOM($uri, [
+            'cookie: accessAgeDisclaimerPH=1'
+        ]);
 
         foreach ($html->find('div.videoUList ul.videos li.videoblock') as $element) {
             $item = [];
