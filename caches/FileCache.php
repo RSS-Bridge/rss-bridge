@@ -3,8 +3,8 @@
 class FileCache implements CacheInterface
 {
     private array $config;
-    protected $scope;
-    protected $key;
+    protected string $scope;
+    protected string $key;
 
     public function __construct(array $config = [])
     {
@@ -95,16 +95,9 @@ class FileCache implements CacheInterface
         $this->scope = $this->config['path'] . trim($scope, " \t\n\r\0\x0B\\\/") . '/';
     }
 
-    public function setKey($key)
+    public function setKey(array $key): void
     {
-        $key = json_encode($key);
-
-        if (!is_string($key)) {
-            throw new \Exception('The given key is invalid!');
-        }
-
-        $this->key = $key;
-        return $this;
+        $this->key = json_encode($key);
     }
 
     private function getScope()

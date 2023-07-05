@@ -8,7 +8,7 @@ class NullCache implements CacheInterface
     {
     }
 
-    public function setKey($key)
+    public function setKey(array $key): void
     {
     }
 

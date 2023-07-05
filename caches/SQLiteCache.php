@@ -5,8 +5,8 @@
  */
 class SQLiteCache implements CacheInterface
 {
-    protected $scope;
-    protected $key;
+    protected string $scope;
+    protected string $key;
 
     private $db = null;
 
@@ -97,19 +97,9 @@ class SQLiteCache implements CacheInterface
         $this->scope = $scope;
     }
 
-    public function setKey($key)
+    public function setKey(array $key): void
     {
-        if (!empty($key) && is_array($key)) {
-            $key = array_map('strtolower', $key);
-        }
-        $key = json_encode($key);
-
-        if (!is_string($key)) {
-            throw new \Exception('The given key is invalid!');
-        }
-
-        $this->key = $key;
-        return $this;
+        $this->key = json_encode($key);
     }
 
     private function getCacheKey()

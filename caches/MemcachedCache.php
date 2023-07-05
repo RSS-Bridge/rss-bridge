@@ -2,8 +2,8 @@
 
 class MemcachedCache implements CacheInterface
 {
-    private $scope;
-    private $key;
+    private string $scope;
+    private string $key;
     private $conn;
     private $expiration = 0;
     private $time = null;
@@ -96,19 +96,9 @@ class MemcachedCache implements CacheInterface
         $this->scope = $scope;
     }
 
-    public function setKey($key)
+    public function setKey(array $key): void
     {
-        if (!empty($key) && is_array($key)) {
-            $key = array_map('strtolower', $key);
-        }
-        $key = json_encode($key);
-
-        if (!is_string($key)) {
-            throw new \Exception('The given key is invalid!');
-        }
-
-        $this->key = $key;
-        return $this;
+        $this->key = json_encode($key);
     }
 
     private function getCacheKey()

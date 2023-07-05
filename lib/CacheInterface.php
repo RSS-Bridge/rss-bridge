@@ -19,16 +19,7 @@ interface CacheInterface
 {
     public function setScope(string $scope): void;
 
-    /**
-     * Set key to assign the current data
-     *
-     * Since $key can be anything, the cache implementation must ensure to
-     * assign the related data reliably; most commonly by serializing and
-     * hashing the key in an appropriate way.
-     *
-     * @param array $key The key the data is related to
-     */
-    public function setKey($key);
+    public function setKey(array $key): void;
 
     /**
      * Loads data from cache
