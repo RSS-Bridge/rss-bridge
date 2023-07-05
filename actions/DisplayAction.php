@@ -95,7 +95,7 @@ class DisplayAction implements ActionInterface
         $mtime = $cache->getTime();
 
         if (
-            $mtime !== false
+            $mtime
             && (time() - $cache_timeout < $mtime)
             && !Debug::isEnabled()
         ) {

@@ -48,7 +48,7 @@ class FileCache implements CacheInterface
         return $this;
     }
 
-    public function getTime()
+    public function getTime(): ?int
     {
         $cacheFile = $this->getCacheFile();
         clearstatcache(false, $cacheFile);

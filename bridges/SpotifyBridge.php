@@ -203,7 +203,7 @@ class SpotifyBridge extends BridgeAbstract
             $time = (new DateTime())->getTimestamp() - $cache->getTime();
         }
 
-        if ($cache->getTime() == false || $time >= 3600) {
+        if (!$cache->getTime() || $time >= 3600) {
             $this->fetchToken();
             $cache->saveData($this->token);
         } else {
