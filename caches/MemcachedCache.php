@@ -91,10 +91,9 @@ class MemcachedCache implements CacheInterface
         $this->expiration = $duration;
     }
 
-    public function setScope($scope)
+    public function setScope(string $scope): void
     {
         $this->scope = $scope;
-        return $this;
     }
 
     public function setKey($key)

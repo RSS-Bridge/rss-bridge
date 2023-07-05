@@ -90,15 +90,9 @@ class FileCache implements CacheInterface
         }
     }
 
-    public function setScope($scope)
+    public function setScope(string $scope): void
     {
-        if (!is_string($scope)) {
-            throw new \Exception('The given scope is invalid!');
-        }
-
         $this->scope = $this->config['path'] . trim($scope, " \t\n\r\0\x0B\\\/") . '/';
-
-        return $this;
     }
 
     public function setKey($key)

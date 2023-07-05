@@ -17,14 +17,7 @@
  */
 interface CacheInterface
 {
-    /**
-     * Set scope of the current cache
-     *
-     * If $scope is an empty string, the cache is set to a global context.
-     *
-     * @param string $scope The scope the data is related to
-     */
-    public function setScope($scope);
+    public function setScope(string $scope): void;
 
     /**
      * Set key to assign the current data

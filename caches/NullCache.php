@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class NullCache implements CacheInterface
 {
-    public function setScope($scope)
+    public function setScope(string $scope): void
     {
     }
 

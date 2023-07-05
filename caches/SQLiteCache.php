@@ -92,14 +92,9 @@ class SQLiteCache implements CacheInterface
         $Qdelete->execute();
     }
 
-    public function setScope($scope)
+    public function setScope(string $scope): void
     {
-        if (is_null($scope) || !is_string($scope)) {
-            throw new \Exception('The given scope is invalid!');
-        }
-
         $this->scope = $scope;
-        return $this;
     }
 
     public function setKey($key)
