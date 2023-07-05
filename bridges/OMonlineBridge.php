@@ -1,68 +1,72 @@
 <?php
-// Code
-class OMonlineBridge extends BridgeAbstract {
-	const NAME        = 'OM Online Bridge';
-	const URI         = 'https://www.om-online.de';
-	const DESCRIPTION = 'RSS feed for OM Online';
-	const MAINTAINER  = 'jummo4@yahoo.de';
-  const PARAMETERS = [
-        [
-            'ort' => [
-                'name' => 'Ortsname',
-                'title' => 'Für die Anzeige von Beitragen nur aus einem Ort oder mehreren Orten geben einen Orstnamen ein. Mehrere Ortsnamen müssen mit / getrennt eingeben werden, z.B. Vechta/Cloppenburg. Groß- und Kleinschreibung beachten!'
-            ]
-        ]
-    ];
 
-	public function collectData() {
-		if (!empty($this->getInput('ort'))) {
-			$url = sprintf('%s/ort/%s', self::URI, $this->getInput('ort'));
-		} else {
-			$url = sprintf('%s', self::URI);
-		} 
+class OMonlineBridge extends BridgeAbstract
+{
+    const NAME        = 'OM Online Bridge';
+    const URI         = 'https://www.om-online.de';
+    const DESCRIPTION = 'RSS feed for OM Online';
+    const MAINTAINER  = 'jummo4@yahoo.de';
+    const PARAMETERS = [
+                           [
+                               'ort' => [
+                               'name' => 'Ortsname',
+                               'title' => 'Für die Anzeige von Beitragen nur aus einem Ort oder mehreren Orten 
+                               geben einen Orstnamen ein. Mehrere Ortsnamen müssen mit / getrennt eingeben werden, 
+                               z.B. Vechta/Cloppenburg. Groß- und Kleinschreibung beachten!'
+                               ]
+                           ]
+                       ];
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request: ' . $url);
+    public function collectData()
+    {
+        if (!empty($this->getInput('ort'))) {
+            $url = sprintf('%s/ort/%s', self::URI, $this->getInput('ort'));
+        } else {
+            $url = sprintf('%s', self::URI);
+        }
 
-		$html = defaultLinkTo($html, $url);
+        $html = getSimpleHTMLDOM($url)
+            or returnServerError('Could not request: ' . $url);
 
-		foreach($html->find('div.molecule-teaser > a ') as $index => $a) {
-			$item = array();
+        $html = defaultLinkTo($html, $url);
 
-			$articlePath = $a->href;
-			Debug::log('>>> '. $articlePath);
+        foreach ($html->find('div.molecule-teaser > a ') as $index => $a) {
+            $item = [];
 
-			$articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT)
-				or returnServerError('Could not request: ' . $articlePath);
+            $articlePath = $a->href;
 
-			$articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
+            $articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT)
+                or returnServerError('Could not request: ' . $articlePath);
 
-			$contents = $articlePageHtml->find('div.molecule-article', 0);
+            $articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
 
-			$item['uri'] = $articlePath;
-			$item['title'] = $contents->find('h1', 0)->innertext;
+            $contents = $articlePageHtml->find('div.molecule-article', 0);
 
-			$contents->find('div.col-12 col-md-10 offset-0 offset-md-1', 0);
+            $item['uri'] = $articlePath;
+            $item['title'] = $contents->find('h1', 0)->innertext;
 
-			$item['content'] = $contents->innertext;
-			$item['timestamp'] = $this->extractDate2($a->plaintext);
-			$this->items[] = $item;
+            $contents->find('div.col-12 col-md-10 offset-0 offset-md-1', 0);
 
-			if (count($this->items) >= 10) {
-				break;
-			}
-		}
-	}
+            $item['content'] = $contents->innertext;
+            $item['timestamp'] = $this->extractDate2($a->plaintext);
+            $this->items[] = $item;
 
-	private function extractDate2($text) {
-		$dateRegex = '/^([0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2})/';
+            if (count($this->items) >= 10) {
+                break;
+            }
+        }
+    }
 
-		$text = trim($text);
+    private function extractDate2($text)
+    {
+        $dateRegex = '/^([0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2})/';
 
-		if (preg_match($dateRegex, $text, $matches)) {
-			return $matches[1];
-		}
+        $text = trim($text);
 
-		return '';
-	}
+        if (preg_match($dateRegex, $text, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
+    }
 }
