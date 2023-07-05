@@ -220,9 +220,9 @@ final class Configuration
         }
     }
 
-    public static function getConfig(string $section, string $key)
+    public static function getConfig(string $section, string $key, $default = null)
     {
-        return self::$config[strtolower($section)][strtolower($key)] ?? null;
+        return self::$config[strtolower($section)][strtolower($key)] ?? $default;
     }
 
     private static function setConfig(string $section, string $key, $value): void
