@@ -103,7 +103,7 @@ function getContents(
 
     $cache = $cacheFactory->create();
     $cache->setScope('server');
-    $cache->purgeCache(86400); // 24 hours (forced)
+    $cache->purgeCache(86400);
     $cache->setKey([$url]);
 
     // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102

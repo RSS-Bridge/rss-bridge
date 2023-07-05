@@ -16,7 +16,7 @@ class NullCache implements CacheInterface
     {
     }
 
-    public function saveData($data)
+    public function saveData($data): void
     {
     }
 
@@ -25,7 +25,7 @@ class NullCache implements CacheInterface
         return null;
     }
 
-    public function purgeCache($seconds)
+    public function purgeCache(int $seconds): void
     {
     }
 }

@@ -58,11 +58,11 @@ class MemcachedCache implements CacheInterface
         return $result['data'];
     }
 
-    public function saveData($datas)
+    public function saveData($data): void
     {
         $time = time();
         $object_to_save = [
-            'data' => $datas,
+            'data' => $data,
             'time' => $time,
         ];
         $result = $this->conn->set($this->getCacheKey(), $object_to_save, $this->expiration);
@@ -72,8 +72,6 @@ class MemcachedCache implements CacheInterface
         }
 
         $this->time = $time;
-
-        return $this;
     }
 
     public function getTime(): ?int
@@ -84,11 +82,11 @@ class MemcachedCache implements CacheInterface
         return $this->time;
     }
 
-    public function purgeCache($duration)
+    public function purgeCache(int $seconds): void
     {
         // Note: does not purges cache right now
         // Just sets cache expiration and leave cache purging for memcached itself
-        $this->expiration = $duration;
+        $this->expiration = $seconds;
     }
 
     public function setScope(string $scope): void

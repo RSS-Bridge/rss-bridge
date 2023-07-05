@@ -228,7 +228,7 @@ EOD
 
                 $cache->setScope('twitter');
                 $cache->setKey(['cache']);
-                $cache->purgeCache(60 * 60 * 3); // 3h
+                $cache->purgeCache(60 * 60 * 3);
                 $api = new TwitterClient($cache);
 
                 $screenName = $this->getInput('u');

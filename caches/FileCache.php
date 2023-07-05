@@ -39,13 +39,12 @@ class FileCache implements CacheInterface
         return $data;
     }
 
-    public function saveData($data)
+    public function saveData($data): void
     {
         $writeStream = file_put_contents($this->getCacheFile(), serialize($data));
         if ($writeStream === false) {
             throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
         }
-        return $this;
     }
 
     public function getTime(): ?int
@@ -63,7 +62,7 @@ class FileCache implements CacheInterface
         return null;
     }
 
-    public function purgeCache($seconds)
+    public function purgeCache(int $seconds): void
     {
         if (! $this->config['enable_purge']) {
             return;

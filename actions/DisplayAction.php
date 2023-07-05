@@ -87,7 +87,7 @@ class DisplayAction implements ActionInterface
 
         $cache = $cacheFactory->create();
         $cache->setScope('');
-        $cache->purgeCache(86400); // 24 hours
+        $cache->purgeCache(86400);
         $cache->setKey($cache_params);
 
         $items = [];
@@ -211,7 +211,7 @@ class DisplayAction implements ActionInterface
         $cache = $cacheFactory->create();
         $cache->setScope('error_reporting');
         $cache->setkey([$bridgeName . '_' . $code]);
-        $cache->purgeCache(86400); // 24 hours
+        $cache->purgeCache(86400);
         if ($report = $cache->loadData()) {
             $report = Json::decode($report);
             $report['time'] = time();
