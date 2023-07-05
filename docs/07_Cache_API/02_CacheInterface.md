@@ -27,12 +27,6 @@ saveData(mixed $data): self
 
 ## The `getTime` function
 
-This function returns the last write time for the cache, or `false` if the cache does not yet exist. Please notice that 'cache' refers to one specific item in the cache repository and might require additional data to identify a specific item (introduce custom functions where necessary!).
-
-```PHP
-getTime(): int, false
-```
-
 ## The `purgeCache` function
 
 This function removes any data from the cache that is not within the given duration. The duration is specified in seconds and defines the period between now and the oldest item to keep.

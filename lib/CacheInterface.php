@@ -53,11 +53,11 @@ interface CacheInterface
     public function saveData($data);
 
     /**
-     * Returns the timestamp for the curent cache data
-     *
-     * @return ?int Timestamp
+     * Returns the modification time of the current cache item.
+     * In unix timestamp.
+     * Example: 1688570578
      */
-    public function getTime();
+    public function getTime(): ?int;
 
     /**
      * Removes any data that is older than the specified age from cache

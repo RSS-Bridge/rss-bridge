@@ -20,8 +20,9 @@ class NullCache implements CacheInterface
     {
     }
 
-    public function getTime()
+    public function getTime(): ?int
     {
+        return null;
     }
 
     public function purgeCache($seconds)

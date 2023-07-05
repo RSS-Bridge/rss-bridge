@@ -423,7 +423,13 @@ abstract class BridgeAbstract implements BridgeInterface
         $scope = $this->getShortName();
         $cache->setScope($scope);
         $cache->setKey($key);
-        if ($duration && $cache->getTime() < time() - $duration) {
+        $timestamp = $cache->getTime();
+
+        if (
+            $duration
+            && $timestamp
+            && $timestamp < time() - $duration
+        ) {
             return null;
         }
         return $cache->loadData();

@@ -432,8 +432,8 @@ function getSimpleHTMLDOMCached(
     // Determine if cached file is within duration
     $time = $cache->getTime();
     if (
-        $time !== false
-        && (time() - $duration < $time)
+        $time
+        && time() - $duration < $time
         && !Debug::isEnabled()
     ) {
         // Contents within duration and debug mode is disabled

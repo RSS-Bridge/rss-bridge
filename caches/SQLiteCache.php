@@ -70,7 +70,7 @@ class SQLiteCache implements CacheInterface
         return $this;
     }
 
-    public function getTime()
+    public function getTime(): ?int
     {
         $Qselect = $this->db->prepare('SELECT updated FROM storage WHERE key = :key');
         $Qselect->bindValue(':key', $this->getCacheKey());

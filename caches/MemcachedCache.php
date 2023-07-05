@@ -6,7 +6,7 @@ class MemcachedCache implements CacheInterface
     private $key;
     private $conn;
     private $expiration = 0;
-    private $time = false;
+    private $time = null;
     private $data = null;
 
     public function __construct()
@@ -76,9 +76,9 @@ class MemcachedCache implements CacheInterface
         return $this;
     }
 
-    public function getTime()
+    public function getTime(): ?int
     {
-        if ($this->time === false) {
+        if ($this->time === null) {
             $this->loadData();
         }
         return $this->time;
