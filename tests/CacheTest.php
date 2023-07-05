@@ -31,6 +31,7 @@ class CacheTest extends TestCase
         $sut->purgeCache(-1);
         $sut->setKey(['key']);
 
+        $this->assertNull($sut->getTime());
         $this->assertNull($sut->loadData());
 
         $sut->saveData('data');
