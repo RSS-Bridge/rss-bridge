@@ -66,8 +66,6 @@ class PicnobBridge extends BridgeAbstract
                                 $moreContentNote = $isMoreContent ? '<p><i>(multiple images and/or videos)</i></p>' : '';
 
                                 $imageUrl = $element->find('.img', 0)->getAttribute('data-src');
-                                parse_str(parse_url($imageUrl, PHP_URL_QUERY), $imageVars);
-                                $imageUrl = $imageVars['u'];
 
                                 $uid = explode('/', parse_url($url, PHP_URL_PATH))[2];
 
