@@ -49,8 +49,10 @@ class FileCache implements CacheInterface
 
     public function getTime(): ?int
     {
+        // https://www.php.net/manual/en/function.clearstatcache.php
+        clearstatcache();
+
         $cacheFile = $this->getCacheFile();
-        clearstatcache(false, $cacheFile);
         if (file_exists($cacheFile)) {
             $time = filemtime($cacheFile);
             if ($time !== false) {
