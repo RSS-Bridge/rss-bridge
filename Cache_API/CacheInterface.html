@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Cache_API/index.html">Cache API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Cache_API/CacheInterface.html">CacheInterface</a></h1>
                 <span class="ModifiedDate">
-            July 5, 2023 at 8:37 AM        </span>
+            July 6, 2023 at 6:10 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/07_Cache_API/02_CacheInterface.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,62 +108,21 @@
             </div>
 
     <div class="s-content">
-        <p>The <code>CacheInterface</code> interface defines functions that need to be implemented. To create a new cache that implements <code>CacheInterface</code> you must implement following functions:</p>
-<ul>
-<li>
-<a href="#the-loaddata-function">loadData</a>
-</li>
-<li>
-<a href="#the-savedata-function">saveData</a>
-</li>
-<li>
-<a href="#the-gettime-function">getTime</a>
-</li>
-<li>
-<a href="#the-purgecache-function">purgeCache</a>
-</li>
-</ul>
-<p>Find a <a href="#template">template</a> at the end of this file.</p>
-<h1><a id="functions" href="#functions" class="Permalink" aria-hidden="true" title="Permalink">#</a>Functions</h1>
-<h2><a id="the-loaddata-function" href="#the-loaddata-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>loadData</code> function</h2>
-<p>This function loads data from the cache and returns the data in the same format provided to the <a href="#the-savedata-function">saveData</a> function.</p>
-<pre><code class="language-PHP">loadData(): mixed
-</code></pre>
-<h2><a id="the-savedata-function" href="#the-savedata-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>saveData</code> function</h2>
-<p>This function stores the given data into the cache and returns the object instance.</p>
-<pre><code class="language-PHP">saveData(mixed $data): self
-</code></pre>
-<h2><a id="the-gettime-function" href="#the-gettime-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>getTime</code> function</h2>
-<h2><a id="the-purgecache-function" href="#the-purgecache-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>purgeCache</code> function</h2>
-<p>This function removes any data from the cache that is not within the given duration. The duration is specified in seconds and defines the period between now and the oldest item to keep.</p>
-<pre><code class="language-PHP">purgeCache(int $duration): null
-</code></pre>
-<h1><a id="template" href="#template" class="Permalink" aria-hidden="true" title="Permalink">#</a>Template</h1>
-<p>This is the bare minimum template for a new cache:</p>
-<pre><code class="language-PHP">&lt;?php
-class MyTypeCache implements CacheInterface {
-    public function loadData(){
-        // Implement your algorithm here!
-        return null;
-    }
+        <p>See <code>CacheInterface</code>.</p>
+<pre><code class="hljs php"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">CacheInterface</span>
+</span>{
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setScope</span><span class="hljs-params">(string $scope)</span>: <span class="hljs-title">void</span></span>;
 
-    public function saveData($data){
-        // Implement your algorithm here!
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setKey</span><span class="hljs-params">(array $key)</span>: <span class="hljs-title">void</span></span>;
 
-        return $this;
-    }
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadData</span><span class="hljs-params">()</span></span>;
 
-    public function getTime(){
-        // Implement your algorithm here!
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">saveData</span><span class="hljs-params">($data)</span>: <span class="hljs-title">void</span></span>;
 
-        return false;
-    }
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getTime</span><span class="hljs-params">()</span>: ?<span class="hljs-title">int</span></span>;
 
-    public function purgeCache($duration){
-        // Implement your algorithm here!
-    }
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">purgeCache</span><span class="hljs-params">(int $seconds)</span>: <span class="hljs-title">void</span></span>;
 }
-// Imaginary empty line!
 </code></pre>
     </div>
 

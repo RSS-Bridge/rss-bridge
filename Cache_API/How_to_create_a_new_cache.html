@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Cache_API/index.html">Cache API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Cache_API/How_to_create_a_new_cache.html">How to create a new cache</a></h1>
                 <span class="ModifiedDate">
-            July 5, 2023 at 8:37 AM        </span>
+            July 6, 2023 at 6:10 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/07_Cache_API/01_How_to_create_a_new_cache.md" target="_blank">
                 Edit on GitHub            </a>
@@ -109,37 +109,7 @@
 
     <div class="s-content">
         <p>Create a new file in the <code>caches/</code> folder (see <a href="../For_Developers/Folder_structure.html">Folder structure</a>).</p>
-<p>The file must be named according to following specification:</p>
-<ul>
-<li>It starts with the type</li>
-<li>The file name must end with ‘Cache’</li>
-<li>The file type must be PHP, written in small letters (seriously!) “.php”</li>
-</ul>
-<p><strong>Examples:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>Filename</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>File</td>
-<td>FileCache.php</td>
-</tr>
-<tr>
-<td>MySQL</td>
-<td>MySQLCache.php</td>
-</tr>
-</tbody>
-</table>
-<p>The file must start with the PHP tags and end with an empty line. The closing tag <code>?&gt;</code> is <a href="http://php.net/basic-syntax.instruction-separation" class="Link--external" rel="noopener noreferrer">omitted</a>.</p>
-<p>Example:</p>
-<pre><code class="language-PHP">&lt;?PHP
-    // PHP code here
-// This line is empty (just imagine it!)
-</code></pre>
+<p>See <code>NullCache</code> and <code>SQLiteCache</code> for examples.</p>
     </div>
 
         <nav>
