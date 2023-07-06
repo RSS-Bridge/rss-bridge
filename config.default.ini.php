@@ -25,6 +25,9 @@ enable_debug_mode = false
 ; debug_mode_whitelist[] = 127.0.0.1
 ; debug_mode_whitelist[] = 192.168.1.10
 
+; Whether to enable maintenance mode. If enabled, feed requests receive 503 Service Unavailable
+enable_maintenance_mode = false
+
 [http]
 timeout = 60
 useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
