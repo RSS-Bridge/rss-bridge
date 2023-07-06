@@ -7,6 +7,7 @@
 [system]
 
 ; Only these bridges are available for feed production
+; How to enable all bridges: enabled_bridges[] = *
 enabled_bridges[] = Youtube
 enabled_bridges[] = Twitter
 enabled_bridges[] = Telegram
