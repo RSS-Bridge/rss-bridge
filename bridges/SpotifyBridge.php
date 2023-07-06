@@ -190,9 +190,7 @@ class SpotifyBridge extends BridgeAbstract
 
     private function getToken()
     {
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = RssBridge::getCache();
         $cache->setScope('SpotifyBridge');
 
         $cacheKey = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));

@@ -99,9 +99,7 @@ function getContents(
     array $curlOptions = [],
     bool $returnFull = false
 ) {
-    $cacheFactory = new CacheFactory();
-
-    $cache = $cacheFactory->create();
+    $cache = RssBridge::getCache();
     $cache->setScope('server');
     $cache->setKey([$url]);
 
@@ -419,9 +417,7 @@ function getSimpleHTMLDOMCached(
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
 ) {
-    $cacheFactory = new CacheFactory();
-
-    $cache = $cacheFactory->create();
+    $cache = RssBridge::getCache();
     $cache->setScope('pages');
     $cache->setKey([$url]);
 

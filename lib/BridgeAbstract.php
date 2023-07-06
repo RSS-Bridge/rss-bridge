@@ -415,9 +415,7 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     protected function loadCacheValue(string $key, $duration = null)
     {
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = RssBridge::getCache();
         // Create class name without the namespace part
         $scope = $this->getShortName();
         $cache->setScope($scope);
@@ -441,9 +439,7 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     protected function saveCacheValue(string $key, $value)
     {
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = RssBridge::getCache();
         $scope = $this->getShortName();
         $cache->setScope($scope);
         $cache->setKey([$key]);

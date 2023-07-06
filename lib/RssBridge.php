@@ -2,6 +2,8 @@
 
 final class RssBridge
 {
+    private static CacheInterface $cache;
+
     public function main(array $argv = [])
     {
         if ($argv) {
@@ -69,6 +71,10 @@ final class RssBridge
         // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
+        // Create cache
+        $cacheFactory = new CacheFactory();
+        self::setCache($cacheFactory->create());
+
         if (Configuration::getConfig('authentication', 'enable')) {
             $authenticationMiddleware = new AuthenticationMiddleware();
             $authenticationMiddleware();
@@ -97,5 +103,15 @@ final class RssBridge
         } elseif ($response instanceof Response) {
             $response->send();
         }
+    }
+
+    public static function getCache(): CacheInterface
+    {
+        return self::$cache;
+    }
+
+    public static function setCache(CacheInterface $cache): void
+    {
+        self::$cache = $cache;
     }
 }

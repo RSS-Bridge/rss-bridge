@@ -87,9 +87,7 @@ class DisplayAction implements ActionInterface
             )
         );
 
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = RssBridge::getCache();
         $cache->setScope('');
         $cache->setKey($cache_params);
         // This cache purge will basically delete all cache items older than 24h, regardless of scope and key
@@ -166,6 +164,9 @@ class DisplayAction implements ActionInterface
                 }
             }
 
+            // Unfortunately need to set scope and key again because they might be modified
+            $cache->setScope('');
+            $cache->setKey($cache_params);
             $cache->saveData([
                 'items' => array_map(function (FeedItem $item) {
                     return $item->toArray();
@@ -212,8 +213,7 @@ class DisplayAction implements ActionInterface
 
     private static function logBridgeError($bridgeName, $code)
     {
-        $cacheFactory = new CacheFactory();
-        $cache = $cacheFactory->create();
+        $cache = RssBridge::getCache();
         $cache->setScope('error_reporting');
         $cache->setkey([$bridgeName . '_' . $code]);
 

@@ -122,9 +122,7 @@ HTML;
             return;
         }
 
-        $cacheFactory = new CacheFactory();
-
-        $this->clientIDCache = $cacheFactory->create();
+        $this->clientIDCache = RssBridge::getCache();
         $this->clientIDCache->setScope('SoundCloudBridge');
         $this->clientIDCache->setKey(['client_id']);
     }
