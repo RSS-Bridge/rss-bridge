@@ -52,7 +52,7 @@ final class RssBridge
             $error = error_get_last();
             if ($error) {
                 $message = sprintf(
-                    'Fatal Error %s: %s in %s line %s',
+                    '(shutdown) %s: %s in %s line %s',
                     $error['type'],
                     sanitize_root($error['message']),
                     sanitize_root($error['file']),

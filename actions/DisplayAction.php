@@ -91,8 +91,9 @@ class DisplayAction implements ActionInterface
 
         $cache = $cacheFactory->create();
         $cache->setScope('');
-        $cache->purgeCache(86400);
         $cache->setKey($cache_params);
+        // This cache purge will basically delete all cache items older than 24h, regardless of scope and key
+        $cache->purgeCache(86400);
 
         $items = [];
         $infos = [];
@@ -215,7 +216,7 @@ class DisplayAction implements ActionInterface
         $cache = $cacheFactory->create();
         $cache->setScope('error_reporting');
         $cache->setkey([$bridgeName . '_' . $code]);
-        $cache->purgeCache(86400);
+
         if ($report = $cache->loadData()) {
             $report = Json::decode($report);
             $report['time'] = time();

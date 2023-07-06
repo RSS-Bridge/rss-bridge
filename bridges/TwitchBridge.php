@@ -223,10 +223,10 @@ EOD;
             CURLOPT_POSTFIELDS => json_encode($request)
         ];
 
-        Debug::log("Sending GraphQL query:\n" . $query);
-        Debug::log("Sending GraphQL variables:\n" . json_encode($variables, JSON_PRETTY_PRINT));
+        Logger::debug("Sending GraphQL query:\n" . $query);
+        Logger::debug("Sending GraphQL variables:\n" . json_encode($variables, JSON_PRETTY_PRINT));
         $response = json_decode(getContents('https://gql.twitch.tv/gql', $header, $opts));
-        Debug::log("Got GraphQL response:\n" . json_encode($response, JSON_PRETTY_PRINT));
+        Logger::debug("Got GraphQL response:\n" . json_encode($response, JSON_PRETTY_PRINT));
 
         if (isset($response->errors)) {
             $messages = array_column($response->errors, 'message');
