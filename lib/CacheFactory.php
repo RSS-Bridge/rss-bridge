@@ -51,7 +51,25 @@ class CacheFactory
                 }
                 return new FileCache($fileCacheConfig);
             case SQLiteCache::class:
-                return new SQLiteCache();
+                if (!extension_loaded('sqlite3')) {
+                    throw new \Exception('"sqlite3" extension not loaded. Please check "php.ini"');
+                }
+                if (!is_writable(PATH_CACHE)) {
+                    throw new \Exception('The cache folder is not writable');
+                }
+                $file = Configuration::getConfig('SQLiteCache', 'file');
+                if (!$file) {
+                    throw new \Exception(sprintf('Configuration for %s missing.', 'SQLiteCache'));
+                }
+                if (dirname($file) == '.') {
+                    $file = PATH_CACHE . $file;
+                } elseif (!is_dir(dirname($file))) {
+                    throw new \Exception(sprintf('Invalid configuration for %s', 'SQLiteCache'));
+                }
+                return new SQLiteCache([
+                    'file'      => $file,
+                    'timeout'   => 5000,
+                ]);
             case MemcachedCache::class:
                 return new MemcachedCache();
             default:
