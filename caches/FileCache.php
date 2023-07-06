@@ -78,12 +78,19 @@ class FileCache implements CacheInterface
         );
 
         foreach ($cacheIterator as $cacheFile) {
-            if (in_array($cacheFile->getBasename(), ['.', '..', '.gitkeep'])) {
+            $basename = $cacheFile->getBasename();
+            $excluded = [
+                '.'         => true,
+                '..'        => true,
+                '.gitkeep'  => true,
+            ];
+            if (isset($excluded[$basename])) {
                 continue;
             } elseif ($cacheFile->isFile()) {
-                if (filemtime($cacheFile->getPathname()) < time() - $seconds) {
+                $filepath = $cacheFile->getPathname();
+                if (filemtime($filepath) < time() - $seconds) {
                     // todo: sometimes this file doesn't exists
-                    unlink($cacheFile->getPathname());
+                    unlink($filepath);
                 }
             }
         }

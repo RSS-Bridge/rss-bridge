@@ -103,7 +103,6 @@ function getContents(
 
     $cache = $cacheFactory->create();
     $cache->setScope('server');
-    $cache->purgeCache(86400);
     $cache->setKey([$url]);
 
     // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
@@ -424,10 +423,7 @@ function getSimpleHTMLDOMCached(
 
     $cache = $cacheFactory->create();
     $cache->setScope('pages');
-    $cache->purgeCache(86400);
-
-    $params = [$url];
-    $cache->setKey($params);
+    $cache->setKey([$url]);
 
     // Determine if cached file is within duration
     $time = $cache->getTime();
@@ -436,17 +432,15 @@ function getSimpleHTMLDOMCached(
         && time() - $duration < $time
         && !Debug::isEnabled()
     ) {
-        // Contents within duration and debug mode is disabled
+        // Cache hit
         $content = $cache->loadData();
     } else {
-        // Contents not within duration, or debug mode is enabled
         $content = getContents(
             $url,
             $header ?? [],
             $opts ?? []
         );
-        // todo: fix bad if statement
-        if ($content !== false) {
+        if ($content) {
             $cache->saveData($content);
         }
     }
