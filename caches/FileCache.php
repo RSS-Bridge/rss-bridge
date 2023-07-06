@@ -9,8 +9,8 @@ class FileCache implements CacheInterface
     public function __construct(array $config = [])
     {
         $default = [
-            'path' => null,
-            'enable_purge' => true,
+            'path'          => null,
+            'enable_purge'  => true,
         ];
         $this->config = array_merge($default, $config);
         if (!$this->config['path']) {

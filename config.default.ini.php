@@ -125,7 +125,12 @@ path = ""
 enable_purge = true
 
 [SQLiteCache]
+; Filepath of the sqlite db file
 file = "cache.sqlite"
+; Whether to actually delete data when purging
+enable_purge = true
+; Busy wait in ms before timing out
+timeout = 5000
 
 [MemcachedCache]
 host = "localhost"
