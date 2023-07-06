@@ -5,10 +5,10 @@
  */
 class SQLiteCache implements CacheInterface
 {
-    protected string $scope;
-    protected string $key;
-
     private ?SQLite3 $db;
+    private string $scope;
+    private string $key;
+    private array $config;
 
     public function __construct(array $config)
     {
@@ -17,6 +17,7 @@ class SQLiteCache implements CacheInterface
             'timeout'   => 5000,
         ];
         $config = array_merge($default, $config);
+        $this->config = $config;
 
         if (!$config['file']) {
             throw new Exception('sqlite cache needs a file');
