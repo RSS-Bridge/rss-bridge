@@ -16,6 +16,10 @@ class DisplayAction implements ActionInterface
 {
     public function execute(array $request)
     {
+        if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
+            return new Response('503 Service Unavailable', 503);
+        }
+
         $bridgeFactory = new BridgeFactory();
 
         $bridgeClassName = $bridgeFactory->createBridgeClassName($request['bridge'] ?? '');
