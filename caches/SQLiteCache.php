@@ -5,7 +5,7 @@
  */
 class SQLiteCache implements CacheInterface
 {
-    private ?SQLite3 $db;
+    private \SQLite3 $db;
     private string $scope;
     private string $key;
     private array $config;
@@ -21,7 +21,7 @@ class SQLiteCache implements CacheInterface
         $this->config = $config;
 
         if (!$config['file']) {
-            throw new Exception('sqlite cache needs a file');
+            throw new \Exception('sqlite cache needs a file');
         }
 
         if (is_file($config['file'])) {
