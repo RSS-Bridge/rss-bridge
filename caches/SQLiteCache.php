@@ -13,8 +13,9 @@ class SQLiteCache implements CacheInterface
     public function __construct(array $config)
     {
         $default = [
-            'file'      => null,
-            'timeout'   => 5000,
+            'file'          => null,
+            'timeout'       => 5000,
+            'enable_purge'  => true,
         ];
         $config = array_merge($default, $config);
         $this->config = $config;
@@ -76,6 +77,9 @@ class SQLiteCache implements CacheInterface
 
     public function purgeCache(int $seconds): void
     {
+        if (!$this->config['enable_purge']) {
+            return;
+        }
         $stmt = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
         $stmt->bindValue(':expired', time() - $seconds);
         $stmt->execute();

@@ -67,8 +67,9 @@ class CacheFactory
                     throw new \Exception(sprintf('Invalid configuration for %s', 'SQLiteCache'));
                 }
                 return new SQLiteCache([
-                    'file'      => $file,
-                    'timeout'   => 5000,
+                    'file'          => $file,
+                    'timeout'       => Configuration::getConfig('SQLiteCache', 'timeout'),
+                    'enable_purge'  => Configuration::getConfig('SQLiteCache', 'enable_purge'),
                 ]);
             case MemcachedCache::class:
                 return new MemcachedCache();
