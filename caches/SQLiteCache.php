@@ -5,8 +5,8 @@
  */
 class SQLiteCache implements CacheInterface
 {
-    protected $scope;
-    protected $key;
+    protected string $scope;
+    protected string $key;
 
     private $db = null;
 
@@ -59,15 +59,13 @@ class SQLiteCache implements CacheInterface
         return null;
     }
 
-    public function saveData($data)
+    public function saveData($data): void
     {
         $Qupdate = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
         $Qupdate->bindValue(':key', $this->getCacheKey());
         $Qupdate->bindValue(':value', serialize($data));
         $Qupdate->bindValue(':updated', time());
         $Qupdate->execute();
-
-        return $this;
     }
 
     public function getTime(): ?int
@@ -85,36 +83,21 @@ class SQLiteCache implements CacheInterface
         return null;
     }
 
-    public function purgeCache($seconds)
+    public function purgeCache(int $seconds): void
     {
         $Qdelete = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
         $Qdelete->bindValue(':expired', time() - $seconds);
         $Qdelete->execute();
     }
 
-    public function setScope($scope)
+    public function setScope(string $scope): void
     {
-        if (is_null($scope) || !is_string($scope)) {
-            throw new \Exception('The given scope is invalid!');
-        }
-
         $this->scope = $scope;
-        return $this;
     }
 
-    public function setKey($key)
+    public function setKey(array $key): void
     {
-        if (!empty($key) && is_array($key)) {
-            $key = array_map('strtolower', $key);
-        }
-        $key = json_encode($key);
-
-        if (!is_string($key)) {
-            throw new \Exception('The given key is invalid!');
-        }
-
-        $this->key = $key;
-        return $this;
+        $this->key = json_encode($key);
     }
 
     private function getCacheKey()

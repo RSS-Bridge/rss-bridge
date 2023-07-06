@@ -410,11 +410,10 @@ abstract class BridgeAbstract implements BridgeInterface
     /**
      * Loads a cached value for the specified key
      *
-     * @param string $key Key name
      * @param int $duration Cache duration (optional)
      * @return mixed Cached value or null if the key doesn't exist or has expired
      */
-    protected function loadCacheValue($key, $duration = null)
+    protected function loadCacheValue(string $key, $duration = null)
     {
         $cacheFactory = new CacheFactory();
 
@@ -422,7 +421,7 @@ abstract class BridgeAbstract implements BridgeInterface
         // Create class name without the namespace part
         $scope = $this->getShortName();
         $cache->setScope($scope);
-        $cache->setKey($key);
+        $cache->setKey([$key]);
         $timestamp = $cache->getTime();
 
         if (
@@ -438,17 +437,16 @@ abstract class BridgeAbstract implements BridgeInterface
     /**
      * Stores a value to cache with the specified key
      *
-     * @param string $key Key name
      * @param mixed $value Value to cache
      */
-    protected function saveCacheValue($key, $value)
+    protected function saveCacheValue(string $key, $value)
     {
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
         $scope = $this->getShortName();
         $cache->setScope($scope);
-        $cache->setKey($key);
+        $cache->setKey([$key]);
         $cache->saveData($value);
     }
 

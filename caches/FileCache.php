@@ -3,8 +3,8 @@
 class FileCache implements CacheInterface
 {
     private array $config;
-    protected $scope;
-    protected $key;
+    protected string $scope;
+    protected string $key;
 
     public function __construct(array $config = [])
     {
@@ -39,13 +39,12 @@ class FileCache implements CacheInterface
         return $data;
     }
 
-    public function saveData($data)
+    public function saveData($data): void
     {
         $writeStream = file_put_contents($this->getCacheFile(), serialize($data));
         if ($writeStream === false) {
             throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
         }
-        return $this;
     }
 
     public function getTime(): ?int
@@ -63,7 +62,7 @@ class FileCache implements CacheInterface
         return null;
     }
 
-    public function purgeCache($seconds)
+    public function purgeCache(int $seconds): void
     {
         if (! $this->config['enable_purge']) {
             return;
@@ -90,27 +89,14 @@ class FileCache implements CacheInterface
         }
     }
 
-    public function setScope($scope)
+    public function setScope(string $scope): void
     {
-        if (!is_string($scope)) {
-            throw new \Exception('The given scope is invalid!');
-        }
-
         $this->scope = $this->config['path'] . trim($scope, " \t\n\r\0\x0B\\\/") . '/';
-
-        return $this;
     }
 
-    public function setKey($key)
+    public function setKey(array $key): void
     {
-        $key = json_encode($key);
-
-        if (!is_string($key)) {
-            throw new \Exception('The given key is invalid!');
-        }
-
-        $this->key = $key;
-        return $this;
+        $this->key = json_encode($key);
     }
 
     private function getScope()
