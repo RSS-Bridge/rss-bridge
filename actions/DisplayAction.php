@@ -38,22 +38,22 @@ class DisplayAction implements ActionInterface
         $bridge = $bridgeFactory->create($bridgeClassName);
         $bridge->loadConfiguration();
 
-        $noproxy = array_key_exists('_noproxy', $request) && filter_var($request['_noproxy'], FILTER_VALIDATE_BOOLEAN);
-
-        if (Configuration::getConfig('proxy', 'url') && Configuration::getConfig('proxy', 'by_bridge') && $noproxy) {
+        $noproxy = $request['_noproxy'] ?? null;
+        if (
+            Configuration::getConfig('proxy', 'url')
+            && Configuration::getConfig('proxy', 'by_bridge')
+            && $noproxy
+        ) {
+            // This const is only used once in getContents()
             define('NOPROXY', true);
         }
 
-        if (array_key_exists('_cache_timeout', $request)) {
-            if (! Configuration::getConfig('cache', 'custom_timeout')) {
-                unset($request['_cache_timeout']);
-                $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($request);
-                return new Response('', 301, ['Location' => $uri]);
-            }
-
-            $cache_timeout = filter_var($request['_cache_timeout'], FILTER_VALIDATE_INT);
+        $cacheTimeout = $request['_cache_timeout'] ?? null;
+        if (Configuration::getConfig('cache', 'custom_timeout') && $cacheTimeout) {
+            $cacheTimeout = (int) $cacheTimeout;
         } else {
-            $cache_timeout = $bridge->getCacheTimeout();
+            // At this point the query argument might still be in the url but it won't be used
+            $cacheTimeout = $bridge->getCacheTimeout();
         }
 
         // Remove parameters that don't concern bridges
@@ -101,7 +101,7 @@ class DisplayAction implements ActionInterface
 
         if (
             $mtime
-            && (time() - $cache_timeout < $mtime)
+            && (time() - $cacheTimeout < $mtime)
             && !Debug::isEnabled()
         ) {
             // At this point we found the feed in the cache and debug mode is disabled
