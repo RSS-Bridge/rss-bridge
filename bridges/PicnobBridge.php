@@ -47,37 +47,36 @@ class PicnobBridge extends BridgeAbstract
             $html = getSimpleHTMLDOM($this->getURI());
             foreach ($html->find('.items') as $part) {
                 foreach ($part->find('.item') as $element) {
-                                $url = urljoin(self::URI, $element->find('a', 0)->href);
+                    $url = urljoin(self::URI, $element->find('a', 0)->href);
 
+                    $date = date_create();
+                    $relativeDate = date_interval_create_from_date_string(str_replace(' ago', '', $element->find('.time', 0)->plaintext));
+                    if ($relativeDate) {
+                        date_sub($date, $relativeDate);
+                    }
 
-                                $date = date_create();
-                                $relativeDate = str_replace(' ago', '', $element->find('.time', 0)->plaintext);
-                                date_sub($date, date_interval_create_from_date_string($relativeDate));
+                    $description = defaultLinkTo(trim($element->find('.sum', 0)->innertext), self::URI);
 
-                                $description = defaultLinkTo(trim($element->find('.sum', 0)->innertext), self::URI);
+                    $isVideo = (bool) $element->find('.icon_video', 0);
+                    $videoNote = $isVideo ? '<p><i>(video)</i></p>' : '';
 
-                                $isVideo = (bool) $element->find('.icon_video', 0);
-                                $videoNote = $isVideo ? '<p><i>(video)</i></p>' : '';
+                    $isTV = (bool) $element->find('.icon_tv', 0);
+                    $tvNote = $isTV ? '<p><i>(TV)</i></p>' : '';
 
-                                $isTV = (bool) $element->find('.icon_tv', 0);
-                                $tvNote = $isTV ? '<p><i>(TV)</i></p>' : '';
+                    $isMoreContent = (bool) $element->find('.icon_multi', 0);
+                    $moreContentNote = $isMoreContent ? '<p><i>(multiple images and/or videos)</i></p>' : '';
 
-                                $isMoreContent = (bool) $element->find('.icon_multi', 0);
-                                $moreContentNote = $isMoreContent ? '<p><i>(multiple images and/or videos)</i></p>' : '';
+                    $imageUrl = $element->find('.img', 0)->getAttribute('data-src');
 
-                                $imageUrl = $element->find('.img', 0)->getAttribute('data-src');
-                                parse_str(parse_url($imageUrl, PHP_URL_QUERY), $imageVars);
-                                $imageUrl = $imageVars['u'];
+                    $uid = explode('/', parse_url($url, PHP_URL_PATH))[2];
 
-                                $uid = explode('/', parse_url($url, PHP_URL_PATH))[2];
-
-                                $this->items[] = [
-                                        'uri'        => $url,
-                                        'timestamp'  => date_format($date, 'r'),
-                                        'title'      => strlen($description) > 60 ? mb_substr($description, 0, 57) . '...' : $description,
-                                        'thumbnail'  => $imageUrl,
-                                        'enclosures' => [$imageUrl],
-                                        'content'    => <<<HTML
+                    $this->items[] = [
+                        'uri'        => $url,
+                        'timestamp'  => date_format($date, 'r'),
+                        'title'      => strlen($description) > 60 ? mb_substr($description, 0, 57) . '...' : $description,
+                        'thumbnail'  => $imageUrl,
+                        'enclosures' => [$imageUrl],
+                        'content'    => <<<HTML
 <a href="{$url}">
         <img loading="lazy" src="{$imageUrl}" />
 </a>
@@ -86,8 +85,8 @@ class PicnobBridge extends BridgeAbstract
 {$moreContentNote}
 <p>{$description}<p>
 HTML,
-                                       'uid' => $uid
-                                ];
+                        'uid' => $uid
+                    ];
                 }
             }
         }
