@@ -51,8 +51,10 @@ class PicnobBridge extends BridgeAbstract
 
 
                                 $date = date_create();
-                                $relativeDate = str_replace(' ago', '', $element->find('.time', 0)->plaintext);
-                                date_sub($date, date_interval_create_from_date_string($relativeDate));
+                                $relativeDate = date_interval_create_from_date_string(str_replace(' ago', '', $element->find('.time', 0)->plaintext));
+                                if ($relativeDate) {
+                                        date_sub($date, $relativeDate);
+                                }
 
                                 $description = defaultLinkTo(trim($element->find('.sum', 0)->innertext), self::URI);
 
