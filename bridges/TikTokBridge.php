@@ -26,18 +26,6 @@ class TikTokBridge extends BridgeAbstract
 
     private $feedName = '';
 
-    public function detectParameters($url)
-    {
-        if (preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
-            return [
-                'context' => 'By user',
-                'username' => $matches[1]
-            ];
-        }
-
-        return null;
-    }
-
     public function collectData()
     {
         $html = getSimpleHTMLDOM($this->getURI());
@@ -48,10 +36,15 @@ class TikTokBridge extends BridgeAbstract
         foreach ($html->find('div.tiktok-x6y88p-DivItemContainerV2') as $div) {
             $item = [];
 
+            // todo: find proper link to tiktok item
             $link = $div->find('a', 0)->href;
+
             $image = $div->find('img', 0)->src;
             $views = $div->find('strong.video-count', 0)->plaintext;
 
+            if ($link === 'https://www.tiktok.com/') {
+                $link = $this->getURI();
+            }
             $item['uri'] = $link;
 
             $a = $div->find('a', 1);
@@ -98,5 +91,17 @@ EOD;
         }
 
         return $this->getInput('username');
+    }
+
+    public function detectParameters($url)
+    {
+        if (preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
+            return [
+                'context' => 'By user',
+                'username' => $matches[1]
+            ];
+        }
+
+        return null;
     }
 }
