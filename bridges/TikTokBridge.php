@@ -86,11 +86,14 @@ EOD;
 
     private function processUsername()
     {
-        if (substr($this->getInput('username'), 0, 1) !== '@') {
-            return '@' . $this->getInput('username');
+        $username = trim($this->getInput('username'));
+        if (preg_match('#^https?://www\.tiktok\.com/@(.*)$#', $username, $m)) {
+            return '@' . $m[1];
         }
-
-        return $this->getInput('username');
+        if (substr($username, 0, 1) !== '@') {
+            return '@' . $username;
+        }
+        return $username;
     }
 
     public function detectParameters($url)
