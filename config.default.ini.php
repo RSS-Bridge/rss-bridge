@@ -9,6 +9,7 @@
 ; Only these bridges are available for feed production
 ; How to enable all bridges: enabled_bridges[] = *
 enabled_bridges[] = FeedMerge
+enabled_bridges[] = FeedReducerBridge
 enabled_bridges[] = Filter
 enabled_bridges[] = GettrBridge
 enabled_bridges[] = MastodonBridge
