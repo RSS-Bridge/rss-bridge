@@ -92,11 +92,11 @@ class CssSelectorBridge extends BridgeAbstract
      * @param int $limit Optional maximum amount of URLs to return
      * @return array Array of URLs
      */
-    protected function filterUrlList($links, $url_pattern, $limit=0)
+    protected function filterUrlList($links, $url_pattern, $limit = 0)
     {
         if (!empty($url_pattern)) {
             $url_pattern = '/' . str_replace('/', '\/', $url_pattern) . '/';
-            $links = array_filter($links, function($url) {
+            $links = array_filter($links, function ($url) {
                 return preg_match($url_pattern, $url) === 1;
             });
         }
@@ -114,7 +114,7 @@ class CssSelectorBridge extends BridgeAbstract
      * @param string $title_cleanup optional string to remove from webpage title, e.g. " | BlogName"
      * @return string Webpage title
      */
-    protected function getPageTitle($page, $title_cleanup=null)
+    protected function getPageTitle($page, $title_cleanup = null)
     {
         if (is_string($page)) {
             $page = getSimpleHTMLDOMCached($page);
@@ -134,7 +134,7 @@ class CssSelectorBridge extends BridgeAbstract
      * @param int $limit Optional maximum amount of URLs to return
      * @return array of minimal feed items {'uri': entry_url, 'title', entry_title}
      */
-    protected function htmlFindLinks($page, $url_selector, $url_pattern='', $limit=0)
+    protected function htmlFindLinks($page, $url_selector, $url_pattern = '', $limit = 0)
     {
         $links = $page->find($url_selector);
 
@@ -142,7 +142,7 @@ class CssSelectorBridge extends BridgeAbstract
             returnClientError('No results for URL selector');
         }
 
-        $link_to_title = array();
+        $link_to_title = [];
         foreach ($links as $link) {
             if ($link->tag != 'a') {
                 $link = $link->find('a', 0);
@@ -156,7 +156,7 @@ class CssSelectorBridge extends BridgeAbstract
             returnClientError('No results for URL pattern');
         }
 
-        $items = array();
+        $items = [];
         foreach ($links as $link) {
             $item = [];
             $item['uri'] = $link;
@@ -175,7 +175,7 @@ class CssSelectorBridge extends BridgeAbstract
      * @param string $title_cleanup Optional string to remove from article title, e.g. " | BlogName"
      * @return array Entry data: uri, title, content
      */
-    protected function expandEntryWithSelector($entry_url, $content_selector, $content_cleanup=null, $title_cleanup=null)
+    protected function expandEntryWithSelector($entry_url, $content_selector, $content_cleanup = null, $title_cleanup = null)
     {
         if (empty($content_selector)) {
             returnClientError('Please specify a content selector');
