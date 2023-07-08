@@ -40,12 +40,21 @@ Check out RSS-Bridge right now on https://rss-bridge.org/bridge01 or find anothe
 
 RSS-Bridge requires php 7.4 (or higher).
 
-### Install with git:
+### Install with composer or git
 
-```bash
+```shell
+cd /var/www
+composer create-project --no-dev rss-bridge/rss-bridge
+```
+
+```shell
 cd /var/www
 git clone https://github.com/RSS-Bridge/rss-bridge.git
+```
 
+Config:
+
+```shell
 # Give the http user write permission to the cache folder
 chown www-data:www-data /var/www/rss-bridge/cache
 
