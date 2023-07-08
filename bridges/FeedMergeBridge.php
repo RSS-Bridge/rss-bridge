@@ -63,12 +63,20 @@ TEXT;
                 try {
                     $this->collectExpandableDatas($feed);
                 } catch (HttpException $e) {
+                    Logger::warning(sprintf('Exception in FeedMergeBridge: %s', create_sane_exception_message($e)));
                     $this->items[] = [
                         'title' => 'RSS-Bridge: ' . $e->getMessage(),
                         // Give current time so it sorts to the top
                         'timestamp' => time(),
                     ];
                     continue;
+                } catch (\Exception $e) {
+                    if (str_starts_with($e->getMessage(), 'Unable to parse xml')) {
+                        // Allow this particular exception from FeedExpander
+                        Logger::warning(sprintf('Exception in FeedMergeBridge: %s', create_sane_exception_message($e)));
+                        continue;
+                    }
+                    throw $e;
                 }
             } else {
                 $this->collectExpandableDatas($feed);
