@@ -222,13 +222,14 @@ function _http_request(string $url, array $config = []): array
         'if_not_modified_since' => null,
         'retries' => 3,
         'max_filesize' => null,
+        'max_redirections' => 5,
     ];
     $config = array_merge($defaults, $config);
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, $config['max_redirections']);
     curl_setopt($ch, CURLOPT_HEADER, false);
     $httpHeaders = [];
     foreach ($config['headers'] as $name => $value) {
@@ -302,10 +303,12 @@ function _http_request(string $url, array $config = []): array
         }
         if ($attempts > $config['retries']) {
             // Finally give up
+            $curl_error = curl_error($ch);
+            $curl_errno = curl_errno($ch);
             throw new HttpException(sprintf(
                 'cURL error %s: %s (%s) for %s',
-                curl_error($ch),
-                curl_errno($ch),
+                $curl_error,
+                $curl_errno,
                 'https://curl.haxx.se/libcurl/c/libcurl-errors.html',
                 $url
             ));
