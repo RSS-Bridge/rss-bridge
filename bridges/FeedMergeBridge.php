@@ -14,7 +14,7 @@ TEXT;
             'feed_name' => [
                 'name' => 'Feed name',
                 'type' => 'text',
-                'exampleValue' => 'rss-bridge/FeedMerger',
+                'exampleValue' => 'FeedMerge',
             ],
             'feed_1' => [
                 'name' => 'Feed url',
@@ -103,6 +103,6 @@ TEXT;
 
     public function getName()
     {
-        return $this->getInput('feed_name') ?: 'rss-bridge/FeedMerger';
+        return $this->getInput('feed_name') ?: 'FeedMerge';
     }
 }
