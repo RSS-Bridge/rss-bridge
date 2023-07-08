@@ -63,7 +63,7 @@ class CraigslistBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($uri);
 
         // Check if no results page is shown (nearby results)
-        if ($html->find('.displaycountShow', 0)->plaintext == '0') {
+        if (($html->find('.displaycountShow', 0)->plaintext ?? '') == '0') {
             return;
         }
 
