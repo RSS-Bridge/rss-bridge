@@ -39,7 +39,8 @@ class TikTokBridge extends BridgeAbstract
             // todo: find proper link to tiktok item
             $link = $div->find('a', 0)->href;
 
-            $image = $div->find('img', 0)->src;
+            $image = $div->find('img', 0)->src ?? '';
+
             $views = $div->find('strong.video-count', 0)->plaintext;
 
             if ($link === 'https://www.tiktok.com/') {
