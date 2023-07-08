@@ -34,7 +34,12 @@ class ASRockNewsBridge extends BridgeAbstract
 
             $item['content'] = $contents->innertext;
             $item['timestamp'] = $this->extractDate($a->plaintext);
-            $item['enclosures'][] = $a->find('img', 0)->src;
+
+            $img = $a->find('img', 0);
+            if ($img) {
+                $item['enclosures'][] = $img->src;
+            }
+
             $this->items[] = $item;
 
             if (count($this->items) >= 10) {
