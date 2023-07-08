@@ -29,6 +29,7 @@ class SQLiteCache implements CacheInterface
             $this->db = new \SQLite3($config['file']);
             $this->db->enableExceptions(true);
             $this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
+            $this->db->exec('CREATE INDEX idx_storage_updated ON storage (updated)');
         }
         $this->db->busyTimeout($config['timeout']);
     }
