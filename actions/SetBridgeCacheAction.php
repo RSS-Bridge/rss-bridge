@@ -35,9 +35,7 @@ class SetBridgeCacheAction implements ActionInterface
         $bridge->loadConfiguration();
         $value = $request['value'];
 
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = RssBridge::getCache();
         $cache->setScope(get_class($bridge));
         if (!is_array($key)) {
             // not sure if $key is an array when it comes in from request

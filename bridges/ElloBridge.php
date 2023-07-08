@@ -113,9 +113,7 @@ class ElloBridge extends BridgeAbstract
 
     private function getAPIKey()
     {
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = RssBridge::getCache();
         $cache->setScope('ElloBridge');
         $cache->setKey(['key']);
         $key = $cache->loadData();
