@@ -41,9 +41,9 @@ class FileCache implements CacheInterface
 
     public function saveData($data): void
     {
-        $writeStream = file_put_contents($this->getCacheFile(), serialize($data));
-        if ($writeStream === false) {
-            throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
+        $bytes = file_put_contents($this->getCacheFile(), serialize($data), LOCK_EX);
+        if ($bytes === false) {
+            throw new \Exception(sprintf('Failed to write to: %s', $this->getCacheFile()));
         }
     }
 
