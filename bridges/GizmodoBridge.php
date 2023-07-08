@@ -22,7 +22,7 @@ class GizmodoBridge extends FeedExpander
         // Get header image
         $image = $html->find('meta[property="og:image"]', 0)->content;
 
-        $item['content'] = $html->find('div.js_post-content', 0)->innertext;
+        $item['content'] = $html->find('div.js_post-content', 0)->innertext ?? '';
 
         // Get categories
         $categories = explode(',', $html->find('meta[name="keywords"]', 0)->content);
