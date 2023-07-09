@@ -440,6 +440,8 @@ function getSimpleHTMLDOMCached(
             $opts ?? []
         );
         if ($content) {
+            $cache->setScope('pages');
+            $cache->setKey([$url]);
             $cache->saveData($content);
         }
     }
