@@ -23,7 +23,10 @@ class CuriousCatBridge extends BridgeAbstract
 
         $apiJson = getContents($url);
 
-        $apiData = json_decode($apiJson, true);
+        $apiData = Json::decode($apiJson);
+        if (isset($apiData['error'])) {
+            throw new \Exception($apiData['error_code']);
+        }
 
         foreach ($apiData['posts'] as $post) {
             $item = [];
