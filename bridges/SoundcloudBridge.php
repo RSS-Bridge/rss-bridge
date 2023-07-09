@@ -66,8 +66,7 @@ class SoundCloudBridge extends BridgeAbstract
             $item['author'] = $apiItem->user->username;
             $item['title'] = $apiItem->user->username . ' - ' . $apiItem->title;
             $item['timestamp'] = strtotime($apiItem->created_at);
-
-            $description = nl2br($apiItem->description);
+            $description = nl2br($apiItem->description ?? '');
 
             $item['content'] = <<<HTML
 				<p>{$description}</p>

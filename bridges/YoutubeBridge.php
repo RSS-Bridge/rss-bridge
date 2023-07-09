@@ -233,7 +233,11 @@ class YoutubeBridge extends BridgeAbstract
     private function getJSONData($html)
     {
         $scriptRegex = '/var ytInitialData = (.*?);<\/script>/';
-        preg_match($scriptRegex, $html, $matches) or returnServerError('Could not find ytInitialData');
+        $result = preg_match($scriptRegex, $html, $matches);
+        if (! $result) {
+            Logger::debug('Could not find ytInitialData');
+            return null;
+        }
         return json_decode($matches[1]);
     }
 
@@ -292,15 +296,17 @@ class YoutubeBridge extends BridgeAbstract
                 }
             }
 
-            if (preg_match('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', $durationText)) {
-                $durationText = preg_replace('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
-            } else {
-                $durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
-            }
-            sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
-            $duration = $hours * 3600 + $minutes * 60 + $seconds;
-            if ($duration < $duration_min || $duration > $duration_max) {
-                continue;
+            if (is_string($durationText)) {
+                if (preg_match('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', $durationText)) {
+                    $durationText = preg_replace('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
+                } else {
+                    $durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
+                }
+                sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
+                $duration = $hours * 3600 + $minutes * 60 + $seconds;
+                if ($duration < $duration_min || $duration > $duration_max) {
+                    continue;
+                }
             }
 
             // $vid_list .= $vid . ',';
