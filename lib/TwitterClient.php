@@ -95,6 +95,9 @@ class TwitterClient
         $response = getContents($url, $this->createHttpHeaders(), [CURLOPT_POST => true]);
         $guest_token = json_decode($response)->guest_token;
         $this->data['guest_token'] = $guest_token;
+
+        $this->cache->setScope('twitter');
+        $this->cache->setKey(['cache']);
         $this->cache->saveData($this->data);
         Logger::info("Fetch new guest token: $guest_token");
     }
@@ -119,6 +122,9 @@ class TwitterClient
         }
         $userInfo = $response->data->user;
         $this->data[$screenName] = $userInfo;
+
+        $this->cache->setScope('twitter');
+        $this->cache->setKey(['cache']);
         $this->cache->saveData($this->data);
         return $userInfo;
     }
