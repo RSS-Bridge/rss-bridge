@@ -52,7 +52,11 @@ class JornalNBridge extends BridgeAbstract
 
     public function getName()
     {
-        return !is_null($this->getKey('feed')) ? self::NAME . ' | ' . $this->getKey('feed') : self::NAME;
+        if (is_null($this->getKey('feed'))) {
+            return self::NAME;
+        } else {
+            return self::NAME . ' | ' . $this->getKey('feed');
+        }
     }
 
     public function getURI()
