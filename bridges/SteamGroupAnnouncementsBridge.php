@@ -16,18 +16,9 @@ class SteamGroupAnnouncementsBridge extends FeedExpander
         ]
     ];
 
-    public function getURI()
-    {
-        return self::URI . 'groups/' . $this->getInput('g') . '/rss';
-    }
-
     public function collectData()
     {
-        $this->collectExpandableDatas($this->getURI(), 10);
-    }
-
-    public function parseItem($newsItem)
-    {
-        return parent::parseItem($newsItem);
+        $uri = self::URI . 'groups/' . $this->getInput('g') . '/rss';
+        $this->collectExpandableDatas($uri, 10);
     }
 }
