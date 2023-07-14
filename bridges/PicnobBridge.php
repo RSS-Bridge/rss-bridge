@@ -6,7 +6,7 @@ class PicnobBridge extends BridgeAbstract
         const NAME = 'Picnob Bridge';
         const URI = 'https://www.picnob.com/';
         const CACHE_TIMEOUT = 3600; // 1h
-        const DESCRIPTION = 'Returns Picnob posts by user or by hashtag';
+        const DESCRIPTION = 'Returns Picnob (Instagram viewer) posts by user or by hashtag';
 
         const PARAMETERS = [
                 'Username' => [

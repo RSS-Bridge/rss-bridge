@@ -6,7 +6,7 @@ class PicukiBridge extends BridgeAbstract
     const NAME = 'Picuki Bridge';
     const URI = 'https://www.picuki.com/';
     const CACHE_TIMEOUT = 3600; // 1h
-    const DESCRIPTION = 'Returns Picuki posts by user and by hashtag';
+    const DESCRIPTION = 'Returns Picuki (Instagram viewer) posts by user and by hashtag';
 
     const PARAMETERS = [
         'Username' => [
