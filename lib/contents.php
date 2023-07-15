@@ -142,20 +142,14 @@ function getContents(
         $config['if_not_modified_since'] = $cache->getTime();
     }
 
-    $result = $httpClient->request($url, $config);
-    $response = [
-        'code' => $result['code'],
-        'status_lines' => $result['status_lines'],
-        'header' => $result['headers'],
-        'content' => $result['body'],
-    ];
+    $response = $httpClient->request($url, $config);
 
-    switch ($result['code']) {
+    switch ($response['code']) {
         case 200:
         case 201:
         case 202:
-            if (isset($result['headers']['cache-control'])) {
-                $cachecontrol = $result['headers']['cache-control'];
+            if (isset($response['headers']['cache-control'])) {
+                $cachecontrol = $response['headers']['cache-control'];
                 $lastValue = array_pop($cachecontrol);
                 $directives = explode(',', $lastValue);
                 $directives = array_map('trim', $directives);
@@ -164,7 +158,7 @@ function getContents(
                     break;
                 }
             }
-            $cache->saveData($result['body']);
+            $cache->saveData($response['body']);
             break;
         case 301:
         case 302:
@@ -173,16 +167,16 @@ function getContents(
             break;
         case 304:
             // Not Modified
-            $response['content'] = $cache->loadData();
+            $response['body'] = $cache->loadData();
             break;
         default:
             $exceptionMessage = sprintf(
                 '%s resulted in %s %s %s',
                 $url,
-                $result['code'],
-                Response::STATUS_CODES[$result['code']] ?? '',
+                $response['code'],
+                Response::STATUS_CODES[$response['code']] ?? '',
                 // If debug, include a part of the response body in the exception message
-                Debug::isEnabled() ? mb_substr($result['body'], 0, 500) : '',
+                Debug::isEnabled() ? mb_substr($response['body'], 0, 500) : '',
             );
 
             // The following code must be extracted if it grows too much
@@ -193,20 +187,28 @@ function getContents(
                 '<title>Security | Glassdoor',
             ];
             foreach ($cloudflareTitles as $cloudflareTitle) {
-                if (str_contains($result['body'], $cloudflareTitle)) {
-                    throw new CloudFlareException($exceptionMessage, $result['code']);
+                if (str_contains($response['body'], $cloudflareTitle)) {
+                    throw new CloudFlareException($exceptionMessage, $response['code']);
                 }
             }
 
-            throw new HttpException($exceptionMessage, $result['code']);
+            throw new HttpException($exceptionMessage, $response['code']);
     }
     if ($returnFull === true) {
+        // For legacy reasons, use content instead of body
+        $response['content'] = $response['body'];
+        unset($response['body']);
         return $response;
     }
-    return $response['content'];
+    return $response['body'];
 }
 
-final class CurlHttpClient
+interface HttpClient
+{
+    public function request(string $url, array $config = []): array;
+}
+
+final class CurlHttpClient implements HttpClient
 {
     public function request(string $url, array $config = []): array
     {
