@@ -1,8 +1,5 @@
 <?php
 
-/**
- * Cache based on SQLite 3 <https://www.sqlite.org>
- */
 class SQLiteCache implements CacheInterface
 {
     private \SQLite3 $db;
@@ -32,6 +29,7 @@ class SQLiteCache implements CacheInterface
             $this->db = new \SQLite3($config['file']);
             $this->db->enableExceptions(true);
             $this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
+            $this->db->exec('CREATE INDEX idx_storage_updated ON storage (updated)');
         }
         $this->db->busyTimeout($config['timeout']);
     }
@@ -42,20 +40,22 @@ class SQLiteCache implements CacheInterface
         $stmt->bindValue(':key', $this->getCacheKey());
         $result = $stmt->execute();
         if ($result) {
-            $data = $result->fetchArray(\SQLITE3_ASSOC);
-            if (isset($data['value'])) {
-                return unserialize($data['value']);
+            $row = $result->fetchArray(\SQLITE3_ASSOC);
+            $data = unserialize($row['value']);
+            if ($data !== false) {
+                return $data;
             }
         }
-
         return null;
     }
 
     public function saveData($data): void
     {
+        $blob = serialize($data);
+
         $stmt = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
         $stmt->bindValue(':key', $this->getCacheKey());
-        $stmt->bindValue(':value', serialize($data));
+        $stmt->bindValue(':value', $blob);
         $stmt->bindValue(':updated', time());
         $stmt->execute();
     }
@@ -66,12 +66,9 @@ class SQLiteCache implements CacheInterface
         $stmt->bindValue(':key', $this->getCacheKey());
         $result = $stmt->execute();
         if ($result) {
-            $data = $result->fetchArray(\SQLITE3_ASSOC);
-            if (isset($data['updated'])) {
-                return $data['updated'];
-            }
+            $row = $result->fetchArray(\SQLITE3_ASSOC);
+            return $row['updated'];
         }
-
         return null;
     }
 
