@@ -99,6 +99,7 @@ function getContents(
     array $curlOptions = [],
     bool $returnFull = false
 ) {
+    $httpClient = RssBridge::getHttpClient();
     $cache = RssBridge::getCache();
     $cache->setScope('server');
     $cache->setKey([$url]);
@@ -141,7 +142,7 @@ function getContents(
         $config['if_not_modified_since'] = $cache->getTime();
     }
 
-    $result = _http_request($url, $config);
+    $result = $httpClient->request($url, $config);
     $response = [
         'code' => $result['code'],
         'status_lines' => $result['status_lines'],
@@ -205,124 +206,121 @@ function getContents(
     return $response['content'];
 }
 
-/**
- * Fetch content from url
- *
- * @internal Private function used internally
- * @throws HttpException
- */
-function _http_request(string $url, array $config = []): array
+final class CurlHttpClient
 {
-    $defaults = [
-        'useragent' => null,
-        'timeout' => 5,
-        'headers' => [],
-        'proxy' => null,
-        'curl_options' => [],
-        'if_not_modified_since' => null,
-        'retries' => 3,
-        'max_filesize' => null,
-        'max_redirections' => 5,
-    ];
-    $config = array_merge($defaults, $config);
+    public function request(string $url, array $config = []): array
+    {
+        $defaults = [
+            'useragent' => null,
+            'timeout' => 5,
+            'headers' => [],
+            'proxy' => null,
+            'curl_options' => [],
+            'if_not_modified_since' => null,
+            'retries' => 3,
+            'max_filesize' => null,
+            'max_redirections' => 5,
+        ];
+        $config = array_merge($defaults, $config);
 
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_MAXREDIRS, $config['max_redirections']);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    $httpHeaders = [];
-    foreach ($config['headers'] as $name => $value) {
-        $httpHeaders[] = sprintf('%s: %s', $name, $value);
-    }
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
-    if ($config['useragent']) {
-        curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
-    }
-    curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
-    curl_setopt($ch, CURLOPT_ENCODING, '');
-    curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, $config['max_redirections']);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        $httpHeaders = [];
+        foreach ($config['headers'] as $name => $value) {
+            $httpHeaders[] = sprintf('%s: %s', $name, $value);
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
+        if ($config['useragent']) {
+            curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
+        }
+        curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
+        curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
-    if ($config['max_filesize']) {
-        // This option inspects the Content-Length header
-        curl_setopt($ch, CURLOPT_MAXFILESIZE, $config['max_filesize']);
-        curl_setopt($ch, CURLOPT_NOPROGRESS, false);
-        // This progress function will monitor responses who omit the Content-Length header
-        curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $downloadSize, $downloaded, $uploadSize, $uploaded) use ($config) {
-            if ($downloaded > $config['max_filesize']) {
-                // Return a non-zero value to abort the transfer
-                return -1;
+        if ($config['max_filesize']) {
+            // This option inspects the Content-Length header
+            curl_setopt($ch, CURLOPT_MAXFILESIZE, $config['max_filesize']);
+            curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+            // This progress function will monitor responses who omit the Content-Length header
+            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $downloadSize, $downloaded, $uploadSize, $uploaded) use ($config) {
+                if ($downloaded > $config['max_filesize']) {
+                    // Return a non-zero value to abort the transfer
+                    return -1;
+                }
+                return 0;
+            });
+        }
+
+        if ($config['proxy']) {
+            curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
+        }
+        if (curl_setopt_array($ch, $config['curl_options']) === false) {
+            throw new \Exception('Tried to set an illegal curl option');
+        }
+
+        if ($config['if_not_modified_since']) {
+            curl_setopt($ch, CURLOPT_TIMEVALUE, $config['if_not_modified_since']);
+            curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+        }
+
+        $responseStatusLines = [];
+        $responseHeaders = [];
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $rawHeader) use (&$responseHeaders, &$responseStatusLines) {
+            $len = strlen($rawHeader);
+            if ($rawHeader === "\r\n") {
+                return $len;
             }
-            return 0;
+            if (preg_match('#^HTTP/(2|1.1|1.0)#', $rawHeader)) {
+                $responseStatusLines[] = $rawHeader;
+                return $len;
+            }
+            $header = explode(':', $rawHeader);
+            if (count($header) === 1) {
+                return $len;
+            }
+            $name = mb_strtolower(trim($header[0]));
+            $value = trim(implode(':', array_slice($header, 1)));
+            if (!isset($responseHeaders[$name])) {
+                $responseHeaders[$name] = [];
+            }
+            $responseHeaders[$name][] = $value;
+            return $len;
         });
-    }
 
-    if ($config['proxy']) {
-        curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
-    }
-    if (curl_setopt_array($ch, $config['curl_options']) === false) {
-        throw new \Exception('Tried to set an illegal curl option');
-    }
+        $attempts = 0;
+        while (true) {
+            $attempts++;
+            $data = curl_exec($ch);
+            if ($data !== false) {
+                // The network call was successful, so break out of the loop
+                break;
+            }
+            if ($attempts > $config['retries']) {
+                // Finally give up
+                $curl_error = curl_error($ch);
+                $curl_errno = curl_errno($ch);
+                throw new HttpException(sprintf(
+                    'cURL error %s: %s (%s) for %s',
+                    $curl_error,
+                    $curl_errno,
+                    'https://curl.haxx.se/libcurl/c/libcurl-errors.html',
+                    $url
+                ));
+            }
+        }
 
-    if ($config['if_not_modified_since']) {
-        curl_setopt($ch, CURLOPT_TIMEVALUE, $config['if_not_modified_since']);
-        curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return [
+            'code' => $statusCode,
+            'status_lines' => $responseStatusLines,
+            'headers' => $responseHeaders,
+            'body' => $data,
+        ];
     }
-
-    $responseStatusLines = [];
-    $responseHeaders = [];
-    curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $rawHeader) use (&$responseHeaders, &$responseStatusLines) {
-        $len = strlen($rawHeader);
-        if ($rawHeader === "\r\n") {
-            return $len;
-        }
-        if (preg_match('#^HTTP/(2|1.1|1.0)#', $rawHeader)) {
-            $responseStatusLines[] = $rawHeader;
-            return $len;
-        }
-        $header = explode(':', $rawHeader);
-        if (count($header) === 1) {
-            return $len;
-        }
-        $name = mb_strtolower(trim($header[0]));
-        $value = trim(implode(':', array_slice($header, 1)));
-        if (!isset($responseHeaders[$name])) {
-            $responseHeaders[$name] = [];
-        }
-        $responseHeaders[$name][] = $value;
-        return $len;
-    });
-
-    $attempts = 0;
-    while (true) {
-        $attempts++;
-        $data = curl_exec($ch);
-        if ($data !== false) {
-            // The network call was successful, so break out of the loop
-            break;
-        }
-        if ($attempts > $config['retries']) {
-            // Finally give up
-            $curl_error = curl_error($ch);
-            $curl_errno = curl_errno($ch);
-            throw new HttpException(sprintf(
-                'cURL error %s: %s (%s) for %s',
-                $curl_error,
-                $curl_errno,
-                'https://curl.haxx.se/libcurl/c/libcurl-errors.html',
-                $url
-            ));
-        }
-    }
-
-    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    return [
-        'code'      => $statusCode,
-        'status_lines' => $responseStatusLines,
-        'headers'   => $responseHeaders,
-        'body'      => $data,
-    ];
 }
 
 /**

@@ -14,7 +14,8 @@ while ($next) { /* Collect all contributors */
         'Content-Type' => 'application/json',
         'User-Agent' => 'RSS-Bridge',
     ];
-    $result = _http_request($url, ['headers' => $headers]);
+    $httpClient = new CurlHttpClient();
+    $result = $httpClient->request($url, ['headers' => $headers]);
 
     foreach (json_decode($result['body']) as $contributor) {
         $contributors[] = $contributor;
