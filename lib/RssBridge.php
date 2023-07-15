@@ -2,7 +2,7 @@
 
 final class RssBridge
 {
-    private static CurlHttpClient $httpClient;
+    private static HttpClient $httpClient;
     private static CacheInterface $cache;
 
     public function main(array $argv = [])
@@ -107,7 +107,7 @@ final class RssBridge
         }
     }
 
-    public static function getHttpClient(): CurlHttpClient
+    public static function getHttpClient(): HttpClient
     {
         return self::$httpClient;
     }
