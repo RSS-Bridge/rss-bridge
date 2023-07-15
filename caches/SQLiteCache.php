@@ -41,10 +41,12 @@ class SQLiteCache implements CacheInterface
         $result = $stmt->execute();
         if ($result) {
             $row = $result->fetchArray(\SQLITE3_ASSOC);
-            $data = unserialize($row['value']);
+            $blob = $row['value'];
+            $data = unserialize($blob);
             if ($data !== false) {
                 return $data;
             }
+            Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
         }
         return null;
     }
