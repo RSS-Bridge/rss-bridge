@@ -5,7 +5,7 @@ class GithubIssueBridge extends BridgeAbstract
     const MAINTAINER = 'Pierre Mazière';
     const NAME = 'Github Issue';
     const URI = 'https://github.com/';
-    const CACHE_TIMEOUT = 0; // 10min
+    const CACHE_TIMEOUT = 600; // 10m
     const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
     const PARAMETERS = [
