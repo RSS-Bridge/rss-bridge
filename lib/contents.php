@@ -191,8 +191,7 @@ function getContents(
                     throw new CloudFlareException($exceptionMessage, $response['code']);
                 }
             }
-
-            throw new HttpException($exceptionMessage, $response['code']);
+            throw new HttpException(trim($exceptionMessage), $result['code']);
     }
     if ($returnFull === true) {
         // For legacy reasons, use content instead of body

@@ -92,7 +92,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
             $item['author'] = $details->authorText->runs[0]->text;
             $item['content'] = '';
 
-            if (isset($details->contentText)) {
+            if (isset($details->contentText->runs)) {
                 $text = $this->getText($details->contentText->runs);
 
                 $this->itemTitle = $this->ellipsisTitle($text);

@@ -142,13 +142,14 @@ class DisplayAction implements ActionInterface
                     'donationUri'  => $bridge->getDonationURI(),
                     'icon' => $bridge->getIcon()
                 ];
-            } catch (\Throwable $e) {
+            } catch (\Exception $e) {
                 if ($e instanceof HttpException) {
-                    // Produce a smaller log record for http exceptions
-                    Logger::warning(sprintf('Exception in %s: %s', $bridgeClassName, create_sane_exception_message($e)));
+                    Logger::warning(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)));
+                    if ($e->getCode() === 429) {
+                        return new Response('503 Service Unavailable', 503);
+                    }
                 } else {
-                    // Log the exception
-                    Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
+                    Logger::error(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)), ['e' => $e]);
                 }
 
                 // Emit error only if we are passed the error report limit
@@ -158,7 +159,6 @@ class DisplayAction implements ActionInterface
                         // Emit the error as a feed item in a feed so that feed readers can pick it up
                         $items[] = $this->createFeedItemFromException($e, $bridge);
                     } elseif (Configuration::getConfig('error', 'output') === 'http') {
-                        // Emit as a regular web response
                         throw $e;
                     }
                 }

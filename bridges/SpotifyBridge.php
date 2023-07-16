@@ -53,6 +53,7 @@ class SpotifyBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $this->fetchAccessToken();
         $entries = $this->getAllEntries();
         usort($entries, function ($entry1, $entry2) {
             return $this->getDate($entry2) <=> $this->getDate($entry1);
@@ -92,7 +93,7 @@ class SpotifyBridge extends BridgeAbstract
                 'show' => 'episode',
             ];
             if (!isset($types[$type])) {
-                throw new \Exception('Spotify URI not supported');
+                throw new \Exception(sprintf('Unsupported Spotify URI: %s', $uri));
             }
             $entry_type = $types[$type];
 
@@ -111,7 +112,8 @@ class SpotifyBridge extends BridgeAbstract
             $offset = 0;
             while (true) {
                 $query['offset'] = $offset;
-                $partial = $this->fetchContent($url . '?' . http_build_query($query));
+                $json = getContents($url . '?' . http_build_query($query), ['Authorization: Bearer ' . $this->token]);
+                $partial = Json::decode($json);
                 if (empty($partial['items'])) {
                     break;
                 }
@@ -188,12 +190,11 @@ class SpotifyBridge extends BridgeAbstract
         return DateTime::createFromFormat('Y-m-d', $date)->getTimestamp();
     }
 
-    private function getToken()
+    private function fetchAccessToken()
     {
         $cache = RssBridge::getCache();
-        $cache->setScope('SpotifyBridge');
-
         $cacheKey = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
+        $cache->setScope('SpotifyBridge');
         $cache->setKey([$cacheKey]);
 
         $time = null;
@@ -202,43 +203,20 @@ class SpotifyBridge extends BridgeAbstract
         }
 
         if (!$cache->getTime() || $time >= 3600) {
-            $this->fetchToken();
+            // fetch token
+            $basicAuth = base64_encode(sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret')));
+            $json = getContents('https://accounts.spotify.com/api/token', [
+                "Authorization: Basic $basicAuth"
+            ], [
+                CURLOPT_POSTFIELDS => 'grant_type=client_credentials'
+            ]);
+            $data = Json::decode($json);
+            $this->token = $data['access_token'];
+
             $cache->saveData($this->token);
         } else {
             $this->token = $cache->loadData();
         }
-    }
-
-    private function fetchToken()
-    {
-        $curl = curl_init();
-
-        curl_setopt($curl, CURLOPT_URL, 'https://accounts.spotify.com/api/token');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
-
-        $basic = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Basic ' . base64_encode($basic)]);
-
-        $json = curl_exec($curl);
-        $json = json_decode($json)->access_token;
-        curl_close($curl);
-
-        $this->token = $json;
-    }
-
-    private function fetchContent($url)
-    {
-        $this->getToken();
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $this->token]);
-        $json = curl_exec($curl);
-        $json = json_decode($json, true);
-        curl_close($curl);
-        return $json;
     }
 
     public function getURI()
@@ -273,7 +251,8 @@ class SpotifyBridge extends BridgeAbstract
                 $query['market'] = $this->getInput('country');
             }
 
-            $item = $this->fetchContent($uri . '?' . http_build_query($query));
+            $json = getContents($uri . '?' . http_build_query($query), ['Authorization: Bearer ' . $this->token]);
+            $item = Json::decode($json);
 
             $this->uri = $item['external_urls']['spotify'];
             $this->name = $item['name'] . ' - Spotify';
