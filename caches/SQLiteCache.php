@@ -41,12 +41,14 @@ class SQLiteCache implements CacheInterface
         $result = $stmt->execute();
         if ($result) {
             $row = $result->fetchArray(\SQLITE3_ASSOC);
-            $blob = $row['value'];
-            $data = unserialize($blob);
-            if ($data !== false) {
-                return $data;
+            if ($row !== false) {
+                $blob = $row['value'];
+                $data = unserialize($blob);
+                if ($data !== false) {
+                    return $data;
+                }
+                Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
             }
-            Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
         }
         return null;
     }
@@ -69,7 +71,9 @@ class SQLiteCache implements CacheInterface
         $result = $stmt->execute();
         if ($result) {
             $row = $result->fetchArray(\SQLITE3_ASSOC);
-            return $row['updated'];
+            if ($row !== false) {
+                return $row['updated'];
+            }
         }
         return null;
     }
