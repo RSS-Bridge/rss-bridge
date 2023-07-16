@@ -197,7 +197,7 @@ function getContents(
                 }
             }
 
-            throw new HttpException($exceptionMessage, $result['code']);
+            throw new HttpException(trim($exceptionMessage), $result['code']);
     }
     if ($returnFull === true) {
         return $response;
