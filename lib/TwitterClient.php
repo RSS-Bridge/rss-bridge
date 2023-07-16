@@ -11,8 +11,13 @@ class TwitterClient
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
-        $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
+
+        $cache->setScope('twitter');
+        $cache->setKey(['cache']);
+        $cache->purgeCache(60 * 60 * 3);
+
         $this->data = $this->cache->loadData() ?? [];
+        $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
     }
 
     public function fetchUserTweets(string $screenName): \stdClass

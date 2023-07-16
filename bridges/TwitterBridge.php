@@ -224,10 +224,6 @@ EOD
         switch ($this->queriedContext) {
             case 'By username':
                 $cache = RssBridge::getCache();
-                $cache->setScope('twitter');
-                $cache->setKey(['cache']);
-                // todo: inspect mtime instead of purging with 3h
-                $cache->purgeCache(60 * 60 * 3);
                 $api = new TwitterClient($cache);
 
                 $screenName = $this->getInput('u');

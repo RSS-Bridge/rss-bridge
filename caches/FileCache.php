@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @link https://www.php.net/manual/en/function.clearstatcache.php
+ */
 class FileCache implements CacheInterface
 {
     private array $config;
@@ -25,18 +28,24 @@ class FileCache implements CacheInterface
         return $this->config;
     }
 
-    public function loadData()
+    public function loadData(int $timeout = 86400)
     {
+        clearstatcache();
         if (!file_exists($this->getCacheFile())) {
             return null;
         }
-        $data = unserialize(file_get_contents($this->getCacheFile()));
-        if ($data === false) {
-            // Intentionally not throwing an exception
-            Logger::warning(sprintf('Failed to unserialize: %s', $this->getCacheFile()));
-            return null;
+        $modificationTime = filemtime($this->getCacheFile());
+        if (time() - $timeout < $modificationTime) {
+            $data = unserialize(file_get_contents($this->getCacheFile()));
+            if ($data === false) {
+                // Intentionally not throwing an exception
+                Logger::warning(sprintf('Failed to unserialize: %s', $this->getCacheFile()));
+                return null;
+            }
+            return $data;
         }
-        return $data;
+        unlink($this->getCacheFile());
+        return null;
     }
 
     public function saveData($data): void
@@ -49,9 +58,7 @@ class FileCache implements CacheInterface
 
     public function getTime(): ?int
     {
-        // https://www.php.net/manual/en/function.clearstatcache.php
         clearstatcache();
-
         $cacheFile = $this->getCacheFile();
         if (file_exists($cacheFile)) {
             $time = filemtime($cacheFile);
@@ -64,7 +71,7 @@ class FileCache implements CacheInterface
         return null;
     }
 
-    public function purgeCache(int $seconds): void
+    public function purgeCache(int $timeout = 86400): void
     {
         if (! $this->config['enable_purge']) {
             return;
@@ -90,7 +97,7 @@ class FileCache implements CacheInterface
                 continue;
             } elseif ($cacheFile->isFile()) {
                 $filepath = $cacheFile->getPathname();
-                if (filemtime($filepath) < time() - $seconds) {
+                if (filemtime($filepath) < time() - $timeout) {
                     // todo: sometimes this file doesn't exists
                     unlink($filepath);
                 }

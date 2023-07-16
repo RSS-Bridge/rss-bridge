@@ -409,26 +409,15 @@ abstract class BridgeAbstract implements BridgeInterface
     /**
      * Loads a cached value for the specified key
      *
-     * @param int $duration Cache duration (optional)
+     * @param int $timeout Cache duration (optional)
      * @return mixed Cached value or null if the key doesn't exist or has expired
      */
-    protected function loadCacheValue(string $key, $duration = null)
+    protected function loadCacheValue(string $key, int $timeout = 86400)
     {
         $cache = RssBridge::getCache();
-        // Create class name without the namespace part
-        $scope = $this->getShortName();
-        $cache->setScope($scope);
+        $cache->setScope($this->getShortName());
         $cache->setKey([$key]);
-        $timestamp = $cache->getTime();
-
-        if (
-            $duration
-            && $timestamp
-            && $timestamp < time() - $duration
-        ) {
-            return null;
-        }
-        return $cache->loadData();
+        return $cache->loadData($timeout);
     }
 
     /**
@@ -439,8 +428,7 @@ abstract class BridgeAbstract implements BridgeInterface
     protected function saveCacheValue(string $key, $value)
     {
         $cache = RssBridge::getCache();
-        $scope = $this->getShortName();
-        $cache->setScope($scope);
+        $cache->setScope($this->getShortName());
         $cache->setKey([$key]);
         $cache->saveData($value);
     }
