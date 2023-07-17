@@ -7,45 +7,86 @@ class SpotifyBridge extends BridgeAbstract
     const DESCRIPTION = 'Fetches the latest items from one or more artists, playlists or podcasts';
     const MAINTAINER = 'Paroleen';
     const CACHE_TIMEOUT = 3600;
-    const PARAMETERS = [ [
-        'clientid' => [
-            'name' => 'Client ID',
-            'type' => 'text',
-            'required' => true
+    const PARAMETERS = [
+        'By Spotify URIs' => [
+            'clientid' => [
+                'name' => 'Client ID',
+                'type' => 'text',
+                'required' => true
+            ],
+            'clientsecret' => [
+                'name' => 'Client secret',
+                'type' => 'text',
+                'required' => true
+            ],
+            'country' => [
+                'name' => 'Country/Market',
+                'type' => 'text',
+                'required' => false,
+                'exampleValue' => 'US',
+                'defaultValue' => 'US'
+            ],
+            'limit' => [
+                'name' => 'Limit',
+                'type' => 'number',
+                'required' => false,
+                'exampleValue' => 10,
+                'defaultValue' => 10
+            ],
+            'spotifyuri' => [
+                'name' => 'Spotify URIs',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ [,spotify:playlist:37i9dQZF1DXcBWIGoYBM5M,spotify:show:6ShFMYxeDNMo15COLObDvC]',
+            ],
+            'albumtype' => [
+                'name' => 'Album type',
+                'type' => 'text',
+                'required' => false,
+                'exampleValue' => 'album,single,appears_on,compilation',
+                'defaultValue' => 'album,single'
+            ]
         ],
-        'clientsecret' => [
-            'name' => 'Client secret',
-            'type' => 'text',
-            'required' => true
+        'By Spotify Search' => [
+            'clientid' => [
+                'name' => 'Client ID',
+                'type' => 'text',
+                'required' => true
+            ],
+            'clientsecret' => [
+                'name' => 'Client secret',
+                'type' => 'text',
+                'required' => true
+            ],
+            'market' => [
+                'name' => 'Market',
+                'type' => 'text',
+                'required' => false,
+                'exampleValue' => 'US',
+                'defaultValue' => 'US'
+            ],
+            'limit' => [
+                'name' => 'Limit',
+                'type' => 'number',
+                'required' => false,
+                'exampleValue' => 10,
+                'defaultValue' => 10
+            ],
+            'query' => [
+                'name' => 'Search query',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'artist:The Beatles',
+            ],
+            'type' => [
+                'name' => 'Type',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'album,episode',
+                'defaultValue' => 'album,episode'
+            ]
         ],
-        'country' => [
-            'name' => 'Country/Market',
-            'type' => 'text',
-            'required' => false,
-            'exampleValue' => 'US',
-            'defaultValue' => 'US'
-        ],
-        'limit' => [
-            'name' => 'Limit',
-            'type' => 'number',
-            'required' => false,
-            'exampleValue' => 10,
-            'defaultValue' => 10
-        ],
-        'spotifyuri' => [
-            'name' => 'Spotify URIs',
-            'type' => 'text',
-            'required' => true,
-            'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ [,spotify:playlist:37i9dQZF1DXcBWIGoYBM5M,spotify:show:6ShFMYxeDNMo15COLObDvC]',
-        ],
-        'albumtype' => [
-            'name' => 'Album type',
-            'type' => 'text',
-            'required' => false,
-            'exampleValue' => 'album,single,appears_on,compilation',
-            'defaultValue' => 'album,single'
-        ]
-    ] ];
+    ];
 
     private $uri = '';
     private $name = '';
@@ -54,7 +95,13 @@ class SpotifyBridge extends BridgeAbstract
     public function collectData()
     {
         $this->fetchAccessToken();
-        $entries = $this->getAllEntries();
+
+        if ($this->queriedContext === 'By Spotify URIs') {
+            $entries = $this->getEntriesFromURIs();
+        } else {
+            $entries = $this->getEntriesFromQuery();
+        }
+
         usort($entries, function ($entry1, $entry2) {
             return $this->getDate($entry2) <=> $this->getDate($entry1);
         });
@@ -78,7 +125,46 @@ class SpotifyBridge extends BridgeAbstract
         }
     }
 
-    private function getAllEntries()
+    private function getEntriesFromQuery()
+    {
+        $entries = [];
+
+        $types = [
+            'albums',
+            'episodes',
+        ];
+
+        $query = [
+            'q' => $this->getInput('query'),
+            'type' => $this->getInput('type'),
+            'market' => $this->getInput('market'),
+            'limit' => 50,
+        ];
+
+        $hasItems = true;
+        $offset = 0;
+
+        while ($hasItems && $offset < 1000) {
+            $hasItems = false;
+
+            $query['offset'] = $offset;
+            $json = getContents('https://api.spotify.com/v1/search?' . http_build_query($query), ['Authorization: Bearer ' . $this->token]);
+            $partial = Json::decode($json);
+
+            foreach ($types as $type) {
+                if (isset($partial[$type]['items'])) {
+                    $entries = array_merge($entries, $partial[$type]['items']);
+                    $hasItems = true;
+                }
+            }
+
+            $offset += 50;
+        }
+
+        return $entries;
+    }
+
+    private function getEntriesFromURIs()
     {
         $entries = [];
         $uris = explode(',', $this->getInput('spotifyuri'));
