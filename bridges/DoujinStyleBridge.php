@@ -83,7 +83,8 @@ class DoujinStyleBridge extends BridgeAbstract {
                 switch ($key) {
                     case 'Artist':
                         $artist = $value->find('a', 0)->plaintext;
-                        $item['title'] = $artist . ' - ' . $title;
+                        $item['title'] = "$artist - $title";
+                        $item['content'] .= "<br>Artist: $artist";
                         break;
                     case 'Tags:':
                         $item['categories'] = [];
@@ -91,9 +92,11 @@ class DoujinStyleBridge extends BridgeAbstract {
                             $tag = str_replace("&#45;", "-", $tag->plaintext);
                             $item['categories'][] = $tag;
                         }
+
+                        $item['content'] .= '<br>Tags: ' . join(", ", $item['categories']);
                         break;
                     case 'Format:':
-                        $item['content'] .= "<p>Format: $value->plaintext</p>";
+                        $item['content'] .= "<br>Format: $value->plaintext";
                         break;
                     case 'Date Added:':
                         $item['timestamp'] = $value->plaintext;
