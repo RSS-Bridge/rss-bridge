@@ -22,7 +22,7 @@ class DoujinStyleBridge extends BridgeAbstract {
             $content = getSimpleHTMLDOM($item['uri']);
             $content = defaultLinkTo($content, $this->getURI());
 
-            $item['title'] = $content->find('h2', 0)->plaintext;
+            $title = $content->find('h2', 0)->plaintext;
 
             $cover = $content->find('#imgClick a', 0);
             if (is_null($cover)) {
@@ -46,24 +46,26 @@ class DoujinStyleBridge extends BridgeAbstract {
             foreach ($metadata as $key => $value) {
                 switch ($key) {
                     case 'Artist':
-                        $item['author'] = $value->find('a', 0)->plaintext;
+                        $artist = $value->find('a', 0)->plaintext;
+                        $item['title'] = $artist . ' - ' . $title;
                         break;
                     case 'Tags:':
                         $item['categories'] = [];
-                        foreach ($value->find("a") as $tag) {
+                        foreach ($value->find('a') as $tag) {
                             $item['categories'][] = $tag->plaintext;
                         }
                         break;
                     case 'Format:':
-                        $format = $value->plaintext;
+                        $item['content'] .= "<p>Format: $value->plaintext</p>";
                         break;
                     case 'Date Added:':
                         $item['timestamp'] = $value->plaintext;
                         break;
+                    case 'Provided By:':
+                        $item['author'] = $value->find('a', 0)->plaintext;
+                        break;
                 }
             }
-            
-            $item['content'] .= "<p>Format: $format</p>";
 
             $this->items[] = $item;
         }
