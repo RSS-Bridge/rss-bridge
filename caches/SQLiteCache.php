@@ -55,9 +55,11 @@ class SQLiteCache implements CacheInterface
             }
             return $data;
         }
-        $stmt = $this->db->prepare('DELETE FROM storage WHERE key = :key');
-        $stmt->bindValue(':key', $this->getCacheKey());
-        $stmt->execute();
+        // It's a good idea to delete expired cache items.
+        // However I'm seeing lots of  SQLITE_BUSY errors so commented out for now
+        // $stmt = $this->db->prepare('DELETE FROM storage WHERE key = :key');
+        // $stmt->bindValue(':key', $this->getCacheKey());
+        // $stmt->execute();
         return null;
     }
 
