@@ -10,6 +10,7 @@ class DoujinStyleBridge extends BridgeAbstract {
 
     const PARAMETERS = [
         'Most recent submissions' => [],
+        'Randomly selected items' => [],
         'From search results' => [
             'query' => [
                 'name' => 'Search query',
@@ -129,6 +130,9 @@ class DoujinStyleBridge extends BridgeAbstract {
                 if ($this->getInput('ogg') == 1) {
                     $url .= '&format4=on';
                 }
+
+            case 'Randomly selected items':
+                $url .= '?p=random';
         }
 
         return $url;
