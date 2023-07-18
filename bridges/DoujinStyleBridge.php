@@ -7,7 +7,42 @@ class DoujinStyleBridge extends BridgeAbstract {
     const MAINTAINER = 'mrtnvgr';
 
     // TODO: "Games" support
-    // TODO: Search support
+
+    const PARAMETERS = [
+        'Most recent submissions' => [],
+        'From search results' => [
+            'query' => [
+                'name' => 'Search query',
+                'required' => true,
+                'exampleValue' => 'FELT',
+            ],
+            'flac' => [
+                'name' => 'Include FLAC',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ],
+            'mp3' => [
+                'name' => 'Include MP3',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ],
+            'tta' => [
+                'name' => 'Include TTA',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ],
+            'opus' => [
+                'name' => 'Include Opus',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ],
+            'ogg' => [
+                'name' => 'Include OGG',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ]
+        ]
+    ];
 
     public function collectData() {
         $html = getSimpleHTMLDOM($this->getURI());
@@ -69,6 +104,34 @@ class DoujinStyleBridge extends BridgeAbstract {
 
             $this->items[] = $item;
         }
+    }
+
+	public function getURI() {
+        $url = self::URI;
+
+        switch($this->queriedContext) {
+            case 'From search results':
+                $url .= '?p=search&type=blanket';
+                $url .= '&result=' . $this->getInput('query');
+
+                if ($this->getInput('flac') == 1) {
+                    $url .= '&format0=on';
+                }
+                if ($this->getInput('mp3') == 1) {
+                    $url .= '&format1=on';
+                }
+                if ($this->getInput('tta') == 1) {
+                    $url .= '&format2=on';
+                }
+                if ($this->getInput('opus') == 1) {
+                    $url .= '&format3=on';
+                }
+                if ($this->getInput('ogg') == 1) {
+                    $url .= '&format4=on';
+                }
+        }
+
+        return $url;
     }
 }
 
