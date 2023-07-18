@@ -425,14 +425,9 @@ function getSimpleHTMLDOMCached(
     $cache->setScope('pages');
     $cache->setKey([$url]);
     $content = $cache->loadData($timeout);
-    if ($content && !Debug::isEnabled()) {
-        return $content;
+    if (!$content || Debug::isEnabled()) {
+        $content = getContents($url, $header ?? [], $opts ?? []);
     }
-    $content = getContents(
-        $url,
-        $header ?? [],
-        $opts ?? []
-    );
     if ($content) {
         $cache->setScope('pages');
         $cache->setKey([$url]);
