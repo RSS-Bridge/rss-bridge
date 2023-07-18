@@ -28,13 +28,11 @@ class ImgsedBridge extends BridgeAbstract
                 'name' => 'stories',
                 'type' => 'checkbox',
                 'title' => 'Show stories for this Instagram user',
-                'defaultValue' => '',
             ],
             'tagged' => [
                 'name' => 'tagged',
                 'type' => 'checkbox',
                 'title' => 'Show tagged post for this Instagram user',
-                'defaultValue' => '',
             ],
         ]
     ];
