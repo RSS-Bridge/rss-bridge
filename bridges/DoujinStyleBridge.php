@@ -88,7 +88,8 @@ class DoujinStyleBridge extends BridgeAbstract {
                     case 'Tags:':
                         $item['categories'] = [];
                         foreach ($value->find('a') as $tag) {
-                            $item['categories'][] = $tag->plaintext;
+                            $tag = str_replace("&#45;", "-", $tag->plaintext);
+                            $item['categories'][] = $tag;
                         }
                         break;
                     case 'Format:':
