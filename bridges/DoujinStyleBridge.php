@@ -137,10 +137,10 @@ class DoujinStyleBridge extends BridgeAbstract
                 if ($this->getInput('ogg') == 1) {
                     $url .= '&format4=on';
                 }
-		break;
+                break;
             case 'Randomly selected items':
                 $url .= '?p=random';
-		break;
+                break;
         }
 
         return $url;
