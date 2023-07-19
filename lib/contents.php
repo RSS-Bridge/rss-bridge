@@ -169,7 +169,7 @@ function getContents(
             break;
         case 304:
             // Not Modified
-            $response['body'] = $cache->loadData();
+            $response['body'] = $cache->loadData(86400 * 7);
             break;
         default:
             $exceptionMessage = sprintf(
