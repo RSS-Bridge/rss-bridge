@@ -247,31 +247,6 @@ class RedditBridge extends BridgeAbstract
         });
     }
 
-    public function detectParameters($url)
-    {
-        $parsed_url = parse_url($url);
-
-        $host = $parsed_url['host'] ?? null;
-
-        if ($host != 'www.reddit.com' && $host != 'old.reddit.com') {
-            return null;
-        }
-
-        $path = explode('/', $parsed_url['path']);
-
-        if ($path[1] == 'r') {
-            return [
-                'r' => $path[2]
-            ];
-        } elseif ($path[1] == 'user') {
-            return [
-                'u' => $path[2]
-            ];
-        } else {
-            return null;
-        }
-    }
-
     public function getIcon()
     {
         return 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png';
@@ -306,5 +281,30 @@ class RedditBridge extends BridgeAbstract
     private function link($href, $text)
     {
         return '<a href="' . $href . '">' . $text . '</a>';
+    }
+
+    public function detectParameters($url)
+    {
+        $parsed_url = parse_url($url);
+
+        $host = $parsed_url['host'] ?? null;
+
+        if ($host != 'www.reddit.com' && $host != 'old.reddit.com') {
+            return null;
+        }
+
+        $path = explode('/', $parsed_url['path']);
+
+        if ($path[1] == 'r') {
+            return [
+                'r' => $path[2]
+            ];
+        } elseif ($path[1] == 'user') {
+            return [
+                'u' => $path[2]
+            ];
+        } else {
+            return null;
+        }
     }
 }
