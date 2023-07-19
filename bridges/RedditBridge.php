@@ -111,7 +111,7 @@ class RedditBridge extends BridgeAbstract
 
         foreach ($subreddits as $subreddit) {
             $name = trim($subreddit);
-            $values = getContents(self::URI
+            $url = self::URI
                 . '/search.json?q='
                 . $keywords
                 . $flair
@@ -119,10 +119,14 @@ class RedditBridge extends BridgeAbstract
                 . $name
                 . '&sort='
                 . $this->getInput('d')
-                . '&include_over_18=on');
-            $decodedValues = json_decode($values);
+                . '&include_over_18=on';
 
-            foreach ($decodedValues->data->children as $post) {
+            $version = 'v0.0.1';
+            $useragent = "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)";
+            $json = getContents($url, ['User-Agent: ' . $useragent]);
+            $parsedJson = Json::decode($json, false);
+
+            foreach ($parsedJson->data->children as $post) {
                 if ($post->kind == 't1' && !$comments) {
                     continue;
                 }
