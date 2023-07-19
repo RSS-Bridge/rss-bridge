@@ -9,6 +9,14 @@ class PicukiBridge extends BridgeAbstract
     const DESCRIPTION = 'Returns Picuki (Instagram viewer) posts by user and by hashtag';
 
     const PARAMETERS = [
+        'global' => [
+            'count' => [
+                'name' => 'Count',
+                'type' => 'number',
+                'title' => 'How many posts to fetch',
+                'defaultValue' => 12
+            ]
+        ],
         'Username' => [
             'u' => [
                 'name' => 'username',
@@ -43,6 +51,13 @@ class PicukiBridge extends BridgeAbstract
         $re = '#let short_code = "(.*?)";\s*$#m';
         $html = getSimpleHTMLDOM($this->getURI());
 
+        $requestedCount = $this->getInput('count');
+        if ($requestedCount > 12) {
+            // Picuki shows 12 posts per page at initial load.
+            throw new \Exception('Maximum count is 12');
+        }
+
+        $count = 0;
         foreach ($html->find('.box-photos .box-photo') as $element) {
             // skip ad items
             if (in_array('adv', explode(' ', $element->class))) {
@@ -86,14 +101,19 @@ class PicukiBridge extends BridgeAbstract
                 'source'     => $sourceUrl,
                 'enclosures' => [$imageUrl],
                 'content'    => <<<HTML
-<a href="{$url}">
-	<img loading="lazy" src="{$imageUrl}" />
-</a>
-<a href="{$sourceUrl}">{$sourceUrl}</a>
-{$videoNote}
-<p>{$description}<p>
-HTML
+                    <a href="{$url}">
+                        <img loading="lazy" src="{$imageUrl}" />
+                    </a>
+                    <a href="{$sourceUrl}">{$sourceUrl}</a>
+                    {$videoNote}
+                    <p>{$description}<p>
+                    HTML
             ];
+
+            $count++;
+            if ($count >= $requestedCount) {
+                break;
+            }
         }
     }
 
