@@ -65,7 +65,6 @@ class MemcachedCache implements CacheInterface
                 'scope'         => $this->scope,
                 'key'           => $this->key,
                 'expiration'    => $this->expiration,
-                'value'         => mb_substr($data, 0, 50),
                 'code'          => $this->conn->getLastErrorCode(),
                 'message'       => $this->conn->getLastErrorMessage(),
                 'number'        => $this->conn->getLastErrorErrno(),
