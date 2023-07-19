@@ -73,47 +73,6 @@ class RedditBridge extends BridgeAbstract
         ]
     ];
 
-    public function detectParameters($url)
-    {
-        $parsed_url = parse_url($url);
-
-        $host = $parsed_url['host'] ?? null;
-
-        if ($host != 'www.reddit.com' && $host != 'old.reddit.com') {
-            return null;
-        }
-
-        $path = explode('/', $parsed_url['path']);
-
-        if ($path[1] == 'r') {
-            return [
-                'r' => $path[2]
-            ];
-        } elseif ($path[1] == 'user') {
-            return [
-                'u' => $path[2]
-            ];
-        } else {
-            return null;
-        }
-    }
-
-    public function getIcon()
-    {
-        return 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png';
-    }
-
-    public function getName()
-    {
-        if ($this->queriedContext == 'single') {
-            return 'Reddit r/' . $this->getInput('r');
-        } elseif ($this->queriedContext == 'user') {
-            return 'Reddit u/' . $this->getInput('u');
-        } else {
-            return self::NAME;
-        }
-    }
-
     public function collectData()
     {
         $user = false;
@@ -153,14 +112,14 @@ class RedditBridge extends BridgeAbstract
         foreach ($subreddits as $subreddit) {
             $name = trim($subreddit);
             $values = getContents(self::URI
-                    . '/search.json?q='
-                    . $keywords
-                    . $flair
-                    . ($user ? 'author%3A' : 'subreddit%3A')
-                    . $name
-                    . '&sort='
-                    . $this->getInput('d')
-                    . '&include_over_18=on');
+                . '/search.json?q='
+                . $keywords
+                . $flair
+                . ($user ? 'author%3A' : 'subreddit%3A')
+                . $name
+                . '&sort='
+                . $this->getInput('d')
+                . '&include_over_18=on');
             $decodedValues = json_decode($values);
 
             foreach ($decodedValues->data->children as $post) {
@@ -221,10 +180,10 @@ class RedditBridge extends BridgeAbstract
                     }
 
                     $item['content'] = $this->template(
-                        $data->url,
-                        $data->thumbnail,
-                        $data->domain
-                    ) . $embed;
+                            $data->url,
+                            $data->thumbnail,
+                            $data->domain
+                        ) . $embed;
                 } elseif (isset($data->post_hint) ? $data->post_hint == 'image' : false) {
                     // Single image
 
@@ -286,6 +245,47 @@ class RedditBridge extends BridgeAbstract
         usort($this->items, function ($a, $b) {
             return $a['timestamp'] < $b['timestamp'];
         });
+    }
+
+    public function detectParameters($url)
+    {
+        $parsed_url = parse_url($url);
+
+        $host = $parsed_url['host'] ?? null;
+
+        if ($host != 'www.reddit.com' && $host != 'old.reddit.com') {
+            return null;
+        }
+
+        $path = explode('/', $parsed_url['path']);
+
+        if ($path[1] == 'r') {
+            return [
+                'r' => $path[2]
+            ];
+        } elseif ($path[1] == 'user') {
+            return [
+                'u' => $path[2]
+            ];
+        } else {
+            return null;
+        }
+    }
+
+    public function getIcon()
+    {
+        return 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png';
+    }
+
+    public function getName()
+    {
+        if ($this->queriedContext == 'single') {
+            return 'Reddit r/' . $this->getInput('r');
+        } elseif ($this->queriedContext == 'user') {
+            return 'Reddit u/' . $this->getInput('u');
+        } else {
+            return self::NAME;
+        }
     }
 
     private function encodePermalink($link)
