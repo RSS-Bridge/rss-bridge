@@ -27,7 +27,6 @@ class TwitterClient
             $userInfo = $this->fetchUserInfoByScreenName($screenName);
         } catch (HttpException $e) {
             if ($e->getCode() === 403) {
-                Logger::info('The guest token has expired');
                 $this->data['guest_token'] = null;
                 $this->fetchGuestToken();
                 $userInfo = $this->fetchUserInfoByScreenName($screenName);
@@ -40,7 +39,6 @@ class TwitterClient
             $timeline = $this->fetchTimeline($userInfo->rest_id);
         } catch (HttpException $e) {
             if ($e->getCode() === 403) {
-                Logger::info('The guest token has expired');
                 $this->data['guest_token'] = null;
                 $this->fetchGuestToken();
                 $timeline = $this->fetchTimeline($userInfo->rest_id);
@@ -93,7 +91,6 @@ class TwitterClient
     private function fetchGuestToken(): void
     {
         if (isset($this->data['guest_token'])) {
-            Logger::info('Reusing cached guest token: ' . $this->data['guest_token']);
             return;
         }
         $url = 'https://api.twitter.com/1.1/guest/activate.json';
@@ -104,7 +101,6 @@ class TwitterClient
         $this->cache->setScope('twitter');
         $this->cache->setKey(['cache']);
         $this->cache->saveData($this->data);
-        Logger::info("Fetch new guest token: $guest_token");
     }
 
     private function fetchUserInfoByScreenName(string $screenName)
