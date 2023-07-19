@@ -184,10 +184,10 @@ class RedditBridge extends BridgeAbstract
                     }
 
                     $item['content'] = $this->template(
-                            $data->url,
-                            $data->thumbnail,
-                            $data->domain
-                        ) . $embed;
+                        $data->url,
+                        $data->thumbnail,
+                        $data->domain
+                    ) . $embed;
                 } elseif (isset($data->post_hint) ? $data->post_hint == 'image' : false) {
                     // Single image
 
