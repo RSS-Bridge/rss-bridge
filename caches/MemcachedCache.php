@@ -6,8 +6,6 @@ class MemcachedCache implements CacheInterface
     private string $key;
     private $conn;
     private $expiration = 0;
-    private $time = null;
-    private $data = null;
 
     public function __construct()
     {
@@ -50,8 +48,6 @@ class MemcachedCache implements CacheInterface
             return null;
         }
         if (time() - $timeout < $value['time']) {
-            $this->time = $value['time'];
-            $this->data = $value['data'];
             return $value['data'];
         }
         return null;
@@ -67,13 +63,15 @@ class MemcachedCache implements CacheInterface
         if ($result === false) {
             throw new \Exception('Cannot write the cache to memcached server');
         }
-        $this->time = $value['time'];
     }
 
     public function getTime(): ?int
     {
-        $this->loadData();
-        return $this->time;
+        $value = $this->conn->get($this->getCacheKey());
+        if ($value === false) {
+            return null;
+        }
+        return $value['time'];
     }
 
     public function purgeCache(int $timeout = 86400): void
