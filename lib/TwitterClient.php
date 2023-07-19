@@ -116,7 +116,7 @@ class TwitterClient
             'https://twitter.com/i/api/graphql/hc-pka9A7gyS3xODIafnrQ/UserByScreenName?variables=%s',
             urlencode(json_encode($variables))
         );
-        $response = json_decode(getContents($url, $this->createHttpHeaders()));
+        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         if (isset($response->errors)) {
             // Grab the first error message
             throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
