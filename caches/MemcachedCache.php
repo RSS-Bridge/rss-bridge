@@ -84,7 +84,6 @@ class MemcachedCache implements CacheInterface
 
     public function purgeCache(int $timeout = 86400): void
     {
-        $this->conn->flush();
         // Note: does not purges cache right now
         // Just sets cache expiration and leave cache purging for memcached itself
         $this->expiration = $timeout;
