@@ -38,13 +38,14 @@ class FileCache implements CacheInterface
         if (time() - $timeout < $modificationTime) {
             $data = unserialize(file_get_contents($this->getCacheFile()));
             if ($data === false) {
-                // Intentionally not throwing an exception
                 Logger::warning(sprintf('Failed to unserialize: %s', $this->getCacheFile()));
+                // Intentionally not throwing an exception
                 return null;
             }
             return $data;
         }
-        unlink($this->getCacheFile());
+        // It's a good idea to delete the expired item here, but commented out atm
+        // unlink($this->getCacheFile());
         return null;
     }
 
