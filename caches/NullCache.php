@@ -12,7 +12,7 @@ class NullCache implements CacheInterface
     {
     }
 
-    public function loadData()
+    public function loadData(int $timeout = 86400)
     {
     }
 
@@ -25,7 +25,7 @@ class NullCache implements CacheInterface
         return null;
     }
 
-    public function purgeCache(int $seconds): void
+    public function purgeCache(int $timeout = 86400): void
     {
     }
 }

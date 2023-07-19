@@ -11,8 +11,13 @@ class TwitterClient
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
-        $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
+
+        $cache->setScope('twitter');
+        $cache->setKey(['cache']);
+        $cache->purgeCache(60 * 60 * 3);
+
         $this->data = $this->cache->loadData() ?? [];
+        $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
     }
 
     public function fetchUserTweets(string $screenName): \stdClass
@@ -22,7 +27,6 @@ class TwitterClient
             $userInfo = $this->fetchUserInfoByScreenName($screenName);
         } catch (HttpException $e) {
             if ($e->getCode() === 403) {
-                Logger::info('The guest token has expired');
                 $this->data['guest_token'] = null;
                 $this->fetchGuestToken();
                 $userInfo = $this->fetchUserInfoByScreenName($screenName);
@@ -35,7 +39,6 @@ class TwitterClient
             $timeline = $this->fetchTimeline($userInfo->rest_id);
         } catch (HttpException $e) {
             if ($e->getCode() === 403) {
-                Logger::info('The guest token has expired');
                 $this->data['guest_token'] = null;
                 $this->fetchGuestToken();
                 $timeline = $this->fetchTimeline($userInfo->rest_id);
@@ -88,7 +91,6 @@ class TwitterClient
     private function fetchGuestToken(): void
     {
         if (isset($this->data['guest_token'])) {
-            Logger::info('Reusing cached guest token: ' . $this->data['guest_token']);
             return;
         }
         $url = 'https://api.twitter.com/1.1/guest/activate.json';
@@ -99,7 +101,6 @@ class TwitterClient
         $this->cache->setScope('twitter');
         $this->cache->setKey(['cache']);
         $this->cache->saveData($this->data);
-        Logger::info("Fetch new guest token: $guest_token");
     }
 
     private function fetchUserInfoByScreenName(string $screenName)
@@ -115,7 +116,7 @@ class TwitterClient
             'https://twitter.com/i/api/graphql/hc-pka9A7gyS3xODIafnrQ/UserByScreenName?variables=%s',
             urlencode(json_encode($variables))
         );
-        $response = json_decode(getContents($url, $this->createHttpHeaders()));
+        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         if (isset($response->errors)) {
             // Grab the first error message
             throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
@@ -168,7 +169,7 @@ class TwitterClient
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
-        $response = json_decode(getContents($url, $this->createHttpHeaders()));
+        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         return $response;
     }
 

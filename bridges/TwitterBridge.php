@@ -7,7 +7,7 @@ class TwitterBridge extends BridgeAbstract
     const API_URI = 'https://api.twitter.com';
     const GUEST_TOKEN_USES = 100;
     const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
-    const CACHE_TIMEOUT = 300; // 5min
+    const CACHE_TIMEOUT = 60 * 15; // 15min
     const DESCRIPTION = 'returns tweets';
     const MAINTAINER = 'arnd-s';
     const PARAMETERS = [
@@ -224,10 +224,6 @@ EOD
         switch ($this->queriedContext) {
             case 'By username':
                 $cache = RssBridge::getCache();
-                $cache->setScope('twitter');
-                $cache->setKey(['cache']);
-                // todo: inspect mtime instead of purging with 3h
-                $cache->purgeCache(60 * 60 * 3);
                 $api = new TwitterClient($cache);
 
                 $screenName = $this->getInput('u');

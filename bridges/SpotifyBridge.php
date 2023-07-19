@@ -282,14 +282,10 @@ class SpotifyBridge extends BridgeAbstract
         $cacheKey = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
         $cache->setScope('SpotifyBridge');
         $cache->setKey([$cacheKey]);
-
-        $time = null;
-        if ($cache->getTime()) {
-            $time = (new DateTime())->getTimestamp() - $cache->getTime();
-        }
-
-        if (!$cache->getTime() || $time >= 3600) {
-            // fetch token
+        $token = $cache->loadData(3600);
+        if ($token) {
+            $this->token = $token;
+        } else {
             $basicAuth = base64_encode(sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret')));
             $json = getContents('https://accounts.spotify.com/api/token', [
                 "Authorization: Basic $basicAuth"
@@ -298,10 +294,9 @@ class SpotifyBridge extends BridgeAbstract
             ]);
             $data = Json::decode($json);
             $this->token = $data['access_token'];
-
+            $cache->setScope('SpotifyBridge');
+            $cache->setKey([$cacheKey]);
             $cache->saveData($this->token);
-        } else {
-            $this->token = $cache->loadData();
         }
     }
 

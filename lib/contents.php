@@ -100,9 +100,6 @@ function getContents(
     bool $returnFull = false
 ) {
     $httpClient = RssBridge::getHttpClient();
-    $cache = RssBridge::getCache();
-    $cache->setScope('server');
-    $cache->setKey([$url]);
 
     // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
     $defaultHttpHeaders = [
@@ -138,6 +135,11 @@ function getContents(
     if (Configuration::getConfig('proxy', 'url') && !defined('NOPROXY')) {
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
+
+    $cache = RssBridge::getCache();
+    $cache->setScope('server');
+    $cache->setKey([$url]);
+
     if (!Debug::isEnabled() && $cache->getTime()) {
         $config['if_not_modified_since'] = $cache->getTime();
     }
@@ -384,7 +386,7 @@ function getSimpleHTMLDOM(
  * _Notice_: Cached contents are forcefully removed after 24 hours (86400 seconds).
  *
  * @param string $url The URL.
- * @param int $duration Cache duration in seconds.
+ * @param int $timeout Cache duration in seconds.
  * @param array $header (optional) A list of cURL header.
  * For more information follow the links below.
  * * https://php.net/manual/en/function.curl-setopt.php
@@ -409,7 +411,7 @@ function getSimpleHTMLDOM(
  */
 function getSimpleHTMLDOMCached(
     $url,
-    $duration = 86400,
+    $timeout = 86400,
     $header = [],
     $opts = [],
     $lowercase = true,
@@ -422,29 +424,15 @@ function getSimpleHTMLDOMCached(
     $cache = RssBridge::getCache();
     $cache->setScope('pages');
     $cache->setKey([$url]);
-
-    // Determine if cached file is within duration
-    $time = $cache->getTime();
-    if (
-        $time
-        && time() - $duration < $time
-        && !Debug::isEnabled()
-    ) {
-        // Cache hit
-        $content = $cache->loadData();
-    } else {
-        $content = getContents(
-            $url,
-            $header ?? [],
-            $opts ?? []
-        );
-        if ($content) {
-            $cache->setScope('pages');
-            $cache->setKey([$url]);
-            $cache->saveData($content);
-        }
+    $content = $cache->loadData($timeout);
+    if (!$content || Debug::isEnabled()) {
+        $content = getContents($url, $header ?? [], $opts ?? []);
     }
-
+    if ($content) {
+        $cache->setScope('pages');
+        $cache->setKey([$url]);
+        $cache->saveData($content);
+    }
     return str_get_html(
         $content,
         $lowercase,

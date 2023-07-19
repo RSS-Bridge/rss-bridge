@@ -90,36 +90,34 @@ class DisplayAction implements ActionInterface
         $cache = RssBridge::getCache();
         $cache->setScope('');
         $cache->setKey($cache_params);
-        // This cache purge will basically delete all cache items older than 24h, regardless of scope and key
-        $cache->purgeCache(86400);
 
         $items = [];
         $infos = [];
-        $mtime = $cache->getTime();
+
+        $feed = $cache->loadData($cacheTimeout);
 
         if (
-            $mtime
-            && (time() - $cacheTimeout < $mtime)
+            $feed
             && !Debug::isEnabled()
         ) {
-            // At this point we found the feed in the cache and debug mode is disabled
-
             if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+                $modificationTime = $cache->getTime();
                 // The client wants to know if the feed has changed since its last check
-                $stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
-                if ($mtime <= $stime) {
-                    $lastModified2 = gmdate('D, d M Y H:i:s ', $mtime) . 'GMT';
+                $modifiedSince = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+                if ($modificationTime <= $modifiedSince) {
+                    $lastModified2 = gmdate('D, d M Y H:i:s ', $modificationTime) . 'GMT';
                     return new Response('', 304, ['Last-Modified' => $lastModified2]);
                 }
             }
 
-            // Load the feed from cache and prepare it
-            $cached = $cache->loadData();
-            if (isset($cached['items']) && isset($cached['extraInfos'])) {
-                foreach ($cached['items'] as $item) {
+            if (
+                isset($feed['items'])
+                && isset($feed['extraInfos'])
+            ) {
+                foreach ($feed['items'] as $item) {
                     $items[] = new FeedItem($item);
                 }
-                $infos = $cached['extraInfos'];
+                $infos = $feed['extraInfos'];
             }
         } else {
             // At this point we did NOT find the feed in the cache or debug mode is enabled.
@@ -173,6 +171,7 @@ class DisplayAction implements ActionInterface
                 }, $items),
                 'extraInfos' => $infos
             ]);
+            $cache->purgeCache();
         }
 
         $format->setItems($items);

@@ -6,8 +6,6 @@ class MemcachedCache implements CacheInterface
     private string $key;
     private $conn;
     private $expiration = 0;
-    private $time = null;
-    private $data = null;
 
     public function __construct()
     {
@@ -43,50 +41,53 @@ class MemcachedCache implements CacheInterface
         $this->conn = $conn;
     }
 
-    public function loadData()
+    public function loadData(int $timeout = 86400)
     {
-        if ($this->data) {
-            return $this->data;
-        }
-        $result = $this->conn->get($this->getCacheKey());
-        if ($result === false) {
+        $value = $this->conn->get($this->getCacheKey());
+        if ($value === false) {
             return null;
         }
-
-        $this->time = $result['time'];
-        $this->data = $result['data'];
-        return $result['data'];
+        if (time() - $timeout < $value['time']) {
+            return $value['data'];
+        }
+        return null;
     }
 
     public function saveData($data): void
     {
-        $time = time();
-        $object_to_save = [
+        $value = [
             'data' => $data,
-            'time' => $time,
+            'time' => time(),
         ];
-        $result = $this->conn->set($this->getCacheKey(), $object_to_save, $this->expiration);
-
+        $result = $this->conn->set($this->getCacheKey(), $value, $this->expiration);
         if ($result === false) {
-            throw new \Exception('Cannot write the cache to memcached server');
+            Logger::warning('Failed to store an item in memcached', [
+                'scope'         => $this->scope,
+                'key'           => $this->key,
+                'expiration'    => $this->expiration,
+                'code'          => $this->conn->getLastErrorCode(),
+                'message'       => $this->conn->getLastErrorMessage(),
+                'number'        => $this->conn->getLastErrorErrno(),
+            ]);
+            // Intentionally not throwing an exception
         }
-
-        $this->time = $time;
     }
 
     public function getTime(): ?int
     {
-        if ($this->time === null) {
-            $this->loadData();
+        $value = $this->conn->get($this->getCacheKey());
+        if ($value === false) {
+            return null;
         }
-        return $this->time;
+        return $value['time'];
     }
 
-    public function purgeCache(int $seconds): void
+    public function purgeCache(int $timeout = 86400): void
     {
+        $this->conn->flush();
         // Note: does not purges cache right now
         // Just sets cache expiration and leave cache purging for memcached itself
-        $this->expiration = $seconds;
+        $this->expiration = $timeout;
     }
 
     public function setScope(string $scope): void
