@@ -69,7 +69,7 @@ class SQLiteCache implements CacheInterface
 
         $stmt = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
         $stmt->bindValue(':key', $this->getCacheKey());
-        $stmt->bindValue(':value', $blob);
+        $stmt->bindValue(':value', $blob, \SQLITE3_BLOB);
         $stmt->bindValue(':updated', time());
         $stmt->execute();
     }
