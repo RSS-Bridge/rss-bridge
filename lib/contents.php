@@ -140,7 +140,7 @@ function getContents(
     $cache->setScope('server');
     $cache->setKey([$url]);
 
-    if (!Debug::isEnabled() && $cache->getTime()) {
+    if (!Debug::isEnabled() && $cache->getTime() && $cache->loadData(86400 * 7)) {
         $config['if_not_modified_since'] = $cache->getTime();
     }
 
