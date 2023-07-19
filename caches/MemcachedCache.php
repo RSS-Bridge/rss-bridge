@@ -62,10 +62,13 @@ class MemcachedCache implements CacheInterface
         $result = $this->conn->set($this->getCacheKey(), $value, $this->expiration);
         if ($result === false) {
             Logger::warning('Failed to store an item in memcached', [
-                'key'       => $this->getCacheKey(),
-                'code'      => $this->conn->getLastErrorCode(),
-                'message'   => $this->conn->getLastErrorMessage(),
-                'number'    => $this->conn->getLastErrorErrno(),
+                'scope'         => $this->scope,
+                'key'           => $this->key,
+                'expiration'    => $this->expiration,
+                'value'         => mb_substr($data, 0, 50),
+                'code'          => $this->conn->getLastErrorCode(),
+                'message'       => $this->conn->getLastErrorMessage(),
+                'number'        => $this->conn->getLastErrorErrno(),
             ]);
             // Intentionally not throwing an exception
         }
