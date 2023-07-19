@@ -169,7 +169,7 @@ class TwitterClient
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
-        $response = json_decode(getContents($url, $this->createHttpHeaders()));
+        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         return $response;
     }
 

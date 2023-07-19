@@ -72,9 +72,7 @@ class MemcachedCache implements CacheInterface
 
     public function getTime(): ?int
     {
-        if ($this->time === null) {
-            $this->loadData();
-        }
+        $this->loadData();
         return $this->time;
     }
 
