@@ -61,6 +61,10 @@ class MemcachedCache implements CacheInterface
         ];
         $result = $this->conn->set($this->getCacheKey(), $value, $this->expiration);
         if ($result === false) {
+            $code = $this->conn->getLastErrorCode();
+            $message = $this->conn->getLastErrorMessage();
+            $number = $this->conn->getLastErrorErrno();
+            Logger::warning(sprintf('code=%s, message=%s, number=%s', $code, $message, $number));
             throw new \Exception('Cannot write the cache to memcached server');
         }
     }
