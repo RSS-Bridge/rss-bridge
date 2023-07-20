@@ -41,6 +41,9 @@ class TikTokBridge extends BridgeAbstract
 
             $link = 'https://www.tiktok.com/@' . $value->author . '/video/' . $value->id;
             $image = $value->video->dynamicCover;
+            if (empty($image)) {
+                $image = $value->video->cover;
+            }
             $views = $value->stats->playCount;
 
             $item['title'] = $value->desc;
