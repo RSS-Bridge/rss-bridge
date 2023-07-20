@@ -51,11 +51,13 @@ function get_current_url(): string
 
 function create_sane_exception_message(\Throwable $e): string
 {
+    $sanitizedMessage = sanitize_root($e->getMessage());
+    $sanitizedFilepath = sanitize_root($e->getFile());
     return sprintf(
         '%s: %s in %s line %s',
         get_class($e),
-        sanitize_root($e->getMessage()),
-        sanitize_root($e->getFile()),
+        $sanitizedMessage,
+        $sanitizedFilepath,
         $e->getLine()
     );
 }

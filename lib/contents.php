@@ -63,6 +63,11 @@ final class Response
         return $this->body;
     }
 
+    public function getCode()
+    {
+        return $this->code;
+    }
+
     public function getHeaders()
     {
         return $this->headers;

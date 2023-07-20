@@ -119,7 +119,7 @@ class TwitterClient
         $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         if (isset($response->errors)) {
             // Grab the first error message
-            throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
+            throw new \Exception(sprintf('Response from twitter: %s', $response->errors[0]->message));
         }
         $userInfo = $response->data->user;
         $this->data[$screenName] = $userInfo;
