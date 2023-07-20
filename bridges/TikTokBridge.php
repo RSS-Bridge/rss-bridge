@@ -33,29 +33,19 @@ class TikTokBridge extends BridgeAbstract
         $title = $html->find('h1', 0)->plaintext ?? self::NAME;
         $this->feedName = htmlspecialchars_decode($title);
 
-        foreach ($html->find('div.tiktok-x6y88p-DivItemContainerV2') as $div) {
+        $SIGI_STATE_RAW = $html->find('script[id=SIGI_STATE]', 0)->innertext;
+        $SIGI_STATE = json_decode($SIGI_STATE_RAW);
+
+        foreach ($SIGI_STATE->ItemModule as $key => $value) {
             $item = [];
 
-            // todo: find proper link to tiktok item
-            $link = $div->find('a', 0)->href;
+            $link = 'https://www.tiktok.com/@' . $value->author . '/video/' . $value->id;
+            $image = $value->video->dynamicCover;
+            $views = $value->stats->playCount;
 
-            $image = $div->find('img', 0)->src ?? '';
-
-            $views = $div->find('strong.video-count', 0)->plaintext;
-
-            if ($link === 'https://www.tiktok.com/') {
-                $link = $this->getURI();
-            }
+            $item['title'] = $value->desc;
             $item['uri'] = $link;
-
-            $a = $div->find('a', 1);
-            if ($a) {
-                $item['title'] = $a->plaintext;
-            } else {
-                $item['title'] = $this->getName();
-            }
             $item['enclosures'][] = $image;
-
             $item['content'] = <<<EOD
 <a href="{$link}"><img src="{$image}"/></a>
 <p>{$views} views<p>
