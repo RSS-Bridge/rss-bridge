@@ -14,21 +14,19 @@ class DisplayAction implements ActionInterface
         if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
             return new Response('503 Service Unavailable', 503);
         }
-
         $this->cache->setScope('http');
         $this->cache->setKey($request);
-
+        // avg timeout of 20m
+        $timeout = 60 * 15 + rand(1, 60 * 10);
         /** @var Response $cachedResponse */
-        $cachedResponse = $this->cache->loadData(60 * 15 + rand(1, 60 * 10));
-        if (!Debug::isEnabled() && $cachedResponse) {
-            Logger::info(sprintf('Returning cached (http) response: %s', $cachedResponse->getBody()));
+        $cachedResponse = $this->cache->loadData($timeout);
+        if ($cachedResponse && !Debug::isEnabled()) {
+            //Logger::info(sprintf('Returning cached (http) response: %s', $cachedResponse->getBody()));
             return $cachedResponse;
         }
-
         $response = $this->createResponse($request);
-
         if (in_array($response->getCode(), [429, 503])) {
-            Logger::info(sprintf('Storing cached (http) response: %s', $response->getBody()));
+            //Logger::info(sprintf('Storing cached (http) response: %s', $response->getBody()));
             $this->cache->setScope('http');
             $this->cache->setKey($request);
             $this->cache->saveData($response);
@@ -112,37 +110,28 @@ class DisplayAction implements ActionInterface
 
         $feed = $this->cache->loadData($cacheTimeout);
 
-        if (
-            $feed
-            && !Debug::isEnabled()
-        ) {
+        if ($feed && !Debug::isEnabled()) {
             if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
                 $modificationTime = $this->cache->getTime();
                 // The client wants to know if the feed has changed since its last check
                 $modifiedSince = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
                 if ($modificationTime <= $modifiedSince) {
-                    $lastModified2 = gmdate('D, d M Y H:i:s ', $modificationTime) . 'GMT';
-                    return new Response('', 304, ['Last-Modified' => $lastModified2]);
+                    $modificationTimeGMT = gmdate('D, d M Y H:i:s ', $modificationTime);
+                    return new Response('', 304, ['Last-Modified' => $modificationTimeGMT . 'GMT']);
                 }
             }
 
-            if (
-                isset($feed['items'])
-                && isset($feed['extraInfos'])
-            ) {
+            if (isset($feed['items']) && isset($feed['extraInfos'])) {
                 foreach ($feed['items'] as $item) {
                     $items[] = new FeedItem($item);
                 }
                 $infos = $feed['extraInfos'];
             }
         } else {
-            // At this point we did NOT find the feed in the cache or debug mode is enabled.
             try {
                 $bridge->setDatas($bridge_params);
                 $bridge->collectData();
-
                 $items = $bridge->getItems();
-
                 if (isset($items[0]) && is_array($items[0])) {
                     $feedItems = [];
                     foreach ($items as $item) {
@@ -208,11 +197,11 @@ class DisplayAction implements ActionInterface
 
         $format->setItems($items);
         $format->setExtraInfos($infos);
-        $lastModified = $this->cache->getTime();
-        $format->setLastModified($lastModified);
+        $newModificationTime = $this->cache->getTime();
+        $format->setLastModified($newModificationTime);
         $headers = [];
-        if ($lastModified) {
-            $headers['Last-Modified'] = gmdate('D, d M Y H:i:s ', $lastModified) . 'GMT';
+        if ($newModificationTime) {
+            $headers['Last-Modified'] = gmdate('D, d M Y H:i:s ', $newModificationTime) . 'GMT';
         }
         $headers['Content-Type'] = $format->getMimeType() . '; charset=' . $format->getCharset();
         return new Response($format->stringify(), 200, $headers);
