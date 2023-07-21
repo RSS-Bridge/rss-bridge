@@ -6,7 +6,7 @@ RSS-Bridge is a web application.
 
 It generates web feeds for websites that don't have one.
 
-Officially hosted instance: https://rss-bridge.org/bridge01
+Officially hosted instance: https://rss-bridge.org/bridge01/
 
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
@@ -44,7 +44,9 @@ Officially hosted instance: https://rss-bridge.org/bridge01
 
 [Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
 
-Check out RSS-Bridge right now on https://rss-bridge.org/bridge01 or find another
+Check out RSS-Bridge right now on https://rss-bridge.org/bridge01/
+
+Alternatively find another
 [public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
 
 ## Tutorial
