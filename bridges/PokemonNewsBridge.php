@@ -14,7 +14,10 @@ final class PokemonNewsBridge extends BridgeAbstract
         // todo: parse json api instead: https://www.pokemon.com/api/1/us/news/get-news.json
         $url = 'https://www.pokemon.com/us/pokemon-news';
         $dom = getSimpleHTMLDOM($url);
-
+        $haystack = (string)$dom;
+        if (str_contains($haystack, 'Request unsuccessful. Incapsula incident')) {
+            throw new \Exception('Blocked by anti-bot');
+        }
         foreach ($dom->find('.news-list ul li') as $item) {
             $title = $item->find('h3', 0)->plaintext;
             $description = $item->find('p.hidden-mobile', 0);
