@@ -157,6 +157,8 @@ class DisplayAction implements ActionInterface
                     'icon' => $bridge->getIcon()
                 ];
             } catch (\Exception $e) {
+                $errorOutput = Configuration::getConfig('error', 'output');
+                $reportLimit = Configuration::getConfig('error', 'report_limit');
                 if ($e instanceof HttpException) {
                     // Reproduce (and log) these responses regardless of error output and report limit
                     if ($e->getCode() === 429) {
@@ -167,13 +169,11 @@ class DisplayAction implements ActionInterface
                         Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)));
                         return new Response('503 Service Unavailable', 503);
                     }
-                    // 504 Gateway Timeout ?
+                    // Might want to cache other codes such as 504 Gateway Timeout
                 }
-                $errorOutput = Configuration::getConfig('error', 'output');
                 if (in_array($errorOutput, ['feed', 'none'])) {
                     Logger::error(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)), ['e' => $e]);
                 }
-                $reportLimit = Configuration::getConfig('error', 'report_limit');
                 $errorCount = 1;
                 if ($reportLimit > 1) {
                     $errorCount = $this->logBridgeError($bridge->getName(), $e->getCode());
@@ -181,7 +181,7 @@ class DisplayAction implements ActionInterface
                 // Let clients know about the error if we are passed the report limit
                 if ($errorCount >= $reportLimit) {
                     if ($errorOutput === 'feed') {
-                        // Render a feed item with the exception
+                        // Render the exception as a feed item
                         $items[] = $this->createFeedItemFromException($e, $bridge);
                     } elseif ($errorOutput === 'http') {
                         // Rethrow so that the main exception handler in RssBridge.php produces an HTTP 500
