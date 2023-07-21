@@ -2,7 +2,9 @@
 
 ![RSS-Bridge](static/logo_600px.png)
 
-RSS-Bridge is a web application. It generates web feeds for websites that don't have one.
+RSS-Bridge is a web application.
+
+It generates web feeds for websites that don't have one.
 
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
