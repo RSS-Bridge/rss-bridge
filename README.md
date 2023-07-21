@@ -93,9 +93,9 @@ server {
 }
 ```
 
-### Install with Docker Hub:
+### Install from Docker Hub:
 
-Install by using the docker image from Docker Hub:
+Install by downloading the docker image from Docker Hub:
 
 ```bash
 # Create container
@@ -243,6 +243,22 @@ Modify `report_limit` so that an error must occur 3 times before it is reported.
 
     ; Defines how often an error must occur before it is reported to the user
     report_limit = 3
+
+### How to password-protect the instance
+
+HTTP basic access authentication:
+
+    [authentication]
+
+    enable = true
+    username = "alice"
+    password = "cat"
+
+Will typically require feed readers to be configured with the credentials.
+
+It may also be possible to manually include the credentials in the URL:
+
+https://alice:cat@rss-bridge.org/bridge01/?action=display&bridge=FabriceBellardBridge&format=Html
 
 ### How to create a new output format
 
