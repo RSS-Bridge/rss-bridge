@@ -220,6 +220,30 @@ type = "memcached"
 
     type = "sqlite"
 
+### How to disable bridge errors (as feed items)
+
+When a bridge fails, RSS-Bridge will produce a feed with a single item describing the error.
+
+This way, feed readers pick it up and you are notified.
+
+If you don't want this behaviour, switch the error output to `http`:
+
+    [error]
+
+    ; Defines how error messages are returned by RSS-Bridge
+    ;
+    ; "feed" = As part of the feed (default)
+    ; "http" = As HTTP error message
+    ; "none" = No errors are reported
+    output = "http"
+
+### How to accumulate errors before finally reporting it
+
+Modify `report_limit` so that an error must occur 3 times before it is reported.
+
+    ; Defines how often an error must occur before it is reported to the user
+    report_limit = 3
+
 ### How to create a new output format
 
 [Create a new format](https://rss-bridge.github.io/rss-bridge/Format_API/index.html).
@@ -230,6 +254,12 @@ These commands require that you have installed the dev dependencies in `composer
 
     ./vendor/bin/phpunit
     ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
+
+### How to spawn a minimal development environment
+
+    php -S 127.0.0.1:9001
+
+http://127.0.0.1:9001/
 
 ## Explanation
 
