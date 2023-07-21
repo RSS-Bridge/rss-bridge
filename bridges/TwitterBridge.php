@@ -124,6 +124,7 @@ EOD
     private $apiKey     = null;
     private $guestToken = null;
     private $authHeaders = [];
+    private ?string $feedIconUrl = null;
 
     public function detectParameters($url)
     {
@@ -307,6 +308,10 @@ EOD
             if ($user && $user->pinned_tweet_ids_str) {
                 $pinnedTweetId = $user->pinned_tweet_ids_str;
             }
+        }
+
+        if ($this->queriedContext === 'By username') {
+            $this->feedIconUrl = $data->user_info->legacy->profile_image_url_https ?? null;
         }
 
         foreach ($tweets as $tweet) {
@@ -495,6 +500,11 @@ EOD;
         }
 
         usort($this->items, ['TwitterBridge', 'compareTweetId']);
+    }
+
+    public function getIcon()
+    {
+        return $this->feedIconUrl ?? parent::getIcon();
     }
 
     private static function compareTweetId($tweet1, $tweet2)
