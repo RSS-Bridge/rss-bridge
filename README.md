@@ -6,6 +6,8 @@ RSS-Bridge is a web application.
 
 It generates web feeds for websites that don't have one.
 
+Officially hosted instance: https://rss-bridge.org/bridge01
+
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
 [![irc.libera.chat](https://img.shields.io/badge/irc.libera.chat-%23rssbridge-blue.svg)](https://web.libera.chat/#rssbridge)
@@ -53,7 +55,6 @@ Requires minimum PHP 7.4.
 
 ```shell
 cd /var/www
-# Verbose flag and don't install development dependencies
 composer create-project -v --no-dev rss-bridge/rss-bridge
 ```
 
@@ -237,10 +238,11 @@ The specific cache duration can be different between bridges. Cached files are d
 RSS-Bridge allows you to take full control over which bridges are displayed to the user.
 That way you can host your own RSS-Bridge service with your favorite collection of bridges!
 
-
 ## Reference
 
-### FeedItem properties
+### Feed item structure
+
+This is the feed item structure that bridges are expected to produce.
 
 ```php
     $item = [
@@ -263,7 +265,7 @@ That way you can host your own RSS-Bridge service with your favorite collection 
     ]
 ```
 
-### Output formats:
+### Output formats
 
 * `Atom`: Atom feed, for use in feed readers
 * `Html`: Simple HTML page
@@ -274,9 +276,10 @@ That way you can host your own RSS-Bridge service with your favorite collection 
 
 ### Cache backends
 
-* file
-* sqlite
-* memcached
+* `file`
+* `sqlite`
+* `memcached`
+* `null`
 
 ### Licenses
 
