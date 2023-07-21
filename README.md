@@ -224,6 +224,13 @@ type = "memcached"
 
 [Create a new format](https://rss-bridge.github.io/rss-bridge/Format_API/index.html).
 
+### How to run unit tests and linter
+
+These commands require that you have installed the dev dependencies in `composer.json`.
+
+    ./vendor/bin/phpunit
+    ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
+
 ## Explanation
 
 We are RSS-Bridge community, a group of developers continuing the project initiated by sebsauvage,
