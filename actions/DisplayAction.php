@@ -4,16 +4,12 @@ class DisplayAction implements ActionInterface
 {
     private CacheInterface $cache;
 
-    public function __construct()
-    {
-        $this->cache = RssBridge::getCache();
-    }
-
     public function execute(array $request)
     {
         if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
             return new Response('503 Service Unavailable', 503);
         }
+        $this->cache = RssBridge::getCache();
         $this->cache->setScope('http');
         $this->cache->setKey($request);
         // avg timeout of 20m
