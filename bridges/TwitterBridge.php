@@ -7,7 +7,7 @@ class TwitterBridge extends BridgeAbstract
     const API_URI = 'https://api.twitter.com';
     const GUEST_TOKEN_USES = 100;
     const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
-    const CACHE_TIMEOUT = 60 * 15; // 15min
+    const CACHE_TIMEOUT = 120; // 15min
     const DESCRIPTION = 'returns tweets';
     const MAINTAINER = 'arnd-s';
     const PARAMETERS = [
@@ -321,7 +321,7 @@ EOD
         if ($this->queriedContext === 'By username') {
             $this->feedIconUrl = $data->user_info->legacy->profile_image_url_https ?? null;
         }
-        
+
         $i = 0;
         foreach ($tweets as $tweet) {
             // Skip own Retweets...
@@ -366,7 +366,7 @@ EOD
                     $item['id']        = $realtweet->id_str;
                     break;
             }
-            
+
             $item['timestamp'] = $realtweet->created_at;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
             $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '')
