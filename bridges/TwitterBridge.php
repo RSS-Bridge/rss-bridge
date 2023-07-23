@@ -220,13 +220,11 @@ EOD
         $tweets = [];
 
         // Get authentication information
-
+        $cache = RssBridge::getCache();
+        $api = new TwitterClient($cache);
         // Try to get all tweets
         switch ($this->queriedContext) {
             case 'By username':
-                $cache = RssBridge::getCache();
-                $api = new TwitterClient($cache);
-
                 $screenName = $this->getInput('u');
                 $screenName = trim($screenName);
                 $screenName = ltrim($screenName, '@');
@@ -238,35 +236,45 @@ EOD
             case 'By keyword or hashtag':
                 // Does not work with the recent twitter changes
                 $params = [
-                'q'                 => urlencode($this->getInput('q')),
-                'tweet_mode'        => 'extended',
-                'tweet_search_mode' => 'live',
+                    'q'                 => urlencode($this->getInput('q')),
+                    'tweet_mode'        => 'extended',
+                    'tweet_search_mode' => 'live',
                 ];
 
-                $data = $this->makeApiCall('/1.1/search/tweets.json', $params)->statuses;
+                $tweets = $api->search($params)->statuses;
+                $data = [
+                    'tweets' => $tweets
+                ];
                 break;
 
             case 'By list':
                 // Does not work with the recent twitter changes
-                $params = [
-                'slug'              => strtolower($this->getInput('list')),
-                'owner_screen_name' => strtolower($this->getInput('user')),
-                'tweet_mode'        => 'extended',
+                // $params = [
+                // 'slug'              => strtolower($this->getInput('list')),
+                // 'owner_screen_name' => strtolower($this->getInput('user')),
+                // 'tweet_mode'        => 'extended',
+                // ];
+                $query = [
+                    'screenName' => strtolower($this->getInput('user')),
+                    'listSlug' => strtolower($this->getInput('list'))
                 ];
 
-                $data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
+                $data = $api->fetchListTweets($query, $this->queriedContext);
                 break;
 
             case 'By list ID':
                 // Does not work with the recent twitter changes
-                $params = [
-                'list_id'           => $this->getInput('listid'),
-                'tweet_mode'        => 'extended',
+                // $params = [
+                // 'list_id'           => $this->getInput('listid'),
+                // 'tweet_mode'        => 'extended',
+                // ];
+
+                $query = [
+                    'listId' => $this->getInput('listid')
                 ];
 
-                $data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
+                $data = $api->fetchListTweets($query, $this->queriedContext);
                 break;
-
             default:
                 returnServerError('Invalid query context !');
         }
@@ -313,7 +321,8 @@ EOD
         if ($this->queriedContext === 'By username') {
             $this->feedIconUrl = $data->user_info->legacy->profile_image_url_https ?? null;
         }
-
+        
+        $i = 0;
         foreach ($tweets as $tweet) {
             // Skip own Retweets...
             if (isset($tweet->retweeted_status) && $tweet->retweeted_status->user->id_str === $tweet->user->id_str) {
@@ -325,14 +334,6 @@ EOD
                 continue;
             }
 
-            switch ($this->queriedContext) {
-                case 'By username':
-                    if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id)) {
-                        continue 2;
-                    }
-                    break;
-            }
-
             $item = [];
 
             $realtweet = $tweet;
@@ -341,11 +342,32 @@ EOD
                 $realtweet = $tweet->retweeted_status;
             }
 
-            $item['username']  = $data->user_info->legacy->screen_name;
-            $item['fullname']  = $data->user_info->legacy->name;
-            $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
+            switch ($this->queriedContext) {
+                case 'By username':
+                    if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id)) {
+                        continue 2;
+                    }
+                    $item['username']  = $data->user_info->legacy->screen_name;
+                    $item['fullname']  = $data->user_info->legacy->name;
+                    $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
+                    $item['id']        = $realtweet->id_str;
+                    break;
+                case 'By list':
+                case 'By list ID':
+                    $item['username']  = $data->userIds[$i]->legacy->screen_name;
+                    $item['fullname']  = $data->userIds[$i]->legacy->name;
+                    $item['avatar']    = $data->userIds[$i]->legacy->profile_image_url_https;
+                    $item['id']        = $realtweet->conversation_id_str;
+                    break;
+                case 'By keyword or hashtag':
+                    $item['username']  = $realtweet->user->screen_name;
+                    $item['fullname']  = $realtweet->user->name;
+                    $item['avatar']    = $realtweet->user->profile_image_url_https;
+                    $item['id']        = $realtweet->id_str;
+                    break;
+            }
+            
             $item['timestamp'] = $realtweet->created_at;
-            $item['id']        = $realtweet->id_str;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
             $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '')
                          . $item['fullname']
@@ -353,7 +375,11 @@ EOD
                          . $item['username'] . ')';
 
             // Convert plain text URLs into HTML hyperlinks
-            $fulltext = $realtweet->full_text;
+            if (isset($realtweet->full_text)) {
+                $fulltext = $realtweet->full_text;
+            } else {
+                $fulltext = $realtweet->text;
+            }
             $cleanedTweet = $fulltext;
 
             $foundUrls = false;
@@ -496,6 +522,7 @@ EOD;
 EOD;
 
             // put out
+            $i++;
             $this->items[] = $item;
         }
 
