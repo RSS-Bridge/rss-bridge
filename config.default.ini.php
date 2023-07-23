@@ -8,6 +8,7 @@
 
 ; Only these bridges are available for feed production
 ; How to enable all bridges: enabled_bridges[] = *
+enabled_bridges[] = CssSelectorBridge
 enabled_bridges[] = FeedMerge
 enabled_bridges[] = FeedReducerBridge
 enabled_bridges[] = Filter
