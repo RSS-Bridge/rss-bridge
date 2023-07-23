@@ -1,27 +1,38 @@
 <?php
 
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
 class DisplayAction implements ActionInterface
 {
+    private CacheInterface $cache;
+
     public function execute(array $request)
     {
         if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
             return new Response('503 Service Unavailable', 503);
         }
+        $this->cache = RssBridge::getCache();
+        $this->cache->setScope('http');
+        $this->cache->setKey($request);
+        // avg timeout of 20m
+        $timeout = 60 * 15 + rand(1, 60 * 10);
+        /** @var Response $cachedResponse */
+        $cachedResponse = $this->cache->loadData($timeout);
+        if ($cachedResponse && !Debug::isEnabled()) {
+            //Logger::info(sprintf('Returning cached (http) response: %s', $cachedResponse->getBody()));
+            return $cachedResponse;
+        }
+        $response = $this->createResponse($request);
+        if (in_array($response->getCode(), [429, 503])) {
+            //Logger::info(sprintf('Storing cached (http) response: %s', $response->getBody()));
+            $this->cache->setScope('http');
+            $this->cache->setKey($request);
+            $this->cache->saveData($response);
+        }
+        return $response;
+    }
 
+    private function createResponse(array $request)
+    {
         $bridgeFactory = new BridgeFactory();
-
         $bridgeClassName = $bridgeFactory->createBridgeClassName($request['bridge'] ?? '');
 
         $format = $request['format'] ?? null;
@@ -87,46 +98,36 @@ class DisplayAction implements ActionInterface
             )
         );
 
-        $cache = RssBridge::getCache();
-        $cache->setScope('');
-        $cache->setKey($cache_params);
+        $this->cache->setScope('');
+        $this->cache->setKey($cache_params);
 
         $items = [];
         $infos = [];
 
-        $feed = $cache->loadData($cacheTimeout);
+        $feed = $this->cache->loadData($cacheTimeout);
 
-        if (
-            $feed
-            && !Debug::isEnabled()
-        ) {
+        if ($feed && !Debug::isEnabled()) {
             if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
-                $modificationTime = $cache->getTime();
+                $modificationTime = $this->cache->getTime();
                 // The client wants to know if the feed has changed since its last check
                 $modifiedSince = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
                 if ($modificationTime <= $modifiedSince) {
-                    $lastModified2 = gmdate('D, d M Y H:i:s ', $modificationTime) . 'GMT';
-                    return new Response('', 304, ['Last-Modified' => $lastModified2]);
+                    $modificationTimeGMT = gmdate('D, d M Y H:i:s ', $modificationTime);
+                    return new Response('', 304, ['Last-Modified' => $modificationTimeGMT . 'GMT']);
                 }
             }
 
-            if (
-                isset($feed['items'])
-                && isset($feed['extraInfos'])
-            ) {
+            if (isset($feed['items']) && isset($feed['extraInfos'])) {
                 foreach ($feed['items'] as $item) {
                     $items[] = new FeedItem($item);
                 }
                 $infos = $feed['extraInfos'];
             }
         } else {
-            // At this point we did NOT find the feed in the cache or debug mode is enabled.
             try {
                 $bridge->setDatas($bridge_params);
                 $bridge->collectData();
-
                 $items = $bridge->getItems();
-
                 if (isset($items[0]) && is_array($items[0])) {
                     $feedItems = [];
                     foreach ($items as $item) {
@@ -141,46 +142,62 @@ class DisplayAction implements ActionInterface
                     'icon' => $bridge->getIcon()
                 ];
             } catch (\Exception $e) {
+                $errorOutput = Configuration::getConfig('error', 'output');
+                $reportLimit = Configuration::getConfig('error', 'report_limit');
                 if ($e instanceof HttpException) {
-                    Logger::warning(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)));
+                    // Reproduce (and log) these responses regardless of error output and report limit
                     if ($e->getCode() === 429) {
+                        Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)));
+                        return new Response('429 Too Many Requests', 429);
+                    }
+                    if ($e->getCode() === 503) {
+                        Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)));
                         return new Response('503 Service Unavailable', 503);
                     }
-                } else {
+                    // Might want to cache other codes such as 504 Gateway Timeout
+                }
+                if (in_array($errorOutput, ['feed', 'none'])) {
                     Logger::error(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)), ['e' => $e]);
                 }
-
-                // Emit error only if we are passed the error report limit
-                $errorCount = self::logBridgeError($bridge->getName(), $e->getCode());
-                if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
-                    if (Configuration::getConfig('error', 'output') === 'feed') {
-                        // Emit the error as a feed item in a feed so that feed readers can pick it up
+                $errorCount = 1;
+                if ($reportLimit > 1) {
+                    $errorCount = $this->logBridgeError($bridge->getName(), $e->getCode());
+                }
+                // Let clients know about the error if we are passed the report limit
+                if ($errorCount >= $reportLimit) {
+                    if ($errorOutput === 'feed') {
+                        // Render the exception as a feed item
                         $items[] = $this->createFeedItemFromException($e, $bridge);
-                    } elseif (Configuration::getConfig('error', 'output') === 'http') {
+                    } elseif ($errorOutput === 'http') {
+                        // Rethrow so that the main exception handler in RssBridge.php produces an HTTP 500
                         throw $e;
+                    } elseif ($errorOutput === 'none') {
+                        // Do nothing (produces an empty feed)
+                    } else {
+                        // Do nothing, unknown error output? Maybe throw exception or validate in Configuration.php
                     }
                 }
             }
 
             // Unfortunately need to set scope and key again because they might be modified
-            $cache->setScope('');
-            $cache->setKey($cache_params);
-            $cache->saveData([
+            $this->cache->setScope('');
+            $this->cache->setKey($cache_params);
+            $this->cache->saveData([
                 'items' => array_map(function (FeedItem $item) {
                     return $item->toArray();
                 }, $items),
                 'extraInfos' => $infos
             ]);
-            $cache->purgeCache();
+            $this->cache->purgeCache();
         }
 
         $format->setItems($items);
         $format->setExtraInfos($infos);
-        $lastModified = $cache->getTime();
-        $format->setLastModified($lastModified);
+        $newModificationTime = $this->cache->getTime();
+        $format->setLastModified($newModificationTime);
         $headers = [];
-        if ($lastModified) {
-            $headers['Last-Modified'] = gmdate('D, d M Y H:i:s ', $lastModified) . 'GMT';
+        if ($newModificationTime) {
+            $headers['Last-Modified'] = gmdate('D, d M Y H:i:s ', $newModificationTime) . 'GMT';
         }
         $headers['Content-Type'] = $format->getMimeType() . '; charset=' . $format->getCharset();
         return new Response($format->stringify(), 200, $headers);
@@ -210,13 +227,12 @@ class DisplayAction implements ActionInterface
         return $item;
     }
 
-    private static function logBridgeError($bridgeName, $code)
+    private function logBridgeError($bridgeName, $code)
     {
-        $cache = RssBridge::getCache();
-        $cache->setScope('error_reporting');
-        $cache->setkey([$bridgeName . '_' . $code]);
-
-        if ($report = $cache->loadData()) {
+        $this->cache->setScope('error_reporting');
+        $this->cache->setkey([$bridgeName . '_' . $code]);
+        $report = $this->cache->loadData();
+        if ($report) {
             $report = Json::decode($report);
             $report['time'] = time();
             $report['count']++;
@@ -227,7 +243,7 @@ class DisplayAction implements ActionInterface
                 'count' => 1,
             ];
         }
-        $cache->saveData(Json::encode($report));
+        $this->cache->saveData(Json::encode($report));
         return $report['count'];
     }
 
