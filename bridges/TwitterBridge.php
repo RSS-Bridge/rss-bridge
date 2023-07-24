@@ -210,6 +210,16 @@ EOD
         }
     }
 
+    public function getFullText($id)
+    {
+        $url = sprintf(
+            'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en',
+            $id
+        );
+
+        return json_decode(getContents($url), false);
+    }
+
     public function collectData()
     {
         // $data will contain an array of all found tweets (unfiltered)
@@ -242,7 +252,7 @@ EOD
                 ];
 
                 $tweets = $api->search($params)->statuses;
-                $data = [
+                $data = (object) [
                     'tweets' => $tweets
                 ];
                 break;
@@ -342,6 +352,10 @@ EOD
                 $realtweet = $tweet->retweeted_status;
             }
 
+            if (isset($realtweet->truncated) && $realtweet->truncated) {
+                $realtweet = $this->getFullText($realtweet->id_str);
+            }
+
             switch ($this->queriedContext) {
                 case 'By username':
                     if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id)) {
@@ -411,7 +425,7 @@ EOD
             if ($foundUrls === false) {
                 // fallback to regex'es
                 $reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-                if (preg_match($reg_ex, $realtweet->full_text, $url)) {
+                if (preg_match($reg_ex, $fulltext, $url)) {
                     $cleanedTweet = preg_replace(
                         $reg_ex,
                         "<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
@@ -436,10 +450,16 @@ EOD
 EOD;
             }
 
+            if (isset($realtweet->extended_entities->media)) {
+                $medias = $realtweet->extended_entities->media;
+            } else {
+                $medias = $realtweet->mediaDetails;
+            }
+
             // Get images
             $media_html = '';
-            if (isset($realtweet->extended_entities->media) && !$this->getInput('noimg')) {
-                foreach ($realtweet->extended_entities->media as $media) {
+            if (!$this->getInput('noimg')) {
+                foreach ($medias as $media) {
                     switch ($media->type) {
                         case 'photo':
                             $image = $media->media_url_https . '?name=orig';
