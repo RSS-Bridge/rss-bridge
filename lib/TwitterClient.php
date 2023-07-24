@@ -277,7 +277,7 @@ class TwitterClient
     public function search($queryParam)
     {
          $url = sprintf(
-             'https://api.twitter.com/1.1/search/tweets.json?%s', 
+             'https://api.twitter.com/1.1/search/tweets.json?%s',
              http_build_query($queryParam)
          );
         $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
