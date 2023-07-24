@@ -29,7 +29,7 @@ class TwitterClient
             $result = $timeline->data->list->timeline_response;
             $instructions = $result->timeline->instructions;
         }
-        if ($result->__typename === 'UserUnavailable') {
+        if (isset($result->__typename) && $result->__typename === 'UserUnavailable') {
             throw new \Exception('UserUnavailable');
         }
         $instructionTypes = [
@@ -277,8 +277,8 @@ class TwitterClient
     public function search($queryParam)
     {
          $url = sprintf(
-            'https://api.twitter.com/1.1/search/tweets.json?%s',
-            http_build_query($queryParam)
+             'https://api.twitter.com/1.1/search/tweets.json?%s', 
+             http_build_query($queryParam)
          );
         $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         return $response;
