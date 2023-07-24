@@ -24,6 +24,7 @@ class AllocineFRSortiesBridge extends BridgeAbstract
             $thumb = $element->find('figure.thumbnail', 0);
             $meta = $element->find('div.meta-body', 0);
             $synopsis = $element->find('div.synopsis', 0);
+            $date = $element->find('span.date', 0);
 
             $title = $element->find('a[class*=meta-title-link]', 0);
             $content = trim(defaultLinkTo($thumb->outertext . $meta->outertext . $synopsis->outertext, static::URI));
@@ -34,8 +35,32 @@ class AllocineFRSortiesBridge extends BridgeAbstract
 
             $item['content'] = $content;
             $item['title'] = trim($title->innertext);
+            $item['timestamp'] = $this->frenchPubDateToTimestamp($date->plaintext);
             $item['uri'] = static::BASE_URI . '/' . substr($title->href, 1);
             $this->items[] = $item;
         }
+    }
+
+    private function frenchPubDateToTimestamp($date)
+    {
+        return strtotime(
+            strtr(
+                strtolower($date),
+                [
+                    'janvier' => 'jan',
+                    'février' => 'feb',
+                    'mars' => 'march',
+                    'avril' => 'apr',
+                    'mai' => 'may',
+                    'juin' => 'jun',
+                    'juillet' => 'jul',
+                    'août' => 'aug',
+                    'septembre' => 'sep',
+                    'octobre' => 'oct',
+                    'novembre' => 'nov',
+                    'décembre' => 'dec'
+                ]
+            )
+        );
     }
 }
