@@ -210,7 +210,7 @@ EOD
         }
     }
 
-    public function getFullText($id)
+    private function getFullText($id)
     {
         $url = sprintf(
             'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en',
