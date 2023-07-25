@@ -355,7 +355,8 @@ EOD
             if (isset($realtweet->truncated) && $realtweet->truncated) {
                 try {
                     $realtweet = $this->getFullText($realtweet->id_str);
-                } catch (HttpException $e) {}
+                } catch (HttpException $e) {
+		}
             }
 
             switch ($this->queriedContext) {
