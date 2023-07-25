@@ -356,7 +356,8 @@ EOD
                 try {
                     $realtweet = $this->getFullText($realtweet->id_str);
                 } catch (HttpException $e) {
-		}
+                    $realtweet = $tweet;
+                }
             }
 
             switch ($this->queriedContext) {
