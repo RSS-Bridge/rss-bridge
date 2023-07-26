@@ -15,7 +15,12 @@ class CssSelectorBridge extends BridgeAbstract
             ],
             'url_selector' => [
                 'name' => 'Selector for article links or their parent elements',
-                'title' => 'This bridge works using CSS selectors, e.g. "a.article" will match all <a class="article" href="URL">TITLE</a> on home page, each one being treated as a feed item. &#10;&#13;Instead of just a link you can selet one of its parent element. Everything inside that element becomes feed item content, e.g. image and summary present on home page. When doing so, the first link inside the selected element becomes feed item URL/Title.',
+                'title' => implode('', ['This bridge works using CSS selectors, ',
+                    'e.g. "a.article" will match all <a class="article" href="URL">TITLE</a> on home page, ',
+                    'each one being treated as a feed item. &#10;&#13;',
+                    'Instead of just a link you can selet one of its parent element. Everything inside that ',
+                    'element becomes feed item content, e.g. image and summary present on home page. ',
+                    'When doing so, the first link inside the selected element becomes feed item URL/Title.']),
                 'exampleValue' => 'a.article',
                 'required' => true
             ],
@@ -26,7 +31,8 @@ class CssSelectorBridge extends BridgeAbstract
             ],
             'content_selector' => [
                 'name' => '[Optional] Selector to expand each article content',
-                'title' => 'When specified, the bridge will fetch each article from its URL and extract content using the provided selector (Slower!).',
+                'title' => implode('', ['When specified, the bridge will fetch each article from its URL ',
+                    'and extract content using the provided selector (Slower!).']),
                 'exampleValue' => 'article.content',
             ],
             'content_cleanup' => [
@@ -36,7 +42,8 @@ class CssSelectorBridge extends BridgeAbstract
             ],
             'title_cleanup' => [
                 'name' => '[Optional] Text to remove from expanded article title',
-                'title' => 'When fetching each article page, feed item title comes from page title. Specify here some text from page title that need to be removed, e.g. " | BlogName".',
+                'title' => implode('', ['When fetching each article page, feed item title comes from page title. ',
+                    'Specify here some text from page title that need to be removed, e.g. " | BlogName".']),
                 'exampleValue' => ' | BlogName',
             ],
             'limit' => self::LIMIT
