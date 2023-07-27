@@ -61,7 +61,7 @@ class CVEDetailsBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($this->buildUrl());
         $this->html = defaultLinkTo($html, self::URI);
 
-        $vendor = $html->find('#contentdiv > h1 > a', 0);
+        $vendor = $html->find('#contentdiv h1 > a', 0);
         if ($vendor == null) {
             returnServerError('Invalid Vendor ID ' .
                 $this->getInput('vendor_id') .
@@ -70,7 +70,7 @@ class CVEDetailsBridge extends BridgeAbstract
         }
         $this->vendor = $vendor->innertext;
 
-        $product = $html->find('#contentdiv > h1 > a', 1);
+        $product = $html->find('#contentdiv h1 > a', 1);
         if ($product != null) {
             $this->product = $product->innertext;
         }
@@ -102,38 +102,43 @@ class CVEDetailsBridge extends BridgeAbstract
             $this->fetchContent();
         }
 
-        foreach ($this->html->find('#vulnslisttable .srrowns') as $i => $tr) {
+        foreach ($this->html->find('#searchresults > .row') as $i => $tr) {
             // There are some optional vulnerability types, which will be
             // added to the categories as well as the CWE number -- which is
             // always given.
             $categories = [$this->vendor];
             $enclosures = [];
 
-            $cwe = $tr->find('td', 2)->find('a', 0);
-            if ($cwe != null) {
-                $cwe = $cwe->innertext;
-                $categories[] = 'CWE-' . $cwe;
-                $enclosures[] = 'https://cwe.mitre.org/data/definitions/' . $cwe . '.html';
+            $detailLink = $tr->find('.cveheader > h3 > a', 0);
+            $detailHtml = getSimpleHTMLDOM($detailLink->href);
+
+            $div = $detailHtml->find('.cvedetailssummary', 0);
+
+            // The CVE number itself
+            $title = $div->find('h1 > a', 0)->innertext;
+            $content = $div->find('.ssc-paragraph', 0)->innertext;
+            $cweList = $detailHtml->find('h2', 2)->next_sibling();
+            foreach ($cweList->find('li') as $li) {
+                $cweWithDescription = $li->find('a', 0)->innertext;
+                preg_match('/CWE-(\d+)/', $cweWithDescription, $cwe);
+                if (count($cwe) > 1) {
+                    $categories[] = 'CWE-' . $cwe[1];
+                    $enclosures[] = 'https://cwe.mitre.org/data/definitions/' . $cwe[1] . '.html';
+                }
             }
-            $c = $tr->find('td', 4)->innertext;
-            if (trim($c) != '') {
-                $categories[] = $c;
-            }
+
             if ($this->product != '') {
                 $categories[] = $this->product;
             }
 
-            // The CVE number itself
-            $title = $tr->find('td', 1)->find('a', 0)->innertext;
-
             $this->items[] = [
-                'uri' => $tr->find('td', 1)->find('a', 0)->href,
+                'uri' => 'https://cvedetails.com/' . $detailHtml->find('h1 > a', 0)->href,
                 'title' => $title,
                 'timestamp' => $tr->find('td', 5)->innertext,
-                'content' => $tr->next_sibling()->innertext,
+                'content' => $content,
                 'categories' => $categories,
                 'enclosures' => $enclosures,
-                'uid' => $tr->find('td', 1)->find('a', 0)->innertext,
+                'uid' => $title,
             ];
 
             // We only want to fetch the latest 10 CVEs
