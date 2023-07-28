@@ -66,16 +66,27 @@ class EBayBridge extends BridgeAbstract
                 $new_listing_label->remove();
             }
 
-            $item['title'] = $listing->find('.s-item__title', 0)->plaintext;
+            $listingTitle = $listing->find('.s-item__title', 0);
+            if ($listingTitle) {
+                $item['title'] = $listingTitle->plaintext;
+            }
 
             $subtitle = implode('', $listing->find('.s-item__subtitle'));
 
-            $item['uri'] = $listing->find('.s-item__link', 0)->href;
+            $listingUrl = $listing->find('.s-item__link', 0);
+            if ($listingUrl) {
+                $item['uri'] = $listingUrl->href;
+            } else {
+                $item['uri'] = null;
+            }
 
-            preg_match('/.*\/itm\/(\d+).*/i', $item['uri'], $matches);
-            $item['uid'] = $matches[1];
+            if (preg_match('/.*\/itm\/(\d+).*/i', $item['uri'], $matches)) {
+                $item['uid'] = $matches[1];
+            }
 
-            $price = $listing->find('.s-item__details > .s-item__detail > .s-item__price', 0)->plaintext;
+            $priceDom = $listing->find('.s-item__details > .s-item__detail > .s-item__price', 0);
+            $price = $priceDom->plaintext ?? 'N/A';
+
             $shippingFree = $listing->find('.s-item__details > .s-item__detail > .s-item__freeXDays', 0)->plaintext ?? '';
             $localDelivery = $listing->find('.s-item__details > .s-item__detail > .s-item__localDelivery', 0)->plaintext ?? '';
             $logisticsCost = $listing->find('.s-item__details > .s-item__detail > .s-item__logisticsCost', 0)->plaintext ?? '';

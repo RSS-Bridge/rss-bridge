@@ -155,7 +155,7 @@ class TwitterClient
                     throw $e;
                 }
             }
-        } else if ($operation == 'By list ID') {
+        } elseif ($operation === 'By list ID') {
             $id = $query['listId'];
         } else {
             throw new \Exception('Unknown operation to make list tweets');
@@ -347,6 +347,11 @@ class TwitterClient
         if (isset($response->errors)) {
             // Grab the first error message
             throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
+        }
+        if (!isset($response->data->user_by_screen_name->list)) {
+            throw new \Exception(
+                sprintf('Unable to find list in twitter response for %s, %s', $screenName, $listSlug)
+            );
         }
         $listInfo = $response->data->user_by_screen_name->list;
         $this->data[$screenName . '-' . $listSlug] = $listInfo;

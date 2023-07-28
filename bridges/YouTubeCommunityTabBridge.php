@@ -78,19 +78,27 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
             returnServerError('Channel does not have a community tab');
         }
 
-        foreach ($this->getCommunityPosts($json) as $key => $post) {
+        $posts = $this->getCommunityPosts($json);
+        foreach ($posts as $key => $post) {
             $this->itemTitle = '';
 
             if (!isset($post->backstagePostThreadRenderer)) {
                 continue;
             }
 
-            $details = $post->backstagePostThreadRenderer->post->backstagePostRenderer;
+            if (isset($post->backstagePostThreadRenderer->post->backstagePostRenderer)) {
+                $details = $post->backstagePostThreadRenderer->post->backstagePostRenderer;
+            } elseif (isset($post->backstagePostThreadRenderer->post->sharedPostRenderer)) {
+                // todo: properly extract data from this shared post
+                $details = $post->backstagePostThreadRenderer->post->sharedPostRenderer;
+            } else {
+                continue;
+            }
 
             $item = [];
             $item['uri'] = self::URI . '/post/' . $details->postId;
-            $item['author'] = $details->authorText->runs[0]->text;
-            $item['content'] = '';
+            $item['author'] = $details->authorText->runs[0]->text ?? null;
+            $item['content'] = $item['uri'];
 
             if (isset($details->contentText->runs)) {
                 $text = $this->getText($details->contentText->runs);

@@ -137,7 +137,8 @@ class GithubIssueBridge extends BridgeAbstract
     {
         $uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
 
-        $author = $comment->find('.author', 0)->plaintext;
+        $authorDom = $comment->find('.author', 0);
+        $author = $authorDom->plaintext ?? null;
 
         $header = $comment->find('.timeline-comment-header > h3', 0);
         $title .= ' / ' . ($header ? $header->plaintext : 'Activity');

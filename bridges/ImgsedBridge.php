@@ -212,9 +212,12 @@ HTML,
     private function parseDate($content)
     {
         $date = date_create();
-        $relativeDate = date_interval_create_from_date_string(str_replace(' ago', '', $content));
+        $dateString = str_replace(' ago', '', $content);
+        $relativeDate = date_interval_create_from_date_string($dateString);
         if ($relativeDate) {
             date_sub($date, $relativeDate);
+        } else {
+            Logger::info(sprintf('Unable to parse date string: %s', $dateString));
         }
         return date_format($date, 'r');
     }

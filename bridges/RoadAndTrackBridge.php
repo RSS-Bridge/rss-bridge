@@ -50,7 +50,12 @@ class RoadAndTrackBridge extends BridgeAbstract
         }
 
         $item['author'] = $article->find('.byline-name', 0)->innertext ?? '';
-        $item['timestamp'] = strtotime($article->find('.content-info-date', 0)->getAttribute('datetime'));
+
+        $contentInfoDate = $article->find('.content-info-date', 0);
+        if ($contentInfoDate) {
+            $datetime = $contentInfoDate->getAttribute('datetime');
+            $item['timestamp'] = strtotime($datetime);
+        }
 
         $content = $article->find('.content-container', 0);
         if ($content->find('.content-rail', 0) !== null) {
