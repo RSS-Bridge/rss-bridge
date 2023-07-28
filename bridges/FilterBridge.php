@@ -80,10 +80,15 @@ class FilterBridge extends FeedExpander
         // Generate title from first 50 characters of content?
         if ($this->getInput('title_from_content') && array_key_exists('content', $item)) {
             $content = str_get_html($item['content']);
-            $pos = strpos($item['content'], ' ', 50);
-            $item['title'] = substr($content->plaintext, 0, $pos);
-            if (strlen($content->plaintext) >= $pos) {
-                $item['title'] .= '...';
+            $plaintext = $content->plaintext;
+            if (mb_strlen($plaintext) < 51) {
+                $item['title'] = $plaintext;
+            } else {
+                $pos = strpos($item['content'], ' ', 50);
+                $item['title'] = substr($plaintext, 0, $pos);
+                if (strlen($plaintext) >= $pos) {
+                    $item['title'] .= '...';
+                }
             }
         }
 

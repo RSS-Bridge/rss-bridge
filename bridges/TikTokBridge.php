@@ -33,8 +33,9 @@ class TikTokBridge extends BridgeAbstract
         $title = $html->find('h1', 0)->plaintext ?? self::NAME;
         $this->feedName = htmlspecialchars_decode($title);
 
-        $SIGI_STATE_RAW = $html->find('script[id=SIGI_STATE]', 0)->innertext;
-        $SIGI_STATE = json_decode($SIGI_STATE_RAW);
+        $var = $html->find('script[id=SIGI_STATE]', 0);
+        $SIGI_STATE_RAW = $var->innertext;
+        $SIGI_STATE = Json::decode($SIGI_STATE_RAW, false);
 
         foreach ($SIGI_STATE->ItemModule as $key => $value) {
             $item = [];

@@ -55,6 +55,8 @@ final class Logger
                 'Unable to find channel. The channel is non-existing or non-public',
                 // fb
                 'This group is not public! RSS-Bridge only supports public groups!',
+                'You must be logged in to view this page',
+                'Unable to get the page id. You should consider getting the ID by hand',
                 // tiktok 404
                 'https://www.tiktok.com/@',
             ];
