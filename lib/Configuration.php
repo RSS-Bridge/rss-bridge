@@ -113,7 +113,7 @@ final class Configuration
             if ($enabledBridges === '*') {
                 self::setConfig('system', 'enabled_bridges', ['*']);
             } else {
-                self::setConfig('system', 'enabled_bridges', array_filter(explode("\n", $enabledBridges)));
+                self::setConfig('system', 'enabled_bridges', array_filter(array_map('trim', explode("\n", $enabledBridges))));
             }
         }
 
