@@ -72,7 +72,7 @@ class DoujinStyleBridge extends BridgeAbstract
             $item['content'] = "<img src='$cover'/>";
 
             $keys = [];
-            foreach ($content->find('.pageWrap .pageSpan') as $key) {
+            foreach ($content->find('.pageWrap .pageSpan1') as $key) {
                 $keys[] = $key->plaintext;
             }
 
