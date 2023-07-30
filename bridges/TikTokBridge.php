@@ -34,6 +34,9 @@ class TikTokBridge extends BridgeAbstract
         $this->feedName = htmlspecialchars_decode($title);
 
         $var = $html->find('script[id=SIGI_STATE]', 0);
+        if (!$var) {
+            throw new \Exception('Unable to find tiktok user data for ' . $this->processUsername());
+        }
         $SIGI_STATE_RAW = $var->innertext;
         $SIGI_STATE = Json::decode($SIGI_STATE_RAW, false);
 

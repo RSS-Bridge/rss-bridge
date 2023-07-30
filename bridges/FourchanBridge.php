@@ -45,7 +45,8 @@ class FourchanBridge extends BridgeAbstract
             $file = $element->find('.file', 0);
 
             if (!empty($file)) {
-                $item['image'] = $element->find('.file a', 0)->href;
+                $var = $element->find('.file a', 0);
+                $item['image'] = $var->href ?? '';
                 $item['imageThumb'] = $element->find('.file img', 0)->src;
                 if (!isset($item['imageThumb']) and strpos($item['image'], '.swf') !== false) {
                     $item['imageThumb'] = 'http://i.imgur.com/eO0cxf9.jpg';

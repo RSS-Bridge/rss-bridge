@@ -27,9 +27,10 @@ class GettrBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $user = $this->getInput('user');
         $api = sprintf(
             'https://api.gettr.com/u/user/%s/posts?offset=0&max=%s&dir=fwd&incl=posts&fp=f_uo',
-            $this->getInput('user'),
+            $user,
             min($this->getInput('limit'), 20)
         );
         $data = json_decode(getContents($api), false);
