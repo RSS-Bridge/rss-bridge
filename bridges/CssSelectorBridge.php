@@ -198,6 +198,9 @@ class CssSelectorBridge extends BridgeAbstract
             }
             if ($link->tag != 'a') {
                 $link = $link->find('a', 0);
+                if (is_null($link)) {
+                    continue;
+                }
             }
             $item['uri'] = $link->href;
             $item['title'] = $link->plaintext;
@@ -207,6 +210,10 @@ class CssSelectorBridge extends BridgeAbstract
                 $item['content'] = $this->cleanArticleContent($item['content'], $content_cleanup);
             }
             $link_to_item[$link->href] = $item;
+        }
+
+        if (empty($link_to_item)) {
+            returnClientError('The provided URL selector matches some elements, but they do not contain links.');
         }
 
         $links = $this->filterUrlList(array_keys($link_to_item), $url_pattern, $limit);
