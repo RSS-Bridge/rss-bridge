@@ -169,11 +169,19 @@ EOD;
             $stickerDiv->find('picture', 0)->style = '';
 
             return $stickerDiv;
-        } elseif (preg_match(self::BACKGROUND_IMAGE_REGEX, $stickerDiv->find('i', 0)->style, $sticker)) {
-            return <<<EOD
+        }
+
+        $var = $stickerDiv->find('i', 0);
+        if ($var) {
+            $style = $var->style;
+            if (preg_match(self::BACKGROUND_IMAGE_REGEX, $style, $sticker)) {
+                return <<<EOD
 				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
 EOD;
+            }
         }
+
+        return '';
     }
 
     private function processPoll($messageDiv)
