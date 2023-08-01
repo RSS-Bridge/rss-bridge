@@ -112,16 +112,11 @@ abstract class BridgeAbstract implements BridgeInterface
      * @var string
      */
     protected $queriedContext = '';
-    
+
     /**
      * Holds the list of bridge-specific configurations from config.ini.php, used by the bridge.
-     *
-     * Do not access this parameter directly!
-     * Use {@see BridgeAbstract::getConfiguration()} and {@see BridgeAbstract::getOption(string $name)} instead.
-     *
-     * @var array
      */
-    protected array $configuration = [];
+    private array $configuration = [];
 
     /** {@inheritdoc} */
     public function getItems()
