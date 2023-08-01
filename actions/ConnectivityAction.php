@@ -38,7 +38,7 @@ class ConnectivityAction implements ActionInterface
         }
 
         $bridgeName = $request['bridge'] ?? null;
-        if (!isset($bridgeName)) {
+        if (!$bridgeName) {
             return render_template('connectivity.html.php');
         }
         $bridgeClassName = $this->bridgeFactory->createBridgeClassName($bridgeName);
