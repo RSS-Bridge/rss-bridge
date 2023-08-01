@@ -33,9 +33,15 @@ class DisplayAction implements ActionInterface
     private function createResponse(array $request)
     {
         $bridgeFactory = new BridgeFactory();
-        $bridgeClassName = $bridgeFactory->createBridgeClassName($request['bridge'] ?? '');
+        $formatFactory = new FormatFactory();
 
+        $bridgeName = $request['bridge'] ?? null;
         $format = $request['format'] ?? null;
+
+        $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
+        if (!$bridgeClassName) {
+            throw new \Exception(sprintf('Bridge not found: %s', $bridgeName));
+        }
         if (!$format) {
             throw new \Exception('You must specify a format!');
         }
@@ -43,7 +49,6 @@ class DisplayAction implements ActionInterface
             throw new \Exception('This bridge is not whitelisted');
         }
 
-        $formatFactory = new FormatFactory();
         $format = $formatFactory->create($format);
 
         $bridge = $bridgeFactory->create($bridgeClassName);
