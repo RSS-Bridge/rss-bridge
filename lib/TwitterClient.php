@@ -25,9 +25,14 @@ class TwitterClient
         if (isset($timeline->data->user)) {
             $result = $timeline->data->user->result;
             $instructions = $result->timeline_v2->timeline->instructions;
-        } else {
+        } elseif (isset($timeline->data->list->timeline_response)) {
             $result = $timeline->data->list->timeline_response;
+            if (!isset($result->timeline->instructions)) {
+                throw new \Exception('Unable to find instructions');
+            }
             $instructions = $result->timeline->instructions;
+        } else {
+            throw new \Exception('Unable to find timeline');
         }
         if (isset($result->__typename) && $result->__typename === 'UserUnavailable') {
             throw new \Exception('UserUnavailable');
