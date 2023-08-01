@@ -18,11 +18,11 @@ jobs:
       - name: Check out rss-bridge
         run: |
           PR=${{github.event.number}};
-          wget -O requirements.txt https://raw.githubusercontent.com/RSS-Bridge/rss-bridge/master/.github/prtester-requirements.txt;
-          wget https://raw.githubusercontent.com/RSS-Bridge/rss-bridge/master/.github/prtester.py;
+          wget -O requirements.txt https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester-requirements.txt;
+          wget https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester.py;
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
           touch DEBUG;
-          cat $PR.patch | grep " bridges/.*\.php" | sed "s= bridges/\(.*\)Bridge.php.*=\1=g" | sort | uniq > whitelist.txt
+          cat $PR.patch | grep "\bbridges/.*Bridge\.php\b" | sed "s=.*\bbridges/\(.*\)Bridge\.php\b.*=\1=g" | sort | uniq > whitelist.txt
       - name: Start Docker - Current
         run: |
           docker run -d -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG -p 3000:80 ghcr.io/rss-bridge/rss-bridge:latest

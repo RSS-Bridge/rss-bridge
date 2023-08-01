@@ -40,6 +40,8 @@ class AppleMusicBridge extends BridgeAbstract
 
         foreach ($json->results as $obj) {
             if ($obj->wrapperType === 'collection') {
+                $copyright = $obj->copyright ?? '';
+
                 $this->items[] = [
                     'title' => $obj->artistName . ' - ' . $obj->collectionName,
                     'uri' => $obj->collectionViewUrl,
@@ -49,7 +51,7 @@ class AppleMusicBridge extends BridgeAbstract
                     . '><img src="' . $obj->artworkUrl100 . '" /></a><br><br>'
                     . $obj->artistName . ' - ' . $obj->collectionName
                     . '<br>'
-                    . $obj->copyright,
+                    . $copyright,
                 ];
             }
         }

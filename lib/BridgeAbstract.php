@@ -154,6 +154,10 @@ abstract class BridgeAbstract implements BridgeInterface
         }
 
         foreach ($contexts as $context) {
+            if (!isset(static::PARAMETERS[$context])) {
+                // unknown context provided by client, throw exception here? or continue?
+            }
+
             foreach (static::PARAMETERS[$context] as $name => $properties) {
                 if (isset($this->inputs[$context][$name]['value'])) {
                     continue;
