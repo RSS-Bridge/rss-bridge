@@ -256,6 +256,7 @@ Parameter Name | Required | Type | Supported values | Description
 `type` | no | Text | `text`, `number`, `list`, `checkbox` | Type of the input (default: `text`)
 `required` | no | Boolean | `true`, `false` | Specifies if the parameter is required or not (default: `false`). Not supported for lists and checkboxes.
 [`values`](#list-values) | no | associative array | | name/value pairs used by the HTML option tag, required for type '`list`'
+[`multivalue`](#multiple-selectable-list-values) | no | Boolean |`true`, `false` | Specifies if type `list` can have multiple selectable options (default: `false`).
 `title` | no | Text | | Used as tool-tip when mouse-hovering over the input box
 `pattern` | no | Text | | Defines a pattern for an element of type `text`. The pattern should be mentioned in the `title` attribute!
 `exampleValue` | no | Text | | Defines an example value displayed for elements of type `text` and `number` when no data has been entered yet
@@ -273,6 +274,8 @@ List values are defined in an associative array where keys are the string displa
         'Item B' => 'itemB'
      )
 ...
+
+$this->getInput('list'); //whichever selected: 'itemA' or 'itemB'
 ```
 
 If a more complex organization is required to display the values, the above key/value can be used to set a title as a key and another array as a value:
@@ -294,13 +297,39 @@ If a more complex organization is required to display the values, the above key/
 ...
 ```
 
+### Multiple selectable list values
+Instead of using multiple checkboxes for a single parameter, the `multivalue` attribute indicates the list can have multiple options. All selected options of the list will be returned as an array on the parameter's name.
+
+Note: Ctrl / Cmd + click to (de)select multiple options.
+
+```PHP
+...
+const PARAMETERS = array(
+	'filters' => array(
+		'name' => 'Filter by type',
+		'type' => 'list',
+		'values' => array(
+			'Pictures' => 'image',
+			'Videos' => 'media',
+			'Music' => 'audio',
+			'Stories' => 'text'
+		),
+		'multivalue' => true,
+		'defaultValue' => array('image','Videos')
+	)
+);
+
+$this->getInput('filters'); //returns selected options: array('image','media');
+...
+```
+
 #### defaultValue
 
 This attribute defines the default value for your parameter. Its behavior depends on the `type`:
 
 - `text`: Allows any text
 - `number`: Allows any number
-- `list`: Must match either name or value of one element
+- `list`: A single `string` that matches either the name or value of one element of the list, or if the `multivalue` attribute is `true`: an `array()` of strings that matches the name or value of one or more elements of the list.
 - `checkbox`: Must be "checked" to activate the checkbox
 
 ***

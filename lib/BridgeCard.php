@@ -235,6 +235,15 @@ This bridge is not fetching its content through a secure connection</div>';
             $retVal .= ' pattern="' . $entry['pattern'] . '"';
         }
 
+        if (isset($entry['multivalue']) && $entry['multivalue'] === true) {
+            $retVal .= ' multiple';
+            if(isset($entry['values']) && sizeof($entry['values']) > 8){
+                $retVal .= ' size="8"';
+            } else if (isset($entry['values'])){
+                $retVal .= ' size="' . sizeof($entry['values']) . '"';
+            }    
+        }
+
         return $retVal;
     }
 
@@ -301,6 +310,15 @@ This bridge is not fetching its content through a secure connection</div>';
             unset($entry['required']);
         }
 
+        if (isset($entry['multivalue']) && $entry['multivalue'] === true) {
+            $name .= '[]';
+        }
+
+        $defaultValues = $entry['defaultValue'];
+        if(!is_array($defaultValues)){
+            $defaultValues = array($entry['defaultValue']);
+        }
+
         $list = '<select '
         . self::getInputAttributes($entry)
         . ' id="'
@@ -316,6 +334,8 @@ This bridge is not fetching its content through a secure connection</div>';
                     if (
                         $entry['defaultValue'] === $subname
                         || $entry['defaultValue'] === $subvalue
+                        || in_array($subvalue, $defaultValues)
+                        || in_array($subname, $defaultValues)
                     ) {
                         $list .= '<option value="'
                             . $subvalue
@@ -335,7 +355,9 @@ This bridge is not fetching its content through a secure connection</div>';
                 if (
                     $entry['defaultValue'] === $name
                     || $entry['defaultValue'] === $value
-                ) {
+                    || in_array($value, $defaultValues)
+                    || in_array($name, $defaultValues)
+            ) {
                     $list .= '<option value="'
                         . $value
                         . '" selected>'

@@ -119,6 +119,10 @@ input[type="number"]:focus {
     border-color: #888;
 }
 
+option {
+    white-space: break-spaces;
+}
+
 input:focus::-webkit-input-placeholder { opacity: 0; }
 input:focus::-moz-placeholder { opacity: 0; }
 input:focus::placeholder { opacity: 0; }
@@ -241,7 +245,7 @@ form {
     .parameters {
         display: grid;
         padding: 12px 0;
-        grid-template-columns: 40% max-content 24px;
+        grid-template-columns: 40% 50% 24px;
         grid-column-gap: 10px;
         grid-row-gap: 5px;
     }

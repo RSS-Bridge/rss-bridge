@@ -118,9 +118,21 @@ class ParameterValidator
     private function validateListValue($value, $expectedValues)
     {
         $filteredValue = filter_var($value);
+        if (is_array($value)){
+            $filteredValue = filter_var_array($value);
+        }
 
         if ($filteredValue === false) {
             return null;
+        }
+
+        if(is_array($filteredValue)){ //for lists with multiple selected values
+            foreach($filteredValue as $key => $val){
+                if(!in_array($val, $expectedValues)){
+                    return null;
+                }
+            }
+            return $filteredValue;
         }
 
         if (!in_array($filteredValue, $expectedValues)) { // Check sub-values?

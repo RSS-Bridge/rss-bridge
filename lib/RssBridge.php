@@ -83,8 +83,8 @@ final class RssBridge
         }
 
         foreach ($request as $key => $value) {
-            if (!is_string($value)) {
-                throw new \Exception("Query parameter \"$key\" is not a string.");
+            if (!is_string($value) && !is_array($value)) {
+                throw new \Exception("Query parameter \"$key\" is not a string or array.");
             }
         }
 
