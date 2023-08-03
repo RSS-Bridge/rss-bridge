@@ -61,11 +61,6 @@ interface BridgeInterface
     public function collectData();
 
     /**
-    * Get the user's supplied configuration for the bridge
-    */
-    public function getConfiguration();
-
-    /**
      * Returns the value for the selected configuration
      *
      * @param string $input The option name

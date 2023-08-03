@@ -37,12 +37,14 @@ class ConnectivityAction implements ActionInterface
             throw new \Exception('This action is only available in debug mode!');
         }
 
-        if (!isset($request['bridge'])) {
+        $bridgeName = $request['bridge'] ?? null;
+        if (!$bridgeName) {
             return render_template('connectivity.html.php');
         }
-
-        $bridgeClassName = $this->bridgeFactory->createBridgeClassName($request['bridge']);
-
+        $bridgeClassName = $this->bridgeFactory->createBridgeClassName($bridgeName);
+        if (!$bridgeClassName) {
+            throw new \Exception(sprintf('Bridge not found: %s', $bridgeName));
+        }
         return $this->reportBridgeConnectivity($bridgeClassName);
     }
 

@@ -4,6 +4,7 @@ final class BridgeFactory
 {
     private $bridgeClassNames = [];
     private $enabledBridges = [];
+    private $missingEnabledBridges = [];
 
     public function __construct()
     {
@@ -23,7 +24,13 @@ final class BridgeFactory
                 $this->enabledBridges = $this->bridgeClassNames;
                 break;
             }
-            $this->enabledBridges[] = $this->createBridgeClassName($enabledBridge);
+            $bridgeClassName = $this->createBridgeClassName($enabledBridge);
+            if ($bridgeClassName) {
+                $this->enabledBridges[] = $bridgeClassName;
+            } else {
+                $this->missingEnabledBridges[] = $enabledBridge;
+                Logger::info(sprintf('Bridge not found: %s', $enabledBridge));
+            }
         }
     }
 
@@ -42,13 +49,10 @@ final class BridgeFactory
         $name = self::normalizeBridgeName($bridgeName);
         $namesLoweredCase = array_map('strtolower', $this->bridgeClassNames);
         $nameLoweredCase = strtolower($name);
-
         if (! in_array($nameLoweredCase, $namesLoweredCase)) {
-            throw new \Exception(sprintf('Bridge name invalid: %s', $bridgeName));
+            return null;
         }
-
         $index = array_search($nameLoweredCase, $namesLoweredCase);
-
         return $this->bridgeClassNames[$index];
     }
 
@@ -66,5 +70,10 @@ final class BridgeFactory
     public function getBridgeClassNames(): array
     {
         return $this->bridgeClassNames;
+    }
+
+    public function getMissingEnabledBridges(): array
+    {
+        return $this->missingEnabledBridges;
     }
 }

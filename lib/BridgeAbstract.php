@@ -58,8 +58,6 @@ abstract class BridgeAbstract implements BridgeInterface
 
     /**
      * Configuration for the bridge
-     *
-     * Use {@see BridgeAbstract::getConfiguration()} to read this parameter
      */
     const CONFIGURATION = [];
 
@@ -122,6 +120,11 @@ abstract class BridgeAbstract implements BridgeInterface
      * @var array
      */
     protected array $configuration = [];
+
+    /**
+     * Holds the list of bridge-specific configurations from config.ini.php, used by the bridge.
+     */
+    private array $configuration = [];
 
     /** {@inheritdoc} */
     public function getItems()
@@ -373,12 +376,6 @@ abstract class BridgeAbstract implements BridgeInterface
     public function getIcon()
     {
         return static::URI . '/favicon.ico';
-    }
-
-    /** {@inheritdoc} */
-    public function getConfiguration()
-    {
-        return static::CONFIGURATION;
     }
 
     /** {@inheritdoc} */
