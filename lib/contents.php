@@ -96,7 +96,7 @@ function getContents(
                 '%s resulted in %s %s %s',
                 $url,
                 $response->getCode(),
-                Response::STATUS_CODES[$response->getCode()] ?? '',
+                $response->getStatusLine(),
                 // If debug, include a part of the response body in the exception message
                 Debug::isEnabled() ? mb_substr($response->getBody(), 0, 500) : '',
             );
@@ -119,7 +119,7 @@ function getContents(
         return [
             'code'      => $response->getCode(),
             'headers'   => $response->getHeaders(),
-            // For legacy reasons, use content instead of body
+            // For legacy reasons, use 'content' instead of 'body'
             'content'   => $response->getBody(),
         ];
     }

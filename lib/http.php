@@ -198,6 +198,11 @@ final class Response
         return $this->code;
     }
 
+    public function getStatusLine(): string
+    {
+        return self::STATUS_CODES[$this->code] ?? '';
+    }
+
     public function getHeaders()
     {
         return $this->headers;
