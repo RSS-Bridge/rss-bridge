@@ -211,6 +211,9 @@ final class Configuration
         if (!is_string(self::getConfig('error', 'output'))) {
             self::throwConfigError('error', 'output', 'Is not a valid String');
         }
+        if (!in_array(self::getConfig('error', 'output'), ['feed', 'http', 'none'])) {
+            self::throwConfigError('error', 'output', 'Invalid output');
+        }
 
         if (
             !is_numeric(self::getConfig('error', 'report_limit'))

@@ -72,7 +72,29 @@ class CacheFactory
                     'enable_purge'  => Configuration::getConfig('SQLiteCache', 'enable_purge'),
                 ]);
             case MemcachedCache::class:
-                return new MemcachedCache();
+                if (!extension_loaded('memcached')) {
+                    throw new \Exception('"memcached" extension not loaded. Please check "php.ini"');
+                }
+                $section = 'MemcachedCache';
+                $host = Configuration::getConfig($section, 'host');
+                $port = Configuration::getConfig($section, 'port');
+                if (empty($host) && empty($port)) {
+                    throw new \Exception('Configuration for ' . $section . ' missing.');
+                }
+                if (empty($host)) {
+                    throw new \Exception('"host" param is not set for ' . $section);
+                }
+                if (empty($port)) {
+                    throw new \Exception('"port" param is not set for ' . $section);
+                }
+                if (!ctype_digit($port)) {
+                    throw new \Exception('"port" param is invalid for ' . $section);
+                }
+                $port = intval($port);
+                if ($port < 1 || $port > 65535) {
+                    throw new \Exception('"port" param is invalid for ' . $section);
+                }
+                return new MemcachedCache($host, $port);
             default:
                 if (!file_exists(PATH_LIB_CACHES . $className . '.php')) {
                     throw new \Exception('Unable to find the cache file');

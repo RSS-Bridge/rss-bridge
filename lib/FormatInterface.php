@@ -28,15 +28,7 @@ interface FormatInterface
      */
     public function stringify();
 
-    /**
-     * Set items
-     *
-     * @param array $bridges The items
-     * @return self The format object
-     *
-     * @todo Rename parameter `$bridges` to `$items`
-     */
-    public function setItems(array $bridges);
+    public function setItems(array $items);
 
     /**
      * Return items

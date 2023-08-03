@@ -3,8 +3,6 @@
 class SQLiteCache implements CacheInterface
 {
     private \SQLite3 $db;
-    private string $scope;
-    private string $key;
     private array $config;
 
     public function __construct(array $config)
@@ -33,59 +31,47 @@ class SQLiteCache implements CacheInterface
         $this->db->busyTimeout($config['timeout']);
     }
 
-    public function loadData(int $timeout = 86400)
+    public function get($key, $default = null)
     {
+        $cacheKey = hash('sha1', json_encode($key), true);
         $stmt = $this->db->prepare('SELECT value, updated FROM storage WHERE key = :key');
-        $stmt->bindValue(':key', $this->getCacheKey());
+        $stmt->bindValue(':key', $cacheKey);
         $result = $stmt->execute();
         if (!$result) {
-            return null;
+            return $default;
         }
         $row = $result->fetchArray(\SQLITE3_ASSOC);
         if ($row === false) {
-            return null;
+            return $default;
         }
-        $value = $row['value'];
-        $modificationTime = $row['updated'];
-        if (time() - $timeout < $modificationTime) {
-            $data = unserialize($value);
-            if ($data === false) {
-                Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($value, 0, 100)));
-                return null;
-            }
-            return $data;
+        $expiration = $row['updated'];
+        if ($expiration !== 0 && $expiration <= time()) {
+            // It's a good idea to delete expired cache items.
+            // However I'm seeing lots of  SQLITE_BUSY errors so commented out for now
+            // $stmt = $this->db->prepare('DELETE FROM storage WHERE key = :key');
+            // $stmt->bindValue(':key', $cacheKey);
+            // $stmt->execute();
+            return $default;
         }
-        // It's a good idea to delete expired cache items.
-        // However I'm seeing lots of  SQLITE_BUSY errors so commented out for now
-        // $stmt = $this->db->prepare('DELETE FROM storage WHERE key = :key');
-        // $stmt->bindValue(':key', $this->getCacheKey());
-        // $stmt->execute();
-        return null;
+        $blob = $row['value'];
+        $value = unserialize($blob);
+        if ($value === false) {
+            Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
+            return $default;
+        }
+        return $value;
     }
 
-    public function saveData($data): void
+    public function set($key, $value, int $ttl = null): void
     {
-        $blob = serialize($data);
-
+        $cacheKey = hash('sha1', json_encode($key), true);
+        $blob = serialize($value);
+        $expiration = $ttl === null ? 0 : time() + $ttl;
         $stmt = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
-        $stmt->bindValue(':key', $this->getCacheKey());
+        $stmt->bindValue(':key', $cacheKey);
         $stmt->bindValue(':value', $blob, \SQLITE3_BLOB);
-        $stmt->bindValue(':updated', time());
+        $stmt->bindValue(':updated', $expiration);
         $stmt->execute();
-    }
-
-    public function getTime(): ?int
-    {
-        $stmt = $this->db->prepare('SELECT updated FROM storage WHERE key = :key');
-        $stmt->bindValue(':key', $this->getCacheKey());
-        $result = $stmt->execute();
-        if ($result) {
-            $row = $result->fetchArray(\SQLITE3_ASSOC);
-            if ($row !== false) {
-                return $row['updated'];
-            }
-        }
-        return null;
     }
 
     public function purgeCache(int $timeout = 86400): void
@@ -95,21 +81,13 @@ class SQLiteCache implements CacheInterface
         }
         $stmt = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
         $stmt->bindValue(':expired', time() - $timeout);
-        $stmt->execute();
+        $result = $stmt->execute();
+        // Unclear whether we should finalize here
+        //$result->finalize();
     }
 
-    public function setScope(string $scope): void
+    public function clear(): void
     {
-        $this->scope = $scope;
-    }
-
-    public function setKey(array $key): void
-    {
-        $this->key = json_encode($key);
-    }
-
-    private function getCacheKey()
-    {
-        return hash('sha1', $this->scope . $this->key, true);
+        $this->db->query('DELETE FROM storage');
     }
 }

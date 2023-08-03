@@ -73,6 +73,11 @@ final class Response
         return $this->headers;
     }
 
+    public function getHeader(string $name): ?string
+    {
+        return $this->headers[$name] ?? null;
+    }
+
     public function send(): void
     {
         http_response_code($this->code);
@@ -142,11 +147,16 @@ function getContents(
     }
 
     $cache = RssBridge::getCache();
-    $cache->setScope('server');
-    $cache->setKey([$url]);
+    $cacheKey = 'server_' . $url;
 
-    if (!Debug::isEnabled() && $cache->getTime() && $cache->loadData(86400 * 7)) {
-        $config['if_not_modified_since'] = $cache->getTime();
+    $cachedResponse = $cache->get($cacheKey);
+    if (!Debug::isEnabled() && $cachedResponse) {
+        // considering popping
+        $time = $cachedResponse['headers']['last-modified'][0] ?? null;
+        if ($time) {
+            $d = new \DateTimeImmutable($time);
+            $config['if_not_modified_since'] = $d->getTimestamp();
+        }
     }
 
     $response = $httpClient->request($url, $config);
@@ -165,7 +175,7 @@ function getContents(
                     break;
                 }
             }
-            $cache->saveData($response['body']);
+            $cache->set($cacheKey, $response, 86400 * 10);
             break;
         case 301:
         case 302:
@@ -174,7 +184,7 @@ function getContents(
             break;
         case 304:
             // Not Modified
-            $response['body'] = $cache->loadData(86400 * 7);
+            $response['body'] = $cachedResponse['body'];
             break;
         default:
             $exceptionMessage = sprintf(
@@ -427,14 +437,11 @@ function getSimpleHTMLDOMCached(
     $defaultSpanText = DEFAULT_SPAN_TEXT
 ) {
     $cache = RssBridge::getCache();
-    $cache->setScope('pages');
-    $cache->setKey([$url]);
-    $content = $cache->loadData($timeout);
+    $cacheKey = 'pages_' . $url;
+    $content = $cache->get($cacheKey);
     if (!$content || Debug::isEnabled()) {
         $content = getContents($url, $header ?? [], $opts ?? []);
-        $cache->setScope('pages');
-        $cache->setKey([$url]);
-        $cache->saveData($content);
+        $cache->set($cacheKey, $content, $timeout);
     }
     return str_get_html(
         $content,

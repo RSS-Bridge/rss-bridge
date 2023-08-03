@@ -11,12 +11,7 @@ class TwitterClient
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
-
-        $cache->setScope('twitter');
-        $cache->setKey(['cache']);
-        $cache->purgeCache(60 * 60 * 3);
-
-        $this->data = $this->cache->loadData() ?? [];
+        $this->data = $this->cache->get('twitter_cache') ?? [];
         $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
     }
 
@@ -178,6 +173,9 @@ class TwitterClient
         return $data;
     }
 
+    /**
+     * I think the guest token expires after 3h
+     */
     private function fetchGuestToken(): void
     {
         if (isset($this->data['guest_token'])) {
@@ -188,9 +186,7 @@ class TwitterClient
         $guest_token = json_decode($response)->guest_token;
         $this->data['guest_token'] = $guest_token;
 
-        $this->cache->setScope('twitter');
-        $this->cache->setKey(['cache']);
-        $this->cache->saveData($this->data);
+        $this->cache->set('twitter_cache', $this->data);
     }
 
     private function fetchUserInfoByScreenName(string $screenName)
@@ -213,10 +209,7 @@ class TwitterClient
         }
         $userInfo = $response->data->user;
         $this->data[$screenName] = $userInfo;
-
-        $this->cache->setScope('twitter');
-        $this->cache->setKey(['cache']);
-        $this->cache->saveData($this->data);
+        $this->cache->set('twitter_cache', $this->data);
         return $userInfo;
     }
 
@@ -356,9 +349,7 @@ class TwitterClient
         $listInfo = $response->data->user_by_screen_name->list;
         $this->data[$screenName . '-' . $listSlug] = $listInfo;
 
-        $this->cache->setScope('twitter');
-        $this->cache->setKey(['cache']);
-        $this->cache->saveData($this->data);
+        $this->cache->set('twitter_cache', $this->data);
         return $listInfo;
     }
 

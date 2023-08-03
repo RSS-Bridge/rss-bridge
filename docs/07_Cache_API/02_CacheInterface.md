@@ -3,16 +3,12 @@ See `CacheInterface`.
 ```php
 interface CacheInterface
 {
-    public function setScope(string $scope): void;
+    public function set($key, $value, int $ttl = null): void;
 
-    public function setKey(array $key): void;
+    public function get($key, $default = null);
 
-    public function loadData();
+    public function clear(): void;
 
-    public function saveData($data): void;
-
-    public function getTime(): ?int;
-
-    public function purgeCache(int $seconds): void;
+    public function purgeCache(int $timeout = 86400): void;
 }
 ```

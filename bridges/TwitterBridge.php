@@ -569,25 +569,18 @@ EOD;
     private function getApiKey($forceNew = 0)
     {
         $r_cache = RssBridge::getCache();
-        $scope = 'TwitterBridge';
-        $r_cache->setScope($scope);
-        $r_cache->setKey(['refresh']);
-        $data = $r_cache->loadData();
+        $data = $r_cache->get('TwitterBridge_refresh');
 
         $refresh = null;
         if ($data === null) {
             $refresh = time();
-            $r_cache->saveData($refresh);
+            $r_cache->set('TwitterBridge_refresh', $refresh);
         } else {
             $refresh = $data;
         }
 
-        $cacheFactory = new CacheFactory();
-
         $cache = RssBridge::getCache();
-        $cache->setScope($scope);
-        $cache->setKey(['api_key']);
-        $data = $cache->loadData();
+        $data = $cache->get('TwitterBridge_api_key');
 
         $apiKey = null;
         if ($forceNew || $data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
@@ -614,15 +607,13 @@ EOD;
             $apiKeyRegex = '/([a-zA-Z0-9]{59}%[a-zA-Z0-9]{44})/m';
             preg_match_all($apiKeyRegex, $jsContent, $apiKeyMatches, PREG_SET_ORDER, 0);
             $apiKey = $apiKeyMatches[0][0];
-            $cache->saveData($apiKey);
+            $cache->set('TwitterBridge_api_key', $apiKey);
         } else {
             $apiKey = $data;
         }
 
         $gt_cache = RssBridge::getCache();
-        $gt_cache->setScope($scope);
-        $gt_cache->setKey(['guest_token']);
-        $guestTokenUses = $gt_cache->loadData();
+        $guestTokenUses = $gt_cache->get('TwitterBridge_guest_token');
 
         $guestToken = null;
         if (
@@ -637,12 +628,12 @@ EOD;
                     $guestToken = $guestTokenUses[1];
                 }
             } else {
-                $gt_cache->saveData([self::GUEST_TOKEN_USES, $guestToken]);
-                $r_cache->saveData(time());
+                $gt_cache->set('TwitterBridge_guest_token', [self::GUEST_TOKEN_USES, $guestToken]);
+                $r_cache->set('TwitterBridge_refresh', time());
             }
         } else {
             $guestTokenUses[0] -= 1;
-            $gt_cache->saveData($guestTokenUses);
+            $gt_cache->set('TwitterBridge_guest_token', $guestTokenUses);
             $guestToken = $guestTokenUses[1];
         }
 

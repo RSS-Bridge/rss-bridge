@@ -77,6 +77,6 @@ class ConnectivityAction implements ActionInterface
             $retVal['successful'] = false;
         }
 
-        return new Response(Json::encode($retVal), 200, ['Content-Type' => 'text/json']);
+        return new Response(Json::encode($retVal), 200, ['content-type' => 'text/json']);
     }
 }

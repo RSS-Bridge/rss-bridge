@@ -81,6 +81,6 @@ final class Logger
 
         // Log to file
         // todo: extract to log handler
-        // file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND | LOCK_EX);
+        //$bytes = file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND | LOCK_EX);
     }
 }
