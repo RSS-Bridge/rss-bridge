@@ -1,42 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 class MemcachedCache implements CacheInterface
 {
-    private $conn;
+    private \Memcached $conn;
 
     public function __construct(string $host, int $port)
     {
-        $conn = new \Memcached();
+        $this->conn = new \Memcached();
         // This call does not actually connect to server yet
-        if (!$conn->addServer($host, $port)) {
+        if (!$this->conn->addServer($host, $port)) {
             throw new \Exception('Unable to add memcached server');
         }
-        $this->conn = $conn;
     }
 
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
-        $key = json_encode($key);
-        $cacheKey = 'rss_bridge_cache_' . hash('md5', $key . 'A');
-        $value = $this->conn->get($cacheKey);
+        $value = $this->conn->get($key);
         if ($value === false) {
             return $default;
         }
         return $value;
     }
 
-    public function set($key, $value, $ttl = null): void
+    public function set(string $key, $value, $ttl = null): void
     {
-        $key = json_encode($key);
-        $cacheKey = 'rss_bridge_cache_' . hash('md5', $key . 'A');
         $expiration = $ttl === null ? 0 : time() + $ttl;
-        $result = $this->conn->set($cacheKey, $value, $expiration);
+        $result = $this->conn->set($key, $value, $expiration);
         if ($result === false) {
             Logger::warning('Failed to store an item in memcached', [
+                'key'           => $key,
                 'code'          => $this->conn->getLastErrorCode(),
                 'message'       => $this->conn->getLastErrorMessage(),
                 'number'        => $this->conn->getLastErrorErrno(),
-                'key'           => $key,
             ]);
             // Intentionally not throwing an exception
         }

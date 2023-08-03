@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.php.net/manual/en/function.clearstatcache.php
  */
@@ -21,37 +23,35 @@ class FileCache implements CacheInterface
         $this->config['path'] = rtrim($this->config['path'], '/') . '/';
     }
 
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         clearstatcache();
-        $cacheKey = $this->createCacheKey($key);
-        $cacheFile = $this->config['path'] . hash('md5', $cacheKey) . '.cache';
+        $cacheFile = $this->config['path'] . hash('md5', $key) . '.cache';
         if (!file_exists($cacheFile)) {
             return $default;
         }
         $item = unserialize(file_get_contents($cacheFile));
         if ($item === false) {
             Logger::warning(sprintf('Failed to unserialize: %s', $cacheFile));
-            // Intentionally not throwing an exception
+            // delete?
             return $default;
         }
         $expiration = $item['expiration'];
-        if ($expiration !== 0 && $expiration <= time()) {
-            // Maybe delete the expired item here
-            return $default;
+        if ($expiration === 0 || $expiration > time()) {
+            return $item['value'];
         }
-        return $item['value'];
+        // delete?
+        return $default;
     }
 
     public function set($key, $value, int $ttl = null): void
     {
-        $cacheKey = $this->createCacheKey($key);
         $item = [
-            'key'           => $cacheKey,
+            'key'           => $key,
             'value'         => $value,
             'expiration'    => $ttl === null ? 0 : time() + $ttl,
         ];
-        $cacheFile = $this->config['path'] . hash('md5', $cacheKey) . '.cache';
+        $cacheFile = $this->config['path'] . hash('md5', $key) . '.cache';
         $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
         if ($bytes === false) {
             // Consider just logging the error here
@@ -98,11 +98,5 @@ class FileCache implements CacheInterface
     public function clear(): void
     {
         // TODO: Implement clear() method.
-    }
-
-    private function createCacheKey($key)
-    {
-        $json = json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        return $json;
     }
 }

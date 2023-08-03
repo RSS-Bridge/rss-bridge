@@ -100,8 +100,8 @@ abstract class FeedExpander extends BridgeAbstract
             '*/*',
         ];
         $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
-        $content = getContents($url, $httpHeaders);
-        if ($content === '') {
+        $xml = getContents($url, $httpHeaders);
+        if ($xml === '') {
             throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url), 10);
         }
         // Maybe move this call earlier up the stack frames
@@ -109,7 +109,7 @@ abstract class FeedExpander extends BridgeAbstract
         libxml_use_internal_errors(true);
         // Consider replacing libxml with https://www.php.net/domdocument
         // Intentionally not using the silencing operator (@) because it has no effect here
-        $rssContent = simplexml_load_string(trim($content));
+        $rssContent = simplexml_load_string(trim($xml));
         if ($rssContent === false) {
             $xmlErrors = libxml_get_errors();
             foreach ($xmlErrors as $xmlError) {

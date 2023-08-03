@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 class NullCache implements CacheInterface
 {
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
     }
 
-    public function set($key, $value, int $ttl = null): void
+    public function set(string $key, $value, int $ttl = null): void
     {
     }
 

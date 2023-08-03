@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class SQLiteCache implements CacheInterface
 {
     private \SQLite3 $db;
@@ -31,7 +33,7 @@ class SQLiteCache implements CacheInterface
         $this->db->busyTimeout($config['timeout']);
     }
 
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         $cacheKey = $this->createCacheKey($key);
         $stmt = $this->db->prepare('SELECT value, updated FROM storage WHERE key = :key');
@@ -45,24 +47,21 @@ class SQLiteCache implements CacheInterface
             return $default;
         }
         $expiration = $row['updated'];
-        if ($expiration !== 0 && $expiration <= time()) {
-            // It's a good idea to delete expired cache items.
-            // However I'm seeing lots of  SQLITE_BUSY errors so commented out for now
-            // $stmt = $this->db->prepare('DELETE FROM storage WHERE key = :key');
-            // $stmt->bindValue(':key', $cacheKey);
-            // $stmt->execute();
-            return $default;
+        if ($expiration === 0 || $expiration > time()) {
+            $blob = $row['value'];
+            $value = unserialize($blob);
+            if ($value === false) {
+                Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
+                // delete?
+                return $default;
+            }
+            return $value;
         }
-        $blob = $row['value'];
-        $value = unserialize($blob);
-        if ($value === false) {
-            Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
-            return $default;
-        }
-        return $value;
+        // delete?
+        return $default;
     }
 
-    public function set($key, $value, int $ttl = null): void
+    public function set(string $key, $value, int $ttl = null): void
     {
         $cacheKey = $this->createCacheKey($key);
         $blob = serialize($value);
@@ -72,8 +71,7 @@ class SQLiteCache implements CacheInterface
         $stmt->bindValue(':value', $blob, \SQLITE3_BLOB);
         $stmt->bindValue(':updated', $expiration);
         $result = $stmt->execute();
-        // Unclear whether we should finalize here
-        //$result->finalize();
+        // Unclear whether we should $result->finalize(); here?
     }
 
     public function purgeCache(int $timeout = 86400): void
@@ -93,7 +91,6 @@ class SQLiteCache implements CacheInterface
 
     private function createCacheKey($key)
     {
-        $json = json_encode($key);
-        return hash('sha1', $json, true);
+        return hash('sha1', $key, true);
     }
 }

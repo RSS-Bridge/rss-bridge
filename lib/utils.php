@@ -10,9 +10,12 @@ final class CloudFlareException extends HttpException
 
 final class Json
 {
-    public static function encode($value): string
+    public static function encode($value, $pretty = true): string
     {
-        $flags = JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        if ($pretty) {
+            $flags = $flags | JSON_PRETTY_PRINT;
+        }
         return \json_encode($value, $flags);
     }
 
