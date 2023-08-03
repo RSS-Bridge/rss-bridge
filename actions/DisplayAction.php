@@ -28,15 +28,16 @@ class DisplayAction implements ActionInterface
             return $cachedResponse;
         }
 
-        $bridgeFactory = new BridgeFactory();
-
         $bridgeName = $request['bridge'] ?? null;
-        $format = $request['format'] ?? null;
-
+        if (!$bridgeName) {
+            return new Response('Missing bridge param');
+        }
+        $bridgeFactory = new BridgeFactory();
         $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
             return new Response(sprintf('Bridge not found: %s', $bridgeName), 404);
         }
+        $format = $request['format'] ?? null;
         if (!$format) {
             return new Response('You must specify a format!');
         }
