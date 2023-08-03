@@ -107,8 +107,12 @@ class HeiseBridge extends FeedExpander
         'sessioncookie' => [
             'name' => 'Session Cookie',
             'required' => false,
-            'title' 
-            => 'If you have a heise+ subscription, you can enter your cookie (ssohls) here to have heise+ articles displayed in full. By default the cookie is 1 year valid',
+            'title' => <<<'TITLE'
+                If you have a heise+ subscription,
+                you can enter your cookie (ssohls) here to
+                have heise+ articles displayed in full.
+                By default the cookie is 1 year valid.
+                TITLE,
         ]
     ]];
     const LIMIT = 5;
@@ -144,7 +148,7 @@ class HeiseBridge extends FeedExpander
         $article = getSimpleHTMLDOM($item['uri'], [
             'cookie: ssohls=' . $sessioncookie
         ]);
-        
+
         if ($article) {
             $article = defaultLinkTo($article, $item['uri']);
             $item = $this->addArticleToItem($item, $article);
