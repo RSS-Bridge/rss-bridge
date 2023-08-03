@@ -24,8 +24,8 @@ class FileCache implements CacheInterface
     public function get($key, $default = null)
     {
         clearstatcache();
-        $key = json_encode($key);
-        $cacheFile = $this->config['path'] . hash('md5', $key) . '.cache';
+        $cacheKey = $this->createCacheKey($key);
+        $cacheFile = $this->config['path'] . hash('md5', $cacheKey) . '.cache';
         if (!file_exists($cacheFile)) {
             return $default;
         }
@@ -45,13 +45,13 @@ class FileCache implements CacheInterface
 
     public function set($key, $value, int $ttl = null): void
     {
-        $key = json_encode($key);
+        $cacheKey = $this->createCacheKey($key);
         $item = [
-            'key'           => $key,
+            'key'           => $cacheKey,
             'value'         => $value,
             'expiration'    => $ttl === null ? 0 : time() + $ttl,
         ];
-        $cacheFile = $this->config['path'] . hash('md5', $key) . '.cache';
+        $cacheFile = $this->config['path'] . hash('md5', $cacheKey) . '.cache';
         $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
         if ($bytes === false) {
             // Consider just logging the error here
@@ -98,5 +98,11 @@ class FileCache implements CacheInterface
     public function clear(): void
     {
         // TODO: Implement clear() method.
+    }
+
+    private function createCacheKey($key)
+    {
+        $json = json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return $json;
     }
 }

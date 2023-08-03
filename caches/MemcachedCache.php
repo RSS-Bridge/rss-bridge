@@ -16,7 +16,8 @@ class MemcachedCache implements CacheInterface
 
     public function get($key, $default = null)
     {
-        $cacheKey = 'rss_bridge_cache_' . hash('md5', json_encode($key) . 'A');
+        $key = json_encode($key);
+        $cacheKey = 'rss_bridge_cache_' . hash('md5', $key . 'A');
         $value = $this->conn->get($cacheKey);
         if ($value === false) {
             return $default;
@@ -27,8 +28,8 @@ class MemcachedCache implements CacheInterface
     public function set($key, $value, $ttl = null): void
     {
         $key = json_encode($key);
-        $expiration = $ttl === null ? 0 : time() + $ttl;
         $cacheKey = 'rss_bridge_cache_' . hash('md5', $key . 'A');
+        $expiration = $ttl === null ? 0 : time() + $ttl;
         $result = $this->conn->set($cacheKey, $value, $expiration);
         if ($result === false) {
             Logger::warning('Failed to store an item in memcached', [

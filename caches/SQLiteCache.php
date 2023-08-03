@@ -33,7 +33,7 @@ class SQLiteCache implements CacheInterface
 
     public function get($key, $default = null)
     {
-        $cacheKey = hash('sha1', json_encode($key), true);
+        $cacheKey = $this->createCacheKey($key);
         $stmt = $this->db->prepare('SELECT value, updated FROM storage WHERE key = :key');
         $stmt->bindValue(':key', $cacheKey);
         $result = $stmt->execute();
@@ -64,7 +64,7 @@ class SQLiteCache implements CacheInterface
 
     public function set($key, $value, int $ttl = null): void
     {
-        $cacheKey = hash('sha1', json_encode($key), true);
+        $cacheKey = $this->createCacheKey($key);
         $blob = serialize($value);
         $expiration = $ttl === null ? 0 : time() + $ttl;
         $stmt = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
@@ -89,5 +89,11 @@ class SQLiteCache implements CacheInterface
     public function clear(): void
     {
         $this->db->query('DELETE FROM storage');
+    }
+
+    private function createCacheKey($key)
+    {
+        $json = json_encode($key);
+        return hash('sha1', $json, true);
     }
 }

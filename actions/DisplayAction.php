@@ -30,7 +30,7 @@ class DisplayAction implements ActionInterface
 
         $bridgeName = $request['bridge'] ?? null;
         if (!$bridgeName) {
-            return new Response('Missing bridge param');
+            return new Response('Missing bridge param', 400);
         }
         $bridgeFactory = new BridgeFactory();
         $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
@@ -39,10 +39,10 @@ class DisplayAction implements ActionInterface
         }
         $format = $request['format'] ?? null;
         if (!$format) {
-            return new Response('You must specify a format!');
+            return new Response('You must specify a format!', 400);
         }
         if (!$bridgeFactory->isEnabled($bridgeClassName)) {
-            return new Response('This bridge is not whitelisted');
+            return new Response('This bridge is not whitelisted', 400);
         }
 
         $noproxy = $request['_noproxy'] ?? null;
