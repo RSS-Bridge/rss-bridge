@@ -107,7 +107,8 @@ class HeiseBridge extends FeedExpander
         'sessioncookie' => [
             'name' => 'Session Cookie',
             'required' => false,
-            'title' => 'If you have a heise+ subscription, you can enter your cookie (ssohls) here to have heise+ articles displayed in full. By default the cookie is 1 year valid',
+            'title' 
+            => 'If you have a heise+ subscription, you can enter your cookie (ssohls) here to have heise+ articles displayed in full. By default the cookie is 1 year valid',
         ]
     ]];
     const LIMIT = 5;
@@ -123,7 +124,7 @@ class HeiseBridge extends FeedExpander
     protected function parseItem($feedItem)
     {
         $item = parent::parseItem($feedItem);
-        $sessioncookie=$this->getInput('sessioncookie');
+        $sessioncookie = $this->getInput('sessioncookie');
 
         // strip rss parameter
         $item['uri'] = explode('?', $item['uri'])[0];
@@ -134,14 +135,14 @@ class HeiseBridge extends FeedExpander
         }
 
         // abort on heise+ articles and link to archive.ph for full-text content
-        if ($sessioncookie == "" && str_starts_with($item['title'], 'heise+ |')) {
+        if ($sessioncookie == '' && str_starts_with($item['title'], 'heise+ |')) {
             $item['uri'] = 'https://archive.ph/?run=1&url=' . urlencode($item['uri']);
             return $item;
         }
 
         $item['uri'] .= '?seite=all';
         $article = getSimpleHTMLDOM($item['uri'], [
-            'cookie: ssohls='.$sessioncookie
+            'cookie: ssohls=' . $sessioncookie
         ]);
         
         if ($article) {
