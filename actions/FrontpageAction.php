@@ -4,11 +4,19 @@ final class FrontpageAction implements ActionInterface
 {
     public function execute(array $request)
     {
+        $messages = [];
         $showInactive = (bool) ($request['show_inactive'] ?? null);
         $activeBridges = 0;
 
         $bridgeFactory = new BridgeFactory();
         $bridgeClassNames = $bridgeFactory->getBridgeClassNames();
+
+        foreach ($bridgeFactory->getMissingEnabledBridges() as $missingEnabledBridge) {
+            $messages[] = [
+                'body' => sprintf('Warning : Bridge "%s" not found', $missingEnabledBridge),
+                'level' => 'warning'
+            ];
+        }
 
         $formatFactory = new FormatFactory();
         $formats = $formatFactory->getFormatNames();
@@ -24,7 +32,7 @@ final class FrontpageAction implements ActionInterface
         }
 
         return render(__DIR__ . '/../templates/frontpage.html.php', [
-            'messages' => [],
+            'messages' => $messages,
             'admin_email' => Configuration::getConfig('admin', 'email'),
             'admin_telegram' => Configuration::getConfig('admin', 'telegram'),
             'bridges' => $body,

@@ -4,6 +4,7 @@ final class BridgeFactory
 {
     private $bridgeClassNames = [];
     private $enabledBridges = [];
+    private $missingEnabledBridges = [];
 
     public function __construct()
     {
@@ -27,6 +28,7 @@ final class BridgeFactory
             if ($bridgeClassName) {
                 $this->enabledBridges[] = $bridgeClassName;
             } else {
+                $this->missingEnabledBridges[] = $enabledBridge;
                 Logger::info(sprintf('Bridge not found: %s', $enabledBridge));
             }
         }
@@ -68,5 +70,10 @@ final class BridgeFactory
     public function getBridgeClassNames(): array
     {
         return $this->bridgeClassNames;
+    }
+
+    public function getMissingEnabledBridges(): array
+    {
+        return $this->missingEnabledBridges;
     }
 }
