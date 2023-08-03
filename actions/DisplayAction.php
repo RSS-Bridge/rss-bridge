@@ -77,7 +77,7 @@ class DisplayAction implements ActionInterface
         if ($response->getCode() === 500) {
             $this->cache->set($cacheKey, $response, 60 * 15);
         }
-
+        $this->cache->purgeCache();
         return $response;
     }
 
@@ -120,7 +120,7 @@ class DisplayAction implements ActionInterface
                     return new Response('503 Service Unavailable', 503);
                 }
             }
-            Logger::error(sprintf('Exception in DisplayAction(%s): %s', $bridge->getName(), create_sane_exception_message($e)), ['e' => $e]);
+            Logger::error(sprintf('Exception in DisplayAction(%s)', $bridge->getName()), ['e' => $e]);
             $errorCount = 1;
             if ($reportLimit > 1) {
                 $errorCount = $this->logBridgeError($bridge->getName(), $e->getCode());

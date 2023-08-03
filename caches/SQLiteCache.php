@@ -71,7 +71,9 @@ class SQLiteCache implements CacheInterface
         $stmt->bindValue(':key', $cacheKey);
         $stmt->bindValue(':value', $blob, \SQLITE3_BLOB);
         $stmt->bindValue(':updated', $expiration);
-        $stmt->execute();
+        $result = $stmt->execute();
+        // Unclear whether we should finalize here
+        //$result->finalize();
     }
 
     public function purgeCache(int $timeout = 86400): void
@@ -82,8 +84,6 @@ class SQLiteCache implements CacheInterface
         $stmt = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
         $stmt->bindValue(':expired', time() - $timeout);
         $result = $stmt->execute();
-        // Unclear whether we should finalize here
-        //$result->finalize();
     }
 
     public function clear(): void
