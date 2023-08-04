@@ -308,10 +308,10 @@ abstract class FeedExpander extends BridgeAbstract
             $item['author'] = (string)$feedItem->author->name;
         }
         if (isset($feedItem->content)) {
-            $contentType = (string)$feedItem->content->attributes()['type'];
-            if ($contentType === 'xhtml') {
+            $contentChildren = $feedItem->content->children();
+            if (count($contentChildren) > 0) {
                 $content = '';
-                foreach ($feedItem->content->children() as $contentChild) {
+                foreach ($contentChildren as $contentChild) {
                     $content .= $contentChild->asXML();
                 }
                 $item['content'] = $content;
