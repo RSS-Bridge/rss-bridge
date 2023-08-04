@@ -7,7 +7,7 @@ class ThePirateBayBridge extends BridgeAbstract
 {
     const MAINTAINER = 'dvikan';
     const NAME = 'The Pirate Bay';
-    const URI = 'https://thepiratebay.org';
+    const URI = 'https://thepiratebay10.org';
     const DESCRIPTION = 'Returns results for the keywords. You can put several
  list of keywords by separating them with a semicolon (e.g. "one show;another
  show"). Category based search needs the category number as input. User based
