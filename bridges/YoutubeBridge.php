@@ -107,7 +107,8 @@ class YoutubeBridge extends BridgeAbstract
         $url_feed = '';
         $url_listing = '';
 
-        if ($this->getInput('u')) { /* User and Channel modes */
+        if ($this->getInput('u')) {
+            /* User and Channel modes */
             $this->request = $this->getInput('u');
             $url_feed = self::URI . 'feeds/videos.xml?user=' . urlencode($this->request);
             $url_listing = self::URI . 'user/' . urlencode($this->request) . '/videos';
@@ -148,7 +149,8 @@ class YoutubeBridge extends BridgeAbstract
                 }
             }
             $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
-        } elseif ($this->getInput('p')) { /* playlist mode */
+        } elseif ($this->getInput('p')) {
+            /* playlist mode */
             // TODO: this mode makes a lot of excess video query requests.
             // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
             // This cache will be used to find out, which videos to fetch
@@ -170,7 +172,7 @@ class YoutubeBridge extends BridgeAbstract
             } else {
                 $this->parseJSONListing($jsonData);
             }
-            $this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
+            $this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
             usort($this->items, function ($item1, $item2) {
                 if (!is_int($item1['timestamp']) && !is_int($item2['timestamp'])) {
                     $item1['timestamp'] = strtotime($item1['timestamp']);
@@ -178,7 +180,8 @@ class YoutubeBridge extends BridgeAbstract
                 }
                 return $item2['timestamp'] - $item1['timestamp'];
             });
-        } elseif ($this->getInput('s')) { /* search mode */
+        } elseif ($this->getInput('s')) {
+            /* search mode */
             $this->request = $this->getInput('s');
             $url_listing = self::URI
                 . 'results?search_query='
@@ -190,7 +193,8 @@ class YoutubeBridge extends BridgeAbstract
             $jsonData = $this->getJSONData($html);
             $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
             $jsonData = $jsonData->sectionListRenderer->contents;
-            foreach ($jsonData as $data) {   // Search result includes some ads, have to filter them
+            foreach ($jsonData as $data) {
+                // Search result includes some ads, have to filter them
                 if (isset($data->itemSectionRenderer->contents[0]->videoRenderer)) {
                     $jsonData = $data->itemSectionRenderer->contents;
                     break;
@@ -198,8 +202,9 @@ class YoutubeBridge extends BridgeAbstract
             }
             $this->parseJSONListing($jsonData);
             $this->feeduri = $url_listing;
-            $this->feedName = 'Search: ' . $this->request; // feedName will be used by getName()
-        } else { /* no valid mode */
+            $this->feedName = 'Search: ' . $this->request;
+        } else {
+            /* no valid mode */
             returnClientError("You must either specify either:\n - YouTube
  username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
         }
@@ -280,7 +285,8 @@ class YoutubeBridge extends BridgeAbstract
         $item['timestamp'] = $time;
         $item['uri'] = self::URI . 'watch?v=' . $vid;
         if (!$thumbnail) {
-            $thumbnail = '0';   // Fallback to default thumbnail if there aren't any provided.
+            // Fallback to default thumbnail if there aren't any provided.
+            $thumbnail = '0';
         }
         $thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/' . $thumbnail . '.jpg';
         $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br />' . $desc;
@@ -460,14 +466,13 @@ class YoutubeBridge extends BridgeAbstract
 
     public function getName()
     {
-        // Name depends on queriedContext:
         switch ($this->queriedContext) {
             case 'By username':
             case 'By channel id':
             case 'By custom name':
             case 'By playlist Id':
             case 'Search result':
-                return htmlspecialchars_decode($this->feedName) . ' - YouTube'; // We already know it's a bridge, right?
+                return htmlspecialchars_decode($this->feedName) . ' - YouTube';
             default:
                 return parent::getName();
         }
