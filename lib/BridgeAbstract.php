@@ -116,6 +116,10 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     private array $configuration = [];
 
+    public function __construct()
+    {
+    }
+
     /** {@inheritdoc} */
     public function getItems()
     {

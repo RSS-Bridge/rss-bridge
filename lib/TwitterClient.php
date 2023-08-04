@@ -11,8 +11,78 @@ class TwitterClient
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
-        $this->data = $this->cache->get('twitter_cache') ?? [];
+        $this->data = $this->cache->get('twitter_cache', []);
         $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
+    }
+
+    public function fetchUserTweets(string $screenName): \stdClass
+    {
+        $this->fetchGuestToken();
+        try {
+            $userInfo = $this->fetchUserInfoByScreenName($screenName);
+        } catch (HttpException $e) {
+            if ($e->getCode() === 403) {
+                $this->cache->set('twitter_guest_token', null, 1);
+                $userInfo = $this->fetchUserInfoByScreenName($screenName);
+            } else {
+                throw $e;
+            }
+        }
+
+        try {
+            $timeline = $this->fetchTimelineUsingSearch($screenName);
+        } catch (HttpException $e) {
+            if ($e->getCode() === 403) {
+                $this->cache->set('twitter_guest_token', null, 1);
+                $this->fetchGuestToken();
+                $timeline = $this->fetchTimelineUsingSearch($screenName);
+            } else {
+                throw $e;
+            }
+        }
+
+        $tweets = $this->extractTweetFromSearch($timeline);
+
+        return (object) [
+            'user_info' => $userInfo,
+            'tweets' => $tweets,
+        ];
+    }
+
+    private function fetchUserInfoByScreenName(string $screenName)
+    {
+        if (isset($this->data[$screenName])) {
+            return $this->data[$screenName];
+        }
+        $variables = [
+            'screen_name' => $screenName,
+            'withHighlightedLabel' => true
+        ];
+        $url = sprintf(
+            'https://twitter.com/i/api/graphql/hc-pka9A7gyS3xODIafnrQ/UserByScreenName?variables=%s',
+            urlencode(json_encode($variables))
+        );
+        $response = getContents($url, $this->createHttpHeaders(), [], true);
+        $data = Json::decode($response['content'], false);
+        if (isset($data->errors)) {
+            // Grab the first error message
+            throw new \Exception(sprintf('From twitter api: "%s"', $data->errors[0]->message));
+        }
+        $userInfo = $data->data->user;
+        $this->data[$screenName] = $userInfo;
+        $this->cache->set('twitter_cache', $this->data);
+        return $userInfo;
+    }
+
+    private function fetchTimelineUsingSearch($screenName)
+    {
+        $params = [
+            'q' => 'from:' . $screenName,
+            'modules' => 'status',
+            'result_type' => 'recent'
+        ];
+        $response = $this->search($params);
+        return $response;
     }
 
     private function extractTweetAndUsersFromGraphQL($timeline)
@@ -97,41 +167,6 @@ class TwitterClient
         return $searchResult->statuses;
     }
 
-    public function fetchUserTweets(string $screenName): \stdClass
-    {
-        $this->fetchGuestToken();
-        try {
-            $userInfo = $this->fetchUserInfoByScreenName($screenName);
-        } catch (HttpException $e) {
-            if ($e->getCode() === 403) {
-                $this->data['guest_token'] = null;
-                $this->fetchGuestToken();
-                $userInfo = $this->fetchUserInfoByScreenName($screenName);
-            } else {
-                throw $e;
-            }
-        }
-
-        try {
-            $timeline = $this->fetchTimelineUsingSearch($screenName);
-        } catch (HttpException $e) {
-            if ($e->getCode() === 403) {
-                $this->data['guest_token'] = null;
-                $this->fetchGuestToken();
-                $timeline = $this->fetchTimelineUsingSearch($screenName);
-            } else {
-                throw $e;
-            }
-        }
-
-        $tweets = $this->extractTweetFromSearch($timeline);
-
-        return (object) [
-            'user_info' => $userInfo,
-            'tweets' => $tweets,
-        ];
-    }
-
     public function fetchListTweets($query, $operation = '')
     {
         $id = '';
@@ -142,7 +177,7 @@ class TwitterClient
                 $id = $listInfo->id_str;
             } catch (HttpException $e) {
                 if ($e->getCode() === 403) {
-                    $this->data['guest_token'] = null;
+                    $this->cache->set('twitter_guest_token', null, 1);
                     $this->fetchGuestToken();
                     $listInfo = $this->fetchListInfoBySlug($query['screenName'], $query['listSlug']);
                     $id = $listInfo->id_str;
@@ -160,7 +195,7 @@ class TwitterClient
             $timeline = $this->fetchListTimeline($id);
         } catch (HttpException $e) {
             if ($e->getCode() === 403) {
-                $this->data['guest_token'] = null;
+                $this->cache->set('twitter_guest_token', null, 1);
                 $this->fetchGuestToken();
                 $timeline = $this->fetchListTimeline($id);
             } else {
@@ -178,93 +213,14 @@ class TwitterClient
      */
     private function fetchGuestToken(): void
     {
-        if (isset($this->data['guest_token'])) {
+        $token = $this->cache->get('twitter_guest_token');
+        if ($token) {
             return;
         }
         $url = 'https://api.twitter.com/1.1/guest/activate.json';
-        $response = getContents($url, $this->createHttpHeaders(), [CURLOPT_POST => true]);
-        $guest_token = json_decode($response)->guest_token;
-        $this->data['guest_token'] = $guest_token;
-
-        $this->cache->set('twitter_cache', $this->data);
-    }
-
-    private function fetchUserInfoByScreenName(string $screenName)
-    {
-        if (isset($this->data[$screenName])) {
-            return $this->data[$screenName];
-        }
-        $variables = [
-            'screen_name' => $screenName,
-            'withHighlightedLabel' => true
-        ];
-        $url = sprintf(
-            'https://twitter.com/i/api/graphql/hc-pka9A7gyS3xODIafnrQ/UserByScreenName?variables=%s',
-            urlencode(json_encode($variables))
-        );
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
-        if (isset($response->errors)) {
-            // Grab the first error message
-            throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
-        }
-        $userInfo = $response->data->user;
-        $this->data[$screenName] = $userInfo;
-        $this->cache->set('twitter_cache', $this->data);
-        return $userInfo;
-    }
-
-    private function fetchTimeline($userId)
-    {
-        $variables = [
-            'userId' => $userId,
-            'count' => 40,
-            'includePromotedContent' => true,
-            'withQuickPromoteEligibilityTweetFields' => true,
-            'withSuperFollowsUserFields' => true,
-            'withDownvotePerspective' => false,
-            'withReactionsMetadata' => false,
-            'withReactionsPerspective' => false,
-            'withSuperFollowsTweetFields' => true,
-            'withVoice' => true,
-            'withV2Timeline' => true,
-        ];
-        $features = [
-            'responsive_web_twitter_blue_verified_badge_is_enabled' => true,
-            'responsive_web_graphql_exclude_directive_enabled' => false,
-            'verified_phone_label_enabled' => false,
-            'responsive_web_graphql_timeline_navigation_enabled' => true,
-            'responsive_web_graphql_skip_user_profile_image_extensions_enabled' => false,
-            'longform_notetweets_consumption_enabled' => true,
-            'tweetypie_unmention_optimization_enabled' => true,
-            'vibe_api_enabled' => true,
-            'responsive_web_edit_tweet_api_enabled' => true,
-            'graphql_is_translatable_rweb_tweet_is_translatable_enabled' => true,
-            'view_counts_everywhere_api_enabled' => true,
-            'freedom_of_speech_not_reach_appeal_label_enabled' => false,
-            'standardized_nudges_misinfo' => true,
-            'tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled' => false,
-            'interactive_text_enabled' => true,
-            'responsive_web_text_conversations_enabled' => false,
-            'responsive_web_enhance_cards_enabled' => false,
-        ];
-        $url = sprintf(
-            'https://twitter.com/i/api/graphql/WZT7sCTrLvSOaWOXLDsWbQ/UserTweets?variables=%s&features=%s',
-            urlencode(json_encode($variables)),
-            urlencode(json_encode($features))
-        );
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
-        return $response;
-    }
-
-    private function fetchTimelineUsingSearch($screenName)
-    {
-        $params = [
-            'q' => 'from:' . $screenName,
-            'modules' => 'status',
-            'result_type' => 'recent'
-        ];
-        $response = $this->search($params);
-        return $response;
+        $json = getContents($url, $this->createHttpHeaders(), [CURLOPT_POST => true], true);
+        $token = Json::decode($json['content'], false);
+        $this->cache->set('twitter_guest_token', $token->guest_token, 60 * 60 * 3);
     }
 
     public function search($queryParam)
@@ -273,8 +229,9 @@ class TwitterClient
              'https://api.twitter.com/1.1/search/tweets.json?%s',
              http_build_query($queryParam)
          );
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
-        return $response;
+        $response = getContents($url, $this->createHttpHeaders(), [], true);
+        $data = Json::decode($response['content'], false);
+        return $data;
     }
 
     private function fetchListInfoBySlug($screenName, $listSlug)
@@ -336,7 +293,8 @@ class TwitterClient
             urlencode(json_encode($features))
         );
 
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
+        $json = getContents($url, $this->createHttpHeaders(), [], true);
+        $response = Json::decode($json['content'], false);
         if (isset($response->errors)) {
             // Grab the first error message
             throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
@@ -407,7 +365,8 @@ class TwitterClient
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
+        $json = getContents($url, $this->createHttpHeaders(), [], true);
+        $response = Json::decode($json['content'], false);
         return $response;
     }
 
@@ -415,7 +374,7 @@ class TwitterClient
     {
         $headers = [
             'authorization' => sprintf('Bearer %s', $this->authorization),
-            'x-guest-token' => $this->data['guest_token'] ?? null,
+            'x-guest-token' => $this->cache->get('twitter_guest_token'),
         ];
         foreach ($headers as $key => $value) {
             $headers[] = sprintf('%s: %s', $key, $value);

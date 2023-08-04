@@ -13,15 +13,15 @@ class DisplayAction implements ActionInterface
         $cacheKey = 'http_' . json_encode($request);
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
-        if ($cachedResponse && !Debug::isEnabled()) {
+        if ($cachedResponse) {
             $ifModifiedSince = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? null;
             $lastModified = $cachedResponse->getHeader('last-modified');
             if ($ifModifiedSince && $lastModified) {
-                $d = new \DateTimeImmutable($lastModified);
-                $dd = $d->getTimestamp();
+                $lastModified = new \DateTimeImmutable($lastModified);
+                $lastModifiedTimestamp = $lastModified->getTimestamp();
                 $modifiedSince = strtotime($ifModifiedSince);
-                if ($dd <= $modifiedSince) {
-                    $modificationTimeGMT = gmdate('D, d M Y H:i:s ', $dd);
+                if ($lastModifiedTimestamp <= $modifiedSince) {
+                    $modificationTimeGMT = gmdate('D, d M Y H:i:s ', $lastModifiedTimestamp);
                     return new Response('', 304, ['last-modified' => $modificationTimeGMT . 'GMT']);
                 }
             }
@@ -113,15 +113,15 @@ class DisplayAction implements ActionInterface
             if ($e instanceof HttpException) {
                 // Reproduce (and log) these responses regardless of error output and report limit
                 if ($e->getCode() === 429) {
-                    Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getName(), create_sane_exception_message($e)));
+                    Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
                     return new Response('429 Too Many Requests', 429);
                 }
                 if ($e->getCode() === 503) {
-                    Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getName(), create_sane_exception_message($e)));
+                    Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
                     return new Response('503 Service Unavailable', 503);
                 }
             }
-            Logger::error(sprintf('Exception in DisplayAction(%s)', $bridge->getName()), ['e' => $e]);
+            Logger::error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
             $errorCount = 1;
             if ($reportLimit > 1) {
                 $errorCount = $this->logBridgeError($bridge->getName(), $e->getCode());

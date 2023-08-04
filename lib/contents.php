@@ -56,7 +56,7 @@ function getContents(
 
     /** @var Response $cachedResponse */
     $cachedResponse = $cache->get($cacheKey);
-    if (!Debug::isEnabled() && $cachedResponse) {
+    if ($cachedResponse) {
         // considering popping
         $cachedLastModified = $cachedResponse->getHeader('last-modified');
         if ($cachedLastModified) {
@@ -186,7 +186,7 @@ function getSimpleHTMLDOM(
  * _Notice_: Cached contents are forcefully removed after 24 hours (86400 seconds).
  *
  * @param string $url The URL.
- * @param int $timeout Cache duration in seconds.
+ * @param int $ttl Cache duration in seconds.
  * @param array $header (optional) A list of cURL header.
  * For more information follow the links below.
  * * https://php.net/manual/en/function.curl-setopt.php
@@ -211,7 +211,7 @@ function getSimpleHTMLDOM(
  */
 function getSimpleHTMLDOMCached(
     $url,
-    $timeout = 86400,
+    $ttl = 86400,
     $header = [],
     $opts = [],
     $lowercase = true,
@@ -224,9 +224,9 @@ function getSimpleHTMLDOMCached(
     $cache = RssBridge::getCache();
     $cacheKey = 'pages_' . $url;
     $content = $cache->get($cacheKey);
-    if (!$content || Debug::isEnabled()) {
+    if (!$content) {
         $content = getContents($url, $header ?? [], $opts ?? []);
-        $cache->set($cacheKey, $content, $timeout);
+        $cache->set($cacheKey, $content, $ttl);
     }
     return str_get_html(
         $content,

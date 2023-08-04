@@ -57,6 +57,8 @@ interface BridgeInterface
 {
     /**
      * Collects data from the site
+     *
+     * @return void
      */
     public function collectData();
 

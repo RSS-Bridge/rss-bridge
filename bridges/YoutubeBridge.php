@@ -77,6 +77,133 @@ class YoutubeBridge extends BridgeAbstract
     private $channel_name = '';
     // This took from repo BetterVideoRss of VerifiedJoseph.
     const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
+    private CacheInterface $cache;
+
+    public function __construct()
+    {
+        $this->cache = RssBridge::getCache();
+    }
+
+    public function collectData()
+    {
+        $cacheKey = 'youtube_rate_limit';
+        if ($this->cache->get($cacheKey)) {
+            throw new HttpException('429 Too Many Requests', 429);
+        }
+        try {
+            $this->collectDataInternal();
+        } catch (HttpException $e) {
+            if ($e->getCode() === 429) {
+                $this->cache->set($cacheKey, true, 60 * 16);
+                throw $e;
+            }
+        }
+    }
+
+    private function collectDataInternal()
+    {
+        $xml = '';
+        $html = '';
+        $url_feed = '';
+        $url_listing = '';
+
+        if ($this->getInput('u')) { /* User and Channel modes */
+            $this->request = $this->getInput('u');
+            $url_feed = self::URI . 'feeds/videos.xml?user=' . urlencode($this->request);
+            $url_listing = self::URI . 'user/' . urlencode($this->request) . '/videos';
+        } elseif ($this->getInput('c')) {
+            $this->request = $this->getInput('c');
+            $url_feed = self::URI . 'feeds/videos.xml?channel_id=' . urlencode($this->request);
+            $url_listing = self::URI . 'channel/' . urlencode($this->request) . '/videos';
+        } elseif ($this->getInput('custom')) {
+            $this->request = $this->getInput('custom');
+            $url_listing = self::URI . urlencode($this->request) . '/videos';
+        }
+
+        if (!empty($url_feed) || !empty($url_listing)) {
+            $this->feeduri = $url_listing;
+            if (!empty($this->getInput('custom'))) {
+                $html = $this->ytGetSimpleHTMLDOM($url_listing);
+                $jsonData = $this->getJSONData($html);
+                $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
+                $this->iconURL = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
+            }
+            if (!$this->skipFeeds()) {
+                $html = $this->ytGetSimpleHTMLDOM($url_feed);
+                $this->ytBridgeParseXmlFeed($html);
+            } else {
+                if (empty($this->getInput('custom'))) {
+                    $html = $this->ytGetSimpleHTMLDOM($url_listing);
+                    $jsonData = $this->getJSONData($html);
+                }
+                $channel_id = '';
+                if (isset($jsonData->contents)) {
+                    $channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
+                    $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
+                    $jsonData = $jsonData->tabRenderer->content->richGridRenderer->contents;
+                    // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+                    $this->parseJSONListing($jsonData);
+                } else {
+                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
+                }
+            }
+            $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
+        } elseif ($this->getInput('p')) { /* playlist mode */
+            // TODO: this mode makes a lot of excess video query requests.
+            // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
+            // This cache will be used to find out, which videos to fetch
+            // to make feed of 15 items or more, if there a lot of videos published on that date.
+            $this->request = $this->getInput('p');
+            $url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
+            $url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
+            $html = $this->ytGetSimpleHTMLDOM($url_listing);
+            $jsonData = $this->getJSONData($html);
+            // TODO: this method returns only first 100 video items
+            // if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
+            $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0];
+            $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
+            $jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
+            $item_count = count($jsonData);
+
+            if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
+                $this->ytBridgeParseXmlFeed($xml);
+            } else {
+                $this->parseJSONListing($jsonData);
+            }
+            $this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
+            usort($this->items, function ($item1, $item2) {
+                if (!is_int($item1['timestamp']) && !is_int($item2['timestamp'])) {
+                    $item1['timestamp'] = strtotime($item1['timestamp']);
+                    $item2['timestamp'] = strtotime($item2['timestamp']);
+                }
+                return $item2['timestamp'] - $item1['timestamp'];
+            });
+        } elseif ($this->getInput('s')) { /* search mode */
+            $this->request = $this->getInput('s');
+            $url_listing = self::URI
+                . 'results?search_query='
+                . urlencode($this->request)
+                . '&sp=CAI%253D';
+
+            $html = $this->ytGetSimpleHTMLDOM($url_listing);
+
+            $jsonData = $this->getJSONData($html);
+            $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
+            $jsonData = $jsonData->sectionListRenderer->contents;
+            foreach ($jsonData as $data) {   // Search result includes some ads, have to filter them
+                if (isset($data->itemSectionRenderer->contents[0]->videoRenderer)) {
+                    $jsonData = $data->itemSectionRenderer->contents;
+                    break;
+                }
+            }
+            $this->parseJSONListing($jsonData);
+            $this->feeduri = $url_listing;
+            $this->feedName = 'Search: ' . $this->request; // feedName will be used by getName()
+        } else { /* no valid mode */
+            returnClientError("You must either specify either:\n - YouTube
+ username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
+        }
+    }
 
     private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time)
     {
@@ -312,111 +439,6 @@ class YoutubeBridge extends BridgeAbstract
             // $vid_list .= $vid . ',';
             $this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
             $this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-        }
-    }
-
-    public function collectData()
-    {
-        $xml = '';
-        $html = '';
-        $url_feed = '';
-        $url_listing = '';
-
-        if ($this->getInput('u')) { /* User and Channel modes */
-            $this->request = $this->getInput('u');
-            $url_feed = self::URI . 'feeds/videos.xml?user=' . urlencode($this->request);
-            $url_listing = self::URI . 'user/' . urlencode($this->request) . '/videos';
-        } elseif ($this->getInput('c')) {
-            $this->request = $this->getInput('c');
-            $url_feed = self::URI . 'feeds/videos.xml?channel_id=' . urlencode($this->request);
-            $url_listing = self::URI . 'channel/' . urlencode($this->request) . '/videos';
-        } elseif ($this->getInput('custom')) {
-            $this->request = $this->getInput('custom');
-            $url_listing = self::URI . urlencode($this->request) . '/videos';
-        }
-
-        if (!empty($url_feed) || !empty($url_listing)) {
-            $this->feeduri = $url_listing;
-            if (!empty($this->getInput('custom'))) {
-                $html = $this->ytGetSimpleHTMLDOM($url_listing);
-                $jsonData = $this->getJSONData($html);
-                $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
-                $this->iconURL = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
-            }
-            if (!$this->skipFeeds()) {
-                $html = $this->ytGetSimpleHTMLDOM($url_feed);
-                $this->ytBridgeParseXmlFeed($html);
-            } else {
-                if (empty($this->getInput('custom'))) {
-                    $html = $this->ytGetSimpleHTMLDOM($url_listing);
-                    $jsonData = $this->getJSONData($html);
-                }
-                $channel_id = '';
-                if (isset($jsonData->contents)) {
-                    $channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
-                    $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
-                    $jsonData = $jsonData->tabRenderer->content->richGridRenderer->contents;
-                    // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
-                    $this->parseJSONListing($jsonData);
-                } else {
-                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
-                }
-            }
-            $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
-        } elseif ($this->getInput('p')) { /* playlist mode */
-            // TODO: this mode makes a lot of excess video query requests.
-            // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
-            // This cache will be used to find out, which videos to fetch
-            // to make feed of 15 items or more, if there a lot of videos published on that date.
-            $this->request = $this->getInput('p');
-            $url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
-            $url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
-            $html = $this->ytGetSimpleHTMLDOM($url_listing);
-            $jsonData = $this->getJSONData($html);
-            // TODO: this method returns only first 100 video items
-            // if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
-            $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0];
-            $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
-            $jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
-            $item_count = count($jsonData);
-
-            if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
-                $this->ytBridgeParseXmlFeed($xml);
-            } else {
-                $this->parseJSONListing($jsonData);
-            }
-            $this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
-            usort($this->items, function ($item1, $item2) {
-                if (!is_int($item1['timestamp']) && !is_int($item2['timestamp'])) {
-                    $item1['timestamp'] = strtotime($item1['timestamp']);
-                    $item2['timestamp'] = strtotime($item2['timestamp']);
-                }
-                return $item2['timestamp'] - $item1['timestamp'];
-            });
-        } elseif ($this->getInput('s')) { /* search mode */
-            $this->request = $this->getInput('s');
-            $url_listing = self::URI
-            . 'results?search_query='
-            . urlencode($this->request)
-            . '&sp=CAI%253D';
-
-            $html = $this->ytGetSimpleHTMLDOM($url_listing);
-
-            $jsonData = $this->getJSONData($html);
-            $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
-            $jsonData = $jsonData->sectionListRenderer->contents;
-            foreach ($jsonData as $data) {   // Search result includes some ads, have to filter them
-                if (isset($data->itemSectionRenderer->contents[0]->videoRenderer)) {
-                    $jsonData = $data->itemSectionRenderer->contents;
-                    break;
-                }
-            }
-            $this->parseJSONListing($jsonData);
-            $this->feeduri = $url_listing;
-            $this->feedName = 'Search: ' . $this->request; // feedName will be used by getName()
-        } else { /* no valid mode */
-            returnClientError("You must either specify either:\n - YouTube
- username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
         }
     }
 
