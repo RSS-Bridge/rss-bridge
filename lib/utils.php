@@ -1,13 +1,5 @@
 <?php
 
-class HttpException extends \Exception
-{
-}
-
-final class CloudFlareException extends HttpException
-{
-}
-
 final class Json
 {
     public static function encode($value, $pretty = true): string
@@ -239,4 +231,14 @@ function now(): \DateTimeImmutable
 function create_random_string(int $bytes = 16): string
 {
     return bin2hex(openssl_random_pseudo_bytes($bytes));
+}
+
+function returnClientError($message)
+{
+    throw new \Exception($message, 400);
+}
+
+function returnServerError($message)
+{
+    throw new \Exception($message, 500);
 }

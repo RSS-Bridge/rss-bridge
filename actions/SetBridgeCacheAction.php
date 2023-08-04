@@ -19,7 +19,10 @@ class SetBridgeCacheAction implements ActionInterface
         $authenticationMiddleware = new ApiAuthenticationMiddleware();
         $authenticationMiddleware($request);
 
-        $key = $request['key'] or returnClientError('You must specify key!');
+        $key = $request['key'] ?? null;
+        if (!$key) {
+            returnClientError('You must specify key!');
+        }
 
         $bridgeFactory = new BridgeFactory();
 

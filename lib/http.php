@@ -1,5 +1,13 @@
 <?php
 
+class HttpException extends \Exception
+{
+}
+
+final class CloudFlareException extends HttpException
+{
+}
+
 interface HttpClient
 {
     public function request(string $url, array $config = []): Response;
