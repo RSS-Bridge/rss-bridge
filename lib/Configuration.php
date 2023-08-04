@@ -37,10 +37,6 @@ final class Configuration
      */
     public static function verifyInstallation()
     {
-        if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
-            throw new \Exception('RSS-Bridge requires at least PHP version 7.4.0!');
-        }
-
         $errors = [];
 
         // OpenSSL: https://www.php.net/manual/en/book.openssl.php

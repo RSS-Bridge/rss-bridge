@@ -56,6 +56,10 @@ Alternatively find another
 Requires minimum PHP 7.4.
 
 ```shell
+apt install nginx php-fpm php-mbstring php-simplexml php-curl
+```
+
+```shell
 cd /var/www
 composer create-project -v --no-dev rss-bridge/rss-bridge
 ```
