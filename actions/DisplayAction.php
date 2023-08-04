@@ -35,7 +35,7 @@ class DisplayAction implements ActionInterface
         $bridgeFactory = new BridgeFactory();
         $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
-            return new Response(sprintf('Bridge not found: %s', $bridgeName), 404);
+            return new Response('Bridge not found', 404);
         }
         $format = $request['format'] ?? null;
         if (!$format) {

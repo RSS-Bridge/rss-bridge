@@ -15,7 +15,12 @@ final class RssBridge
         }
 
         try {
-            $this->run($request);
+            $response = $this->run($request);
+            if (is_string($response)) {
+                print $response;
+            } elseif ($response instanceof Response) {
+                $response->send();
+            }
         } catch (\Throwable $e) {
             Logger::error('Exception in RssBridge::main()', ['e' => $e]);
             http_response_code(500);
@@ -23,7 +28,7 @@ final class RssBridge
         }
     }
 
-    private function run($request): void
+    private function run($request)
     {
         Configuration::verifyInstallation();
 
@@ -94,17 +99,12 @@ final class RssBridge
 
         $filePath = __DIR__ . '/../actions/' . $actionName . '.php';
         if (!file_exists($filePath)) {
-            throw new \Exception(sprintf('Invalid action: %s', $actionName));
+            return new Response('Invalid action', 400);
         }
         $className = '\\' . $actionName;
         $action = new $className();
 
-        $response = $action->execute($request);
-        if (is_string($response)) {
-            print $response;
-        } elseif ($response instanceof Response) {
-            $response->send();
-        }
+        return $action->execute($request);
     }
 
     public static function getHttpClient(): HttpClient
