@@ -78,7 +78,9 @@ class DisplayAction implements ActionInterface
         if ($response->getCode() === 500) {
             $this->cache->set($cacheKey, $response, 60 * 15);
         }
-        $this->cache->purgeCache();
+        if (rand(1, 100) === 2) {
+            $this->cache->prune();
+        }
         return $response;
     }
 

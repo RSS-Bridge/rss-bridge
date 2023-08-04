@@ -6,18 +6,22 @@ class NullCache implements CacheInterface
 {
     public function get(string $key, $default = null)
     {
+        return $default;
     }
 
     public function set(string $key, $value, int $ttl = null): void
     {
     }
 
-    public function purgeCache(int $timeout = 86400): void
+    public function delete(string $key): void
     {
     }
 
     public function clear(): void
     {
-        // TODO: Implement clear() method.
+    }
+
+    public function prune(): void
+    {
     }
 }

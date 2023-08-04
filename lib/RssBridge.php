@@ -15,6 +15,13 @@ final class RssBridge
         }
         Configuration::loadConfiguration($customConfig, getenv());
 
+        set_exception_handler(function (\Throwable $e) {
+            Logger::error('Uncaught Exception', ['e' => $e]);
+            http_response_code(500);
+            print render(__DIR__ . '/../templates/error.html.php', ['e' => $e]);
+            exit(1);
+        });
+
         set_error_handler(function ($code, $message, $file, $line) {
             if ((error_reporting() & $code) === 0) {
                 return false;
@@ -27,7 +34,6 @@ final class RssBridge
             );
             Logger::warning($text);
             if (Debug::isEnabled()) {
-                // todo: extract to log handler
                 print sprintf("<pre>%s</pre>\n", e($text));
             }
         });

@@ -39,13 +39,18 @@ class MemcachedCache implements CacheInterface
         }
     }
 
-    public function purgeCache(int $timeout = 86400): void
+    public function delete(string $key): void
     {
-        //$this->conn->flush();
+        $this->conn->delete($key);
     }
 
     public function clear(): void
     {
         $this->conn->flush();
+    }
+
+    public function prune(): void
+    {
+        // memcached manages pruning on its own
     }
 }

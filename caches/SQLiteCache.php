@@ -31,6 +31,10 @@ class SQLiteCache implements CacheInterface
             $this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
         }
         $this->db->busyTimeout($config['timeout']);
+        // https://www.sqlite.org/pragma.html#pragma_journal_mode
+        $this->db->exec('PRAGMA journal_mode = wal');
+        // https://www.sqlite.org/pragma.html#pragma_synchronous
+        $this->db->exec('PRAGMA synchronous = NORMAL');
     }
 
     public function get(string $key, $default = null)
@@ -60,7 +64,6 @@ class SQLiteCache implements CacheInterface
         // delete?
         return $default;
     }
-
     public function set(string $key, $value, int $ttl = null): void
     {
         $cacheKey = $this->createCacheKey($key);
@@ -74,13 +77,21 @@ class SQLiteCache implements CacheInterface
         // Unclear whether we should $result->finalize(); here?
     }
 
-    public function purgeCache(int $timeout = 86400): void
+    public function delete(string $key): void
+    {
+        $key = $this->createCacheKey($key);
+        $stmt = $this->db->prepare('DELETE FROM storage WHERE key = :key');
+        $stmt->bindValue(':key', $key);
+        $result = $stmt->execute();
+    }
+
+    public function prune(): void
     {
         if (!$this->config['enable_purge']) {
             return;
         }
-        $stmt = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
-        $stmt->bindValue(':expired', time() - $timeout);
+        $stmt = $this->db->prepare('DELETE FROM storage WHERE updated <= :now');
+        $stmt->bindValue(':now', time());
         $result = $stmt->execute();
     }
 

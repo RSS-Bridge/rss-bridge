@@ -1,10 +1,14 @@
 <?php
 
+// https://github.com/nette/utils/blob/master/src/Utils/Json.php
 final class Json
 {
-    public static function encode($value, $pretty = true): string
+    public static function encode($value, $pretty = true, bool $asciiSafe = false): string
     {
-        $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES;
+        if (!$asciiSafe) {
+            $flags = $flags | JSON_UNESCAPED_UNICODE;
+        }
         if ($pretty) {
             $flags = $flags | JSON_PRETTY_PRINT;
         }

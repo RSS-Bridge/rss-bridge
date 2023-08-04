@@ -26,7 +26,7 @@ class FileCache implements CacheInterface
     public function get(string $key, $default = null)
     {
         clearstatcache();
-        $cacheFile = $this->config['path'] . hash('md5', $key) . '.cache';
+        $cacheFile = $this->createCacheFile($key);
         if (!file_exists($cacheFile)) {
             return $default;
         }
@@ -51,7 +51,7 @@ class FileCache implements CacheInterface
             'value'         => $value,
             'expiration'    => $ttl === null ? 0 : time() + $ttl,
         ];
-        $cacheFile = $this->config['path'] . hash('md5', $key) . '.cache';
+        $cacheFile = $this->createCacheFile($key);
         $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
         if ($bytes === false) {
             // Consider just logging the error here
@@ -59,7 +59,22 @@ class FileCache implements CacheInterface
         }
     }
 
-    public function purgeCache(int $timeout = 86400): void
+    public function delete(string $key): void
+    {
+        unlink($this->createCacheFile($key));
+    }
+
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    public function clear(): void
+    {
+        // TODO: Implement clear() method.
+    }
+
+    public function prune(): void
     {
         if (! $this->config['enable_purge']) {
             return;
@@ -90,13 +105,8 @@ class FileCache implements CacheInterface
         }
     }
 
-    public function getConfig()
+    private function createCacheFile(string $key): string
     {
-        return $this->config;
-    }
-
-    public function clear(): void
-    {
-        // TODO: Implement clear() method.
+        return $this->config['path'] . hash('md5', $key) . '.cache';
     }
 }

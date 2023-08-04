@@ -6,7 +6,9 @@ interface CacheInterface
 
     public function set(string $key, $value, int $ttl = null): void;
 
+    public function delete(string $key): void;
+
     public function clear(): void;
 
-    public function purgeCache(int $timeout = 86400): void;
+    public function prune(): void;
 }
