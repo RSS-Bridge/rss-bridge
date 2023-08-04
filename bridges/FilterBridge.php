@@ -12,7 +12,7 @@ class FilterBridge extends FeedExpander
         'url' => [
             'name' => 'Feed URL',
             'type'  => 'text',
-            'defaultValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day',
+            'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day',
             'required' => true,
         ],
         'filter' => [
