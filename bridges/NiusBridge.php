@@ -14,8 +14,11 @@ class NiusBridge extends XPathAbstract
     const XPATH_EXPRESSION_ITEM_TITLE = './/h2[@class="title"]//node()';
     const XPATH_EXPRESSION_ITEM_CONTENT = './/h2[@class="title"]//node()';
     const XPATH_EXPRESSION_ITEM_URI = './/a[1]/@href';
-    const XPATH_EXPRESSION_ITEM_AUTHOR = 'substring-after(concat(normalize-space(.//span[@class="author"]/text()[1])'.
-        ', " ", normalize-space(.//span[@class="author"]/text()[2])), " ")';
+
+    const XPATH_EXPR_AUTHOR_PART1 = 'normalize-space(.//span[@class="author"]/text()[1])';
+    const XPATH_EXPR_AUTHOR_PART2 = 'normalize-space(.//span[@class="author"]/text()[2])';
+    const XPATH_EXPRESSION_ITEM_AUTHOR = 'substring-after(' . self::XPATH_EXPR_AUTHOR_PART1.'), " ", ' . self::XPATH_EXPR_AUTHOR_PART2 . '), " ")';
+    
     //const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/td[3]';
     const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img[1]/@src';
     const XPATH_EXPRESSION_ITEM_CATEGORIES = './/div[@class="subtitle"]/text()';
