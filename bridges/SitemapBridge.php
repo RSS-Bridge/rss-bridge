@@ -73,7 +73,7 @@ class SitemapBridge extends CssSelectorBridge
         $links = $this->sitemapXmlToList($sitemap_xml, $url_pattern, empty($limit) ? 10 : $limit);
 
         if (empty($links) && empty(sitemapXmlToList($sitemap_xml))) {
-            returnClientError('Could not retrieve URLs with Timestamps from Sitemap: '. $sitemap_url);
+            returnClientError('Could not retrieve URLs with Timestamps from Sitemap: ' . $sitemap_url);
         }
 
         foreach ($links as $link) {
@@ -87,10 +87,9 @@ class SitemapBridge extends CssSelectorBridge
      * @param string $is_site_map TRUE if the specified URL points directly to the sitemap XML
      * @return object Sitemap DOM (from parsed XML)
      */
-    protected function getSitemapXml(&$url, $is_site_map=false)
+    protected function getSitemapXml(&$url, $is_site_map = false)
     {
-        if (!$is_site_map)
-        {
+        if (!$is_site_map) {
             $robots_txt = getSimpleHTMLDOM(urljoin($url, '/robots.txt'))->outertext;
             preg_match('/Sitemap: ([^ ]+)/', $robots_txt, $matches);
             if (empty($matches)) {
@@ -109,7 +108,7 @@ class SitemapBridge extends CssSelectorBridge
      * @param bool $keep_date TRUE to keep dates (url => date array instead of url array)
      * @return array Array of URLs
      */
-    protected function sitemapXmlToList($sitemap, $url_pattern='', $limit=0, $keep_date=false)
+    protected function sitemapXmlToList($sitemap, $url_pattern = '', $limit = 0, $keep_date = false)
     {
         $links = [];
 
