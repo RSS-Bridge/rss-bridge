@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * @link https://www.php.net/manual/en/function.clearstatcache.php
- */
 class FileCache implements CacheInterface
 {
     private array $config;
@@ -25,7 +22,6 @@ class FileCache implements CacheInterface
 
     public function get(string $key, $default = null)
     {
-        clearstatcache();
         $cacheFile = $this->createCacheFile($key);
         if (!file_exists($cacheFile)) {
             return $default;
