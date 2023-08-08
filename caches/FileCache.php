@@ -33,14 +33,14 @@ class FileCache implements CacheInterface
         $item = unserialize(file_get_contents($cacheFile));
         if ($item === false) {
             Logger::warning(sprintf('Failed to unserialize: %s', $cacheFile));
-            // delete?
+            $this->delete($key);
             return $default;
         }
         $expiration = $item['expiration'];
         if ($expiration === 0 || $expiration > time()) {
             return $item['value'];
         }
-        // delete?
+        $this->delete($key);
         return $default;
     }
 
@@ -64,14 +64,16 @@ class FileCache implements CacheInterface
         unlink($this->createCacheFile($key));
     }
 
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
     public function clear(): void
     {
-        // TODO: Implement clear() method.
+        foreach (scandir($this->config['path']) as $filename) {
+            $cacheFile = $this->config['path'] . $filename;
+            $excluded = ['.' => true, '..' => true, '.gitkeep' => true];
+            if (isset($excluded[$filename]) || !is_file($cacheFile)) {
+                continue;
+            }
+            unlink($cacheFile);
+        }
     }
 
     public function prune(): void
@@ -79,34 +81,32 @@ class FileCache implements CacheInterface
         if (! $this->config['enable_purge']) {
             return;
         }
-
-        $cachePath = $this->config['path'];
-        $cacheIterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($cachePath),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($cacheIterator as $cacheFile) {
-            $basename = $cacheFile->getBasename();
-            $excluded = [
-                '.'         => true,
-                '..'        => true,
-                '.gitkeep'  => true,
-            ];
-            if (isset($excluded[$basename])) {
+        foreach (scandir($this->config['path']) as $filename) {
+            $cacheFile = $this->config['path'] . $filename;
+            $excluded = ['.' => true, '..' => true, '.gitkeep' => true];
+            if (isset($excluded[$filename]) || !is_file($cacheFile)) {
                 continue;
-            } elseif ($cacheFile->isFile()) {
-                $filepath = $cacheFile->getPathname();
-                if (filemtime($filepath) < time() - $timeout) {
-                    // todo: sometimes this file doesn't exists
-                    unlink($filepath);
-                }
             }
+            $item = unserialize(file_get_contents($cacheFile));
+            if ($item === false) {
+                unlink($cacheFile);
+                continue;
+            }
+            $expiration = $item['expiration'];
+            if ($expiration === 0 || $expiration > time()) {
+                continue;
+            }
+            unlink($cacheFile);
         }
     }
 
     private function createCacheFile(string $key): string
     {
         return $this->config['path'] . hash('md5', $key) . '.cache';
+    }
+
+    public function getConfig()
+    {
+        return $this->config;
     }
 }

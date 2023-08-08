@@ -77,14 +77,14 @@ final class Logger
         } else {
             $context = '';
         }
-        $text = trim(sprintf(
+        $text = sprintf(
             "[%s] rssbridge.%s %s %s\n",
             now()->format('Y-m-d H:i:s'),
             $level,
             // Intentionally not sanitizing $message
             $message,
             $context
-        ));
+        );
 
         // Log to stderr/stdout whatever that is
         // todo: extract to log handler
