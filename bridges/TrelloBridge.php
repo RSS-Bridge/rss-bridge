@@ -670,7 +670,15 @@ class TrelloBridge extends BridgeAbstract
     {
         $regex = '/^(https?:\/\/)?trello\.com\/([bc])\/([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
-            return [$matches[2] => $matches[3]];
+            if ($matches[2] == 'b') {
+                $context = 'Board';
+            } else if ($matches[2] == 'c') {
+                $context = 'Card';
+            }
+            return [
+                'context' => $context,
+                $matches[2] => $matches[3]
+            ];
         } else {
             return null;
         }

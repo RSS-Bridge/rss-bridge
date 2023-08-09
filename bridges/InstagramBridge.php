@@ -323,6 +323,7 @@ class InstagramBridge extends BridgeAbstract
         $regex = '/^(https?:\/\/)?(www\.)?instagram\.com\/([^\/?\n]+)/';
 
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Username';
             $params['u'] = urldecode($matches[3]);
             return $params;
         }

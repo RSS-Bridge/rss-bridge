@@ -301,10 +301,12 @@ class RedditBridge extends BridgeAbstract
 
         if ($path[1] == 'r') {
             return [
+                'context' => 'single',
                 'r' => $path[2]
             ];
         } elseif ($path[1] == 'user') {
             return [
+                'context' => 'user',
                 'u' => $path[2]
             ];
         } else {

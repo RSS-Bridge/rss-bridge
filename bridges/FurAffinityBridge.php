@@ -603,6 +603,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Single journal
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/journal\/(\d+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Single Journal';
             $params['journal-id'] = urldecode($matches[3]);
             return $params;
         }
@@ -610,6 +611,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Journals
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/journals\/([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Journals';
             $params['username-journals'] = urldecode($matches[3]);
             return $params;
         }
@@ -617,6 +619,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Gallery folder
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/gallery\/([^\/&?\n]+)\/folder\/(\d+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Gallery Folder';
             $params['username-folder'] = urldecode($matches[3]);
             $params['folder-id'] = urldecode($matches[4]);
             $params['full'] = 'on';
@@ -626,6 +629,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Gallery (must be after gallery folder)
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/(gallery|scraps|favorites)\/([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Gallery';
             $params['username-' . $matches[3]] = urldecode($matches[4]);
             $params['full'] = 'on';
             return $params;
