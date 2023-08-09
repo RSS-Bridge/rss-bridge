@@ -277,6 +277,7 @@ class GithubIssueBridge extends BridgeAbstract
             case 2: // Project issues
                 [$user, $project] = $path_segments;
                 $show_comments = 'off';
+                $context = 'Project Issues';
                 break;
             case 3: // Project issues with issue comments
                 if ($path_segments[2] !== static::URL_PATH) {
@@ -284,15 +285,18 @@ class GithubIssueBridge extends BridgeAbstract
                 }
                 [$user, $project] = $path_segments;
                 $show_comments = 'on';
+                $context = 'Project Issues';
                 break;
             case 4: // Issue comments
                 [$user, $project, /* issues */, $issue] = $path_segments;
+                $context = 'Issue comments';
                 break;
             default:
                 return null;
         }
 
         return [
+            'context' => $context,
             'u' => $user,
             'p' => $project,
             'c' => $show_comments ?? null,

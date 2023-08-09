@@ -267,6 +267,7 @@ HTML,
         $regex = '/^http(s|):\/\/((www\.|)(instagram.com)\/([a-zA-Z0-9_\.]{1,30})\/(reels\/|tagged\/|)
 |(www\.|)(imgsed.com)\/(stories\/|tagged\/|)([a-zA-Z0-9_\.]{1,30})\/)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Username';
             // Extract detected domain using the regex
             $domain = $matches[8] ?? $matches[4];
             if ($domain == 'imgsed.com') {

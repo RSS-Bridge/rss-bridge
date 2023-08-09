@@ -63,9 +63,9 @@ class InstagramBridge extends BridgeAbstract
     ];
 
     const TEST_DETECT_PARAMETERS = [
-        'https://www.instagram.com/metaverse' => ['u' => 'metaverse'],
-        'https://instagram.com/metaverse' => ['u' => 'metaverse'],
-        'http://www.instagram.com/metaverse' => ['u' => 'metaverse'],
+        'https://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+        'https://instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+        'http://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
     ];
 
     const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
@@ -323,6 +323,7 @@ class InstagramBridge extends BridgeAbstract
         $regex = '/^(https?:\/\/)?(www\.)?instagram\.com\/([^\/?\n]+)/';
 
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Username';
             $params['u'] = urldecode($matches[3]);
             return $params;
         }
