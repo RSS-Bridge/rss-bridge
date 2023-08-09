@@ -1,5 +1,4 @@
 <script src="static/rss-bridge.js"></script>
-<script src="static/findfeed.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', rssbridge_toggle_bridge);
     document.addEventListener('DOMContentLoaded', rssbridge_list_search);
@@ -16,12 +15,12 @@
         onkeyup="rssbridge_list_search()"
         value=""
     >
-    <input
+    <button
         type="button"
-	value="Find Feed from URL"
-	id="findfeed"
+	    id="findfeed"
         name="findfeed"
-    />
+    />Find Feed from URL
+    </button>
     <section id="findfeedresults">
     </section>
 </section>
