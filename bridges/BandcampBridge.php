@@ -397,6 +397,7 @@ class BandcampBridge extends BridgeAbstract
         // By tag
         $regex = '/^(https?:\/\/)?bandcamp\.com\/tag\/([^\/.&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'By tag';
             $params['tag'] = urldecode($matches[2]);
             return $params;
         }
@@ -404,6 +405,7 @@ class BandcampBridge extends BridgeAbstract
         // By band
         $regex = '/^(https?:\/\/)?([^\/.&?\n]+?)\.bandcamp\.com/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'By band';
             $params['band'] = urldecode($matches[2]);
             return $params;
         }
@@ -411,6 +413,7 @@ class BandcampBridge extends BridgeAbstract
         // By album
         $regex = '/^(https?:\/\/)?([^\/.&?\n]+?)\.bandcamp\.com\/album\/([^\/.&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'By album';
             $params['band'] = urldecode($matches[2]);
             $params['album'] = urldecode($matches[3]);
             return $params;

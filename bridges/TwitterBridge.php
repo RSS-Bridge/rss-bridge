@@ -133,6 +133,7 @@ EOD
         // By keyword or hashtag (search)
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/search.*(\?|&)q=([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'By keyword or hashtag';
             $params['q'] = urldecode($matches[4]);
             return $params;
         }
@@ -140,6 +141,7 @@ EOD
         // By hashtag
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/hashtag\/([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'By keyword or hashtag';
             $params['q'] = urldecode($matches[3]);
             return $params;
         }
@@ -147,6 +149,7 @@ EOD
         // By list
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/lists\/([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'By list';
             $params['user'] = urldecode($matches[3]);
             $params['list'] = urldecode($matches[4]);
             return $params;
@@ -155,6 +158,7 @@ EOD
         // By username
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'By username';
             $params['u'] = urldecode($matches[3]);
             return $params;
         }
