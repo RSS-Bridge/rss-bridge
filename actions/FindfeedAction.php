@@ -41,6 +41,14 @@ class FindfeedAction implements ActionInterface
                 continue;
             }
 
+            // It's allowed to have no 'context' in a bridge (only a default context without any name)
+            // In this case, the reference to the parameters are found in the first element of the PARAMETERS array
+
+            if (!isset($bridgeParams['context'])) {
+                $context = 0;
+            } else {
+                $context = $bridgeParams['context'];
+            }
 
             $bridgeData = [];
             // Construct the array of parameters
@@ -50,7 +58,7 @@ class FindfeedAction implements ActionInterface
                     $bridgeData[$key]['name'] = 'Context';
                     $bridgeData[$key]['value'] = $value;
                 } else {
-                    $bridgeData[$key]['name'] = $bridge::PARAMETERS[$bridgeParams['context']][$key]['name'];
+                    $bridgeData[$key]['name'] = $this->getParameterName($bridge, $context, $key);
                     $bridgeData[$key]['value'] = $value;
                 }
             }
@@ -76,5 +84,18 @@ class FindfeedAction implements ActionInterface
         } else {
             throw new \Exception('No bridge found for given URL: ' . $targetURL);
         }
+    }
+
+    // Get parameter name in the actual context, or in the global parameter
+    private function getParameterName($bridge, $context, $key)
+    {
+        if (isset($bridge::PARAMETERS[$context][$key]['name'])) {
+            $name = $bridge::PARAMETERS[$context][$key]['name'];
+        } else if (isset($bridge::PARAMETERS['global'][$key]['name'])) {
+            $name = $bridge::PARAMETERS['global'][$key]['name'];
+        } else {
+            $name = 'Variable "' . $key . '" (No name provided)';
+        }
+        return $name;
     }
 }
