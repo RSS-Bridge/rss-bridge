@@ -338,10 +338,11 @@ This is the feed item structure that bridges are expected to produce.
 
 ### Cache backends
 
-* `file`
-* `sqlite`
-* `memcached`
-* `null`
+* `File`
+* `SQLite`
+* `Memcached`
+* `Array`
+* `Null`
 
 ### Licenses
 
