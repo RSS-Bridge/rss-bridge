@@ -29,7 +29,7 @@ class KoFiBridge extends BridgeAbstract
                     $item['title'] = $element->find('div.content-link-text div')[0]->plaintext;
                     // $item['timestamp'] = strtotime($element->find('div.feeditem-time', 0)->plaintext);
                     $item['uri'] = self::URI . $element->find('div.fi-post-item-large a')[0]->href;
-                    if(isset($element->find('div.fi-post-item-large div.content-link-post img')[0])) {
+                    if (isset($element->find('div.fi-post-item-large div.content-link-post img')[0])) {
                         $item['enclosures'][] = $element->find('div.fi-post-item-large div.content-link-post img')[0]->src;
                     }
                     // $item['content'] = $element->find('div.content-link-text div#content-link', 0)->plaintext;
@@ -41,7 +41,7 @@ class KoFiBridge extends BridgeAbstract
                     $item['timestamp'] = strtotime(trim($feedItemTime->plaintext));
                     $item['content'] = $this->getFullContent($html);
                     $html->clear();
-                    
+
                     $this->items[] = $item;
                     $limit++;
                 }
@@ -50,14 +50,16 @@ class KoFiBridge extends BridgeAbstract
         $html->clear();
     }
 
-    private function getFullContent($html) {
-        foreach($html->find('script[type="text/javascript"]') as $script){
-            if(!empty($script->innertext)) {
+    private function getFullContent($html)
+    {
+        foreach ($html->find('script[type="text/javascript"]') as $script) {
+            if (!empty($script->innertext)) {
                 if (strpos($script->innertext, 'shadowDom.innerHTML += \'') !== false) {
                     preg_match_all('/d\N+/i', $script->innertext, $aMatches);
-                    foreach($aMatches[0] as $match) {
-                        if(strpos($match, 'article-body') !== false)
+                    foreach ($aMatches[0] as $match) {
+                        if (strpos($match, 'article-body') !== false) {
                             break;
+                        }
                     }
                     $fullPostHtml = str_get_html(mb_substr($match, 21, -3));
                     // Get the first paragraph
@@ -66,8 +68,9 @@ class KoFiBridge extends BridgeAbstract
             }
         }
     }
-    
-    private function getPageId() {
+
+    private function getPageId()
+    {
         $html = getSimpleHTMLDOM(self::URI . '/' . $this->getInput('pageId'));
         $reportUrl = $html->find('div.modal-dialog div.mb a.btn')[1]->href;
         $html->clear();
