@@ -13,7 +13,7 @@ class KoFiBridge extends BridgeAbstract
             'name' => 'Page ID',
             'type' => 'text',
             'required' => true,
-            'exampleValue' => 'W7W465887 or walkero',
+            'exampleValue' => 'walkero',
         ]
     ]];
 
