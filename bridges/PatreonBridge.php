@@ -151,7 +151,7 @@ class PatreonBridge extends BridgeAbstract
         }
     }
 
-    private function apiGet($endpoint, $query_data = [])
+    protected function apiGet($endpoint, $query_data = [])
     {
         $query_data['json-api-version'] = 1.0;
         $query_data['json-api-use-default-includes'] = 0;
