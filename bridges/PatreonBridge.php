@@ -6,8 +6,8 @@ class PatreonBridge extends BridgeAbstract
     const URI = 'https://www.patreon.com/';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns posts by creators on Patreon';
-    const MAINTAINER = 'Roliga';
-    const PARAMETERS = [ [
+    const MAINTAINER = 'Roliga, mruac';
+    const PARAMETERS = [[
         'creator' => [
             'name' => 'Creator',
             'type' => 'text',
@@ -189,7 +189,13 @@ class PatreonBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('creator'))) {
-            return $this->getInput('creator') . ' posts';
+            $html = getSimpleHTMLDOMCached($this->getURI());
+            if ($html) {
+                preg_match('#"name": "(.*)"#', $html->save(), $matches);
+                return 'Patreon posts from ' . stripcslashes($matches[1]);
+            } else {
+                return $this->getInput('creator') . 'posts from Patreon';
+            }
         }
 
         return parent::getName();
