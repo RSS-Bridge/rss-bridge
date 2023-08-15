@@ -1,6 +1,6 @@
 <?php
 
-class mruac_ItakuUserBridge extends BridgeAbstract
+class ItakuUserBridge extends BridgeAbstract
 {
     const NAME = 'Itaku.ee User Bridge';
     const URI = 'https://itaku.ee';
