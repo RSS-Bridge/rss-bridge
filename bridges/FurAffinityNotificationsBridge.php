@@ -57,7 +57,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         ]
     ];
     private $FA_AUTH_COOKIE;
-    const emojis = [
+    const EMOJIS = [
         '😛', '😎', '😉', '😲',
         '🙂', '😈', '😵', '😏',
         '😇', '🤡', '🤣', '💿',
@@ -67,7 +67,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         '🥱', '😠', '😃', '😡',
         '🤐'
     ];
-    const smileys = [
+    const SMILEYS = [
         '<i class="smilie tongue"></i>',
         '<i class="smilie cool"></i>',
         '<i class="smilie wink"></i>',
@@ -155,7 +155,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
                     $url = self::URI . 'user/' . $user;
 
                     $this->addItem([
-                        'title' => 'New watcher: ' .  $user,
+                        'title' => 'New watcher: ' . $user,
                         'uri' => $url,
                         'uid' => $url,
                         'timestamp' => $date,
@@ -169,40 +169,35 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
             if ($comments) {
                 if ($oldUI) {
                     $current_user = substr(trim($html->find('#my-username', 0)->plaintext, ' \\n\n\r\t\v\x00'), 1);
-                    foreach ($html->find('fieldset#messages-comments-submission li')
-                        as $submission_comment) {
+                    foreach ($html->find('fieldset#messages-comments-submission li') as $submission_comment) {
                         if ($submission_comment->hasClass('section-controls')) {
                             break;
                         }
-                        $this->addItem($this->parse_comment_notif($submission_comment, $oldUI));
+                        $this->addItem($this->parseCommentNotif($submission_comment, $oldUI));
                     }
-                    foreach ($html->find('fieldset#messages-comments-journal li')
-                        as $journal_comment) {
+                    foreach ($html->find('fieldset#messages-comments-journal li') as $journal_comment) {
                         if ($journal_comment->hasClass('section-controls')) {
                             break;
                         }
-                        $this->addItem($this->parse_comment_notif($journal_comment, $oldUI));
+                        $this->addItem($this->parseCommentNotif($journal_comment, $oldUI));
                     }
-                    foreach ($html->find('fieldset#messages-shouts li')
-                        as $shout) {
+                    foreach ($html->find('fieldset#messages-shouts li') as $shout) {
                         if ($shout->hasClass('section-controls')) {
                             break;
                         }
-                        $this->addItem($this->parse_comment_notif($shout, $oldUI, $current_user));
+                        $this->addItem($this->parseCommentNotif($shout, $oldUI, $current_user));
                     }
                 } else {
                     $current_user = $html->find('.loggedin_user_avatar', 0);
                     $current_user = $current_user ? $current_user->getAttribute('alt') : null;
                     foreach ($html->find('#messages-comments-submission li') as $submission_comment) {
-                        $this->addItem($this->parse_comment_notif($submission_comment, $oldUI));
+                        $this->addItem($this->parseCommentNotif($submission_comment, $oldUI));
                     }
-                    foreach ($html->find('#comments-journal li')
-                        as $journal_comment) {
-                        $this->addItem($this->parse_comment_notif($journal_comment, $oldUI));
+                    foreach ($html->find('#comments-journal li') as $journal_comment) {
+                        $this->addItem($this->parseCommentNotif($journal_comment, $oldUI));
                     }
-                    foreach ($html->find('#messages-shouts li')
-                        as $shout) {
-                        $this->addItem($this->parse_comment_notif($shout, $oldUI, $current_user));
+                    foreach ($html->find('#messages-shouts li') as $shout) {
+                        $this->addItem($this->parseCommentNotif($shout, $oldUI, $current_user));
                     }
                 }
             }
@@ -213,7 +208,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
                     if ($favourite->hasClass('section-controls')) {
                         break;
                     }
-                    $this->addItem($this->parse_favourites($favourite));
+                    $this->addItem($this->parseFavourites($favourite));
                 }
             }
 
@@ -223,12 +218,11 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
                         if ($journal->hasClass('section-controls')) {
                             break;
                         }
-                        $this->addItem($this->parse_journals($journal, $oldUI));
+                        $this->addItem($this->parseJournals($journal, $oldUI));
                     }
                 } else { //new journals (new UI)
-                    foreach ($html->find('#messages-journals li')
-                        as $journal) {
-                        $this->addItem($this->parse_journals($journal, $oldUI));
+                    foreach ($html->find('#messages-journals li') as $journal) {
+                        $this->addItem($this->parseJournals($journal, $oldUI));
                     }
                 }
             }
@@ -258,19 +252,19 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
 
         if ($isOldUI) { //https://www.furaffinity.net/viewmessage/{$id}/
             $id = $html->find('#pms-form [name^="items"]', 0)->getAttribute('value');
-            $title = $html->find("#pms-form .maintable tr", 0)->find('font b', 0)->plaintext;
-            $note = $html->find("#pms-form .maintable tr", 1);
+            $title = $html->find('#pms-form .maintable tr', 0)->find('font b', 0)->plaintext;
+            $note = $html->find('#pms-form .maintable tr', 1);
             $from = $note->find('font a', 0)->plaintext;
             $time = $note->find('.popup_date', 0)->getAttribute('title');
             $note->find('font', 0)->remove();
-            $content = trim($this->format_comment($note));
+            $content = trim($this->formatComment($note));
         } else { //https://www.furaffinity.net/msg/pms/1/{$id}/
             $id = $html->find('#note-actions [name^="items"]', 0)->getAttribute('value');
             $note = $html->find('#message', 0);
             $title = $note->find('.section-header h2', 0)->plaintext;
             $from = $note->find('.addresses strong', 0)->plaintext;
             $time = $note->find('.popup_date', 0)->getAttribute('title');
-            $content = $this->format_comment($note->find('.user-submitted-links', 0));
+            $content = $this->formatComment($note->find('.user-submitted-links', 0));
         }
         $content .= "<hr/><a href=\"{$url}\">Mark note as read</a>";
 
@@ -295,23 +289,24 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         ];
     }
 
-    private function parse_favourites($record)
+    private function parseFavourites($record)
     {
         //same for both old and new ui
         $user = $record->find('a', 0);
         $submission = $record->find('a', 1);
         $uid = $record->find('input', 0)->getAttribute('value');
-        return [
-            'categories' => ['favorites'],
-            'title' => "{$user->plaintext} has favourited: {$submission->plaintext}",
-            'uri' => $user->getAttribute('href'),
-            'uid' => "{$user->getAttribute('href')}#favorites-{$uid}",
-            'timestamp' => $record->find('.popup_date', 0)->getAttribute('title'),
-            'content' => "<b><a href=\"{$user->getAttribute('href')}\">{$user->plaintext}</a></b> has favourited your submission: <a href=\"{$submission->getAttribute('href')}\">{$submission->plaintext}</a>"
-        ];
+        $item = [];
+            $item['categories'] = ['favorites'];
+            $item['title'] = "{$user->plaintext} has favourited: {$submission->plaintext}";
+            $item['uri'] = $user->getAttribute('href');
+            $item['uid'] = "{$user->getAttribute('href')}#favorites-{$uid}";
+            $item['timestamp'] = $record->find('.popup_date', 0)->getAttribute('title');
+            $item['content'] = "<b><a href=\"{$user->getAttribute('href')}\">{$user->plaintext}</a></b>";
+            $item['content'] .= " has favourited your submission: <a href=\"{$submission->getAttribute('href')}\">{$submission->plaintext}</a>";
+        return $item;
     }
 
-    private function parse_comment_notif($record, $oldUI, $current_user = null)
+    private function parseCommentNotif($record, $oldUI, $current_user = null)
     {
         if (
             $record->plaintext === 'Shout has been removed from your page.'
@@ -355,18 +350,18 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
                 if ($oldUI) {
                     $comment = $html->find("[id='$cid']", 0);
                     if (is_null($comment->find('.comment-deleted', 0))) {
-                        $content = $this->format_comment($comment->find('.message-text', 0));
+                        $content = $this->formatComment($comment->find('.message-text', 0));
                     } else {
                         $isDeleted = true;
-                        $content = "<p>Comment deleted</p>";
+                        $content = '<p>Comment deleted</p>';
                     }
                 } else {
                     $comment = $html->find("[id='$cid']", 0)->parent();
                     if (is_null($comment->find('.deleted-comment-container', 0))) {
-                        $content = $this->format_comment($comment->find('.user-submitted-links', 0));
+                        $content = $this->formatComment($comment->find('.user-submitted-links', 0));
                     } else {
                         $isDeleted = true;
-                        $content = "<p>Comment deleted</p>";
+                        $content = '<p>Comment deleted</p>';
                     }
                 }
             } else {
@@ -397,7 +392,8 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
                         $parent_name = $parent_comment->find('.comment_username', 0)->plaintext;
                         $parent_content = $parent_comment->find('.user-submitted-links', 0);
                     }
-                    $content .= "<br/><table style=\"border: 1px solid;\"><tr><td><b>Replying to {$parent_name}:</b><blockquote>{$this->format_comment($parent_content)}</blockquote></td></tr></table>";
+                    $content .= "<br/><table style=\"border: 1px solid;\"><tr><td><b>Replying to {$parent_name}:</b>";
+                    $content .= "<blockquote>{$this->formatComment($parent_content)}</blockquote></td></tr></table>";
                 }
             } else {
                 $title = "{$who} replied to your {$type}: {$post_title}"; //initial comment
@@ -407,9 +403,9 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
             $html = $this->getFASimpleHTMLDOM($url, true)
                 or returnServerError("Could not load {$url}. Check your cookies?");
             if ($oldUI) {
-                $content = $this->format_comment($html->find("[id='$cid'] .no_overflow", 0));
+                $content = $this->formatComment($html->find("[id='$cid'] .no_overflow", 0));
             } else {
-                $content = $this->format_comment($html->find("[id='$cid']", 0)->parent()->find('.user-submitted-links', 0));
+                $content = $this->formatComment($html->find("[id='$cid']", 0)->parent()->find('.user-submitted-links', 0));
             }
         }
 
@@ -423,7 +419,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         ];
     }
 
-    private function parse_journals($record, $oldUI)
+    private function parseJournals($record, $oldUI)
     {
         $id = $record->find('input', 0)->getAttribute('value');
         $url = self::URI . 'journal/' . $id;
@@ -440,21 +436,21 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
             $item['title'] = $record->find('a', 0)->plaintext;
             $item['timestamp'] = substr($record->find('.popup_date', 0)->getAttribute('title'), 3);
             $item['author'] = $record->find('a', 1)->plaintext;
-            $item['content'] = "Journal hidden due to disabled account.";
+            $item['content'] = 'Journal hidden due to disabled account.';
             return $item;
         }
 
 
         if ($oldUI) {
-            $header = $this->format_comment($html->find('.journal-header', 0));
-            $content = $this->format_comment($html->find('.journal-body', 0));
-            $footer = $this->format_comment($html->find('.journal-footer', 0));
+            $header = $this->formatComment($html->find('.journal-header', 0));
+            $content = $this->formatComment($html->find('.journal-body', 0));
+            $footer = $this->formatComment($html->find('.journal-footer', 0));
 
             if (!is_null($header)) {
-                $header .= "</hr>";
+                $header .= '</hr>';
             }
             if (!is_null($footer)) {
-                $content .= "</hr>";
+                $content .= '</hr>';
             }
             $content = $header . $content . $footer;
 
@@ -463,15 +459,15 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
             $item['author'] = $html->find('td.cat .journal-title-box a', 0)->plaintext;
             $item['content'] = $content;
         } else {
-            $header = $this->format_comment($html->find('#columnpage .journal-header', 0));
-            $content = $this->format_comment($html->find('#columnpage .journal-content-container', 0));
-            $footer = $this->format_comment($html->find('#columnpage .journal-footer', 0));
+            $header = $this->formatComment($html->find('#columnpage .journal-header', 0));
+            $content = $this->formatComment($html->find('#columnpage .journal-content-container', 0));
+            $footer = $this->formatComment($html->find('#columnpage .journal-footer', 0));
 
             if (!is_null($header)) {
-                $header .= "</hr>";
+                $header .= '</hr>';
             }
             if (!is_null($footer)) {
-                $content .= "</hr>";
+                $content .= '</hr>';
             }
             $content = $header . $content . $footer;
 
@@ -484,7 +480,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         return $item;
     }
 
-    private function format_comment($elem)
+    private function formatComment($elem)
     {
         if (is_null($elem)) {
             return null;
@@ -511,7 +507,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
             $img->referrerpolicy = 'no-referrer';
         }
 
-        return str_replace(self::smileys, self::emojis, $elem); //converts it to string
+        return str_replace(self::SMILEYS, self::EMOJIS, $elem); //converts it to string
     }
 
     protected function getSubmission($uri, $isOldUI)
@@ -532,12 +528,11 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         $item['content'] = "<a href=\"{$url}\"> <img src=\"{$imgURL}\" referrerpolicy=\"no-referrer\" /></a>";
 
         if ($isOldUI) {
-
             $item['title'] = $html->find('.classic-submission-title .information h2', 0)->plaintext; // Title of the item
             $item['timestamp'] = $html->find('.stats-container .popup_date', 0)->getAttribute('title');        // Timestamp of the item in numeric or text format (compatible for strtotime())
             $item['author'] = $html->find('.classic-submission-title .information a', 0)->plaintext; // Name of the author for this item
-            $item['content'] .= $this->format_comment($html->find('.maintable', 1)->find('td', 3)); // Content in HTML format
-            $item['content'] .= "<hr/><b>Tags:</b><br/>";
+            $item['content'] .= $this->formatComment($html->find('.maintable', 1)->find('td', 3)); // Content in HTML format
+            $item['content'] .= '<hr/><b>Tags:</b><br/>';
             foreach ($html->find('#keywords a') as $tag) {
                 $item['content'] .= "{$tag->outertext}<br/>";
             }
@@ -545,8 +540,8 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
             $item['title'] = trim($html->find('.submission-title', 0)->plaintext); // Title of the item
             $item['timestamp'] = $html->find('.submission-id-sub-container .popup_date', 0)->getAttribute('title');        // Timestamp of the item in numeric or text format (compatible for strtotime())
             $item['author'] = $html->find('.submission-id-sub-container strong', 0)->plaintext; // Name of the author for this item
-            $item['content'] .= $this->format_comment($html->find('.submission-description', 0)); // Content in HTML format
-            $item['content'] .= "<hr/><b>Tags:</b><br/>";
+            $item['content'] .= $this->formatComment($html->find('.submission-description', 0)); // Content in HTML format
+            $item['content'] .= '<hr/><b>Tags:</b><br/>';
             foreach ($html->find('.section-body .tags a') as $tag) {
                 $item['content'] .= "{$tag->outertext}<br/>";
             }
@@ -565,7 +560,6 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         } else {
             $current_user = $html->find('.loggedin_user_avatar', 0);
             $current_user = $current_user ? $current_user->getAttribute('alt') : null;
-
         }
         $this->saveCacheValue('username', $current_user);
 
