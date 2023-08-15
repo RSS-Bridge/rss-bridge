@@ -7,7 +7,7 @@ class PatreonBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns posts by creators on Patreon';
     const MAINTAINER = 'Roliga';
-    const PARAMETERS = [ [
+    const PARAMETERS = [[
         'creator' => [
             'name' => 'Creator',
             'type' => 'text',
@@ -120,84 +120,76 @@ class PatreonBridge extends BridgeAbstract
 
             //image, video, audio, link (featured post content)
             switch ($post->attributes->post_type) {
-                case 'audio_file': {
-                        //check if download_url is null before assigning $audio
-                        $id = $post->relationships->audio->data->id ?? null;
+                case 'audio_file':
+                    //check if download_url is null before assigning $audio
+                    $id = $post->relationships->audio->data->id ?? null;
+                    if (isset($id)) {
+                        $audio = $this->findInclude($posts, 'media', $id)->attributes ?? null;
+                    }
+                    if (!isset($audio->download_url)) { //if not unlocked
+                        $id = $post->relationships->audio_preview->data->id ?? null;
                         if (isset($id)) {
                             $audio = $this->findInclude($posts, 'media', $id)->attributes ?? null;
                         }
-                        if (!isset($audio->download_url)) { //if not unlocked
-                            $id = $post->relationships->audio_preview->data->id ?? null;
-                            if (isset($id)) {
-                                $audio = $this->findInclude($posts, 'media', $id)->attributes ?? null;
-                            }
-                        }
-                        $thumbnail =
-                            $post->attributes->thumbnail->large ??
-                            $post->attributes->thumbnail->url ??
-                            $post->attributes->image->thumb_url ??
-                            $post->attributes->image->url;
-                        $audio_filename = $audio->file_name ?? $item['title'];
-                        $download_url = $audio->download_url ?? $item['uri'];
-                        $item['content'] .= "<p><a href\"{$download_url}\"><img src=\"{$thumbnail}\"><br/>🎧 {$audio_filename}</a><br/>";
-                        if ($download_url !== $item['uri']) {
-                            $item['enclosures'][] = $download_url;
-                            $item['content'] .= "<audio controls src=\"{$download_url}\"></audio>";
-                        }
-                        $item['content'] .= "</p>";
-                        break;
                     }
-                case 'video_embed': {
-                        $thumbnail =
-                            $post->attributes->thumbnail->large ??
-                            $post->attributes->thumbnail->url ??
-                            $post->attributes->image->thumb_url ??
-                            $post->attributes->image->url;
-                        $item['content'] .= "<p><a href=\"{$item['uri']}\">🎬 {$item['title']}<br><img src=\"{$thumbnail}\"></a></p>";
-                        break;
+                    $thumbnail = 
+                        $post->attributes->thumbnail->large ??
+                        $post->attributes->thumbnail->url ??
+                        $post->attributes->image->thumb_url ??
+                        $post->attributes->image->url;
+                    $audio_filename = $audio->file_name ?? $item['title'];
+                    $download_url = $audio->download_url ?? $item['uri'];
+                    $item['content'] .= "<p><a href\"{$download_url}\"><img src=\"{$thumbnail}\"><br/>🎧 {$audio_filename}</a><br/>";
+                    if ($download_url !== $item['uri']) {
+                        $item['enclosures'][] = $download_url;
+                        $item['content'] .= "<audio controls src=\"{$download_url}\"></audio>";
                     }
-                case 'video_external_file': {
-                        $thumbnail =
-                            $post->attributes->thumbnail->large ??
-                            $post->attributes->thumbnail->url ??
-                            $post->attributes->image->thumb_url ??
-                            $post->attributes->image->url;
-                        $item['content'] .= "<p><a href=\"{$item['uri']}\">🎬 {$item['title']}<br><img src=\"{$thumbnail}\"></a></p>";
-                        break;
+                    $item['content'] .= '</p>';
+                    break;
+
+                case 'video_embed':
+                    $thumbnail =
+                        $post->attributes->thumbnail->large ??
+                        $post->attributes->thumbnail->url ??
+                        $post->attributes->image->thumb_url ??
+                        $post->attributes->image->url;
+                    $item['content'] .= "<p><a href=\"{$item['uri']}\">🎬 {$item['title']}<br><img src=\"{$thumbnail}\"></a></p>";
+                    break;
+
+                case 'video_external_file':
+                    $thumbnail =
+                        $post->attributes->thumbnail->large ??
+                        $post->attributes->thumbnail->url ??
+                        $post->attributes->image->thumb_url ??
+                        $post->attributes->image->url;
+                    $item['content'] .= "<p><a href=\"{$item['uri']}\">🎬 {$item['title']}<br><img src=\"{$thumbnail}\"></a></p>";
+                    break;
+
+                case 'image_file':
+                    $item['content'] .= '<p>';
+                    foreach ($post->relationships->images->data as $key => $image) {
+                        $image = $this->findInclude($posts, 'media', $image->id)->attributes;
+                        $image_fullres = $image->download_url ?? $image->image_urls->url ?? $image->image_urls->original;
+                        $filename = $image->file_name ?? '';
+                        $image_url = $image->image_urls->url ?? $image->image_urls->original;
+                        $item['enclosures'][] = $image_fullres;
+                        $item['content'] .= "<a href=\"{$image_fullres}\">{$filename}<br/><img src=\"{$image_url}\"></a><br/><br/>";
                     }
-                case 'image_file': {
-                        $item['content'] .= '<p>';
-                        foreach ($post->relationships->images->data as $key => $image) {
-                            $image = $this->findInclude($posts, 'media', $image->id)->attributes;
-                            $image_fullres =
-                                $image->download_url ??                                 $image->image_urls->url ??
-                                $image->image_urls->original;
-                            $filename = $image->file_name ?? '';
-                            $image_url =
-                                $image->image_urls->url ??
-                                $image->image_urls->original;
-                            $item['enclosures'][] = $image_fullres;
-                            $item['content'] .= "<a href=\"{$image_fullres}\">{$filename}<br/><img src=\"{$image_url}\"></a><br/><br/>";
-                        }
-                        $item['content'] .= '</p>';
-                        break;
+                    $item['content'] .= '</p>';
+                    break;
+
+                case 'link':
+                    //make it locked safe
+                    if (isset($post->attributes->embed)) {
+                        $embed = $post->attributes->embed;
+                        $thumbnail = $post->attributes->image->large_url ?? $post->attributes->image->thumb_url ?? $post->attributes->image->url;
+                        $item['content'] .= '<p><table>';
+                        $item['content'] .= "<tr><td><a href=\"{$embed->url}\"><img src=\"{$thumbnail}\"></a></td></tr>";
+                        $item['content'] .= "<tr><td><b>{$embed->subject}</b></td></tr>";
+                        $item['content'] .= "<tr><td>{$embed->description}</td></tr>";
+                        $item['content'] .= '</table></p><hr/>';
                     }
-                case 'link': {
-                        //make it locked safe
-                        if (isset($post->attributes->embed)) {
-                            $embed = $post->attributes->embed;
-                            $thumbnail =
-                                $post->attributes->image->large_url ??
-                                $post->attributes->image->thumb_url ??
-                                $post->attributes->image->url;
-                            $item['content'] .= '<p><table>';
-                            $item['content'] .= "<tr><td><a href=\"{$embed->url}\"><img src=\"{$thumbnail}\"></a></td></tr>";
-                            $item['content'] .= "<tr><td><b>{$embed->subject}</b></td></tr>";
-                            $item['content'] .= "<tr><td>{$embed->description}</td></tr>";
-                            $item['content'] .= '</table></p><hr/>';
-                        }
-                        break;
-                    }
+                    break;
             }
 
             //content of the post
@@ -229,10 +221,10 @@ class PatreonBridge extends BridgeAbstract
                     $poll_option = $this->findInclude($posts, 'poll_choice', $poll_option->id);
                     $poll_option_text = $poll_option->attributes->text_content ?? null;
                     if (isset($poll_option_text)) {
-                        $item['content'] .=  "<tr><td><a href=\"{$item['uri']}\">{$poll_option_text}</a></td></tr>";
+                        $item['content'] .= "<tr><td><a href=\"{$item['uri']}\">{$poll_option_text}</a></td></tr>";
                     }
                 }
-                $item['content'] .= "</table></p>";
+                $item['content'] .= '</table></p>';
             }
 
 
@@ -247,7 +239,7 @@ class PatreonBridge extends BridgeAbstract
                     $attrs = $this->findInclude($posts, 'attachment', $attachment->id)->attributes;
                     $filename = $attrs->name;
                     $n = strrpos($filename, '.');
-                    $ext =  ($n === false) ? '' : substr($filename, $n);
+                    $ext = ($n === false) ? '' : substr($filename, $n);
                     $item['enclosures'][] = $attrs->url . '#' . $ext;
                     $item['content'] .= '<li><a href="' . $attrs->url . '">' . $filename . '</a></li>';
                 }
