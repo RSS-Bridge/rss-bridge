@@ -25,7 +25,8 @@ class TldrTechBridge extends BridgeAbstract
                     'Crypto' => 'crypto',
                     'AI' => 'ai',
                     'Web Dev' => 'engineering',
-                    'Founders' => 'founders'
+                    'Founders' => 'founders',
+                    'Cybersecurity' => 'cybersecurity'
                 ],
                 'defaultValue' => 'tech'
             ]

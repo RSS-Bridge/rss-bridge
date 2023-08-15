@@ -159,7 +159,7 @@ class EconomistBridge extends FeedExpander
             $svelte->parent->removeChild($svelte);
         }
         foreach ($elem->find('img') as $strange_img) {
-            if (!str_contains($strange_img->src, 'https://economist.com')) {
+            if (!str_contains($strange_img->src, 'economist.com')) {
                 $strange_img->src = 'https://economist.com' . $strange_img->src;
             }
         }

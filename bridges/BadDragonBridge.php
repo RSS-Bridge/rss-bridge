@@ -138,6 +138,7 @@ class BadDragonBridge extends BridgeAbstract
         // Sale
         $regex = '/^(https?:\/\/)?bad-dragon\.com\/sales/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Sales';
             return $params;
         }
 
@@ -192,6 +193,7 @@ class BadDragonBridge extends BridgeAbstract
             isset($urlParams['noAccessories'])
                 && $urlParams['noAccessories'] === '1'
                 && $params['noAccessories'] = 'on';
+            $params['context'] = 'Clearance';
 
             return $params;
         }

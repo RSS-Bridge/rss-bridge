@@ -209,7 +209,12 @@ class CodebergBridge extends BridgeAbstract
 
             $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
             $item['uri'] = $li->find('a.title', 0)->href;
-            $item['timestamp'] = $li->find('span.time-since', 0)->title;
+
+            $time = $li->find('relative-time.time-since', 0);
+            if ($time) {
+                $item['timestamp'] = $time->datetime;
+            }
+
             $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch issue page
@@ -270,14 +275,23 @@ class CodebergBridge extends BridgeAbstract
 
             $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
             $item['uri'] = $li->find('a.title', 0)->href;
-            $item['timestamp'] = $li->find('span.time-since', 0)->title;
+
+            $time = $li->find('relative-time.time-since', 0);
+            if ($time) {
+                $item['timestamp'] = $time->datetime;
+            }
+
             $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch pull request page
             $pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600);
             $pullRequestPage = defaultLinkTo($pullRequestPage, self::URI);
 
-            $item['content'] = $pullRequestPage->find('ui.timeline', 0)->find('div.render-content.markup', 0);
+            $var = $pullRequestPage->find('ui.timeline', 0);
+            if ($var) {
+                $var1 = $var->find('div.render-content.markup', 0);
+                $item['content'] = $var1;
+            }
 
             foreach ($li->find('a.ui.label') as $label) {
                 $item['categories'][] = $label->plaintext;

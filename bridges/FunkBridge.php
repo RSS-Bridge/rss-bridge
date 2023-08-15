@@ -64,6 +64,7 @@ class FunkBridge extends BridgeAbstract
         $regex = '/^https?:\/\/(?:www\.)?funk\.net\/channel\/([^\/]+).*$/';
         if (preg_match($regex, $url, $urlMatches) > 0) {
             return [
+                'context' => 'Channel',
                 'channel' => $urlMatches[1]
             ];
         } else {
