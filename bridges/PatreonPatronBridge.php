@@ -1,8 +1,8 @@
 <?php
-class mruac_PatreonUserBridge extends PatreonBridge
+class PatreonPatronBridge extends PatreonBridge
 {
-	const NAME = 'Authenticated Patreon Bridge';
-	const DESCRIPTION = 'Patreon Bridge for patron-only Patreon pages';
+	const NAME = 'Patron Unlocked Patreon Bridge';
+	const DESCRIPTION = 'Patreon Bridge for patron-only Patreon posts';
 	const MAINTAINER = 'mruac';
 	const CONFIGURATION = [
 		'session_id' => [
