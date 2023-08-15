@@ -1,11 +1,10 @@
 <?php
 
-class mruac_ItakuBridge extends BridgeAbstract
+class ItakuBridge extends BridgeAbstract
 {
     const NAME = 'Itaku.ee Bridge';
     const URI = 'https://itaku.ee';
-    // const CACHE_TIMEOUT = 900; // 15mn
-    const CACHE_TIMEOUT = 0;
+    const CACHE_TIMEOUT = 900; // 15mn
     const MAINTAINER = 'mruac';
     const DESCRIPTION = 'Bridges for Itaku.ee';
     const PARAMETERS = [
@@ -703,7 +702,7 @@ class mruac_ItakuBridge extends BridgeAbstract
         if (is_array($item) || is_object($item)) {
             $this->items[] = $item;
         } else {
-            returnServerError("Incorrectly parsed item. Check the code!\nType: " . gettype($item) . "\nprint_r(item:)\n" . print_r($item));
+            returnServerError("Incorrectly parsed item. Check the code!\nType: " . gettype($item) . "\nprint_r(item:)\n" . var_dump($item));
         }
     }
 }
