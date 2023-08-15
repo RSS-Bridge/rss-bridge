@@ -13,14 +13,12 @@ class ItakuBridge extends BridgeAbstract
                 'name' => 'Text to search',
                 'title' => 'Search includes title, description and tags.',
                 'type' => 'text',
-                'defaultValue' => '',
                 'exampleValue' => 'Text (incl. tags)'
             ],
             'tags' => [
                 'name' => 'Tags to search',
                 'title' => 'Space seperated tags to include in search. Prepend with "-" to exclude, "~" for optional.',
                 'type' => 'text',
-                'defaultValue' => '',
                 'exampleValue' => 'tag1 -tag2 ~tag3'
             ],
             'order' => [
@@ -65,14 +63,12 @@ class ItakuBridge extends BridgeAbstract
                 'name' => 'Include NSFW',
                 'type' => 'checkbox'
             ]
-
         ],
         'Post Search' => [
             'tags' => [
                 'name' => 'Tags to search',
                 'title' => 'Space seperated tags to include in search. Prepend with "-" to exclude, "~" for optional.',
                 'type' => 'text',
-                'defaultValue' => '',
                 'exampleValue' => 'tag1 -tag2 ~tag3'
             ],
             'order' => [
@@ -187,7 +183,6 @@ class ItakuBridge extends BridgeAbstract
                 'type' => 'checkbox'
             ]
         ]
-
     ];
 
     public function collectData()
@@ -209,18 +204,17 @@ class ItakuBridge extends BridgeAbstract
             $tag_arr = explode(' ', $this->getInput('tags'));
             foreach ($tag_arr as $str) {
                 switch ($str[0]) {
-                    case '-': {
-                            $opt['negative_tags'][] = substr($str, 1);
-                            break;
-                        }
-                    case '~': {
-                            $opt['optional_tags'][] = substr($str, 1);
-                            break;
-                        }
-                    default: {
-                            $opt['required_tags'][] = substr($str, 1);
-                            break;
-                        }
+                    case '-':
+                        $opt['negative_tags'][] = substr($str, 1);
+                        break;
+
+                    case '~':
+                        $opt['optional_tags'][] = substr($str, 1);
+                        break;
+
+                    default:
+                        $opt['required_tags'][] = substr($str, 1);
+                        break;
                 }
             }
 
@@ -233,7 +227,6 @@ class ItakuBridge extends BridgeAbstract
         }
 
         if ($this->queriedContext === 'Post Search') {
-
             $opt = [
                 'optional_tags' => [],
                 'negative_tags' => [],
@@ -249,18 +242,17 @@ class ItakuBridge extends BridgeAbstract
             $tag_arr = explode(' ', $this->getInput('tags'));
             foreach ($tag_arr as $str) {
                 switch ($str[0]) {
-                    case '-': {
-                            $opt['negative_tags'][] = substr($str, 1);
-                            break;
-                        }
-                    case '~': {
-                            $opt['optional_tags'][] = substr($str, 1);
-                            break;
-                        }
-                    default: {
-                            $opt['required_tags'][] = substr($str, 1);
-                            break;
-                        }
+                    case '-':
+                        $opt['negative_tags'][] = substr($str, 1);
+                        break;
+
+                    case '~':
+                        $opt['optional_tags'][] = substr($str, 1);
+                        break;
+
+                    default:
+                        $opt['required_tags'][] = substr($str, 1);
+                        break;
                 }
             }
 
@@ -302,40 +294,37 @@ class ItakuBridge extends BridgeAbstract
 
             foreach ($data['results'] as $record) {
                 switch ($record['content_type']) {
-                    case "reshare": {
-                            //get type of reshare and its id
-                            $id = $record['content_object']['content_object']['id'];
-                            switch ($record['content_object']['content_type']) {
-                                case "galleryimage": {
-                                        $item = $this->getImage($id);
-                                        $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
-                                        break;
-                                    }
-                                case "commission": {
-                                        $item = $this->getCommission($id, $record['content_object']['content_object']);
-                                        $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
-                                        break;
-                                    }
-                                case "post": {
-                                        $item = $this->getPost($id, $record['content_object']['content_object']);
-                                        $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
-                                        break;
-                                    }
-                            }
-                            break;
-                        }
-                    case "galleryimage": {
-                            $item = $this->getImage($record['content_object']['id']);
-                            break;
-                        }
-                    case "commission": {
-                            $item = $this->getCommission($record['content_object']['id'], $record['content_object']);
-                            break;
-                        }
-                    case "post": {
-                            $item = $this->getPost($record['content_object']['id'], $record['content_object']);
-                            break;
-                        }
+                    case 'reshare':
+                        //get type of reshare and its id
+                        $id = $record['content_object']['content_object']['id'];
+                        switch ($record['content_object']['content_type']) {
+                            case 'galleryimage':
+                                $item = $this->getImage($id);
+                                $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
+                                break;
+
+                            case 'commission':
+                                $item = $this->getCommission($id, $record['content_object']['content_object']);
+                                $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
+                                break;
+
+                            case 'post':
+                                $item = $this->getPost($id, $record['content_object']['content_object']);
+                                $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
+                                break;
+                        };
+                        break;
+                    case 'galleryimage':
+                        $item = $this->getImage($record['content_object']['id']);
+                        break;
+
+                    case 'commission':
+                        $item = $this->getCommission($record['content_object']['id'], $record['content_object']);
+                        break;
+
+                    case 'post':
+                        $item = $this->getPost($record['content_object']['id'], $record['content_object']);
+                        break;
                 }
 
                 $this->addItem($item);
@@ -355,7 +344,8 @@ class ItakuBridge extends BridgeAbstract
 
     private function getImagesSearch(array $opt)
     {
-        $url = self::URI . "/api/galleries/images/?by_following=false&date_range={$opt['range']}&ordering={$opt['order']}&is_video={$opt['video_only']}&text={$opt['text']}&visibility=PUBLIC&visibility=PROFILE_ONLY&page=1&page_size=30&format=json";
+        $url = self::URI . "/api/galleries/images/?by_following=false&date_range={$opt['range']}&ordering={$opt['order']}&is_video={$opt['video_only']}";
+        $url .= "&text={$opt['text']}&visibility=PUBLIC&visibility=PROFILE_ONLY&page=1&page_size=30&format=json";
 
         if (sizeof($opt['optional_tags']) > 0) {
             foreach ($opt['optional_tags'] as $tag) {
@@ -373,13 +363,13 @@ class ItakuBridge extends BridgeAbstract
             }
         }
         if ($opt['rating_s']) {
-            $url .= "&maturity_rating=SFW";
+            $url .= '&maturity_rating=SFW';
         }
         if ($opt['rating_q']) {
-            $url .= "&maturity_rating=Questionable";
+            $url .= '&maturity_rating=Questionable';
         }
         if ($opt['rating_e']) {
-            $url .= "&maturity_rating=NSFW";
+            $url .= '&maturity_rating=NSFW';
         }
 
         return $this->getData($url, false, true);
@@ -388,7 +378,8 @@ class ItakuBridge extends BridgeAbstract
 
     private function getPostsSearch(array $opt)
     {
-        $url = self::URI . "/api/posts/?by_following=false&date_range={$opt['range']}&ordering={$opt['order']}&visibility=PUBLIC&visibility=PROFILE_ONLY&page=1&page_size=30&format=json";
+        $url = self::URI . "/api/posts/?by_following=false&date_range={$opt['range']}&ordering={$opt['order']}";
+        $url .= '&visibility=PUBLIC&visibility=PROFILE_ONLY&page=1&page_size=30&format=json';
 
         if (sizeof($opt['optional_tags']) > 0) {
             foreach ($opt['optional_tags'] as $tag) {
@@ -406,13 +397,13 @@ class ItakuBridge extends BridgeAbstract
             }
         }
         if ($opt['rating_s']) {
-            $url .= "&maturity_rating=SFW";
+            $url .= '&maturity_rating=SFW';
         }
         if ($opt['rating_q']) {
-            $url .= "&maturity_rating=Questionable";
+            $url .= '&maturity_rating=Questionable';
         }
         if ($opt['rating_e']) {
-            $url .= "&maturity_rating=NSFW";
+            $url .= '&maturity_rating=NSFW';
         }
 
         return $this->getData($url, false, true);
@@ -423,22 +414,22 @@ class ItakuBridge extends BridgeAbstract
         $url = self::URI . "/api/feed/?date_range={$opt['range']}&ordering={$opt['order']}&page=1&page_size=30&format=json";
 
         if (is_null($ownerID)) {
-            $url .= "&visibility=PUBLIC&by_following=false";
+            $url .= '&visibility=PUBLIC&by_following=false';
         } else {
             $url .= "&owner={$ownerID}";
         }
 
         if (!$opt['reshares']) {
-            $url .= "&hide_reshares=true";
+            $url .= '&hide_reshares=true';
         }
         if ($opt['rating_s']) {
-            $url .= "&maturity_rating=SFW";
+            $url .= '&maturity_rating=SFW';
         }
         if ($opt['rating_q']) {
-            $url .= "&maturity_rating=Questionable";
+            $url .= '&maturity_rating=Questionable';
         }
         if ($opt['rating_e']) {
-            $url .= "&maturity_rating=NSFW";
+            $url .= '&maturity_rating=NSFW';
         }
 
         return $this->getData($url, false, true);
@@ -486,20 +477,20 @@ class ItakuBridge extends BridgeAbstract
         }
 
         if (sizeof($data['folders']) > 0) {
-            $content .= "📁 In Folder(s): ";
+            $content .= '📁 In Folder(s): ';
             foreach ($data['folders'] as $folder) {
                 $url = self::URI . '/profile/' . $data['owner_username'] . '/posts/' . $folder['id'];
                 $content .= "<a href=\"{$url}\">#{$folder['title']}</a> ";
             }
         }
 
-        $content .= "<hr/>";
+        $content .= '<hr/>';
         if (sizeof($data['gallery_images']) > 0) {
             foreach ($data['gallery_images'] as $media) {
                 $title = $media['title'];
                 $url = self::URI . '/images/' . $media['id'];
                 $src = $media['image_xl'];
-                $content .= "<p>";
+                $content .= '<p>';
                 $content .= "<a href=\"{$url}\"><b>{$title}</b></a><br/>";
                 if ($media['is_thumbnail_for_video']) {
                     $url = self::URI . '/api/galleries/images/' . $media['id'] . '/?format=json';
@@ -509,7 +500,7 @@ class ItakuBridge extends BridgeAbstract
                 } else {
                     $content .= "<a href=\"{$url}\"><img src=\"{$src}\"></a>";
                 }
-                $content .= "</p><br/>";
+                $content .= '</p><br/>';
             }
         }
 
@@ -517,7 +508,7 @@ class ItakuBridge extends BridgeAbstract
             'uri' => $uri,
             'title' => $data['title'],
             'timestamp' => $data['date_added'],
-            'author' =>  $data['owner_username'],
+            'author' => $data['owner_username'],
             'content' => $content,
             'categories' => ['post'],
             'uid' => $uri
@@ -559,7 +550,7 @@ class ItakuBridge extends BridgeAbstract
         }
 
         if (array_key_exists('reference_gallery_sections', $data) && sizeof($data['reference_gallery_sections']) > 0) {
-            $content .= "📁 Example folder(s): ";
+            $content .= '📁 Example folder(s): ';
             foreach ($data['folders'] as $folder) {
                 $url = self::URI . '/profile/' . $data['owner_username'] . '/gallery/' . $folder['id'];
                 $folder_name = $folder['title'];
@@ -570,9 +561,9 @@ class ItakuBridge extends BridgeAbstract
             }
         }
 
-        $content .= "<hr/>";
+        $content .= '<hr/>';
         if (!is_null($data['thumbnail_detail'])) {
-            $content .= "<p>";
+            $content .= '<p>';
             $content .= "<a href=\"{$uri}\"><b>{$data['thumbnail_detail']['title']}</b></a><br/>";
             if ($data['thumbnail_detail']['is_thumbnail_for_video']) {
                 $url = self::URI . '/api/galleries/images/' . $data['thumbnail_detail']['id'] . '/?format=json';
@@ -583,14 +574,14 @@ class ItakuBridge extends BridgeAbstract
                 $content .= "<a href=\"{$uri}\"><img src=\"{$data['thumbnail_detail']['image_lg']}\"></a>";
             }
 
-            $content .= "</p>";
+            $content .= '</p>';
         }
 
         return [
             'uri' => $uri,
             'title' => "{$data['comm_type']}: {$data['title']}",
             'timestamp' => $data['date_added'],
-            'author' =>  $data['owner_username'],
+            'author' => $data['owner_username'],
             'content' => $content,
             'categories' => ['commission', $data['comm_type']],
             'uid' => $uri
@@ -631,7 +622,7 @@ class ItakuBridge extends BridgeAbstract
         }
 
         if (array_key_exists('sections', $data) && sizeof($data['sections']) > 0) {
-            $content .= "📁 In Folder(s): ";
+            $content .= '📁 In Folder(s): ';
             foreach ($data['sections'] as $folder) {
                 $url = self::URI . '/profile/' . $data['owner_username'] . '/gallery/' . $folder['id'];
                 $folder_name = $folder['title'];
@@ -642,7 +633,7 @@ class ItakuBridge extends BridgeAbstract
             }
         }
 
-        $content .= "<hr/>";
+        $content .= '<hr/>';
 
         if (array_key_exists('is_thumbnail_for_video', $data)) {
             $url = self::URI . '/api/galleries/images/' . $data['id'] . '/?format=json';
@@ -661,7 +652,7 @@ class ItakuBridge extends BridgeAbstract
             'uri' => $uri,
             'title' => $data['title'],
             'timestamp' => $data['date_added'],
-            'author' =>  $data['owner_username'],
+            'author' => $data['owner_username'],
             'content' => $content,
             'categories' => ['image'],
             'uid' => $uri
