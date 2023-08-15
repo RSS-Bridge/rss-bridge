@@ -1,11 +1,10 @@
 <?php
 
-class mruac_FurAffinityNotificationsBridge extends BridgeAbstract
+class FurAffinityNotificationsBridge extends BridgeAbstract
 {
     const NAME = 'FurAffinity User Notifications';
     const URI = 'https://www.furaffinity.net/';
-    // const CACHE_TIMEOUT = 1800; // 30mn
-    const CACHE_TIMEOUT = 0;
+    const CACHE_TIMEOUT = 900; // 15min
     const MAINTAINER = 'mrauc';
     const DESCRIPTION = 'User notifications from FurAffinity.net';
     const CONFIGURATION = [
