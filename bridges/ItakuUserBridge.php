@@ -87,7 +87,6 @@ class ItakuUserBridge extends BridgeAbstract
         }
 
         if ($this->queriedContext === 'Notifications') {
-
             $messages = $this->getInput('messages');
             $incomm = $this->getInput('incomm');
             $tags = $this->getInput('tags');
@@ -152,7 +151,6 @@ class ItakuUserBridge extends BridgeAbstract
         }
 
         if ($this->queriedContext === 'Home feed of your following') {
-
             $opt = [
                 'order' => $this->getInput('order'),
                 'range' => $this->getInput('range'),
@@ -166,40 +164,38 @@ class ItakuUserBridge extends BridgeAbstract
 
             foreach ($data['results'] as $record) {
                 switch ($record['content_type']) {
-                    case "reshare": {
-                            //get type of reshare and its id
-                            $id = $record['content_object']['content_object']['id'];
-                            switch ($record['content_object']['content_type']) {
-                                case "galleryimage": {
-                                        $item = $this->getImage($id);
-                                        $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
-                                        break;
-                                    }
-                                case "commission": {
-                                        $item = $this->getCommission($id, $record['content_object']['content_object']);
-                                        $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
-                                        break;
-                                    }
-                                case "post": {
-                                        $item = $this->getPost($id, $record['content_object']['content_object']);
-                                        $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
-                                        break;
-                                    }
-                            }
-                            break;
+                    case 'reshare':
+                        //get type of reshare and its id
+                        $id = $record['content_object']['content_object']['id'];
+                        switch ($record['content_object']['content_type']) {
+                            case 'galleryimage':
+                                $item = $this->getImage($id);
+                                $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
+                                break;
+
+                            case 'commission':
+                                $item = $this->getCommission($id, $record['content_object']['content_object']);
+                                $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
+                                break;
+
+                            case 'post':
+                                $item = $this->getPost($id, $record['content_object']['content_object']);
+                                $item['title'] = "{$record['owner_username']} shared: {$item['title']}";
+                                break;
                         }
-                    case "galleryimage": {
-                            $item = $this->getImage($record['content_object']['id']);
-                            break;
-                        }
-                    case "commission": {
-                            $item = $this->getCommission($record['content_object']['id'], $record['content_object']);
-                            break;
-                        }
-                    case "post": {
-                            $item = $this->getPost($record['content_object']['id'], $record['content_object']);
-                            break;
-                        }
+                        break;
+
+                    case 'galleryimage':
+                        $item = $this->getImage($record['content_object']['id']);
+                        break;
+
+                    case 'commission':
+                        $item = $this->getCommission($record['content_object']['id'], $record['content_object']);
+                        break;
+
+                    case 'post':
+                        $item = $this->getPost($record['content_object']['id'], $record['content_object']);
+                        break;
                 }
 
                 $this->addItem($item);
@@ -586,7 +582,7 @@ class ItakuUserBridge extends BridgeAbstract
                     'uri' => 'https://itaku.ee/dms',
                     'title' => "New DM from @{$msg['owner_displayname']}",
                     'timestamp' => $msg['date_added'],
-                    'author' =>  $msg['owner_username'],
+                    'author' => $msg['owner_username'],
                     'content' => nl2br($msg['content']),
                     'categories' => ['message'],
                     'uid' => 'message/' . $record['id'] . '/' . $msg['id']
@@ -618,7 +614,7 @@ class ItakuUserBridge extends BridgeAbstract
         if (strlen($record['message']) > 0) {
             $content .= '<p><b>Message from the suggester:</b><blockquote>' . nl2br($record['message']) . '</blockquote><hr/></p>';
         } else {
-            $content .= '<p>No message provided from the suggester.</p>' . '<hr/><p>';
+            $content .= '<p>No message provided from the suggester.</p><hr/><p>';
         }
 
         if (!is_null($record['suggested_maturity_rating'])) {
@@ -666,7 +662,7 @@ class ItakuUserBridge extends BridgeAbstract
             'uri' => self::URI . '/tag-suggestions',
             'title' => 'New suggestion for: ' . $record['image']['title'],
             'timestamp' => $record['date_added'],
-            'author' =>  $record['owner_username'],
+            'author' => $record['owner_username'],
             'content' => $content,
             'categories' => ['inbox', 'tag suggestion'],
             'uid' => self::URI . '/tag-suggestions/' . $record['id']
@@ -683,7 +679,7 @@ class ItakuUserBridge extends BridgeAbstract
             'uri' => $url,
             'title' => $title,
             'timestamp' => $record['date_added'],
-            'author' =>  $record['owner_username'],
+            'author' => $record['owner_username'],
             'content' => $content,
             'categories' => ['inbox', 'incoming commission request'],
             'uid' => $url
@@ -692,19 +688,20 @@ class ItakuUserBridge extends BridgeAbstract
 
     private function getFeed(array $opt)
     {
-        $url = self::URI . "/api/feed/?date_range={$opt['range']}&ordering={$opt['order']}&page=1&page_size=30&format=json&visibility=PUBLIC&visibility=PROFILE_ONLY&by_following=true";
+        $url = self::URI . "/api/feed/?date_range={$opt['range']}&ordering={$opt['order']}&page=1";
+        $url .= '&page_size=30&format=json&visibility=PUBLIC&visibility=PROFILE_ONLY&by_following=true';
 
         if (!$opt['reshares']) {
-            $url .= "&hide_reshares=true";
+            $url .= '&hide_reshares=true';
         }
         if ($opt['rating_s']) {
-            $url .= "&maturity_rating=SFW";
+            $url .= '&maturity_rating=SFW';
         }
         if ($opt['rating_q']) {
-            $url .= "&maturity_rating=Questionable";
+            $url .= '&maturity_rating=Questionable';
         }
         if ($opt['rating_e']) {
-            $url .= "&maturity_rating=NSFW";
+            $url .= '&maturity_rating=NSFW';
         }
 
         return $this->getData($url, false, true);
@@ -721,9 +718,9 @@ class ItakuUserBridge extends BridgeAbstract
             if ($e->getCode() === 404) {
                 return [
                     'uri' => $uri,
-                    'title' => "Deleted post",
+                    'title' => 'Deleted post',
                     'timestamp' => '@0',
-                    'author' =>  'deleted',
+                    'author' => 'deleted',
                     'content' => 'Deleted post',
                     'categories' => ['post', 'deleted'],
                     'uid' => $uri
@@ -737,29 +734,29 @@ class ItakuUserBridge extends BridgeAbstract
         $content = "<p>{$content_str}</p><br/>"; //TODO: Add link and itaku user mention detection and convert into links.
 
         if (sizeof($data['tags']) > 0) {
-            $content .= "🏷 Tag(s): ";
+            $content .= '🏷 Tag(s): ';
             foreach ($data['tags'] as $tag) {
                 $url = self::URI . '/home/images?tags=' . $tag['name'];
                 $content .= "<a href=\"{$url}\">#{$tag['name']}</a> ";
             }
-            $content .= "<br/>";
+            $content .= '<br/>';
         }
 
         if (sizeof($data['folders']) > 0) {
-            $content .= "📁 In Folder(s): ";
+            $content .= '📁 In Folder(s): ';
             foreach ($data['folders'] as $folder) {
                 $url = self::URI . '/profile/' . $data['owner_username'] . '/posts/' . $folder['id'];
                 $content .= "<a href=\"{$url}\">#{$folder['title']}</a> ";
             }
         }
 
-        $content .= "<hr/>";
+        $content .= '<hr/>';
         if (sizeof($data['gallery_images']) > 0) {
             foreach ($data['gallery_images'] as $media) {
                 $title = $media['title'];
                 $url = self::URI . '/images/' . $media['id'];
                 $src = $media['image_xl'];
-                $content .= "<p>";
+                $content .= '<p>';
                 $content .= "<a href=\"{$url}\"><b>{$title}</b></a><br/>";
                 if ($media['is_thumbnail_for_video']) {
                     $url = self::URI . '/api/galleries/images/' . $media['id'] . '/?format=json';
@@ -769,7 +766,7 @@ class ItakuUserBridge extends BridgeAbstract
                 } else {
                     $content .= "<a href=\"{$url}\"><img src=\"{$src}\"></a>";
                 }
-                $content .= "</p><br/>";
+                $content .= '</p><br/>';
             }
         }
 
@@ -777,7 +774,7 @@ class ItakuUserBridge extends BridgeAbstract
             'uri' => $uri,
             'title' => $data['title'],
             'timestamp' => $data['date_added'],
-            'author' =>  $data['owner_username'],
+            'author' => $data['owner_username'],
             'content' => $content,
             'categories' => ['post'],
             'uid' => $uri
@@ -796,9 +793,9 @@ class ItakuUserBridge extends BridgeAbstract
             if ($e->getCode() === 404) {
                 return [
                     'uri' => $uri,
-                    'title' => "Deleted commission",
+                    'title' => 'Deleted commission',
                     'timestamp' => '@0',
-                    'author' =>  'deleted',
+                    'author' => 'deleted',
                     'content' => 'Deleted commission',
                     'categories' => ['commission', 'deleted'],
                     'uid' => $uri
@@ -812,16 +809,16 @@ class ItakuUserBridge extends BridgeAbstract
         $content = "<p>{$content_str}</p><br>"; //TODO: Add link and itaku user mention detection and convert into links.
 
         if (array_key_exists('tags', $data) && sizeof($data['tags']) > 0) {
-            $content .= "🏷 Tag(s): ";
+            $content .= '🏷 Tag(s): ';
             foreach ($data['tags'] as $tag) {
                 $url = self::URI . '/home/images?tags=' . $tag['name'];
                 $content .= "<a href=\"{$url}\">#{$tag['name']}</a> ";
             }
-            $content .= "<br/>";
+            $content .= '<br/>';
         }
 
         if (array_key_exists('reference_gallery_sections', $data) && sizeof($data['reference_gallery_sections']) > 0) {
-            $content .= "📁 Example folder(s): ";
+            $content .= '📁 Example folder(s): ';
             foreach ($data['folders'] as $folder) {
                 $url = self::URI . '/profile/' . $data['owner_username'] . '/gallery/' . $folder['id'];
                 $folder_name = $folder['title'];
@@ -832,9 +829,9 @@ class ItakuUserBridge extends BridgeAbstract
             }
         }
 
-        $content .= "<hr/>";
+        $content .= '<hr/>';
         if (!is_null($data['thumbnail_detail'])) {
-            $content .= "<p>";
+            $content .= '<p>';
             $content .= "<a href=\"{$uri}\"><b>{$data['thumbnail_detail']['title']}</b></a><br/>";
             if ($data['thumbnail_detail']['is_thumbnail_for_video']) {
                 $url = self::URI . '/api/galleries/images/' . $data['thumbnail_detail']['id'] . '/?format=json';
@@ -845,14 +842,14 @@ class ItakuUserBridge extends BridgeAbstract
                 $content .= "<a href=\"{$uri}\"><img src=\"{$data['thumbnail_detail']['image_lg']}\"></a>";
             }
 
-            $content .= "</p>";
+            $content .= '</p>';
         }
 
         return [
             'uri' => $uri,
             'title' => "{$data['comm_type']} - {$data['title']}",
             'timestamp' => $data['date_added'],
-            'author' =>  $data['owner_username'],
+            'author' => $data['owner_username'],
             'content' => $content,
             'categories' => ['commission', $data['comm_type']],
             'uid' => $uri
@@ -870,9 +867,9 @@ class ItakuUserBridge extends BridgeAbstract
             if ($e->getCode() === 404) {
                 return [
                     'uri' => $uri,
-                    'title' => "Deleted Image",
+                    'title' => 'Deleted Image',
                     'timestamp' => '@0',
-                    'author' =>  'deleted',
+                    'author' => 'deleted',
                     'content' => 'Deleted image',
                     'categories' => ['image', 'deleted'],
                     'uid' => $uri
@@ -908,7 +905,7 @@ class ItakuUserBridge extends BridgeAbstract
         }
 
         if (array_key_exists('sections', $data) && sizeof($data['sections']) > 0) {
-            $content .= "📁 In Folder(s): ";
+            $content .= '📁 In Folder(s): ';
             foreach ($data['sections'] as $folder) {
                 $url = self::URI . '/profile/' . $data['owner_username'] . '/gallery/' . $folder['id'];
                 $folder_name = $folder['title'];
@@ -919,7 +916,7 @@ class ItakuUserBridge extends BridgeAbstract
             }
         }
 
-        $content .= "<hr/>";
+        $content .= '<hr/>';
 
         if (array_key_exists('is_thumbnail_for_video', $data)) {
             $url = self::URI . '/api/galleries/images/' . $data['id'] . '/?format=json';
@@ -938,7 +935,7 @@ class ItakuUserBridge extends BridgeAbstract
             'uri' => $uri,
             'title' => $data['title'],
             'timestamp' => $data['date_added'],
-            'author' =>  $data['owner_username'],
+            'author' => $data['owner_username'],
             'content' => $content,
             'categories' => ['image'],
             'uid' => $uri
