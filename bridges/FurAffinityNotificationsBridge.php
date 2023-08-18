@@ -2,11 +2,11 @@
 
 class FurAffinityNotificationsBridge extends BridgeAbstract
 {
-    const NAME = 'FurAffinity User Notifications';
+    const NAME = 'FurAffinity User Pages Bridge';
     const URI = 'https://www.furaffinity.net/';
     const CACHE_TIMEOUT = 900; // 15min
     const MAINTAINER = 'mrauc';
-    const DESCRIPTION = 'User notifications from FurAffinity.net';
+    const DESCRIPTION = 'User pages from FurAffinity.net';
     const CONFIGURATION = [
         'aCookie' => [
             'required' => true
