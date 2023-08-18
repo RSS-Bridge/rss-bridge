@@ -296,13 +296,13 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         $submission = $record->find('a', 1);
         $uid = $record->find('input', 0)->getAttribute('value');
         $item = [];
-            $item['categories'] = ['favorites'];
-            $item['title'] = "{$user->plaintext} has favourited: {$submission->plaintext}";
-            $item['uri'] = $user->getAttribute('href');
-            $item['uid'] = "{$user->getAttribute('href')}#favorites-{$uid}";
-            $item['timestamp'] = $record->find('.popup_date', 0)->getAttribute('title');
-            $item['content'] = "<b><a href=\"{$user->getAttribute('href')}\">{$user->plaintext}</a></b>";
-            $item['content'] .= " has favourited your submission: <a href=\"{$submission->getAttribute('href')}\">{$submission->plaintext}</a>";
+        $item['categories'] = ['favorites'];
+        $item['title'] = "{$user->plaintext} has favourited: {$submission->plaintext}";
+        $item['uri'] = $user->getAttribute('href');
+        $item['uid'] = "{$user->getAttribute('href')}#favorites-{$uid}";
+        $item['timestamp'] = $record->find('.popup_date', 0)->getAttribute('title');
+        $item['content'] = "<b><a href=\"{$user->getAttribute('href')}\">{$user->plaintext}</a></b>";
+        $item['content'] .= " has favourited your submission: <a href=\"{$submission->getAttribute('href')}\">{$submission->plaintext}</a>";
         return $item;
     }
 
@@ -411,6 +411,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
 
         return [
             'categories' => ["{$type}_comment"],
+            'author' => $who,
             'title' => $title,
             'uri' => $url,
             'uid' => $url,
@@ -583,23 +584,26 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
 
     private function findParentComment($comment, $oldUI)
     {
-        //take $comment's width and crawl through each prev_sibling until a width is found greater than $comment's width
-        $getWidth = function ($elem) use ($oldUI) {
+        //get parent comment's CID of the current comment
+        if ($oldUI) {
+            preg_match('/cid:\d+/', $comment->find('.comment-parent', 0)->href, $res);
+            $parent_cid =  $res[0];
+        } else {
+            preg_match('/cid:\d+/', $comment->find('comment', 0), $res);
+            $parent_cid =  $res[0];
+        }
+
+        //get CID of provided comment
+        $getCID = function ($elem) use ($oldUI) {
             if ($oldUI) {
-                return floatval($elem->getAttribute('width'));
+                return $elem->getAttribute('id');
             } else {
-                preg_match(
-                    '/( *|;|^)width( *):( *)(?P<width>\d+)\%/',
-                    $elem->getAttribute('style'),
-                    $res
-                );
-                return floatval($res['width']);
+                return $elem->find('a', 0)->getAttribute('id');
             }
         };
 
-        $depth = $getWidth($comment);
         $comment_sibling = $comment->prev_sibling();
-        while ($depth >= $getWidth($comment_sibling)) {
+        while ($parent_cid !== $getCID($comment_sibling)) {
             $comment_sibling = $comment_sibling->prev_sibling();
         }
         return $comment_sibling;
