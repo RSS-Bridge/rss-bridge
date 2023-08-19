@@ -69,7 +69,7 @@ class MastodonBridge extends BridgeAbstract
         if ($this->getInput('norep') && $this->getInput('noboost') && $this->getInput('noregular')) {
             throw new \Exception('replies, boosts, or regular statuses must be allowed');
         }
-    
+
         $user = $this->fetchAP($this->getURI());
         if (!isset($user['outbox'])) {
             throw new \Exception('Unable to find the outbox');
@@ -162,7 +162,7 @@ class MastodonBridge extends BridgeAbstract
 
         if (isset($object['name'])) {
             $item['title'] = $object['name'];
-        } else if (mb_strlen($strippedContent) > 75) {
+        } elseif (mb_strlen($strippedContent) > 75) {
             $contentSubstring = mb_substr($strippedContent, 0, mb_strpos(wordwrap($strippedContent, 75), "\n"));
             $item['title'] .= $contentSubstring . '...';
         } else {
