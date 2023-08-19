@@ -35,6 +35,11 @@ class MastodonBridge extends BridgeAbstract
             'exampleValue' => '@sebsauvage@framapiaf.org',
             'required' => true,
         ],
+        'nopost' => [
+            'name' => 'Without posts',
+            'type' => 'checkbox',
+            'title' => 'Hide posts (i.e. non-boosts, replies, etc.)',
+        ],
         'norep' => [
             'name' => 'Without replies',
             'type' => 'checkbox',
@@ -115,12 +120,18 @@ class MastodonBridge extends BridgeAbstract
                 if ($this->getInput('norep') && isset($content['inReplyTo'])) {
                     return null;
                 }
+                if ($this->getInput('nopost') && !isset($content['inReplyTo'])) {
+                    return null;
+                }
                 $item['title'] = '';
                 $item['author'] = $this->getInput('canusername');
                 $item = $this->parseObject($content, $item);
                 break;
             case 'Create': // posts
                 if ($this->getInput('norep') && isset($content['object']['inReplyTo'])) {
+                    return null;
+                }
+                if ($this->getInput('nopost') && !isset($content['object']['inReplyTo'])) {
                     return null;
                 }
                 $item['title'] = '';
