@@ -35,10 +35,10 @@ class MastodonBridge extends BridgeAbstract
             'exampleValue' => '@sebsauvage@framapiaf.org',
             'required' => true,
         ],
-        'nopost' => [
-            'name' => 'Without posts',
+        'noregular' => [
+            'name' => 'Without regular statuses',
             'type' => 'checkbox',
-            'title' => 'Hide posts (i.e. non-boosts, replies, etc.)',
+            'title' => 'Hide regular statuses (i.e. non-boosts, replies, etc.)',
         ],
         'norep' => [
             'name' => 'Without replies',
@@ -66,6 +66,10 @@ class MastodonBridge extends BridgeAbstract
 
     public function collectData()
     {
+        if ($this->getInput('norep') && $this->getInput('noboost') && $this->getInput('noregular')) {
+            throw new \Exception('replies, boosts, or regular statuses must be allowed');
+        }
+    
         $user = $this->fetchAP($this->getURI());
         if (!isset($user['outbox'])) {
             throw new \Exception('Unable to find the outbox');
@@ -120,7 +124,7 @@ class MastodonBridge extends BridgeAbstract
                 if ($this->getInput('norep') && isset($content['inReplyTo'])) {
                     return null;
                 }
-                if ($this->getInput('nopost') && !isset($content['inReplyTo'])) {
+                if ($this->getInput('noregular') && !isset($content['inReplyTo'])) {
                     return null;
                 }
                 $item['title'] = '';
@@ -131,7 +135,7 @@ class MastodonBridge extends BridgeAbstract
                 if ($this->getInput('norep') && isset($content['object']['inReplyTo'])) {
                     return null;
                 }
-                if ($this->getInput('nopost') && !isset($content['object']['inReplyTo'])) {
+                if ($this->getInput('noregular') && !isset($content['object']['inReplyTo'])) {
                     return null;
                 }
                 $item['title'] = '';
