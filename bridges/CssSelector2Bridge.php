@@ -424,6 +424,7 @@ class CssSelector2Bridge extends BridgeAbstract
         $item['content'] = $article_content;
         $item['categories'] = $categories;
         $item['timestamp'] = $time;
+        $item['author'] = $author;
         return $item;
     }
 }
