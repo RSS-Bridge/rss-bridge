@@ -407,12 +407,10 @@ class CssSelector2Bridge extends BridgeAbstract
         $time = null;
         if (!is_null($time_selector)) {
             $time_element = $entry_html->find($time_selector, 0);
-            if (!is_null($time_element)) {
-                if ($time_element->tag == 'time') {
-                    $time = $time_element->getAttribute('datetime');
-                } else {
-                    $time = $time_element->innertext;
-                }
+            if ($time_element->tag == 'time') {
+                $time = $time_element->getAttribute('datetime');
+            } else {
+                $time = $time_element->innertext;
             }
         }
 
