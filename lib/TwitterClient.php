@@ -44,14 +44,14 @@ class TwitterClient
             parse_str($body, $body_params);
             $query_params = array_merge($query_params, $body_params);
         }
-        $payload = array(
+        $payload = [
             'oauth_version' => '1.0',
             'oauth_signature_method' => 'HMAC-SHA1',
             'oauth_consumer_key' => $this->tw_consumer_key,
             'oauth_token' => $oauth_token,
             'oauth_nonce' => $oauth_nonce ? $oauth_nonce : implode('', array_fill(0, 3, strval(time()))),
             'oauth_timestamp' => $timestamp ? $timestamp : time(),
-        );
+        ];
         $payload = array_merge($payload, $query_params);
         ksort($payload);
 
