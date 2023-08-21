@@ -18,23 +18,23 @@ class TwitterClient
 
         $this->data = $this->cache->loadData() ?? [];
         $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
-        $this->tw_consumer_key = "3nVuSoBZnx6U4vzUxf5w";
-        $this->tw_consumer_secret = "Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys";
-        $this->oauth_token = ""; // Fill here
-        $this->oauth_token_secret = ""; // Fill here
+        $this->tw_consumer_key = '3nVuSoBZnx6U4vzUxf5w';
+        $this->tw_consumer_secret = 'Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys';
+        $this->oauth_token = '1692750343510335488-RDoNrQYUxlNe9A5wygl1JZMJs4oS3F';
+        $this->oauth_token_secret = 'upMwgZvGr3ZSPiQA4YCanvEaesuFYri4HRrvdRl2MTeOq';
     }
 
     private function getOauthAuthorization(
         $oauth_token,
         $oauth_token_secret,
-        $method = "GET",
-        $url = "",
-        $body = "",
+        $method = 'GET',
+        $url = '',
+        $body = '',
         $timestamp = null,
         $oauth_nonce = null
     ) {
         if (!$url) {
-            return "";
+            return '';
         }
         $method = strtoupper($method);
         $parseUrl = parse_url($url);
@@ -49,7 +49,7 @@ class TwitterClient
             'oauth_signature_method' => 'HMAC-SHA1',
             'oauth_consumer_key' => $this->tw_consumer_key,
             'oauth_token' => $oauth_token,
-            'oauth_nonce' => $oauth_nonce ? $oauth_nonce : implode("", array_fill(0, 3, strval(time()))),
+            'oauth_nonce' => $oauth_nonce ? $oauth_nonce : implode('', array_fill(0, 3, strval(time()))),
             'oauth_timestamp' => $timestamp ? $timestamp : time(),
         );
         $payload = array_merge($payload, $query_params);
@@ -60,20 +60,10 @@ class TwitterClient
         $base_url = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'];
         $signature_base_string = strtoupper($method) . '&' . rawurlencode($base_url) . '&' . rawurlencode($url_parts['query']);
         $hmac_key = $this->tw_consumer_secret . '&' . $oauth_token_secret;
-
-        // Reference: https://stackoverflow.com/questions/37207221/php-generate-hmac-sha1-signature
-        // $hexStr = $hmac_key;
-        // $c = explode('-',chunk_split($hexStr,2,'-'));
-        // $hexArr = array($c[3],$c[2],$c[1],$c[0],$c[5],$c[4],$c[7],$c[6],$c[8],$c[9],$c[10],$c[11],$c[12],$c[13],$c[14],$c[15]);
-        // $keyStr = '';
-        // for ($i = 0; $i < 16; ++$i) {
-        //     $num = hexdec($hexArr[$i]);
-        //     $keyStr .= chr($num);
-        // }
         $hex_signature = hash_hmac('sha1', $signature_base_string, $hmac_key, true);
         $signature = base64_encode($hex_signature);
 
-        $header_params = array(
+        $header_params = [
             'oauth_version' => '1.0',
             'oauth_token' => $oauth_token,
             'oauth_nonce' => $payload['oauth_nonce'],
@@ -81,9 +71,9 @@ class TwitterClient
             'oauth_signature' => $signature,
             'oauth_consumer_key' => $this->tw_consumer_key,
             'oauth_signature_method' => 'HMAC-SHA1',
-        );
+        ];
         // ksort($header_params);
-        $header_values = array();
+        $header_values = [];
         foreach ($header_params as $key => $value) {
             $header_values[] = rawurlencode($key) . '="' . (is_int($value) ? $value : rawurlencode($value)) . '"';
         }
@@ -109,7 +99,7 @@ class TwitterClient
             $instructions = $result->timeline->instructions;
         }
 
-        if(!isset($result) && !isset($instructions)) {
+        if (!isset($result) && !isset($instructions)) {
             throw new \Exception('Unable to fetch user/list timeline');
         }
 
@@ -339,7 +329,7 @@ class TwitterClient
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
-        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, "GET", $url);
+        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, 'GET', $url);
         $response = Json::decode(getContents($url, $this->createHttpHeaders($oauth)), false);
         return $response;
     }
@@ -361,7 +351,7 @@ class TwitterClient
              'https://api.twitter.com/1.1/search/tweets.json?%s',
              http_build_query($queryParam)
          );
-        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, "GET", $url);
+        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, 'GET', $url);
         $response = Json::decode(getContents($url, $this->createHttpHeaders($oauth)), false);
         return $response;
     }
@@ -493,7 +483,7 @@ class TwitterClient
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
-        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, "GET", $url);
+        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, 'GET', $url);
         $response = Json::decode(getContents($url, $this->createHttpHeaders($oauth)), false);
         return $response;
     }
