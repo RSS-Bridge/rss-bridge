@@ -424,7 +424,6 @@ class CssSelector2Bridge extends BridgeAbstract
 
         $author = null;
         if (!is_null($author_selector) && $author_selector != '') {
-            echo 'Extracting the author';
             $author = trim($entry_html->find($author_selector, 0)->innertext);
         }
 
