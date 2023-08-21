@@ -63,7 +63,7 @@ class CssSelector2Bridge extends BridgeAbstract
             'title_selector' => [
                 'name' => '[Optional] Selector for the article title',
                 'title' => 'Selector to select the article title',
-                'defaultValue' => 'h1' 
+                'defaultValue' => 'h1'
             ],
             'title_cleanup' => [
                 'name' => '[Optional] Text to remove from feed title',
@@ -135,9 +135,9 @@ class CssSelector2Bridge extends BridgeAbstract
         return parent::getName();
     }
 
-    public function getHeaders() 
+    public function getHeaders()
     {
-        $headers = array();
+        $headers = [];
         $cookie = $this->getInput('cookie');
         if (!empty($cookie)) {
             $headers[] = 'Cookie: ' . $cookie;
@@ -155,10 +155,9 @@ class CssSelector2Bridge extends BridgeAbstract
         $url_selector = $this->getInput('url_selector');
         $url_pattern = $this->getInput('url_pattern');
         $limit = $this->getInput('limit') ?? 10;
-        
+
         $use_article_pages = $this->getInput('use_article_pages');
-        $article_page_content_selector = 
-            $this->getInput('article_page_content_selector');
+        $article_page_content_selector = $this->getInput('article_page_content_selector');
         $content_cleanup = $this->getInput('content_cleanup');
         $title_selector = $this->getInput('title_selector');
         $title_cleanup = $this->getInput('title_cleanup');
@@ -170,23 +169,20 @@ class CssSelector2Bridge extends BridgeAbstract
 
         $html = defaultLinkTo(getSimpleHTMLDOM($url, $headers), $url);
         $this->feedName = $this->getTitle($html, $title_cleanup);
-        $entry_elements = $this->htmlFindEntryElements($html, 
-            $entry_element_selector, $url_selector, $url_pattern, $limit);
+        $entry_elements = $this->htmlFindEntryElements($html, $entry_element_selector, $url_selector, $url_pattern, $limit);
 
         if (empty($entry_elements)) {
             return;
         }
-        
+
         // Fetch the elements from the article pages.
         if ($use_article_pages) {
             if (empty($article_page_content_selector)) {
-                returnClientError(
-                    "`Article selector` is required when `Load article page` is enabled");
+                returnClientError('`Article selector` is required when `Load article page` is enabled');
             }
 
             foreach (array_keys($entry_elements) as $uri) {
-                $entry_elements[$uri] = $this->fetchArticleElementFromPage(
-                    $uri, $article_page_content_selector);
+                $entry_elements[$uri] = $this->fetchArticleElementFromPage($uri, $article_page_content_selector);
             }
         }
 
@@ -202,7 +198,7 @@ class CssSelector2Bridge extends BridgeAbstract
                 $this->feedName
             );
 
-            $entry['uri'] = $uri;   
+            $entry['uri'] = $uri;
             $this->items[] = $entry;
         }
     }
@@ -274,7 +270,7 @@ class CssSelector2Bridge extends BridgeAbstract
             // Get rid of inline styling
             $content = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $content);
         }
-        
+
         if ($string_convert) {
             $content = $content->outertext;
         }
@@ -285,15 +281,14 @@ class CssSelector2Bridge extends BridgeAbstract
     /**
      * Retrieve first N link+element from webpage URL or DOM satisfying the specified criteria
      * @param string|object $page URL or DOM to retrieve feed items from
-     * @param string $entry_selector DOM selector for matching HTML elements that contain article 
+     * @param string $entry_selector DOM selector for matching HTML elements that contain article
      *  entries
      * @param string $url_selector DOM selector for matching links
      * @param string $url_pattern Optional filter to keep only links matching the pattern
      * @param int $limit Optional maximum amount of URLs to return
      * @return array of items { <uri> => <html-element> }
      */
-    protected function htmlFindEntryElements($page, $entry_selector, $url_selector, 
-        $url_pattern = '', $limit = 0)
+    protected function htmlFindEntryElements($page, $entry_selector, $url_selector, $url_pattern = '', $limit = 0)
     {
         if (is_string($page)) {
             $page = getSimpleHTMLDOM($page);
@@ -317,7 +312,7 @@ class CssSelector2Bridge extends BridgeAbstract
                 }
             }
 
-            $links_with_elements[$url_element->href] = $entry;;
+            $links_with_elements[$url_element->href] = $entry;
         }
 
         if (empty($links_with_elements)) {
@@ -366,14 +361,14 @@ class CssSelector2Bridge extends BridgeAbstract
      * @param string $title_selector A selector to the article title from the article
      * @param string $author_selector A selector to find the article author
      * @param string $time_selector A selector to get the article publication time.
-     * @param string $content_cleanup Optional selector for removing elements, e.g. "div.ads, 
+     * @param string $content_cleanup Optional selector for removing elements, e.g. "div.ads,
      *  div.comments"
      * @param string $title_default Optional title to use when could not extract title reliably
      * @param bool $remove_styling Whether to remove class and style attributes from the HTML
      * @return array Entry data: uri, title, content
      */
     protected function parseEntryElement(
-        $entry_html, 
+        $entry_html,
         $title_selector = null,
         $author_selector = null,
         $category_selector = null,
@@ -381,8 +376,7 @@ class CssSelector2Bridge extends BridgeAbstract
         $content_cleanup = null,
         $title_default = null,
         $remove_styling = false,
-    )
-    {
+    ) {
         $article_content = convertLazyLoading($entry_html);
 
         if (is_null($title_selector)) {
@@ -414,8 +408,7 @@ class CssSelector2Bridge extends BridgeAbstract
             }
         }
 
-        $article_content = $this->cleanArticleContent($article_content, $content_cleanup, 
-            $remove_styling);
+        $article_content = $this->cleanArticleContent($article_content, $content_cleanup, $remove_styling);
 
         $item = [];
         $item['title'] = $article_title;
