@@ -335,7 +335,7 @@ EOD
         if ($this->queriedContext === 'By username') {
             $this->feedIconUrl = $data->user_info->legacy->profile_image_url_https ?? null;
         }
-        
+
         $i = 0;
         foreach ($tweets as $tweet) {
             // Skip own Retweets...
