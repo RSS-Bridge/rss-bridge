@@ -7,7 +7,7 @@ class TwitterBridge extends BridgeAbstract
     const API_URI = 'https://api.twitter.com';
     const GUEST_TOKEN_USES = 100;
     const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
-    const CACHE_TIMEOUT = 60 * 15; // 15min
+    const CACHE_TIMEOUT = 60 * 2; // 15min
     const DESCRIPTION = 'returns tweets';
     const MAINTAINER = 'arnd-s';
     const PARAMETERS = [
@@ -133,7 +133,6 @@ EOD
         // By keyword or hashtag (search)
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/search.*(\?|&)q=([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
-            $params['context'] = 'By keyword or hashtag';
             $params['q'] = urldecode($matches[4]);
             return $params;
         }
@@ -141,7 +140,6 @@ EOD
         // By hashtag
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/hashtag\/([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
-            $params['context'] = 'By keyword or hashtag';
             $params['q'] = urldecode($matches[3]);
             return $params;
         }
@@ -149,7 +147,6 @@ EOD
         // By list
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/lists\/([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
-            $params['context'] = 'By list';
             $params['user'] = urldecode($matches[3]);
             $params['list'] = urldecode($matches[4]);
             return $params;
@@ -158,7 +155,6 @@ EOD
         // By username
         $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
-            $params['context'] = 'By username';
             $params['u'] = urldecode($matches[3]);
             return $params;
         }
@@ -335,7 +331,7 @@ EOD
         if ($this->queriedContext === 'By username') {
             $this->feedIconUrl = $data->user_info->legacy->profile_image_url_https ?? null;
         }
-
+        
         $i = 0;
         foreach ($tweets as $tweet) {
             // Skip own Retweets...
@@ -354,6 +350,8 @@ EOD
             if (isset($tweet->retweeted_status)) {
                 // Tweet is a Retweet, so set author based on original tweet and set realtweet for reference to the right content
                 $realtweet = $tweet->retweeted_status;
+            } elseif (isset($tweet->retweeted_status_result)) {
+                $realtweet = $tweet->retweeted_status_result->result->legacy;
             }
 
             if (isset($realtweet->truncated) && $realtweet->truncated) {
@@ -364,6 +362,10 @@ EOD
                 }
             }
 
+            if (!$realtweet) {
+                $realtweet = $tweet;
+            }
+
             switch ($this->queriedContext) {
                 case 'By username':
                     if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id)) {
@@ -372,7 +374,7 @@ EOD
                     $item['username']  = $data->user_info->legacy->screen_name;
                     $item['fullname']  = $data->user_info->legacy->name;
                     $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
-                    $item['id']        = $realtweet->id_str;
+                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : $realtweet->conversation_id_str);
                     break;
                 case 'By list':
                 case 'By list ID':
@@ -391,7 +393,7 @@ EOD
 
             $item['timestamp'] = $realtweet->created_at;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
-            $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '')
+            $item['author']    = ((isset($tweet->retweeted_status) || (isset($tweet->retweeted_status_result))) ? 'RT: ' : '')
                          . $item['fullname']
                          . ' (@'
                          . $item['username'] . ')';
