@@ -20,8 +20,8 @@ class TwitterClient
         $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
         $this->tw_consumer_key = '3nVuSoBZnx6U4vzUxf5w';
         $this->tw_consumer_secret = 'Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys';
-        $this->oauth_token = '1692750343510335488-RDoNrQYUxlNe9A5wygl1JZMJs4oS3F';
-        $this->oauth_token_secret = 'upMwgZvGr3ZSPiQA4YCanvEaesuFYri4HRrvdRl2MTeOq';
+        $this->oauth_token = ''; //Fill here
+        $this->oauth_token_secret = ''; //Fill here
     }
 
     private function getOauthAuthorization(
