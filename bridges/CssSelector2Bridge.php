@@ -118,7 +118,7 @@ class CssSelector2Bridge extends BridgeAbstract
 
     private $feedName = '';
 
-    public function getURI()
+    protected function getURI()
     {
         $url = $this->getInput('home_page');
         if (empty($url)) {
@@ -127,7 +127,7 @@ class CssSelector2Bridge extends BridgeAbstract
         return $url;
     }
 
-    public function getName()
+    protected function getName()
     {
         if (!empty($this->feedName)) {
             return $this->feedName;
@@ -135,7 +135,7 @@ class CssSelector2Bridge extends BridgeAbstract
         return parent::getName();
     }
 
-    public function getHeaders()
+    protected function getHeaders()
     {
         $headers = [];
         $cookie = $this->getInput('cookie');
