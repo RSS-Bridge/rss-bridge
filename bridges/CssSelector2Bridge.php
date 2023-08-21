@@ -8,7 +8,7 @@ class CssSelector2Bridge extends BridgeAbstract
     const DESCRIPTION = <<<EOT
         Convert any site to RSS feed using CSS selectors (Advanced Users). The bridge first selects 
         the element describing the article entries. It then extracts the links to the articles from 
-        these elements. If then, depending on the setting "Load article from page", either parses 
+        these elements. It then, depending on the setting "Load article from page", either parses 
         the selected elements, or downloads the page for each article and parses those. Parsing the 
         elements or page is done using the provided selectors.
         EOT;
@@ -22,7 +22,8 @@ class CssSelector2Bridge extends BridgeAbstract
             'cookie' => [
                 'name' => '[Optional] Cookie',
                 'title' => <<<EOT
-                Use when the website does not send the page contents, unless a cookie is included.
+                Use when the website does not send the page contents, unless a static
+                cookie is included.
                 EOT,
                 'exampleValue' => 'sessionId=deadb33f'
             ],
@@ -40,7 +41,7 @@ class CssSelector2Bridge extends BridgeAbstract
                 'required' => true
             ],
             'url_selector' => [
-                'name' => 'Selector for link elements',
+                'name' => '[Optional] Selector for link elements',
                 'title' => <<<EOT
                     The selector to find `a` elements in the entry element. If empty,
                     the first encountered `a` element is used. The `href` property
@@ -53,6 +54,20 @@ class CssSelector2Bridge extends BridgeAbstract
                 'name' => '[Optional] Pattern for site URLs to keep in feed',
                 'title' => 'Optionally filter items by applying a regular expression on their URL',
                 'exampleValue' => '/blog/article/.*',
+            ],
+            'use_article_pages' => [
+                'name' => 'Load article from page',
+                'title' => <<<EOT
+                If true, the article page is load and parsed to get the article contents using 
+                the css selectors. (Slower!)
+                Otherwise, the element selected by the article entry selector is used.
+                EOT,
+                'type' => 'checkbox'
+            ],
+            'article_page_content_selector' => [
+                'name' => '[Optional] Selector to select article page content',
+                'title' => 'Extract the article from its page using the provided selector',
+                'exampleValue' => 'article.content',
             ],
             'limit' => self::LIMIT,
             'content_cleanup' => [
@@ -94,22 +109,16 @@ class CssSelector2Bridge extends BridgeAbstract
                 is a `time` element, the value for the `datetime` attribute is used.
                 EOT,
             ],
-            'use_article_pages' => [
-                'name' => 'Load article from page',
+            'time_format' => [
+                'name' => '[Optional] Format string for parsing time',
                 'title' => <<<EOT
-                If true, the article page is load and parsed to get the article contents using 
-                the css selectors. (Slower!)
-                Otherwise, the element selected by the article entry selector is used.
-                EOT,
-                'type' => 'checkbox'
-            ],
-            'article_page_content_selector' => [
-                'name' => '[Optional] Selector to select article page content',
-                'title' => 'Extract the article from its page using the provided selector',
-                'exampleValue' => 'article.content',
+                The format to use to parse the timestamp. See 
+                https://www.php.net/manual/en/datetimeimmutable.createfromformat.php
+                for the format specification.
+                EOT
             ],
             'remove_styling' => [
-                'name' => 'Remove styling',
+                'name' => '[Optional] Remove styling',
                 'title' => 'Remove class and style tags from the page contents',
                 'type' => 'checkbox'
             ]
@@ -118,7 +127,7 @@ class CssSelector2Bridge extends BridgeAbstract
 
     private $feedName = '';
 
-    protected function getURI()
+    public function getURI()
     {
         $url = $this->getInput('home_page');
         if (empty($url)) {
@@ -127,7 +136,7 @@ class CssSelector2Bridge extends BridgeAbstract
         return $url;
     }
 
-    protected function getName()
+    public function getName()
     {
         if (!empty($this->feedName)) {
             return $this->feedName;
@@ -162,6 +171,7 @@ class CssSelector2Bridge extends BridgeAbstract
         $title_selector = $this->getInput('title_selector');
         $title_cleanup = $this->getInput('title_cleanup');
         $time_selector = $this->getInput('time_selector');
+        $time_format = $this->getInput('time_format');
 
         $category_selector = $this->getInput('category_selector');
         $author_selector = $this->getInput('author_selector');
@@ -193,9 +203,10 @@ class CssSelector2Bridge extends BridgeAbstract
                 $author_selector,
                 $category_selector,
                 $time_selector,
+                $time_format,
                 $content_cleanup,
-                $remove_styling,
-                $this->feedName
+                $this->feedName,
+                $remove_styling
             );
 
             $entry['uri'] = $uri;
@@ -265,10 +276,11 @@ class CssSelector2Bridge extends BridgeAbstract
         }
 
         if ($remove_styling) {
-            // Get rid of classes
-            $content = preg_replace('/(<[^>]+) class=".*?"/i', '$1', $content);
-            // Get rid of inline styling
-            $content = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $content);
+            foreach (['class', 'style'] as $attribute_to_remove) {
+                foreach ($content->find('[' . $attribute_to_remove . ']') as $item_to_clean) {
+                    $item_to_clean->removeAttribute($attribute_to_remove);
+                }
+            }
         }
 
         if ($string_convert) {
@@ -355,12 +367,36 @@ class CssSelector2Bridge extends BridgeAbstract
         return $article_content;
     }
 
+    protected function parseTimeStrAsTimestamp($timeStr, $format)
+    {
+        $date = date_parse_from_format($format, $timeStr);
+        if ($date['error_count'] != 0) {
+            returnClientError('Error while parsing time string');
+        }
+
+        $timestamp = mktime(
+            $date['hour'],
+            $date['minute'],
+            $date['second'],
+            $date['month'],
+            $date['day'],
+            $date['year']
+        );
+
+        if ($timestamp == false) {
+            returnClientError('Error while creating timestamp');
+        }
+
+        return $timestamp;
+    }
+
     /**
      * Retrieve article content from its URL using content selector and return a feed item
      * @param object $entry_html A DOM element containing the article
      * @param string $title_selector A selector to the article title from the article
      * @param string $author_selector A selector to find the article author
      * @param string $time_selector A selector to get the article publication time.
+     * @param string $time_format The format to parse the time_selector.
      * @param string $content_cleanup Optional selector for removing elements, e.g. "div.ads,
      *  div.comments"
      * @param string $title_default Optional title to use when could not extract title reliably
@@ -373,6 +409,7 @@ class CssSelector2Bridge extends BridgeAbstract
         $author_selector = null,
         $category_selector = null,
         $time_selector = null,
+        $time_format = null,
         $content_cleanup = null,
         $title_default = null,
         $remove_styling = false,
@@ -386,12 +423,13 @@ class CssSelector2Bridge extends BridgeAbstract
         }
 
         $author = null;
-        if (is_null($author_selector)) {
+        if (!is_null($author_selector) && $author_selector != '') {
+            echo 'Extracting the author';
             $author = trim($entry_html->find($author_selector, 0)->innertext);
         }
 
         $categories = [];
-        if (!is_null($category_selector)) {
+        if (!is_null($category_selector && $category_selector != '')) {
             $category_elements = $entry_html->find($category_selector);
             foreach ($category_elements as $category_element) {
                 $categories[] = trim($category_element->innertext);
@@ -399,13 +437,14 @@ class CssSelector2Bridge extends BridgeAbstract
         }
 
         $time = null;
-        if (!is_null($time_selector)) {
+        if (!is_null($time_selector) && $time_selector != '') {
             $time_element = $entry_html->find($time_selector, 0);
-            if ($time_element->tag == 'time') {
-                $time = $time_element->getAttribute('datetime');
-            } else {
+            $time = $time_element->getAttribute('datetime');
+            if (is_null($time)) {
                 $time = $time_element->innertext;
             }
+
+            $this->parseTimeStrAsTimestamp($time, $time_format);
         }
 
         $article_content = $this->cleanArticleContent($article_content, $content_cleanup, $remove_styling);
