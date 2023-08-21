@@ -644,6 +644,45 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
     {
         $username = $this->loadCacheValue('username');
         if (isset($username)) {
+            $submissions = $this->getInput('submissions');
+            $watches = $this->getInput('watches');
+            $comments = $this->getInput('comments');
+            $favourites = $this->getInput('favourites');
+            $journals = $this->getInput('journals');
+            $notes = $this->getInput('notes');
+            // $tickets = $this->getInput('tickets');
+
+            //parse new submissions page
+            if (
+                $submissions
+                && !$watches
+                && !$comments
+                && !$favourites
+                && !$journals
+                && !$notes
+            ) {
+                return $username . '\'s New Submissions feed';
+            }
+
+            //parse notifications page
+            if (($watches || $comments || $favourites || $journals)
+            && !$submissions
+            && !$notes
+            ) {
+                return $username . '\'s Notifications feed';
+            }
+
+            //parse unread notes
+            if ($notes
+            && !$submissions
+            && !$watches
+            && !$comments
+            && !$favourites
+            && !$journals
+            ) {
+                return $username . '\'s Notes feed';
+            }
+
             return self::NAME . ' for ' . $username;
         } else {
             return self::NAME;
