@@ -308,13 +308,18 @@ EOD
 
         // Filter out unwanted tweets
         foreach ($data->tweets as $tweet) {
+            if (isset($tweet->rest_id)) {
+                $tweetId = $tweet->rest_id;
+                $tweet = $tweet->legacy;
+            }
+
             if (!$tweet) {
                 continue;
             }
             // Filter out retweets to remove possible duplicates of original tweet
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
-                    if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
+                    if ((isset($tweet->retweeted_status) || isset($tweet->retweeted_status_result)) && substr($tweet->full_text, 0, 4) === 'RT @') {
                         continue 2;
                     }
                     break;
@@ -355,6 +360,7 @@ EOD
                 // Tweet is a Retweet, so set author based on original tweet and set realtweet for reference to the right content
                 $realtweet = $tweet->retweeted_status;
             } elseif (isset($tweet->retweeted_status_result)) {
+                $tweetId = $tweet->retweeted_status_result->result->rest_id;
                 $realtweet = $tweet->retweeted_status_result->result->legacy;
             }
 
@@ -378,7 +384,7 @@ EOD
                     $item['username']  = $data->user_info->legacy->screen_name;
                     $item['fullname']  = $data->user_info->legacy->name;
                     $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
-                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : $realtweet->conversation_id_str);
+                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : $tweetId);
                     break;
                 case 'By list':
                 case 'By list ID':
