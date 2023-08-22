@@ -306,10 +306,12 @@ EOD
             }
         }
 
+	// Array of Tweet IDs
+        $tweetIds = [];
         // Filter out unwanted tweets
         foreach ($data->tweets as $tweet) {
             if (isset($tweet->rest_id)) {
-                $tweetId = $tweet->rest_id;
+                $tweetIds[] = $tweet->rest_id;
                 $tweet = $tweet->legacy;
             }
 
@@ -384,7 +386,7 @@ EOD
                     $item['username']  = $data->user_info->legacy->screen_name;
                     $item['fullname']  = $data->user_info->legacy->name;
                     $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
-                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : $tweetId);
+                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : (isset($tweetIds[$i]) ? $tweetIds[$i] : $realtweet->conversation_id_str));
                     break;
                 case 'By list':
                 case 'By list ID':
