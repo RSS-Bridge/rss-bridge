@@ -358,6 +358,7 @@ EOD
             $item = [];
 
             $realtweet = $tweet;
+	    $tweetId = (isset($tweetIds[$i]) ? $tweetIds[$i] : $realtweet->conversation_id_str);
             if (isset($tweet->retweeted_status)) {
                 // Tweet is a Retweet, so set author based on original tweet and set realtweet for reference to the right content
                 $realtweet = $tweet->retweeted_status;
@@ -386,8 +387,7 @@ EOD
                     $item['username']  = $data->user_info->legacy->screen_name;
                     $item['fullname']  = $data->user_info->legacy->name;
                     $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
-                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : 
-                                            (isset($tweetIds[$i]) ? $tweetIds[$i] : $realtweet->conversation_id_str));
+                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : $tweetId);
                     break;
                 case 'By list':
                 case 'By list ID':
