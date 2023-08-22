@@ -358,7 +358,7 @@ EOD
             $item = [];
 
             $realtweet = $tweet;
-	    $tweetId = (isset($tweetIds[$i]) ? $tweetIds[$i] : $realtweet->conversation_id_str);
+            $tweetId = (isset($tweetIds[$i]) ? $tweetIds[$i] : $realtweet->conversation_id_str);
             if (isset($tweet->retweeted_status)) {
                 // Tweet is a Retweet, so set author based on original tweet and set realtweet for reference to the right content
                 $realtweet = $tweet->retweeted_status;
