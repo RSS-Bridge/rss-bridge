@@ -1,9 +1,9 @@
 <?php
 
-class CssSelector2Bridge extends BridgeAbstract
+class CssSelectorComplexBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Lars Stegman';
-    const NAME = 'CSS Selector 2 Bridge';
+    const NAME = 'CSS Selector Complex Bridge';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge/';
     const DESCRIPTION = <<<EOT
         Convert any site to RSS feed using CSS selectors (Advanced Users). The bridge first selects 
@@ -22,10 +22,16 @@ class CssSelector2Bridge extends BridgeAbstract
             'cookie' => [
                 'name' => '[Optional] Cookie',
                 'title' => <<<EOT
-                Use when the website does not send the page contents, unless a static
-                cookie is included.
+                Use when the website does not send the page contents, unless a static cookie is included.
                 EOT,
                 'exampleValue' => 'sessionId=deadb33f'
+            ],
+            'title_cleanup' => [
+                'name' => '[Optional] Text to remove from feed title',
+                'title' => <<<EOT
+                Text to remove from the feed title, which is read from the article list page.
+                EOT,
+                'exampleValue' => ' | BlogName',
             ],
             'entry_element_selector' => [
                 'name' => 'Selector for article entry elements',
@@ -55,6 +61,7 @@ class CssSelector2Bridge extends BridgeAbstract
                 'title' => 'Optionally filter items by applying a regular expression on their URL',
                 'exampleValue' => '/blog/article/.*',
             ],
+            'limit' => self::LIMIT,
             'use_article_pages' => [
                 'name' => 'Load article from page',
                 'title' => <<<EOT
@@ -65,13 +72,12 @@ class CssSelector2Bridge extends BridgeAbstract
                 'type' => 'checkbox'
             ],
             'article_page_content_selector' => [
-                'name' => '[Optional] Selector to select article page content',
+                'name' => '[Optional] Selector to select article element',
                 'title' => 'Extract the article from its page using the provided selector',
                 'exampleValue' => 'article.content',
             ],
-            'limit' => self::LIMIT,
             'content_cleanup' => [
-                'name' => '[Optional] Content cleanup: List of items to remove',
+                'name' => '[Optional] Content cleanup: selector for items to remove',
                 'title' => 'Selector for unnecessary elements to remove inside article contents.',
                 'exampleValue' => 'div.ads, div.comments',
             ],
@@ -79,13 +85,6 @@ class CssSelector2Bridge extends BridgeAbstract
                 'name' => '[Optional] Selector for the article title',
                 'title' => 'Selector to select the article title',
                 'defaultValue' => 'h1'
-            ],
-            'title_cleanup' => [
-                'name' => '[Optional] Text to remove from feed title',
-                'title' => <<<EOT
-                Text to remove from the feed title, which is read from the article list page.
-                EOT,
-                'exampleValue' => ' | BlogName',
             ],
             'category_selector' => [
                 'name' => '[Optional] Categories',
@@ -105,8 +104,8 @@ class CssSelector2Bridge extends BridgeAbstract
             'time_selector' => [
                 'name' => '[Optional] Time selector',
                 'title' => <<<EOT
-                Element that contains a php `strtotime` compatible text. If the element 
-                is a `time` element, the value for the `datetime` attribute is used.
+                Selector to extract the timestamp of the article. If the element 
+                is an html5 `time` element, the value for the `datetime` attribute is used.
                 EOT,
             ],
             'time_format' => [
@@ -119,7 +118,7 @@ class CssSelector2Bridge extends BridgeAbstract
             ],
             'remove_styling' => [
                 'name' => '[Optional] Remove styling',
-                'title' => 'Remove class and style tags from the page contents',
+                'title' => 'Remove class and style attributes from the page elements',
                 'type' => 'checkbox'
             ]
         ]
@@ -412,7 +411,7 @@ class CssSelector2Bridge extends BridgeAbstract
         $time_format = null,
         $content_cleanup = null,
         $title_default = null,
-        $remove_styling = false,
+        $remove_styling = false
     ) {
         $article_content = convertLazyLoading($entry_html);
 
