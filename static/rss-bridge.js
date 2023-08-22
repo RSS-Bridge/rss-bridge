@@ -48,49 +48,41 @@ function rssbridge_toggle_bridge(){
     }
 }
 
-/*
- * Code for "Find feed by URL" feature
- */
+var rssbridge_feed_finder = (function() {
+    /*
+     * Code for "Find feed by URL" feature
+     */
 
-// Start the Feed search
-async function rssbridge_feed_search(event)
-{
-    const input = document.getElementById('searchfield');
-    let content = input.value;
-    if(content)
-    {
+    // Start the Feed search
+    async function rssbridge_feed_search(event) {
+        const input = document.getElementById('searchfield');
+        let content = input.value;
+        if (content) {
+            const findfeedresults = document.getElementById('findfeedresults');
+            findfeedresults.innerHTML = 'Searching for matching feeds ...';
+            let baseurl = window.location.protocol + window.location.pathname;
+            let url = baseurl + '?action=findfeed&format=Html&url=' + content;
+            const response = await fetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                rss_bridge_feed_display_found_feed(data);
+            } else {
+                rss_bridge_feed_display_feed_search_fail();
+            }
+        } else {
+            rss_bridge_feed_display_find_feed_empty();
+        }
+    }
+
+    // Display the found feeds
+    function rss_bridge_feed_display_found_feed(obj) {
         const findfeedresults = document.getElementById('findfeedresults');
-        findfeedresults.innerHTML = 'Searching for matching feeds ...';
-        let baseurl = window.location.protocol + window.location.pathname;
-        let url = baseurl + '?action=findfeed&format=Html&url=' + content;
-        const response = await fetch(url);
-        if(response.ok)
-        {
-            const data = await response.json();
-            rss_bridge_feed_display_found_feed(data);
-        }
-        else
-        {
-            rss_bridge_feed_display_feed_search_fail();
-        }
-    }
-    else
-    {
-        rss_bridge_feed_display_find_feed_empty();
-    }
-}
 
-// Display the found feeds
-function rss_bridge_feed_display_found_feed(obj)
-{
-    const findfeedresults = document.getElementById('findfeedresults');
+        let content = 'Found Feed(s) :';
 
-    let content = 'Found Feed(s) :';
-    
-    // Let's go throug every Feed found
-    for(const element of obj)
-    {
-        content += `<div class="search-result">
+        // Let's go throug every Feed found
+        for (const element of obj) {
+            content += `<div class="search-result">
                         <div class="icon">
                             <img src="${element.bridgeMeta.icon}" width="60" />
                         </div>
@@ -101,44 +93,37 @@ function rss_bridge_feed_display_found_feed(obj)
                         </p>
                         <div>
                             <ul>`;
-        
-        // Now display every Feed parameter
-        for(const param in element.bridgeData)
-        {
-            content += `<li>${element.bridgeData[param].name} : ${element.bridgeData[param].value}</li>`;
-        }
-        content+= `</div>
+
+            // Now display every Feed parameter
+            for (const param in element.bridgeData) {
+                content += `<li>${element.bridgeData[param].name} : ${element.bridgeData[param].value}</li>`;
+            }
+            content += `</div>
               </div>
             </div>`;
-
+        }
+        content += '<p><div class="alert alert-info" role="alert">This feed may be only one of the possible feeds. You may find more feeds using one of the bridges with different parameters, for example.</div></p>';
+        findfeedresults.innerHTML = content;
     }
-    content += '<p><div class="alert alert-info" role="alert">This feed may be only one of the possible feeds. You may find more feeds using one of the bridges with different parameters, for example.</div></p>';
-    findfeedresults.innerHTML = content;
-}
 
-// Display an error if no feed were found
-function rss_bridge_feed_display_feed_search_fail()
-{
-    const findfeedresults = document.getElementById('findfeedresults');
-    findfeedresults.innerHTML = 'No Feed found !<div class="alert alert-info" role="alert">Not every bridge supports feed detection. You can check below within the bridge parameters to create a feed.</div>';
-}
+    // Display an error if no feed were found
+    function rss_bridge_feed_display_feed_search_fail() {
+        const findfeedresults = document.getElementById('findfeedresults');
+        findfeedresults.innerHTML = 'No Feed found !<div class="alert alert-info" role="alert">Not every bridge supports feed detection. You can check below within the bridge parameters to create a feed.</div>';
+    }
 
-// Empty the Found Feed section
-function rss_bridge_feed_display_find_feed_empty()
-{
-    const findfeedresults = document.getElementById('findfeedresults');
-    findfeedresults.innerHTML = '';
-}
+    // Empty the Found Feed section
+    function rss_bridge_feed_display_find_feed_empty() {
+        const findfeedresults = document.getElementById('findfeedresults');
+        findfeedresults.innerHTML = '';
+    }
 
-
-// Add Event to 'Detect Feed" button
-function rss_bridge_feed_add_detection_event()
-{
-    const button = document.getElementById('findfeed');
-    button.addEventListener("click", rssbridge_feed_search);
-    button.addEventListener("keyup", rssbridge_feed_search);
-
-}
-
-// Wait the page to be loaded to add the Detection Event
-document.addEventListener('DOMContentLoaded', rss_bridge_feed_add_detection_event);
+    // Add Event to 'Detect Feed" button
+    var rssbridge_feed_finder = function() {
+        alert('kek');
+        const button = document.getElementById('findfeed');
+        button.addEventListener("click", rssbridge_feed_search);
+        button.addEventListener("keyup", rssbridge_feed_search);
+    };
+    return rssbridge_feed_finder;
+}());

@@ -1,17 +1,10 @@
 <?php
 
 /**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
+ * This action is used by the frontpage form search.
+ * It finds a bridge based off of a user input url.
+ * It uses bridges' detectParameters implementation.
  */
-
 class FindfeedAction implements ActionInterface
 {
     public function execute(array $request)
@@ -20,14 +13,15 @@ class FindfeedAction implements ActionInterface
         $format = $request['format'] ?? null;
 
         if (!$targetURL) {
-            throw new \Exception('You must specify a url!');
+            return new Response('You must specify a url', 400);
         }
         if (!$format) {
-            throw new \Exception('You must specify a format!');
+            return new Response('You must specify a format', 400);
         }
-        $results = [];
+
         $bridgeFactory = new BridgeFactory();
 
+        $results = [];
         foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
             if (!$bridgeFactory->isEnabled($bridgeClassName)) {
                 continue;
@@ -37,18 +31,14 @@ class FindfeedAction implements ActionInterface
 
             $bridgeParams = $bridge->detectParameters($targetURL);
 
-            if (is_null($bridgeParams)) {
+            if ($bridgeParams === null) {
                 continue;
             }
 
             // It's allowed to have no 'context' in a bridge (only a default context without any name)
             // In this case, the reference to the parameters are found in the first element of the PARAMETERS array
 
-            if (!isset($bridgeParams['context'])) {
-                $context = 0;
-            } else {
-                $context = $bridgeParams['context'];
-            }
+            $context = $bridgeParams['context'] ?? 0;
 
             $bridgeData = [];
             // Construct the array of parameters
@@ -62,7 +52,6 @@ class FindfeedAction implements ActionInterface
                     $bridgeData[$key]['value'] = $value;
                 }
             }
-
 
             $bridgeParams['bridge'] = $bridgeClassName;
             $bridgeParams['format'] = $format;
@@ -79,11 +68,10 @@ class FindfeedAction implements ActionInterface
             ];
             $results[] = $content;
         }
-        if (count($results) >= 1) {
-            return new Response(Json::encode($results), 200, ['Content-Type' => 'application/json']);
-        } else {
-            throw new \Exception('No bridge found for given URL: ' . $targetURL);
+        if ($results === []) {
+            return new Response(Json::encode(['message' => 'No bridge found for given url']), 404, ['content-type' => 'application/json']);
         }
+        return new Response(Json::encode($results), 200, ['content-type' => 'application/json']);
     }
 
     // Get parameter name in the actual context, or in the global parameter

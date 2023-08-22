@@ -2,6 +2,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', rssbridge_toggle_bridge);
     document.addEventListener('DOMContentLoaded', rssbridge_list_search);
+    document.addEventListener('DOMContentLoaded', rssbridge_feed_finder);
 </script>
 
 <section class="searchbar">
@@ -19,10 +20,10 @@
         type="button"
 	    id="findfeed"
         name="findfeed"
-    />Find Feed from URL
-    </button>
+    />Find Feed from URL</button>
     <section id="findfeedresults">
     </section>
+
 </section>
 
 <?= raw($bridges) ?>
