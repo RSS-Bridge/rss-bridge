@@ -15,6 +15,7 @@ class TheGuardianBridge extends FeedExpander
                 'World News' => 'world/rss',
                 'US News' => '/us-news/rss',
                 'UK News' => '/uk-news/rss',
+                'Australia News' => '/australia-news/rss',
                 'Europe News' => '/world/europe-news/rss',
                 'Asia News' => '/world/asia/rss',
                 'Tech' => '/uk/technology/rss',
