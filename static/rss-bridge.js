@@ -120,7 +120,6 @@ var rssbridge_feed_finder = (function() {
 
     // Add Event to 'Detect Feed" button
     var rssbridge_feed_finder = function() {
-        alert('kek');
         const button = document.getElementById('findfeed');
         button.addEventListener("click", rssbridge_feed_search);
         button.addEventListener("keyup", rssbridge_feed_search);
