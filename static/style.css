@@ -453,3 +453,38 @@ button {
         color: #d8d3cb;
     }
 }
+
+/* find-feed */
+.search-result {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  padding: 15px;
+  display: flex;
+  position: relative;
+  text-align: left;
+}
+@media (prefers-color-scheme: dark) {
+    .search-result {
+        background-color: #202325;
+    }
+}
+.search-result h2 {
+  color: #288cfc;
+}
+
+.search-result a {
+  text-decoration: none;
+  color: #248afa;
+}
+.search-result .icon {
+  margin: 0 15px 0 0;
+}
+.search-result span {
+  margin-right: 10px;
+}
+.search-result .description {
+  font-size: 110%;
+  margin-right: 0 !important;
+  margin-top: 5px !important;
+}
+/* end find-feed */
