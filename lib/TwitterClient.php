@@ -149,14 +149,14 @@ class TwitterClient
                 if (!isset($entry->content->itemContent->tweet_results->result->legacy)) {
                     continue;
                 }
-                $tweets[] = $entry->content->itemContent->tweet_results->result->legacy;
+                $tweets[] = $entry->content->itemContent->tweet_results->result;
 
                 $userIds[] = $entry->content->itemContent->tweet_results->result->core->user_results->result;
             } else {
                 if (!isset($entry->content->content->tweetResult->result->legacy)) {
                     continue;
                 }
-                $tweets[] = $entry->content->content->tweetResult->result->legacy;
+                $tweets[] = $entry->content->content->tweetResult->result;
 
                 $userIds[] = $entry->content->content->tweetResult->result->core->user_result->result;
             }
