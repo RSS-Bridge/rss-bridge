@@ -112,7 +112,9 @@ EOD;
             if (!is_null($video->game)) {
                 $item['categories'][] = $video->game->displayName;
             }
-            foreach ($video->contentTags as $tag) {
+
+            $contentTags = $video->contentTags ?? [];
+            foreach ($contentTags as $tag) {
                 if (!$tag->isLanguageTag) {
                     $item['categories'][] = $tag->localizedName;
                 }
