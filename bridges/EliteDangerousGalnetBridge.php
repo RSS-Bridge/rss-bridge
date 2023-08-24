@@ -1,53 +1,61 @@
 <?php
-class EliteDangerousGalnetBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'corenting';
-	const NAME = 'Elite: Dangerous Galnet';
-	const URI = 'https://community.elitedangerous.com/galnet/';
-	const CACHE_TIMEOUT = 7200; // 2h
-	const DESCRIPTION = 'Returns the latest page of news from Galnet';
-	const PARAMETERS = array(
-		array(
-			'language' => array(
-				'name' => 'Language',
-				'type' => 'list',
-				'values' => array(
-					'English' => 'en',
-					'French' => 'fr',
-					'German' => 'de'
-				),
-				'defaultValue' => 'en'
-			)
-		)
-	);
+class EliteDangerousGalnetBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'corenting';
+    const NAME = 'Elite: Dangerous Galnet';
+    const URI = 'https://community.elitedangerous.com/galnet/';
+    const CACHE_TIMEOUT = 7200; // 2h
+    const DESCRIPTION = 'Returns the latest page of news from Galnet';
+    const PARAMETERS = [
+        [
+            'language' => [
+                'name' => 'Language',
+                'type' => 'list',
+                'values' => [
+                    'English' => 'en-US',
+                    'French' => 'fr-FR',
+                    'German' => 'de-DE',
+                    'Russian' => 'ru-RU',
+                    'Spanish' => 'es-ES',
+                ],
+                'defaultValue' => 'en-US'
+            ]
+        ]
+    ];
 
-	public function collectData(){
-		$language = $this->getInput('language');
-		$url = 'https://community.elitedangerous.com/';
-		$url = $url . $language . '/galnet';
-		$html = getSimpleHTMLDOM($url);
+    public function collectData()
+    {
+        $language = $this->getInput('language');
+        $url = 'https://cms.zaonce.net/';
+        $url = $url . $language . '/jsonapi/node/galnet_article';
+        $url = $url . '?&sort=-published_at&page[offset]=0&page[limit]=12';
 
-		foreach($html->find('div.article') as $element) {
-			$item = array();
+        $html = getSimpleHTMLDOM($url);
+        $json = json_decode($html);
 
-			$uri = $element->find('h3 a', 0)->href;
-			$uri = 'https://community.elitedangerous.com/' . $language . $uri;
-			$item['uri'] = $uri;
+        foreach ($json->data as $element) {
+            $item = [];
 
-			$item['title'] = $element->find('h3 a', 0)->plaintext;
+            $uri = 'https://www.elitedangerous.com/news/galnet/';
+            $uri = $uri . $element->attributes->field_slug;
+            $item['uri'] = $uri;
 
-			$content = $element->find('p', -1)->innertext;
-			$item['content'] = $content;
+            $item['title'] = $element->attributes->title;
 
-			$date = $element->find('p.small', 0)->innertext;
-			$article_year = substr($date, -4) - 1286; //Convert E:D date to actual date
-			$date = substr($date, 0, -4) . $article_year;
-			$item['timestamp'] = strtotime($date);
+            $picture = 'https://hosting.zaonce.net/elite-dangerous/galnet/';
+            $picture = $picture . $element->attributes->field_galnet_image . '.png';
+            $picture = '<img src="' . $picture . '"/>';
 
-			$this->items[] = $item;
-		}
+            $content = $element->attributes->body->processed;
+            $item['content'] = $picture . $content;
 
-		//Remove duplicates that sometimes show up on the website
-		$this->items = array_unique($this->items, SORT_REGULAR);
-	}
+            $item['timestamp'] = strtotime($element->attributes->published_at);
+
+            $this->items[] = $item;
+        }
+
+        //Remove duplicates that sometimes show up on the website
+        $this->items = array_unique($this->items, SORT_REGULAR);
+    }
 }

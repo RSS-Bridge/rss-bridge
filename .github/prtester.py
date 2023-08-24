@@ -1,4 +1,5 @@
 import requests
+import itertools
 from bs4 import BeautifulSoup
 from datetime import datetime
 import os.path
@@ -15,6 +16,7 @@ def testBridges(bridges,status):
         if bridge.get('data-ref'): # Some div entries are empty, this ignores those
             bridgeid = bridge.get('id')
             bridgeid = bridgeid.split('-')[1] # this extracts a readable bridge name from the bridge metadata
+            print(bridgeid + "\n")
             bridgestring = '/?action=display&bridge=' + bridgeid + '&format=Html'
             forms = bridge.find_all("form")
             formid = 1
@@ -31,6 +33,9 @@ def testBridges(bridges,status):
                 # if an example or default value is missing for a required attribute, it will throw an error
                 # any non-required fields are not tested!!!
                 for parameter in parameters:
+                    if parameter.get('type') == 'hidden' and parameter.get('name') == 'context':
+                        cleanvalue = parameter.get('value').replace(" ","+")
+                        formstring = formstring + '&' + parameter.get('name') + '=' + cleanvalue
                     if parameter.get('type') == 'number' or parameter.get('type') == 'text':
                         if parameter.has_attr('required'):
                             if parameter.get('placeholder') == '':
@@ -44,13 +49,30 @@ def testBridges(bridges,status):
                     if parameter.get('type') == 'checkbox':
                         if parameter.has_attr('checked'):
                             formstring = formstring + '&' + parameter.get('name') + '=on'
-                for list in lists:
-                    formstring = formstring + '&' + list.get('name') + '=' + list.contents[0].get('value')
+                for listing in lists:
+                    selectionvalue = ''
+                    listname = listing.get('name')
+                    cleanlist = []
+                    for option in listing.contents:
+                        if 'optgroup' in option.name:
+                            cleanlist.extend(option)
+                        else:
+                            cleanlist.append(option)
+                    firstselectionentry = 1
+                    for selectionentry in cleanlist:
+                        if firstselectionentry:
+                            selectionvalue = selectionentry.get('value')
+                            firstselectionentry = 0
+                        else:
+                            if 'selected' in selectionentry.attrs:
+                                selectionvalue = selectionentry.get('value')
+                                break
+                    formstring = formstring + '&' + listname + '=' + selectionvalue
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then upload it to termpad.com, a pastebin-like-site.
                     r = requests.get(URL + bridgestring + formstring)
-                    pagetext = r.text.replace('static/HtmlFormat.css','https://feed.eugenemolotov.ru/static/HtmlFormat.css')
+                    pagetext = r.text.replace('static/style.css','https://rss-bridge.org/bridge01/static/style.css')
                     pagetext = pagetext.encode("utf_8")
                     termpad = requests.post(url="https://termpad.com/", data=pagetext)
                     termpadurl = termpad.text

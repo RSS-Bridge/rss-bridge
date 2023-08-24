@@ -1,45 +1,50 @@
 <?php
-class PanacheDigitalGamesBridge extends BridgeAbstract {
-	const NAME = 'Panache Digital Games';
-	const URI = 'https://www.panachedigitalgames.com';
-	const DESCRIPTION = 'Panache Digital Games News Blog';
-	const MAINTAINER = 'somini';
-	const PARAMETERS = array(
-	);
 
-	public function getIcon() {
-		return 'https://www.panachedigitalgames.com/favicon-32x32.png';
-	}
+class PanacheDigitalGamesBridge extends BridgeAbstract
+{
+    const NAME = 'Panache Digital Games';
+    const URI = 'https://www.panachedigitalgames.com';
+    const DESCRIPTION = 'Panache Digital Games News Blog';
+    const MAINTAINER = 'somini';
+    const PARAMETERS = [
+    ];
 
-	public function getURI() {
-		return self::URI . '/en/news/';
-	}
+    public function getIcon()
+    {
+        return 'https://www.panachedigitalgames.com/favicon-32x32.png';
+    }
 
-	public function collectData() {
-		$articles = self::getURI();
-		$html = getSimpleHTMLDOMCached($articles);
+    public function getURI()
+    {
+        return self::URI . '/en/news/';
+    }
 
-		foreach($html->find('.news-item') as $element) {
-			$item = array();
+    public function collectData()
+    {
+        $articles = $this->getURI();
+        $html = getSimpleHTMLDOMCached($articles);
 
-			$title = $element->find('.news-item-texts-title', 0);
-			$link = $element->find('.news-item-texts a', 0);
-			$timestamp = $element->find('.news-item-texts-date', 0);
+        foreach ($html->find('.news-item') as $element) {
+            $item = [];
 
-			$item['title'] = $title->plaintext;
-			$item['uri'] = self::URI . $link->href;
-			$item['timestamp'] = strtotime($timestamp->plaintext);
+            $title = $element->find('.news-item-texts-title', 0);
+            $link = $element->find('.news-item-texts a', 0);
+            $timestamp = $element->find('.news-item-texts-date', 0);
 
-			$image_html = $element->find('.news-item-thumbnail-image', 0);
-			if ($image_html) {
-				$image_strings = explode('\'', $image_html);
-				/* Debug::log('S: ' . count($image_strings) . '||' . implode('_ _', $image_strings)); */
-				if (count($image_strings) == 4) {
-					$item['content'] = '<img src="' . $image_strings[1] . '" />';
-				}
-			}
+            $item['title'] = $title->plaintext;
+            $item['uri'] = self::URI . $link->href;
+            $item['timestamp'] = strtotime($timestamp->plaintext);
 
-			$this->items[] = $item;
-		}
-	}
+            $image_html = $element->find('.news-item-thumbnail-image', 0);
+            if ($image_html) {
+                $image_strings = explode('\'', $image_html);
+                /* Debug::log('S: ' . count($image_strings) . '||' . implode('_ _', $image_strings)); */
+                if (count($image_strings) == 4) {
+                    $item['content'] = '<img src="' . $image_strings[1] . '" />';
+                }
+            }
+
+            $this->items[] = $item;
+        }
+    }
 }

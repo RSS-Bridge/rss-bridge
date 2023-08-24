@@ -18,7 +18,7 @@
  *   Vadim Voituk
  *   Antcs
  *
- * Version Rev. 1.9 (290)
+ * Version Rev. 1.9.1 (291)
  */
 
 define('HDOM_TYPE_ELEMENT', 1);
@@ -109,6 +109,14 @@ function str_get_html(
 		$defaultBRText,
 		$defaultSpanText
 	);
+
+    // The following two if statements are rss-bridge patch
+    if (empty($str)) {
+        throw new \Exception('Refusing to parse empty string input');
+    }
+    if (strlen($str) > MAX_FILE_SIZE) {
+        throw new \Exception('Refusing to parse too big input');
+    }
 
 	if (empty($str) || strlen($str) > MAX_FILE_SIZE) {
 		$dom->clear();
@@ -607,6 +615,13 @@ class simple_html_dom_node
 			// Skip root nodes
 			if(!$node->parent) {
 				$pass = false;
+			}
+
+			// Handle 'text' selector
+			if($pass && $tag === 'text' && $node->tag === 'text') {
+				$ret[array_search($node, $this->dom->nodes, true)] = 1;
+				unset($node);
+				continue;
 			}
 
 			// Skip if node isn't a child node (i.e. text nodes)

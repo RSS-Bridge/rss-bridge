@@ -1,260 +1,280 @@
 <?php
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
- */
 
-class DisplayAction extends ActionAbstract {
-	private function get_return_code($error) {
-		$returnCode = $error->getCode();
-		if ($returnCode === 301 || $returnCode === 302) {
-			# Don't pass redirect codes to the exterior
-			$returnCode = 508;
-		}
-		return $returnCode;
-	}
+class DisplayAction implements ActionInterface
+{
+    private CacheInterface $cache;
 
-	public function execute() {
-		$bridge = array_key_exists('bridge', $this->userData) ? $this->userData['bridge'] : null;
+    public function execute(array $request)
+    {
+        if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
+            return new Response('503 Service Unavailable', 503);
+        }
+        $this->cache = RssBridge::getCache();
+        $this->cache->setScope('http');
+        $this->cache->setKey($request);
+        // avg timeout of 20m
+        $timeout = 60 * 15 + rand(1, 60 * 10);
+        /** @var Response $cachedResponse */
+        $cachedResponse = $this->cache->loadData($timeout);
+        if ($cachedResponse && !Debug::isEnabled()) {
+            //Logger::info(sprintf('Returning cached (http) response: %s', $cachedResponse->getBody()));
+            return $cachedResponse;
+        }
+        $response = $this->createResponse($request);
+        if (in_array($response->getCode(), [429, 503])) {
+            //Logger::info(sprintf('Storing cached (http) response: %s', $response->getBody()));
+            $this->cache->setScope('http');
+            $this->cache->setKey($request);
+            $this->cache->saveData($response);
+        }
+        return $response;
+    }
 
-		$format = $this->userData['format']
-			or returnClientError('You must specify a format!');
+    private function createResponse(array $request)
+    {
+        $bridgeFactory = new BridgeFactory();
+        $formatFactory = new FormatFactory();
 
-		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
+        $bridgeName = $request['bridge'] ?? null;
+        $format = $request['format'] ?? null;
 
-		// whitelist control
-		if(!$bridgeFac->isWhitelisted($bridge)) {
-			throw new \Exception('This bridge is not whitelisted', 401);
-			die;
-		}
+        $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
+        if (!$bridgeClassName) {
+            throw new \Exception(sprintf('Bridge not found: %s', $bridgeName));
+        }
+        if (!$format) {
+            throw new \Exception('You must specify a format!');
+        }
+        if (!$bridgeFactory->isEnabled($bridgeClassName)) {
+            throw new \Exception('This bridge is not whitelisted');
+        }
 
-		// Data retrieval
-		$bridge = $bridgeFac->create($bridge);
-		$bridge->loadConfiguration();
+        $format = $formatFactory->create($format);
 
-		$noproxy = array_key_exists('_noproxy', $this->userData)
-			&& filter_var($this->userData['_noproxy'], FILTER_VALIDATE_BOOLEAN);
+        $bridge = $bridgeFactory->create($bridgeClassName);
+        $bridge->loadConfiguration();
 
-		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy) {
-			define('NOPROXY', true);
-		}
+        $noproxy = $request['_noproxy'] ?? null;
+        if (
+            Configuration::getConfig('proxy', 'url')
+            && Configuration::getConfig('proxy', 'by_bridge')
+            && $noproxy
+        ) {
+            // This const is only used once in getContents()
+            define('NOPROXY', true);
+        }
 
-		// Cache timeout
-		$cache_timeout = -1;
-		if(array_key_exists('_cache_timeout', $this->userData)) {
+        $cacheTimeout = $request['_cache_timeout'] ?? null;
+        if (Configuration::getConfig('cache', 'custom_timeout') && $cacheTimeout) {
+            $cacheTimeout = (int) $cacheTimeout;
+        } else {
+            // At this point the query argument might still be in the url but it won't be used
+            $cacheTimeout = $bridge->getCacheTimeout();
+        }
 
-			if(!CUSTOM_CACHE_TIMEOUT) {
-				unset($this->userData['_cache_timeout']);
-				$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($this->userData);
-				header('Location: ' . $uri, true, 301);
-				die();
-			}
+        // Remove parameters that don't concern bridges
+        $bridge_params = array_diff_key(
+            $request,
+            array_fill_keys(
+                [
+                    'action',
+                    'bridge',
+                    'format',
+                    '_noproxy',
+                    '_cache_timeout',
+                    '_error_time'
+                ],
+                ''
+            )
+        );
 
-			$cache_timeout = filter_var($this->userData['_cache_timeout'], FILTER_VALIDATE_INT);
+        // Remove parameters that don't concern caches
+        $cache_params = array_diff_key(
+            $request,
+            array_fill_keys(
+                [
+                    'action',
+                    'format',
+                    '_noproxy',
+                    '_cache_timeout',
+                    '_error_time'
+                ],
+                ''
+            )
+        );
 
-		} else {
-			$cache_timeout = $bridge->getCacheTimeout();
-		}
+        $this->cache->setScope('');
+        $this->cache->setKey($cache_params);
 
-		// Remove parameters that don't concern bridges
-		$bridge_params = array_diff_key(
-			$this->userData,
-			array_fill_keys(
-				array(
-					'action',
-					'bridge',
-					'format',
-					'_noproxy',
-					'_cache_timeout',
-					'_error_time'
-				), '')
-		);
+        $items = [];
+        $infos = [];
 
-		// Remove parameters that don't concern caches
-		$cache_params = array_diff_key(
-			$this->userData,
-			array_fill_keys(
-				array(
-					'action',
-					'format',
-					'_noproxy',
-					'_cache_timeout',
-					'_error_time'
-				), '')
-		);
+        $feed = $this->cache->loadData($cacheTimeout);
 
-		// Initialize cache
-		$cacheFac = new CacheFactory();
-		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
-		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
-		$cache->setScope('');
-		$cache->purgeCache(86400); // 24 hours
-		$cache->setKey($cache_params);
+        if ($feed && !Debug::isEnabled()) {
+            if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+                $modificationTime = $this->cache->getTime();
+                // The client wants to know if the feed has changed since its last check
+                $modifiedSince = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+                if ($modificationTime <= $modifiedSince) {
+                    $modificationTimeGMT = gmdate('D, d M Y H:i:s ', $modificationTime);
+                    return new Response('', 304, ['Last-Modified' => $modificationTimeGMT . 'GMT']);
+                }
+            }
 
-		$items = array();
-		$infos = array();
-		$mtime = $cache->getTime();
+            if (isset($feed['items']) && isset($feed['extraInfos'])) {
+                foreach ($feed['items'] as $item) {
+                    $items[] = new FeedItem($item);
+                }
+                $infos = $feed['extraInfos'];
+            }
+        } else {
+            try {
+                $bridge->setDatas($bridge_params);
+                $bridge->collectData();
+                $items = $bridge->getItems();
+                if (isset($items[0]) && is_array($items[0])) {
+                    $feedItems = [];
+                    foreach ($items as $item) {
+                        $feedItems[] = new FeedItem($item);
+                    }
+                    $items = $feedItems;
+                }
+                $infos = [
+                    'name' => $bridge->getName(),
+                    'uri'  => $bridge->getURI(),
+                    'donationUri'  => $bridge->getDonationURI(),
+                    'icon' => $bridge->getIcon()
+                ];
+            } catch (\Exception $e) {
+                $errorOutput = Configuration::getConfig('error', 'output');
+                $reportLimit = Configuration::getConfig('error', 'report_limit');
+                if ($e instanceof HttpException) {
+                    // Reproduce (and log) these responses regardless of error output and report limit
+                    if ($e->getCode() === 429) {
+                        Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)));
+                        return new Response('429 Too Many Requests', 429);
+                    }
+                    if ($e->getCode() === 503) {
+                        Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)));
+                        return new Response('503 Service Unavailable', 503);
+                    }
+                    // Might want to cache other codes such as 504 Gateway Timeout
+                }
+                if (in_array($errorOutput, ['feed', 'none'])) {
+                    Logger::error(sprintf('Exception in DisplayAction(%s): %s', $bridgeClassName, create_sane_exception_message($e)), ['e' => $e]);
+                }
+                $errorCount = 1;
+                if ($reportLimit > 1) {
+                    $errorCount = $this->logBridgeError($bridge->getName(), $e->getCode());
+                }
+                // Let clients know about the error if we are passed the report limit
+                if ($errorCount >= $reportLimit) {
+                    if ($errorOutput === 'feed') {
+                        // Render the exception as a feed item
+                        $items[] = $this->createFeedItemFromException($e, $bridge);
+                    } elseif ($errorOutput === 'http') {
+                        // Rethrow so that the main exception handler in RssBridge.php produces an HTTP 500
+                        throw $e;
+                    } elseif ($errorOutput === 'none') {
+                        // Do nothing (produces an empty feed)
+                    } else {
+                        // Do nothing, unknown error output? Maybe throw exception or validate in Configuration.php
+                    }
+                }
+            }
 
-		if($mtime !== false
-		&& (time() - $cache_timeout < $mtime)
-		&& !Debug::isEnabled()) { // Load cached data
+            // Unfortunately need to set scope and key again because they might be modified
+            $this->cache->setScope('');
+            $this->cache->setKey($cache_params);
+            $this->cache->saveData([
+                'items' => array_map(function (FeedItem $item) {
+                    return $item->toArray();
+                }, $items),
+                'extraInfos' => $infos
+            ]);
+            $this->cache->purgeCache();
+        }
 
-			// Send "Not Modified" response if client supports it
-			// Implementation based on https://stackoverflow.com/a/10847262
-			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
-				$stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+        $format->setItems($items);
+        $format->setExtraInfos($infos);
+        $newModificationTime = $this->cache->getTime();
+        $format->setLastModified($newModificationTime);
+        $headers = [];
+        if ($newModificationTime) {
+            $headers['Last-Modified'] = gmdate('D, d M Y H:i:s ', $newModificationTime) . 'GMT';
+        }
+        $headers['Content-Type'] = $format->getMimeType() . '; charset=' . $format->getCharset();
+        return new Response($format->stringify(), 200, $headers);
+    }
 
-				if($mtime <= $stime) { // Cached data is older or same
-					header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $mtime) . 'GMT', true, 304);
-					die();
-				}
-			}
+    private function createFeedItemFromException($e, BridgeInterface $bridge): FeedItem
+    {
+        $item = new FeedItem();
 
-			$cached = $cache->loadData();
+        // Create a unique identifier every 24 hours
+        $uniqueIdentifier = urlencode((int)(time() / 86400));
+        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $uniqueIdentifier);
+        $item->setTitle($itemTitle);
+        $item->setURI(get_current_url());
+        $item->setTimestamp(time());
 
-			if(isset($cached['items']) && isset($cached['extraInfos'])) {
-				foreach($cached['items'] as $item) {
-					$items[] = new \FeedItem($item);
-				}
+        // Create an item identifier for feed readers e.g. "staysafetv twitch videos_19389"
+        $item->setUid($bridge->getName() . '_' . $uniqueIdentifier);
 
-				$infos = $cached['extraInfos'];
-			}
+        $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
+            'error' => render_template(__DIR__ . '/../templates/error.html.php', ['e' => $e]),
+            'searchUrl' => self::createGithubSearchUrl($bridge),
+            'issueUrl' => self::createGithubIssueUrl($bridge, $e, create_sane_exception_message($e)),
+            'maintainer' => $bridge->getMaintainer(),
+        ]);
+        $item->setContent($content);
+        return $item;
+    }
 
-		} else { // Collect new data
+    private function logBridgeError($bridgeName, $code)
+    {
+        $this->cache->setScope('error_reporting');
+        $this->cache->setkey([$bridgeName . '_' . $code]);
+        $report = $this->cache->loadData();
+        if ($report) {
+            $report = Json::decode($report);
+            $report['time'] = time();
+            $report['count']++;
+        } else {
+            $report = [
+                'error' => $code,
+                'time' => time(),
+                'count' => 1,
+            ];
+        }
+        $this->cache->saveData(Json::encode($report));
+        return $report['count'];
+    }
 
-			try {
-				$bridge->setDatas($bridge_params);
-				$bridge->collectData();
+    private static function createGithubIssueUrl($bridge, $e, string $message): string
+    {
+        return sprintf('https://github.com/RSS-Bridge/rss-bridge/issues/new?%s', http_build_query([
+            'title' => sprintf('%s failed with error %s', $bridge->getName(), $e->getCode()),
+            'body' => sprintf(
+                "```\n%s\n\n%s\n\nQuery string: %s\nVersion: %s\nOs: %s\nPHP version: %s\n```",
+                $message,
+                implode("\n", trace_to_call_points(trace_from_exception($e))),
+                $_SERVER['QUERY_STRING'] ?? '',
+                Configuration::getVersion(),
+                PHP_OS_FAMILY,
+                phpversion() ?: 'Unknown'
+            ),
+            'labels' => 'Bridge-Broken',
+            'assignee' => $bridge->getMaintainer(),
+        ]));
+    }
 
-				$items = $bridge->getItems();
-
-				// Transform "legacy" items to FeedItems if necessary.
-				// Remove this code when support for "legacy" items ends!
-				if(isset($items[0]) && is_array($items[0])) {
-					$feedItems = array();
-
-					foreach($items as $item) {
-						$feedItems[] = new \FeedItem($item);
-					}
-
-					$items = $feedItems;
-				}
-
-				$infos = array(
-					'name' => $bridge->getName(),
-					'uri'  => $bridge->getURI(),
-					'donationUri'  => $bridge->getDonationURI(),
-					'icon' => $bridge->getIcon()
-				);
-			} catch(Error $e) {
-				error_log($e);
-
-				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
-					if(Configuration::getConfig('error', 'output') === 'feed') {
-						$item = new \FeedItem();
-
-						// Create "new" error message every 24 hours
-						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
-
-						// Error 0 is a special case (i.e. "trying to get property of non-object")
-						if($e->getCode() === 0) {
-							$item->setTitle(
-								'Bridge encountered an unexpected situation! ('
-								. $this->userData['_error_time']
-								. ')'
-							);
-						} else {
-							$item->setTitle(
-								'Bridge returned error '
-								. $e->getCode()
-								. '! ('
-								. $this->userData['_error_time']
-								. ')'
-							);
-						}
-
-						$item->setURI(
-							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-							. '?'
-							. http_build_query($this->userData)
-						);
-
-						$item->setTimestamp(time());
-						$item->setContent(buildBridgeException($e, $bridge));
-
-						$items[] = $item;
-					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $this->get_return_code($e));
-						die(buildTransformException($e, $bridge));
-					}
-				}
-			} catch(Exception $e) {
-				error_log($e);
-
-				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
-					if(Configuration::getConfig('error', 'output') === 'feed') {
-						$item = new \FeedItem();
-
-						// Create "new" error message every 24 hours
-						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
-
-						$item->setURI(
-							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-							. '?'
-							. http_build_query($this->userData)
-						);
-
-						$item->setTitle(
-							'Bridge returned error '
-							. $e->getCode()
-							. '! ('
-							. $this->userData['_error_time']
-							. ')'
-						);
-						$item->setTimestamp(time());
-						$item->setContent(buildBridgeException($e, $bridge));
-
-						$items[] = $item;
-					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $this->get_return_code($e));
-						die(buildTransformException($e, $bridge));
-					}
-				}
-			}
-
-			// Store data in cache
-			$cache->saveData(array(
-				'items' => array_map(function($i){ return $i->toArray(); }, $items),
-				'extraInfos' => $infos
-			));
-
-		}
-
-		// Data transformation
-		try {
-			$formatFac = new FormatFactory();
-			$formatFac->setWorkingDir(PATH_LIB_FORMATS);
-			$format = $formatFac->create($format);
-			$format->setItems($items);
-			$format->setExtraInfos($infos);
-			$format->setLastModified($cache->getTime());
-			$format->display();
-		} catch(Error $e) {
-			error_log($e);
-			header('Content-Type: text/html', true, $e->getCode());
-			die(buildTransformException($e, $bridge));
-		} catch(Exception $e) {
-			error_log($e);
-			header('Content-Type: text/html', true, $e->getCode());
-			die(buildTransformException($e, $bridge));
-		}
-	}
+    private static function createGithubSearchUrl($bridge): string
+    {
+        return sprintf(
+            'https://github.com/RSS-Bridge/rss-bridge/issues?q=%s',
+            urlencode('is:issue is:open ' . $bridge->getName())
+        );
+    }
 }

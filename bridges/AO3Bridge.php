@@ -1,118 +1,139 @@
 <?php
 
-class AO3Bridge extends BridgeAbstract {
-	const NAME = 'AO3';
-	const URI = 'https://archiveofourown.org/';
-	const CACHE_TIMEOUT = 1800;
-	const DESCRIPTION = 'Returns works or chapters from Archive of Our Own';
-	const MAINTAINER = 'Obsidienne';
-	const PARAMETERS = array(
-		'List' => array(
-			'url' => array(
-				'name' => 'url',
-				'required' => true,
-				// Example: F/F tag, complete works only
-				'exampleValue' => 'https://archiveofourown.org/works?work_search[complete]=T&tag_id=F*s*F',
-			),
-		),
-		'Bookmarks' => array(
-			'user' => array(
-				'name' => 'user',
-				'required' => true,
-				// Example: Nyaaru's bookmarks
-				'exampleValue' => 'Nyaaru',
-			),
-		),
-		'Work' => array(
-			'id' => array(
-				'name' => 'id',
-				'required' => true,
-				// Example: latest chapters from A Better Past by LysSerris
-				'exampleValue' => '18181853',
-			),
-		)
-	);
+class AO3Bridge extends BridgeAbstract
+{
+    const NAME = 'AO3';
+    const URI = 'https://archiveofourown.org/';
+    const CACHE_TIMEOUT = 1800;
+    const DESCRIPTION = 'Returns works or chapters from Archive of Our Own';
+    const MAINTAINER = 'Obsidienne';
+    const PARAMETERS = [
+        'List' => [
+            'url' => [
+                'name' => 'url',
+                'required' => true,
+                // Example: F/F tag, complete works only
+                'exampleValue' => 'https://archiveofourown.org/works?work_search[complete]=T&tag_id=F*s*F',
+            ],
+        ],
+        'Bookmarks' => [
+            'user' => [
+                'name' => 'user',
+                'required' => true,
+                // Example: Nyaaru's bookmarks
+                'exampleValue' => 'Nyaaru',
+            ],
+        ],
+        'Work' => [
+            'id' => [
+                'name' => 'id',
+                'required' => true,
+                // Example: latest chapters from A Better Past by LysSerris
+                'exampleValue' => '18181853',
+            ],
+        ]
+    ];
 
-	// Feed for lists of works (e.g. recent works, search results, filtered tags,
-	// bookmarks, series, collections).
-	private function collectList($url) {
-		$html = getSimpleHTMLDOM($url);
-		$html = defaultLinkTo($html, self::URI);
+    public function collectData()
+    {
+        switch ($this->queriedContext) {
+            case 'Bookmarks':
+                $user = $this->getInput('user');
+                $this->title = $user;
+                $url = self::URI
+                    . '/users/' . $user
+                    . '/bookmarks?bookmark_search[sort_column]=bookmarkable_date';
+                $this->collectList($url);
+                break;
+            case 'List':
+                $this->collectList($this->getInput('url'));
+                break;
+            case 'Work':
+                $this->collectWork($this->getInput('id'));
+                break;
+        }
+    }
 
-		foreach($html->find('.index.group > li') as $element) {
-			$item = array();
+    /**
+     * Feed for lists of works (e.g. recent works, search results, filtered tags,
+     * bookmarks, series, collections).
+     */
+    private function collectList($url)
+    {
+        $html = getSimpleHTMLDOM($url);
+        $html = defaultLinkTo($html, self::URI);
 
-			$title = $element->find('div h4 a', 0);
-			if (!isset($title)) continue; // discard deleted works
-			$item['title'] = $title->plaintext;
-			$item['content'] = $element;
-			$item['uri'] = $title->href;
+        foreach ($html->find('.index.group > li') as $element) {
+            $item = [];
 
-			$strdate = $element->find('div p.datetime', 0)->plaintext;
-			$item['timestamp'] = strtotime($strdate);
+            $title = $element->find('div h4 a', 0);
+            if (!isset($title)) {
+                continue; // discard deleted works
+            }
+            $item['title'] = $title->plaintext;
+            $item['content'] = $element;
+            $item['uri'] = $title->href;
 
-			$chapters = $element->find('dl dd.chapters', 0);
-			// bookmarked series and external works do not have a chapters count
-			$chapters = (isset($chapters) ? $chapters->plaintext : 0);
-			$item['uid'] = $item['uri'] . "/$strdate/$chapters";
+            $strdate = $element->find('div p.datetime', 0)->plaintext;
+            $item['timestamp'] = strtotime($strdate);
 
-			$this->items[] = $item;
-		}
-	}
+            $chapters = $element->find('dl dd.chapters', 0);
+            // bookmarked series and external works do not have a chapters count
+            $chapters = (isset($chapters) ? $chapters->plaintext : 0);
+            $item['uid'] = $item['uri'] . "/$strdate/$chapters";
 
-	// Feed for recent chapters of a specific work.
-	private function collectWork($id) {
-		$url = self::URI . "/works/$id/navigate";
-		$html = getSimpleHTMLDOM($url);
-		$html = defaultLinkTo($html, self::URI);
+            $this->items[] = $item;
+        }
+    }
 
-		$this->title = $html->find('h2 a', 0)->plaintext;
+    /**
+     * Feed for recent chapters of a specific work.
+     */
+    private function collectWork($id)
+    {
+        $url = self::URI . "/works/$id/navigate";
+        $httpClient = RssBridge::getHttpClient();
 
-		foreach($html->find('ol.index.group > li') as $element) {
-			$item = array();
+        $response = $httpClient->request($url, [
+            'useragent' => 'rss-bridge bot (https://github.com/RSS-Bridge/rss-bridge)',
+        ]);
 
-			$item['title'] = $element->find('a', 0)->plaintext;
-			$item['content'] = $element;
-			$item['uri'] = $element->find('a', 0)->href;
+        $html = \str_get_html($response['body']);
+        $html = defaultLinkTo($html, self::URI);
 
-			$strdate = $element->find('span.datetime', 0)->plaintext;
-			$strdate = str_replace('(', '', $strdate);
-			$strdate = str_replace(')', '', $strdate);
-			$item['timestamp'] = strtotime($strdate);
+        $this->title = $html->find('h2 a', 0)->plaintext;
 
-			$item['uid'] = $item['uri'] . "/$strdate";
+        foreach ($html->find('ol.index.group > li') as $element) {
+            $item = [];
 
-			$this->items[] = $item;
-		}
+            $item['title'] = $element->find('a', 0)->plaintext;
+            $item['content'] = $element;
+            $item['uri'] = $element->find('a', 0)->href;
 
-		$this->items = array_reverse($this->items);
-	}
+            $strdate = $element->find('span.datetime', 0)->plaintext;
+            $strdate = str_replace('(', '', $strdate);
+            $strdate = str_replace(')', '', $strdate);
+            $item['timestamp'] = strtotime($strdate);
 
-	public function collectData() {
-		switch($this->queriedContext) {
-			case 'Bookmarks':
-				$user = $this->getInput('user');
-				$this->title = $user;
-				$url = self::URI
-					. '/users/' . $user
-					. '/bookmarks?bookmark_search[sort_column]=bookmarkable_date';
-				return $this->collectList($url);
-			case 'List': return $this->collectList(
-				$this->getInput('url')
-			);
-			case 'Work': return $this->collectWork(
-				$this->getInput('id')
-			);
-		}
-	}
+            $item['uid'] = $item['uri'] . "/$strdate";
 
-	public function getName() {
-		$name = parent::getName() . " $this->queriedContext";
-		if (isset($this->title)) $name .= " - $this->title";
-		return $name;
-	}
+            $this->items[] = $item;
+        }
 
-	public function getIcon() {
-		return self::URI . '/favicon.ico';
-	}
+        $this->items = array_reverse($this->items);
+    }
+
+    public function getName()
+    {
+        $name = parent::getName() . " $this->queriedContext";
+        if (isset($this->title)) {
+            $name .= " - $this->title";
+        }
+        return $name;
+    }
+
+    public function getIcon()
+    {
+        return self::URI . '/favicon.ico';
+    }
 }

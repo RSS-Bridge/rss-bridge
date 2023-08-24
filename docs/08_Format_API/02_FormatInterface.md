@@ -1,4 +1,4 @@
-The `FormatInterface`interface defines functions that need to be implemented by all formats:
+The `FormatInterface` interface defines functions that need to be implemented by all formats:
 
 * [display](#the-display-function)
 * [stringify](#the-stringify-function)
@@ -13,14 +13,6 @@ The `FormatInterface`interface defines functions that need to be implemented by 
 Find a [template](#template) at the end of this file
 
 # Functions
-
-## The `display` function
-
-The `display` function shows the contents to the user and must return the object instance.
-
-```PHP
-display(): self
-```
 
 ## The `stringify` function
 
@@ -90,7 +82,7 @@ getExtraInfos(): array
 The `getMimeType` function returns the expected [MIME type](https://en.wikipedia.org/wiki/Media_type#Common_examples) of the format's output.
 
 ```PHP
-getMimeType(): string
+parse_mime_type(): string
 ```
 
 # Template
@@ -107,12 +99,6 @@ class MyTypeFormat implements FormatInterface {
     public function stringify(){
         // Implement your code here
         return ''; // Return items as string
-    }
-
-    public function display(){
-        // Implement your code here
-        echo $this->stringify();
-        return $this;
     }
 
     public function setItems(array $items){

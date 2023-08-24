@@ -2,34 +2,42 @@
 
 class N26Bridge extends BridgeAbstract
 {
-	const MAINTAINER = 'quentinus95';
-	const NAME = 'N26 Blog';
-	const URI = 'https://n26.com';
-	const CACHE_TIMEOUT = 1800;
-	const DESCRIPTION = 'Returns recent blog posts from N26.';
+    const MAINTAINER = 'quentinus95';
+    const NAME = 'N26 Blog';
+    const URI = 'https://n26.com';
+    const CACHE_TIMEOUT = 1800;
+    const DESCRIPTION = 'Returns recent blog posts from N26.';
 
-	public function getIcon()
-	{
-		return 'https://n26.com/favicon.ico';
-	}
+    public function collectData()
+    {
+        $limit = 5;
+        $url = 'https://n26.com/en-eu/blog/all';
+        $html = getSimpleHTMLDOM($url);
 
-	public function collectData()
-	{
-		$html = getSimpleHTMLDOM(self::URI . '/en-eu/blog-archive');
+        $articles = $html->find('div[class="bl bm"]');
 
-		foreach($html->find('div[class="ag ah ai aj bs bt dx ea fo gx ie if ih ii ij ik s"]') as $article) {
-			$item = array();
+        foreach ($articles as $article) {
+            $item = [];
 
-			$item['uri'] = self::URI . $article->find('h2 a', 0)->href;
-			$item['title'] = $article->find('h2 a', 0)->plaintext;
+            $itemUrl = self::URI . $article->find('a', 1)->href;
+            $item['uri'] = $itemUrl;
 
-			$fullArticle = getSimpleHTMLDOM($item['uri']);
+            $item['title'] = $article->find('a', 1)->plaintext;
 
-			$dateElement = $fullArticle->find('time', 0);
-			$item['timestamp'] = strtotime($dateElement->plaintext);
-			$item['content'] = $fullArticle->find('div[class="af ag ah ai an"]', 1)->innertext;
+            $fullArticle = getSimpleHTMLDOM($item['uri']);
 
-			$this->items[] = $item;
-		}
-	}
+            $createdAt = $fullArticle->find('time', 0);
+            $item['timestamp'] = strtotime($createdAt->plaintext);
+
+            $this->items[] = $item;
+            if (count($this->items) >= $limit) {
+                break;
+            }
+        }
+    }
+
+    public function getIcon()
+    {
+        return 'https://n26.com/favicon.ico';
+    }
 }

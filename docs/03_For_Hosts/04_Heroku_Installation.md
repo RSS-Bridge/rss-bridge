@@ -14,7 +14,7 @@ You can simply press the button below to easily deploy RSS Bridge on Heroku and 
 
 ![image](../images/fork_button.png)
 
-2. To customise what bridges can be used if need, create a `whitelist.txt` file in your fork and follow the instructions given [here](../03_For_Hosts/05_Whitelisting.md). You don’t need to do this if you’re fine with the default bridges.
+2. To customise what bridges can be used if need, see [here](../03_For_Hosts/05_Whitelisting.md). You don’t need to do this if you’re fine with the default bridges.
 
 3. [Log in to Heroku](https://dashboard.heroku.com) and create a new app. The app name will be the URL of the RSS Bridge (appname.herokuapp.com)
 

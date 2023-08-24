@@ -1,12 +1,12 @@
 This section explains the coding style policy for RSS-Bridge with examples and references to external resources. Please make sure your code is compliant before opening a pull request.
 
-RSS-Bridge uses [Travis-CI](https://travis-ci.org/) to validate code quality. You will automatically be notified if issues were found in your pull request. You must fix those issues before the pull request will be merged. Refer to [phpcs.xml](https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml) for a complete list of policies enforced by Travis-CI.
+You will automatically be notified if issues were found in your pull request. You must fix those issues before the pull request will be merged. Refer to [phpcs.xml](https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml) for a complete list of policies enforced by Travis-CI.
 
 If you want to run the checks locally, make sure you have [`phpcs`](https://github.com/squizlabs/PHP_CodeSniffer) and [`phpunit`](https://phpunit.de/) installed on your machine and run following commands in the root directory of RSS-Bridge (tested on Debian):
 
 ```console
-phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p
-phpunit --configuration=phpunit.xml --include-path=lib/
+./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
+./vendor/bin/phpunit
 ```
 
 The following list provides an overview of all policies applied to RSS-Bridge.
@@ -69,69 +69,11 @@ Whitespace at the end of lines or at the start or end of a file is invisible to 
 _Reference_: [`Squiz.WhiteSpace.SuperfluousWhitespace`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/SuperfluousWhitespaceSniff.php)
 
 # Indentation
-## Use tabs for indentation
-
-RSS-Bridge uses tabs for indentation on all PHP files in the repository (except files located in the `vendor` directory)
-
-_Reference_: [`Generic.WhiteSpace.DisallowSpaceIndent`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/WhiteSpace/DisallowSpaceIndentSniff.php)
+## Use spaces indentation
 
 # Maximum Line Length
 
-## The maximum line length should not exceed 80 characters
-
-One line of code should have no more than **80 characters** (soft limit) and must never exceed **120 characters** (hard limit).
-
-_Notice_: Travis-CI enforces the hard limit of 120 characters. Maintainers may ask you to indent lines longer than 80 characters before merging. This is generally done to keep the code as readable and maintainable as possible.
-
-For long conditional statements, consider indenting the statement into multiple lines.
-
-<details><summary>Example</summary><div><br>
-
-**Bad** (the total length of the line is **94** characters)
-
-```PHP
-if($time !== false && (time() - $duration < $time) && (!defined('DEBUG') || DEBUG !== true)) {
-
-}
-```
-
-**Good** (add line breaks)
-
-```PHP
-if($time !== false
-&& (time() - $duration < $time)
-&& (!defined('DEBUG') || DEBUG !== true)) {
-
-}
-```
-
-</div></details><br>
-
-For long text, either add line feeds, or make use of the [`heredoc`](http://php.net/manual/en/language.types.string.php#language.types.string.syntax.heredoc) syntax.
-
-<details><summary>Example</summary><div><br>
-
-**Bad** (the total length of the line is **340** characters - from [Lorem Ipsum](https://www.lipsum.com/feed/html))
-
-```PHP
-$longtext = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse condimentum nec est eget posuere. Proin at sagittis risus. Fusce faucibus lectus leo, eu ornare velit tristique eu. Curabitur elementum facilisis ultricies. Praesent dictum fermentum lectus a rhoncus. Donec vitae justo metus. Sed molestie faucibus egestas.';
-```
-
-**Good** (use `heredoc` syntax - this will add line-breaks)
-
-```PHP
-$longtext = <<<EOD
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-condimentum nec est eget posuere. Proin at sagittis risus. Fusce faucibus
-lectus leo, eu ornare velit tristique eu. Curabitur elementum facilisis
-ultricies. Praesent dictum fermentum lectus a rhoncus. Donec vitae justo metus.
-Sed molestie faucibus egestas.
-EOD;
-```
-
-</div></details><br>
-
-_Reference_: [`Generic.Files.LineLength`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Files/LineLengthSniff.php)
+There is no maximum line length.
 
 # Strings
 
@@ -743,24 +685,4 @@ $text = (string)$number;
 _Reference_: [`Squiz.WhiteSpace.CastSpacing`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/CastSpacingSniff.php)
 
 # Arrays
-## Always use the long array syntax
-
-Arrays should be initialized using the long array syntax.
-
-<details><summary>Example</summary><div><br>
-
-**Bad**
-
-```PHP
-$data = [ 'hello' => 'world' ];
-```
-
-**Good**
-
-```PHP
-$data = array('hello' => 'world');
-```
-
-</div></details><br>
-
-_Reference_: [`Generic.Arrays.DisallowShortArraySyntax`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Arrays/DisallowShortArraySyntaxSniff.php)
+## Always use the short array syntax

@@ -1,45 +1,49 @@
 <?php
-class ABCNewsBridge extends BridgeAbstract {
-	const NAME = 'ABC News Bridge';
-	const URI = 'https://www.abc.net.au';
-	const DESCRIPTION = 'Topics of the Australian Broadcasting Corporation';
-	const MAINTAINER = 'yue-dongchen';
 
-	const PARAMETERS = array(
-		array(
-			'topic' => array(
-				'type' => 'list',
-				'name' => 'Region',
-				'title' => 'Choose state',
-				'values' => array(
-					'ACT' => 'act',
-					'NSW' => 'nsw',
-					'NT' => 'nt',
-					'QLD' => 'qld',
-					'SA' => 'sa',
-					'TAS' => 'tas',
-					'VIC' => 'vic',
-					'WA' => 'wa'
-				),
-			)
-		)
-	);
+class ABCNewsBridge extends BridgeAbstract
+{
+    const NAME = 'ABC News Bridge';
+    const URI = 'https://www.abc.net.au';
+    const DESCRIPTION = 'Topics of the Australian Broadcasting Corporation';
+    const MAINTAINER = 'yue-dongchen';
 
-	public function collectData() {
-		$url = 'https://www.abc.net.au/news/' . $this->getInput('topic');
-		$html = getSimpleHTMLDOM($url)->find('.YAJzu._2FvRw.ZWhbj._3BZxh', 0);
-		$html = defaultLinkTo($html, $this->getURI());
+    const PARAMETERS = [
+        [
+            'topic' => [
+                'type' => 'list',
+                'name' => 'Region',
+                'title' => 'Choose state',
+                'values' => [
+                    'ACT' => 'act',
+                    'NSW' => 'nsw',
+                    'NT' => 'nt',
+                    'QLD' => 'qld',
+                    'SA' => 'sa',
+                    'TAS' => 'tas',
+                    'VIC' => 'vic',
+                    'WA' => 'wa'
+                ],
+            ]
+        ]
+    ];
 
-		foreach($html->find('._2H7Su') as $article) {
-			$item = array();
-
-			$title = $article->find('._3T9Id.fmhNa.nsZdE._2c2Zy._1tOey._3EOTW', 0);
-			$item['title'] = $title->plaintext;
-			$item['uri'] = $title->href;
-			$item['content'] = $article->find('.rMkro._1cBaI._3PhF6._10YQT._1yL-m', 0)->plaintext;
-			$item['timestamp'] = strtotime($article->find('time', 0)->datetime);
-
-			$this->items[] = $item;
-		}
-	}
+    public function collectData()
+    {
+        $url = sprintf('https://www.abc.net.au/news/%s', $this->getInput('topic'));
+        $dom = getSimpleHTMLDOM($url);
+        $dom = $dom->find('div[data-component="CardList"]', 0);
+        if (!$dom) {
+            throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
+        }
+        $dom = defaultLinkTo($dom, $this->getURI());
+        foreach ($dom->find('div[data-component="GenericCard"]') as $article) {
+            $a = $article->find('a', 0);
+            $this->items[] = [
+                'title' => $a->plaintext,
+                'uri' => $a->href,
+                'content' => $article->find('[data-component="CardDescription"]', 0)->plaintext,
+                'timestamp' => strtotime($article->find('time', 0)->datetime),
+            ];
+        }
+    }
 }

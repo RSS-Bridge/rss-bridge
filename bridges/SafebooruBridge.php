@@ -1,12 +1,16 @@
 <?php
-require_once('GelbooruBridge.php');
 
-class SafebooruBridge extends GelbooruBridge {
+class SafebooruBridge extends GelbooruBridge
+{
+    const MAINTAINER = 'mitsukarenai';
+    const NAME = 'Safebooru';
+    const URI = 'https://safebooru.org/';
+    const DESCRIPTION = 'Returns images from given page';
 
-	const MAINTAINER = 'mitsukarenai';
-	const NAME = 'Safebooru';
-	const URI = 'https://safebooru.org/';
-	const DESCRIPTION = 'Returns images from given page';
-
-	const PIDBYPAGE = 40;
+    protected function buildThumbnailURI($element)
+    {
+        $regex = '/\.\w+$/';
+        return $this->getURI() . 'thumbnails/' . $element->directory
+        . '/thumbnail_' . preg_replace($regex, '.jpg', $element->image);
+    }
 }

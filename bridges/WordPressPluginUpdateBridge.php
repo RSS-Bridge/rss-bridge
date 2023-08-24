@@ -1,74 +1,64 @@
 <?php
-class WordPressPluginUpdateBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'teromene';
-	const NAME = 'WordPress Plugins Update Bridge';
-	const URI = 'https://wordpress.org/plugins/';
-	const CACHE_TIMEOUT = 86400; // 24h = 86400s
-	const DESCRIPTION = 'Returns latest updates of WordPress.com plugins.';
+final class WordPressPluginUpdateBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'dvikan';
+    const NAME = 'WordPress Plugins Update Bridge';
+    const URI = 'https://wordpress.org/plugins/';
+    const DESCRIPTION = 'Returns latest updates of wordpress.org plugins.';
 
-	const PARAMETERS = array(
-		array(
-			'pluginUrl' => array(
-				'name' => 'URL to the plugin',
-				'exampleValue' => 'https://wordpress.org/plugins/wp-rss-aggregator/',
-				'required' => true
-			)
-		)
-	);
+    const PARAMETERS = [
+        [
+            // The incorrectly named pluginUrl is kept for BC
+            'pluginUrl' => [
+                'name' => 'Plugin slug',
+                'exampleValue' => 'akismet',
+                'required' => true,
+                'title' => 'Slug or url',
+            ]
+        ]
+    ];
 
-	public function collectData(){
+    public function collectData()
+    {
+        $input = trim($this->getInput('pluginUrl'));
+        if (preg_match('#https://wordpress\.org/plugins/([\w-]+)#', $input, $m)) {
+            $slug = $m[1];
+        } else {
+            $slug = str_replace(['/'], '', $input);
+        }
 
-		$request = str_replace('/', '', $this->getInput('pluginUrl'));
-		$page = self::URI . $request . '/changelog/';
+        $pluginData = self::fetchPluginData($slug);
 
-		$html = getSimpleHTMLDOM($page);
+        if ($pluginData->versions === []) {
+            throw new \Exception('This plugin does not have versioning data');
+        }
 
-		$content = $html->find('.block-content', 0);
+        // We don't need trunk. I think it's the latest commit.
+        unset($pluginData->versions->trunk);
 
-		$item = array();
-		$item['content'] = '';
-		$version = null;
+        foreach ($pluginData->versions as $version => $downloadUrl) {
+            $this->items[] = [
+                'title'     => $version,
+                'uri'       => sprintf('https://wordpress.org/plugins/%s/#developers', $slug),
+                'uid'       => $downloadUrl,
+            ];
+        }
 
-		foreach($content->children() as $element) {
+        usort($this->items, function ($a, $b) {
+            return version_compare($b['title'], $a['title']);
+        });
+    }
 
-			if($element->tag != 'h4') {
-
-				$item['content'] .= $element;
-
-			} else {
-
-				if($version == null) {
-
-					$version = $element;
-
-				} else {
-
-					$item['title'] = $version;
-					$item['uri'] = 'https://downloads.wordpress.org/plugin/' . $request . '.' . strip_tags($version) . '.zip';
-					$this->items[] = $item;
-
-					$version = $element;
-					$item = array();
-					$item['content'] = '';
-
-				}
-
-			}
-
-		}
-
-		$item['uri'] = 'https://downloads.wordpress.org/plugin/' . $request . '.' . strip_tags($version) . '.zip';
-		$item['title'] = $version;
-		$this->items[] = $item;
-
-	}
-
-	public function getName(){
-		if(!is_null($this->getInput('q'))) {
-			return $this->getInput('q') . ' : ' . self::NAME;
-		}
-
-		return parent::getName();
-	}
+    /**
+     * Fetch plugin data from wordpress.org json api
+     *
+     * https://codex.wordpress.org/WordPress.org_API#Plugins
+     * https://wordpress.org/support/topic/using-the-wordpress-org-api/
+     */
+    private static function fetchPluginData(string $slug): \stdClass
+    {
+        $api = 'https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=%s';
+        return json_decode(getContents(sprintf($api, $slug)));
+    }
 }

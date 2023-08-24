@@ -1,24 +1,36 @@
-FROM php:7-apache-buster
+FROM lwthiker/curl-impersonate:0.5-ff-slim-buster AS curlimpersonate
+
+FROM php:8.0.27-fpm-buster AS rssbridge
 
 LABEL description="RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one."
 LABEL repository="https://github.com/RSS-Bridge/rss-bridge"
 LABEL website="https://github.com/RSS-Bridge/rss-bridge"
 
-ENV APACHE_DOCUMENT_ROOT=/app
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends \
+      nginx \
+      zlib1g-dev \
+      libzip-dev \
+      libmemcached-dev \
+      nss-plugin-pem \
+      libicu-dev && \
+    docker-php-ext-install zip && \
+    docker-php-ext-install intl && \
+    pecl install memcached && \
+    docker-php-ext-enable memcached && \
+    docker-php-ext-enable opcache && \
+    mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-	&& apt-get --yes update \
-	&& apt-get --yes --no-install-recommends install \
-		zlib1g-dev \
-		libmemcached-dev \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& pecl install memcached \
-	&& docker-php-ext-enable memcached \
-	&& sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-	&& sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
-	&& sed -ri -e 's/(MinProtocol\s*=\s*)TLSv1\.2/\1None/' /etc/ssl/openssl.cnf \
-	&& sed -ri -e 's/(CipherString\s*=\s*DEFAULT)@SECLEVEL=2/\1/' /etc/ssl/openssl.cnf
+COPY ./config/nginx.conf /etc/nginx/sites-enabled/default
 
 COPY --chown=www-data:www-data ./ /app/
 
-CMD ["/app/docker-entrypoint.sh"]
+COPY --from=curlimpersonate /usr/local/lib/libcurl-impersonate-ff.so /usr/local/lib/curl-impersonate/
+
+ENV LD_PRELOAD /usr/local/lib/curl-impersonate/libcurl-impersonate-ff.so
+
+ENV CURL_IMPERSONATE ff91esr
+
+EXPOSE 80
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

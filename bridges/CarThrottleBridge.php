@@ -1,41 +1,44 @@
 <?php
-class CarThrottleBridge extends FeedExpander {
-	const NAME = 'Car Throttle ';
-	const URI = 'https://www.carthrottle.com';
-	const DESCRIPTION = 'Get the latest car-related news from Car Throttle.';
-	const MAINTAINER = 't0stiman';
 
-	public function collectData() {
-		$this->collectExpandableDatas('https://www.carthrottle.com/rss', 10);
-	}
+class CarThrottleBridge extends FeedExpander
+{
+    const NAME = 'Car Throttle ';
+    const URI = 'https://www.carthrottle.com';
+    const DESCRIPTION = 'Get the latest car-related news from Car Throttle.';
+    const MAINTAINER = 't0stiman';
 
-	protected function parseItem($feedItem) {
-		$item = parent::parseItem($feedItem);
+    public function collectData()
+    {
+        $this->collectExpandableDatas('https://www.carthrottle.com/rss', 10);
+    }
 
-		//fetch page
-		$articlePage = getSimpleHTMLDOMCached($feedItem->link)
-			or returnServerError('Could not retrieve ' . $feedItem->link);
+    protected function parseItem($feedItem)
+    {
+        $item = parent::parseItem($feedItem);
 
-		$subtitle = $articlePage->find('p.standfirst', 0);
-		$article = $articlePage->find('div.content_field', 0);
+        //fetch page
+        $articlePage = getSimpleHTMLDOMCached($feedItem->link)
+            or returnServerError('Could not retrieve ' . $feedItem->link);
 
-		$item['content'] = str_get_html($subtitle . $article);
+        $subtitle = $articlePage->find('p.standfirst', 0);
+        $article = $articlePage->find('div.content_field', 0);
 
-		//convert <iframe>s to <a>s. meant for embedded videos.
-		foreach($item['content']->find('iframe') as $found) {
+        $item['content'] = str_get_html($subtitle . $article);
 
-			$iframeUrl = $found->getAttribute('src');
+        //convert <iframe>s to <a>s. meant for embedded videos.
+        foreach ($item['content']->find('iframe') as $found) {
+            $iframeUrl = $found->getAttribute('src');
 
-			if ($iframeUrl) {
-				$found->outertext = '<a href="' . $iframeUrl . '">' . $iframeUrl . '</a>';
-			}
-		}
+            if ($iframeUrl) {
+                $found->outertext = '<a href="' . $iframeUrl . '">' . $iframeUrl . '</a>';
+            }
+        }
 
-		//remove scripts from the text
-		foreach ($item['content']->find('script') as $remove) {
-			$remove->outertext = '';
-		}
+        //remove scripts from the text
+        foreach ($item['content']->find('script') as $remove) {
+            $remove->outertext = '';
+        }
 
-		return $item;
-	}
+        return $item;
+    }
 }

@@ -1,66 +1,106 @@
 <?php
-/**
-* Returns the 100 most recent links in results in past year, sorting by date (most recent first).
-* Example:
-* http://www.google.com/search?q=sebsauvage&num=100&complete=0&tbs=qdr:y,sbd:1
-*    complete=0&num=100 : get 100 results
-*    qdr:y : in past year
-*    sbd:1 : sort by date (will only work if qdr: is specified)
-*/
-class GoogleSearchBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'sebsauvage';
-	const NAME = 'Google search';
-	const URI = 'https://www.google.com/';
-	const CACHE_TIMEOUT = 1800; // 30min
-	const DESCRIPTION = 'Returns most recent results from Google search.';
+class GoogleSearchBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'sebsauvage';
+    const NAME = 'Google search';
+    const URI = 'https://www.google.com/';
+    const CACHE_TIMEOUT = 60 * 30; // 30m
+    const DESCRIPTION = 'Returns max 100 results from the past year.';
 
-	const PARAMETERS = array(array(
-		'q' => array(
-			'name' => 'keyword',
-			'required' => true,
-			'exampleValue' => 'rss-bridge',
-		)
-	));
+    const PARAMETERS = [[
+        'q' => [
+            'name' => 'keyword',
+            'required' => true,
+            'exampleValue' => 'rss-bridge',
+        ],
+        'verbatim' => [
+            'name' => 'Verbatim',
+            'type' => 'checkbox',
+            'title' => 'Use literal keyword(s) without making improvements',
+        ],
+    ]];
 
-	public function collectData(){
-		$html = '';
+    public function collectData()
+    {
+        // todo: wrap this in try..catch because 429 too many requests happens a lot
+        $dom = getSimpleHTMLDOM($this->getURI(), ['Accept-language: en-US']);
+        if (!$dom) {
+            returnServerError('No results for this query.');
+        }
+        $result = $dom->find('div[id=res]', 0);
 
-		$html = getSimpleHTMLDOM($this->getURI());
+        if (!$result) {
+            return;
+        }
 
-		$emIsRes = $html->find('div[id=res]', 0);
+        foreach ($result->find('div[class~=g]') as $element) {
+            $item = [];
 
-		if(!is_null($emIsRes)) {
-			foreach($emIsRes->find('div[class=g]') as $element) {
+            $url = $element->find('a[href]', 0)->href;
+            $item['uri'] = htmlspecialchars_decode($url);
+            $item['title'] = $element->find('h3', 0)->plaintext;
 
-				$item = array();
+            $resultDom = $element->find('div[data-content-feature=1]', 0);
+            if ($resultDom) {
+                // Split by — or ·
+                $resultParts = preg_split('/( — | · )/', $resultDom->plaintext);
+                $resultDate = trim($resultParts[0]);
+                $resultContent = trim($resultParts[1] ?? '');
+            } else {
+                // Some search results don't have this particular dom identifier
+                $resultDate = null;
+                $resultContent = null;
+            }
 
-				$t = $element->find('a[href]', 0)->href;
-				$item['uri'] = htmlspecialchars_decode($t);
-				$item['title'] = $element->find('h3', 0)->plaintext;
-				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;
+            if ($resultDate) {
+                try {
+                    $createdAt = new \DateTime($resultDate);
+                    // Set to midnight for consistent datetime
+                    $createdAt->setTime(0, 0);
+                    $item['timestamp'] = $createdAt->format('U');
+                } catch (\Exception $e) {
+                    $item['timestamp'] = 0;
+                }
+            } else {
+                $item['timestamp'] = 0;
+            }
 
-				$this->items[] = $item;
-			}
-		}
-	}
+            if ($resultContent) {
+                $item['content'] = $resultContent;
+            }
 
-	public function getURI() {
-		if (!is_null($this->getInput('q'))) {
-			return self::URI
-				. 'search?q='
-				. urlencode($this->getInput('q'))
-				. '&num=100&complete=0&tbs=qdr:y,sbd:1';
-		}
+            $this->items[] = $item;
+        }
+        // Sort by descending date
+        usort($this->items, function ($a, $b) {
+            return $b['timestamp'] <=> $a['timestamp'];
+        });
+    }
 
-		return parent::getURI();
-	}
+    public function getURI()
+    {
+        if ($this->getInput('q')) {
+            $queryParameters = [
+                'q'         => $this->getInput('q'),
+                'hl'        => 'en',
+                'num'       => '100', // get 100 results
+                'complete'  => '0',
+                // in past year, sort by date, optionally verbatim
+                'tbs'       => 'qdr:y,sbd:1' . ($this->getInput('verbatim') ? ',li:1' : ''),
+            ];
+            return sprintf('https://www.google.com/search?%s', http_build_query($queryParameters));
+        }
 
-	public function getName(){
-		if(!is_null($this->getInput('q'))) {
-			return $this->getInput('q') . ' - Google search';
-		}
+        return parent::getURI();
+    }
 
-		return parent::getName();
-	}
+    public function getName()
+    {
+        if (!is_null($this->getInput('q'))) {
+            return $this->getInput('q') . ' - Google search';
+        }
+
+        return parent::getName();
+    }
 }

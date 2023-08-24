@@ -1,182 +1,193 @@
 <?php
-class ShanaprojectBridge extends BridgeAbstract {
-	const MAINTAINER = 'logmanoriginal';
-	const NAME = 'Shanaproject Bridge';
-	const URI = 'https://www.shanaproject.com';
-	const DESCRIPTION = 'Returns a list of anime from the current Season Anime List';
-	const PARAMETERS = array(
-		array(
-			'min_episodes' => array(
-				'name' => 'Minimum Episodes',
-				'type' => 'number',
-				'title' => 'Minimum number of episodes before including in feed',
-				'defaultValue' => 0,
-			),
-			'min_total_episodes' => array(
-				'name' => 'Minimum Total Episodes',
-				'type' => 'number',
-				'title' => 'Minimum total number of episodes before including in feed',
-				'defaultValue' => 0,
-			),
-			'require_banner' => array(
-				'name' => 'Require Banner',
-				'type' => 'checkbox',
-				'title' => 'Only include anime with custom banner image',
-				'defaultValue' => false,
-			),
-		),
-	);
 
-	private $uri;
+class ShanaprojectBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'logmanoriginal';
+    const NAME = 'Shanaproject Bridge';
+    const URI = 'https://www.shanaproject.com';
+    const DESCRIPTION = 'Returns a list of anime from the current Season Anime List';
+    const PARAMETERS = [
+        [
+            'min_episodes' => [
+                'name' => 'Minimum Episodes',
+                'type' => 'number',
+                'title' => 'Minimum number of episodes before including in feed',
+                'defaultValue' => 0,
+            ],
+            'min_total_episodes' => [
+                'name' => 'Minimum Total Episodes',
+                'type' => 'number',
+                'title' => 'Minimum total number of episodes before including in feed',
+                'defaultValue' => 0,
+            ],
+            'require_banner' => [
+                'name' => 'Require Banner',
+                'type' => 'checkbox',
+                'title' => 'Only include anime with custom banner image',
+                'defaultValue' => false,
+            ],
+        ],
+    ];
 
-	public function getURI() {
-		return isset($this->uri) ? $this->uri : parent::getURI();
-	}
+    private $uri;
 
-	public function collectData(){
-		$html = $this->loadSeasonAnimeList();
+    public function getURI()
+    {
+        return $this->uri ?? parent::getURI();
+    }
 
-		$animes = $html->find('div.header_display_box_info')
-			or returnServerError('Could not find anime headers!');
+    public function collectData()
+    {
+        $html = $this->loadSeasonAnimeList();
 
-		$min_episodes = $this->getInput('min_episodes') ?: 0;
-		$min_total_episodes = $this->getInput('min_total_episodes') ?: 0;
+        $animes = $html->find('div.header_display_box_info')
+            or returnServerError('Could not find anime headers!');
 
-		foreach($animes as $anime) {
+        $min_episodes = $this->getInput('min_episodes') ?: 0;
+        $min_total_episodes = $this->getInput('min_total_episodes') ?: 0;
 
-			list(
-				$episodes_released,
-				/* of */,
-				$episodes_total
-			) = explode(' ', $this->extractAnimeEpisodeInformation($anime));
+        foreach ($animes as $anime) {
+            [
+                $episodes_released,
+                /* of */,
+                $episodes_total
+            ] = explode(' ', $this->extractAnimeEpisodeInformation($anime));
 
-			// Skip if not enough episodes yet
-			if ($episodes_released < $min_episodes) {
-				continue;
-			}
+            // Skip if not enough episodes yet
+            if ($episodes_released < $min_episodes) {
+                continue;
+            }
 
-			// Skip if too many episodes in total
-			if ($episodes_total !== '?' && $episodes_total < $min_total_episodes) {
-				continue;
-			}
+            // Skip if too many episodes in total
+            if ($episodes_total !== '?' && $episodes_total < $min_total_episodes) {
+                continue;
+            }
 
-			// Skip if https://static.shanaproject.com/no-art.jpg
-			if ($this->getInput('require_banner')
-			&& strpos($this->extractAnimeBackgroundImage($anime), 'no-art') !== false) {
-				continue;
-			}
+            // Skip if https://static.shanaproject.com/no-art.jpg
+            if (
+                $this->getInput('require_banner')
+                && strpos($this->extractAnimeBackgroundImage($anime), 'no-art') !== false
+            ) {
+                continue;
+            }
 
-			$this->items[] = array(
-				'title' => $this->extractAnimeTitle($anime),
-				'author' => $this->extractAnimeAuthor($anime),
-				'uri' => $this->extractAnimeUri($anime),
-				'timestamp' => $this->extractAnimeTimestamp($anime),
-				'content' => $this->buildAnimeContent($anime),
-			);
+            $this->items[] = [
+                'title' => $this->extractAnimeTitle($anime),
+                'author' => $this->extractAnimeAuthor($anime),
+                'uri' => $this->extractAnimeUri($anime),
+                'timestamp' => $this->extractAnimeTimestamp($anime),
+                'content' => $this->buildAnimeContent($anime),
+            ];
+        }
+    }
 
-		}
-	}
+    // Returns an html object for the Season Anime List (latest season)
+    private function loadSeasonAnimeList()
+    {
+        $html = getSimpleHTMLDOM(self::URI . '/seasons');
 
-	// Returns an html object for the Season Anime List (latest season)
-	private function loadSeasonAnimeList(){
+        $html = defaultLinkTo($html, self::URI . '/seasons');
 
-		$html = getSimpleHTMLDOM(self::URI . '/seasons');
+        $season = $html->find('div.follows_menu > a', 1)
+            or returnServerError('Could not find \'Season Anime List\'!');
 
-		$html = defaultLinkTo($html, self::URI . '/seasons');
+        $html = getSimpleHTMLDOM($season->href);
 
-		$season = $html->find('div.follows_menu > a', 1)
-			or returnServerError('Could not find \'Season Anime List\'!');
+        $this->uri = $season->href;
 
-		$html = getSimpleHTMLDOM($season->href);
+        $html = defaultLinkTo($html, $season->href);
 
-		$this->uri = $season->href;
+        return $html;
+    }
 
-		$html = defaultLinkTo($html, $season->href);
+    // Extracts the anime title
+    private function extractAnimeTitle($anime)
+    {
+        $title = $anime->find('a', 0)
+            or returnServerError('Could not find anime title!');
+        return trim($title->innertext);
+    }
 
-		return $html;
+    // Extracts the anime URI
+    private function extractAnimeUri($anime)
+    {
+        $uri = $anime->find('a', 0)
+            or returnServerError('Could not find anime URI!');
+        return $uri->href;
+    }
 
-	}
+    // Extracts the anime release date (timestamp)
+    private function extractAnimeTimestamp($anime)
+    {
+        $timestamp = $anime->find('span.header_info_block', 1);
 
-	// Extracts the anime title
-	private function extractAnimeTitle($anime){
-		$title = $anime->find('a', 0)
-			or returnServerError('Could not find anime title!');
-		return trim($title->innertext);
-	}
+        if (!$timestamp) {
+            return null;
+        }
 
-	// Extracts the anime URI
-	private function extractAnimeUri($anime){
-		$uri = $anime->find('a', 0)
-			or returnServerError('Could not find anime URI!');
-		return $uri->href;
-	}
+        return strtotime($timestamp->innertext);
+    }
 
-	// Extracts the anime release date (timestamp)
-	private function extractAnimeTimestamp($anime){
-		$timestamp = $anime->find('span.header_info_block', 1);
+    // Extracts the anime studio name (author)
+    private function extractAnimeAuthor($anime)
+    {
+        $author = $anime->find('span.header_info_block', 2);
 
-		if(!$timestamp) {
-			return null;
-		}
+        if (!$author) {
+            return null; // Sometimes the studio is unknown, so leave empty
+        }
 
-		return strtotime($timestamp->innertext);
-	}
+        return trim($author->innertext);
+    }
 
-	// Extracts the anime studio name (author)
-	private function extractAnimeAuthor($anime){
-		$author = $anime->find('span.header_info_block', 2);
+    // Extracts the episode information (x of y released)
+    private function extractAnimeEpisodeInformation($anime)
+    {
+        $episode = $anime->find('div.header_info_episode', 0)
+            or returnServerError('Could not find anime episode information!');
 
-		if(!$author) {
-			return null; // Sometimes the studio is unknown, so leave empty
-		}
+        $retVal = preg_replace('/\r|\n/', ' ', $episode->plaintext);
+        $retVal = preg_replace('/\s+/', ' ', $retVal);
 
-		return trim($author->innertext);
-	}
+        return $retVal;
+    }
 
-	// Extracts the episode information (x of y released)
-	private function extractAnimeEpisodeInformation($anime){
-		$episode = $anime->find('div.header_info_episode', 0)
-			or returnServerError('Could not find anime episode information!');
+    // Extracts the background image
+    private function extractAnimeBackgroundImage($anime)
+    {
+        // Getting the picture is a little bit tricky as it is part of the style.
+        // Luckily the style is part of the parent div :)
 
-		$retVal = preg_replace('/\r|\n/', ' ', $episode->plaintext);
-		$retVal = preg_replace('/\s+/', ' ', $retVal);
+        if (preg_match('/url\(\/\/([^\)]+)\)/i', $anime->parent->style, $matches)) {
+            return $matches[1];
+        }
 
-		return $retVal;
-	}
+        returnServerError('Could not extract background image!');
+    }
 
-	// Extracts the background image
-	private function extractAnimeBackgroundImage($anime){
-		// Getting the picture is a little bit tricky as it is part of the style.
-		// Luckily the style is part of the parent div :)
+    // Builds an URI to search for a specific anime (subber is left empty)
+    private function buildAnimeSearchUri($anime)
+    {
+        return self::URI
+        . '/search/?title='
+        . urlencode($this->extractAnimeTitle($anime))
+        . '&subber=';
+    }
 
-		if(preg_match('/url\(\/\/([^\)]+)\)/i', $anime->parent->style, $matches)) {
-			return $matches[1];
-		}
-
-		returnServerError('Could not extract background image!');
-	}
-
-	// Builds an URI to search for a specific anime (subber is left empty)
-	private function buildAnimeSearchUri($anime){
-		return self::URI
-		. '/search/?title='
-		. urlencode($this->extractAnimeTitle($anime))
-		. '&subber=';
-	}
-
-	// Builds the content string for a given anime
-	private function buildAnimeContent($anime){
-		// We'll use a template string to place our contents
-		return '<a href="'
-		. $this->extractAnimeUri($anime)
-		. '"><img src="http://'
-		. $this->extractAnimeBackgroundImage($anime)
-		. '" alt="'
-		. htmlspecialchars($this->extractAnimeTitle($anime))
-		. '" style="border: 1px solid black"></a><br><p>'
-		. $this->extractAnimeEpisodeInformation($anime)
-		. '</p><br><p><a href="'
-		. $this->buildAnimeSearchUri($anime)
-		. '">Search episodes</a></p>';
-	}
+    // Builds the content string for a given anime
+    private function buildAnimeContent($anime)
+    {
+        // We'll use a template string to place our contents
+        return '<a href="'
+        . $this->extractAnimeUri($anime)
+        . '"><img src="http://'
+        . $this->extractAnimeBackgroundImage($anime)
+        . '" alt="'
+        . htmlspecialchars($this->extractAnimeTitle($anime))
+        . '" style="border: 1px solid black"></a><br><p>'
+        . $this->extractAnimeEpisodeInformation($anime)
+        . '</p><br><p><a href="'
+        . $this->buildAnimeSearchUri($anime)
+        . '">Search episodes</a></p>';
+    }
 }

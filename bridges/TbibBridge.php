@@ -1,12 +1,16 @@
 <?php
-require_once('GelbooruBridge.php');
 
-class TbibBridge extends GelbooruBridge {
+class TbibBridge extends GelbooruBridge
+{
+    const MAINTAINER = 'mitsukarenai';
+    const NAME = 'Tbib';
+    const URI = 'https://tbib.org/';
+    const DESCRIPTION = 'Returns images from given page';
 
-	const MAINTAINER = 'mitsukarenai';
-	const NAME = 'Tbib';
-	const URI = 'https://tbib.org/';
-	const DESCRIPTION = 'Returns images from given page';
-
-	const PIDBYPAGE = 50;
+    protected function buildThumbnailURI($element)
+    {
+        $regex = '/\.\w+$/';
+        return $this->getURI() . 'thumbnails/' . $element->directory
+        . '/thumbnail_' . preg_replace($regex, '.jpg', $element->image);
+    }
 }
