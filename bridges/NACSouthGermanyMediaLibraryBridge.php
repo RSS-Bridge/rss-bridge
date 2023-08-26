@@ -1,6 +1,6 @@
 <?php
 
-class NacSouthMediaLibraryBridge extends BridgeAbstract
+class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
 {
     private const BASE_URI = 'https://www.nak-sued.de';
 
