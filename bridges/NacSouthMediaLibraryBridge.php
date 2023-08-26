@@ -46,92 +46,77 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         }
     }
 
-    private function collectDataForSWR1($uri) {
+    private function collectDataForSWR1($parent, $title, $content) {
+        # Parse link
+        $sourceURI = $parent->find('a', 1)->href;
+
+        # Parse author
+        if (preg_match('/<p>(.*?)\((.*?)\)</p>/', $content, $matches)) {
+            $content = '<p>' . trim(html_entity_decode(trim($matches[1])), '„“"') . '</p>';
+            $author = $matches[2];
+        } else {
+            $author = '';
+        }
+
+        # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
+
+        $this->items[] = [
+            'title' => $title,
+            'author' => $author,
+            'content' => $content,
+            'enclosures' => [self::URI . $sourceURI],
+            'timestamp' => self::parseTimeStamp($title) . ' 07:27',
+        ];
+    }
+
+    private function collectDataForBayern2($parent, $title, $content) {
+        # Parse link
+        $playerDom = getSimpleHTMLDOMCached(self::URI . $parent->find('a', 0)->href);
+        $sourceURI = $playerDom->find('source', 0)->src;
+
+        # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
+
+        $this->items[] = [
+            'title' => $title,
+            'content' => $content,
+            'enclosures' => [self::URI . $sourceURI],
+            'timestamp' => self::parseTimeStamp($title) . ' 06:45',
+        ];
+    }
+
+    private function collectDataInList($uri, $finalizeItemCall) {
         $dom = getSimpleHTMLDOM(self::URI . $uri);
 
         foreach ($dom->find('div.grids') as $div) {
+            # Find title
             $header = $div->find('h2', 0);
 
-            # Parse description
-            $descriptionBlock = $div->find('ul.contentlist', 0);
-            $description = '';
-            $firstIteration = TRUE;
-            foreach ($descriptionBlock->find('li') as $li) {
-                if (!$firstIteration) {
-                    $description .= ", ";
-                }
-                $description .= $li->plaintext;
-                $firstIteration = FALSE;
+            # Find content
+            $contentBlock = $div->find('ul.contentlist', 0);
+            $content = '';
+            foreach ($contentBlock->find('li') as $li) {
+                $content .= '<p>' . $li->plaintext . '</p>';
             }
 
-            # Parse link
-            $source = $div->find('a', 1);
-            
-            # Parse author
-            if (preg_match('/(.*?)\((.*?)\)/', $description, $matches)) {
-                $description = '<p>' . trim(html_entity_decode(trim($matches[1])), '„“"') . '</p>';
-                $author = $matches[2];
-            } else {
-                $author = '';
-            }
-
-            # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
-
-            $this->items[] = [
-                'title' => $header->plaintext,
-                'author' => $author,
-                'content' => $description,
-                'enclosures' => [self::URI . $source->href],
-                'timestamp' => self::parseTimeStamp($header->plaintext) . ' 07:27',
-            ];
+            $finalizeItemCall($div, $header->plaintext, $content);
         }
     }
 
-    private function collectDataForBayern2($uri) {
-        $dom = getSimpleHTMLDOM(self::URI . $uri);
-
-        foreach ($dom->find('div.grids') as $div) {
-            $header = $div->find('h2', 0);
-
-            # Parse description
-            $descriptionBlock = $div->find('ul.contentlist', 0);
-            $description = '';
-            foreach ($descriptionBlock->find('li') as $li) {
-                $description .= '<p>' . $li->plaintext . '</p>';
-            }
-
-            # Parse link
-            $a = $div->find('a', 0);
-            $playerDom = getSimpleHTMLDOMCached(self::URI . $a->href);
-            $audio = $playerDom->find('audio', 0);
-            $source = $audio->find('source', 0);
-
-            # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
-
-            $this->items[] = [
-                'title' => $header->plaintext,
-                'content' => $description,
-                'enclosures' => [self::URI . $source->src],
-                'timestamp' => self::parseTimeStamp($header->plaintext) . '06:45',
-            ];
+    private function collectDataFromAllPages($rootURI, $finalizeItemMethodName) {
+        $rootPage = getSimpleHTMLDOM(self::BAYERN2_ROOT_URI);
+        $pages = $rootPage->find('div#tabmenu', 0);
+        foreach ($pages->find('a') as $page) {
+            self::collectDataInList($page->href, [$this, $finalizeItemMethodName]);
         }
     }
 
     public function collectData() {
         # TODO: get description for entire feed
 
-        $dom = getSimpleHTMLDOM(self::BAYERN2_ROOT_URI);
-        $pages = $dom->find('div#tabmenu', 0);
-        foreach ($pages->find('a') as $page) {
-            self::collectDataForBayern2($page->href);
-        }
+        self::collectDataFromAllPages(self::BAYERN2_ROOT_URI, 'collectDataForBayern2');
+        self::collectDataFromAllPages(self::SWR1_ROOT_URI, 'collectDataForSWR1');
 
-        $dom = getSimpleHTMLDOM(self::SWR1_ROOT_URI);
-        $pages = $dom->find('div#tabmenu', 0);
-        foreach ($pages->find('a') as $page) {
-            self::collectDataForSWR1($page->href);
-        }
-
+        # Sort items by decreasing timestamp
         usort($this->items, function ($a, $b) {
             return strtotime($b["timestamp"]) <=> strtotime($a["timestamp"]);
         });
