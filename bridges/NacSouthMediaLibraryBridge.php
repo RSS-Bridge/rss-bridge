@@ -28,7 +28,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        return self::BASE_URI . '/typo3conf/ext/nak_naksued_de/Resources/Public/Images/favicon.ico';
+        return 'https://www.nak-stuttgart.de/static/themes/nak_sued/images/nak-logo.png';
     }
 
     private static function parseTimestamp($title)
