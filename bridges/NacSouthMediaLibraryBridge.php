@@ -3,13 +3,14 @@
 class NacSouthMediaLibraryBridge extends BridgeAbstract
 {
     const NAME = 'NAK Süd Mediathek (https://www.nak-sued.de/mediathek)';
+    const DESCRIPTION = 'RSS Feed für die Runkfunkbeiträge der NAK Süd auf Bayern 2 und SWR 1.';
     const URI = 'https://www.nak-sued.de';
     const CACHE_TIMEOUT = 7200;
 
-    const BAYERN2_ROOT_URI = self::URI . '/mediathek/rundfunksendungen-auf-bayern-2/aktuelle-sendungen';
-    const SWR1_ROOT_URI = self::URI . '/mediathek/rundfunksendungen-auf-swr1/aktuelle-sendungen';
+    private const BAYERN2_ROOT_URI = self::URI . '/mediathek/rundfunksendungen-auf-bayern-2/aktuelle-sendungen';
+    private const SWR1_ROOT_URI = self::URI . '/mediathek/rundfunksendungen-auf-swr1/aktuelle-sendungen';
 
-    const MONTHS = [
+    private const MONTHS = [
         'Januar' => 1,
         'Februar' => 2,
         'März' => 3,
@@ -29,15 +30,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         return self::URI . '/typo3conf/ext/nak_naksued_de/Resources/Public/Images/favicon.ico';
     }
 
-    public function getDescription()
-    {
-        $swr1Dom = getSimpleHTMLDOM(self::SWR1_ROOT_URI);
-        $bayern2Dom = getSimpleHTMLDOM(self::BAYERN2_ROOT_URI);
-        $description = $swr1Dom->find('div.csc-default', 0)->plaintext . ' ' . $bayern2Dom->find('div.csc-default', 0)->plaintext;
-        return $description;
-    }
-
-    private function parseTimestamp($title)
+    private static function parseTimestamp($title)
     {
         if (preg_match('/([0-9]+)\.\s*([^\s]+)\s*([0-9]+)/', $title, $matches)) {
             $day = $matches[1];
@@ -49,7 +42,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         }
     }
 
-    private function collectDataForSWR1($parent, $item)
+    private static function collectDataForSWR1($parent, $item)
     {
         # Parse link
         $sourceURI = $parent->find('a', 1)->href;
@@ -69,7 +62,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         return $item;
     }
 
-    private function collectDataForBayern2($parent, $item)
+    private static function collectDataForBayern2($parent, $item)
     {
         # Find link
         $playerDom = getSimpleHTMLDOMCached(self::URI . $parent->find('a', 0)->href);
@@ -119,6 +112,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
 
     public function collectData()
     {
+        # Collect items
         self::collectDataFromAllPages(self::BAYERN2_ROOT_URI, 'collectDataForBayern2');
         self::collectDataFromAllPages(self::SWR1_ROOT_URI, 'collectDataForSWR1');
 
