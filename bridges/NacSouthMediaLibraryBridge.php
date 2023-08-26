@@ -35,7 +35,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         return $description;
 	}
 
-    private function parseTimeStamp($title) {
+    private function parseTimestamp($title) {
         if (preg_match('/([0-9]+)\.\s*([^\s]+)\s*([0-9]+)/', $title, $matches)) {
             $day = $matches[1];
             $month = self::MONTHS[$matches[2]];
@@ -46,73 +46,71 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         }
     }
 
-    private function collectDataForSWR1($parent, $title, $content) {
+    private function collectDataForSWR1($parent, $item) {
         # Parse link
         $sourceURI = $parent->find('a', 1)->href;
+        $item['enclosures'] = [self::URI . $sourceURI];
 
-        # Parse author
-        if (preg_match('/<p>(.*?)\((.*?)\)</p>/', $content, $matches)) {
-            $content = '<p>' . trim(html_entity_decode(trim($matches[1])), '„“"') . '</p>';
-            $author = $matches[2];
-        } else {
-            $author = '';
+        # Add time to timestamp
+        $item['timestamp'] .= ' 07:27';
+
+        # Find author
+        if (preg_match('/<p>(.*?)\((.*?)\)\s*?<\/p>/', html_entity_decode($item['content']), $matches)) {
+            $item['content'] = '<p>' . trim(trim($matches[1]), '„“"') . '</p>';
+            $item['author'] = $matches[2];
         }
 
         # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
 
-        $this->items[] = [
-            'title' => $title,
-            'author' => $author,
-            'content' => $content,
-            'enclosures' => [self::URI . $sourceURI],
-            'timestamp' => self::parseTimeStamp($title) . ' 07:27',
-        ];
+        return $item;
     }
 
-    private function collectDataForBayern2($parent, $title, $content) {
-        # Parse link
+    private function collectDataForBayern2($parent, $item) {
+        # Find link
         $playerDom = getSimpleHTMLDOMCached(self::URI . $parent->find('a', 0)->href);
         $sourceURI = $playerDom->find('source', 0)->src;
+        $item['enclosures'] = [self::URI . $sourceURI];
+
+        # Add time to timestamp
+        $item['timestamp'] .= ' 06:45';
 
         # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
 
-        $this->items[] = [
-            'title' => $title,
-            'content' => $content,
-            'enclosures' => [self::URI . $sourceURI],
-            'timestamp' => self::parseTimeStamp($title) . ' 06:45',
-        ];
+        return $item;
     }
 
-    private function collectDataInList($uri, $finalizeItemCall) {
-        $dom = getSimpleHTMLDOM(self::URI . $uri);
+    private function collectDataInList($pageURI, $customizeItemCall) {
+        $page = getSimpleHTMLDOM(self::URI . $pageURI);
 
-        foreach ($dom->find('div.grids') as $div) {
+        foreach ($page->find('div.grids') as $parent) {
             # Find title
-            $header = $div->find('h2', 0);
+            $title = $parent->find('h2', 0)->plaintext;
 
             # Find content
-            $contentBlock = $div->find('ul.contentlist', 0);
+            $contentBlock = $parent->find('ul.contentlist', 0);
             $content = '';
             foreach ($contentBlock->find('li') as $li) {
                 $content .= '<p>' . $li->plaintext . '</p>';
             }
 
-            $finalizeItemCall($div, $header->plaintext, $content);
+            $item = [
+                'title' => $title,
+                'content' => $content,
+                'timestamp' => self::parseTimestamp($title),
+            ];
+            $this->items[] = $customizeItemCall($parent, $item);
         }
     }
 
-    private function collectDataFromAllPages($rootURI, $finalizeItemMethodName) {
-        $rootPage = getSimpleHTMLDOM(self::BAYERN2_ROOT_URI);
+    private function collectDataFromAllPages($rootURI, $customizeItemCall) {
+        $rootPage = getSimpleHTMLDOM($rootURI);
         $pages = $rootPage->find('div#tabmenu', 0);
         foreach ($pages->find('a') as $page) {
-            self::collectDataInList($page->href, [$this, $finalizeItemMethodName]);
+            self::collectDataInList($page->href, [$this, $customizeItemCall]);
         }
     }
 
     public function collectData() {
-        # TODO: get description for entire feed
-
         self::collectDataFromAllPages(self::BAYERN2_ROOT_URI, 'collectDataForBayern2');
         self::collectDataFromAllPages(self::SWR1_ROOT_URI, 'collectDataForSWR1');
 
