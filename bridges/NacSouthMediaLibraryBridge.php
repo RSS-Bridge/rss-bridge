@@ -1,6 +1,6 @@
 <?php
 
-class NakSuedMediathekBridge extends BridgeAbstract
+class NacSouthMediaLibraryBridge extends BridgeAbstract
 {
     const NAME = 'NAK Süd Mediathek (https://www.nak-sued.de/mediathek)';
     const URI = 'https://www.nak-sued.de';
@@ -29,14 +29,14 @@ class NakSuedMediathekBridge extends BridgeAbstract
 	}
 
     public function getDescription() {
-        $dom1 = getSimpleHTMLDOM(self::SWR1_ROOT_URI);
-        $dom2 = getSimpleHTMLDOM(self::BAYERN2_ROOT_URI);
-        $description = $dom1->find('div.csc-default', 0)->plaintext . ' ' . $dom2->find('div.csc-default', 0)->plaintext;
+        $swr1Dom = getSimpleHTMLDOM(self::SWR1_ROOT_URI);
+        $bayern2Dom = getSimpleHTMLDOM(self::BAYERN2_ROOT_URI);
+        $description = $swr1Dom->find('div.csc-default', 0)->plaintext . ' ' . $bayern2Dom->find('div.csc-default', 0)->plaintext;
         return $description;
 	}
 
     private function parseTimeStamp($title) {
-        if (preg_match('/([0-9]+)\.\s*([a-zA-Z]+)\s*([0-9]+)/', $title, $matches)) {
+        if (preg_match('/([0-9]+)\.\s*([^\s]+)\s*([0-9]+)/', $title, $matches)) {
             $day = $matches[1];
             $month = self::MONTHS[$matches[2]];
             $year = $matches[3];
@@ -69,7 +69,7 @@ class NakSuedMediathekBridge extends BridgeAbstract
             
             # Parse author
             if (preg_match('/(.*?)\((.*?)\)/', $description, $matches)) {
-                $description = $matches[1];
+                $description = '<p>' . trim(html_entity_decode(trim($matches[1])), '„“"') . '</p>';
                 $author = $matches[2];
             } else {
                 $author = '';
@@ -96,13 +96,8 @@ class NakSuedMediathekBridge extends BridgeAbstract
             # Parse description
             $descriptionBlock = $div->find('ul.contentlist', 0);
             $description = '';
-            $firstIteration = TRUE;
             foreach ($descriptionBlock->find('li') as $li) {
-                if (!$firstIteration) {
-                    $description .= ", ";
-                }
-                $description .= $li->plaintext;
-                $firstIteration = FALSE;
+                $description .= '<p>' . $li->plaintext . '</p>';
             }
 
             # Parse link
@@ -136,5 +131,9 @@ class NakSuedMediathekBridge extends BridgeAbstract
         foreach ($pages->find('a') as $page) {
             self::collectDataForSWR1($page->href);
         }
+
+        usort($this->items, function ($a, $b) {
+            return strtotime($b["timestamp"]) <=> strtotime($a["timestamp"]);
+        });
     }
 }
