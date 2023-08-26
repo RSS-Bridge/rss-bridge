@@ -6,7 +6,7 @@ class FurAffinityBridge extends BridgeAbstract
     const URI = 'https://www.furaffinity.net';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns posts from various sections of FurAffinity';
-    const MAINTAINER = 'Roliga, mruac';
+    const MAINTAINER = 'Roliga';
     const PARAMETERS = [
         'Search' => [
             'q' => [
@@ -900,7 +900,7 @@ class FurAffinityBridge extends BridgeAbstract
             );
             $item['author'] = $figure->find('figcaption p a[href*=/user/]', 0)->title;
 
-            $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\"/></a>";
+            $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\" referrerpolicy=\"no-referrer\"/></a>";
 
             if ($this->getInput('full') === true) {
                 $submissionHTML = $this->getFASimpleHTMLDOM($submissionURL, $cache);
@@ -928,24 +928,22 @@ class FurAffinityBridge extends BridgeAbstract
 
                     $description = $submissionHTML->find('div.submission-description', 0);
                     if ($description) {
+                        $this->setReferrerPolicy($description);
                         $description = trim($description->innertext);
                     } else {
                         $description = '';
                     }
 
-                    $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\"/></a><p>{$description}</p>";
+                    $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\" referrerpolicy=\"no-referrer\"/></a><p>{$description}</p>";
                 }
             }
-
-            $this->setReferrerPolicy($item['content']);
 
             $this->items[] = $item;
         }
     }
 
-    private function setReferrerPolicy($htmlstr)
+    private function setReferrerPolicy(&$html)
     {
-        $html = str_get_html($htmlstr);
         foreach ($html->find('img') as $img) {
             /*
              * Note: Without the no-referrer policy their CDN sometimes denies requests.
@@ -955,7 +953,6 @@ class FurAffinityBridge extends BridgeAbstract
              */
             $img->referrerpolicy = 'no-referrer';
         }
-        return $html->outertext;
     }
 
     private function isHiddenSubmission($html)
