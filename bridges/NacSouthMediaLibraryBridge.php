@@ -53,12 +53,9 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         $item['timestamp'] .= ' 07:27';
 
         # Find author
-        if (preg_match('/<p>(.*?)\((.*?)\)\s*?<\/p>/', html_entity_decode($item['content']), $matches)) {
-            $item['content'] = '<p>' . trim(trim($matches[1]), '„“"') . '</p>';
-            $item['author'] = $matches[2];
+        if (preg_match('/\((.*?)\)/', html_entity_decode($item['content']), $matches)) {
+            $item['author'] = $matches[1];
         }
-
-        # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
 
         return $item;
     }
@@ -72,8 +69,6 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
 
         # Add time to timestamp
         $item['timestamp'] .= ' 06:45';
-
-        # TODO: add uri, see https://www.nak-sued.de/meldungen/news/hoerfunksendung-am-27-august-2023-auf-bayern-2/
 
         return $item;
     }
