@@ -967,4 +967,14 @@ class FurAffinityBridge extends BridgeAbstract
 
         return str_contains($system_message, 'System Message');
     }
+
+    private function isHiddenSubmission($html)
+    {
+        //Disabled accounts prevents their userpage, gallery, favorites and journals from being viewed.
+        //Submissions can require maturity limit or logged-in account.
+        $system_message = $html->find('.section-body.alignleft', 0);
+        $system_message = $system_message ? $system_message->plaintext : '';
+
+        return str_contains($system_message, 'System Message');
+    }
 }
