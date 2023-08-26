@@ -11,7 +11,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
 
     const MONTHS = [
         'Januar' => 1,
-        'Februar'=> 2,
+        'Februar' => 2,
         'März' => 3,
         'April' => 4,
         'Mai' => 5,
@@ -24,18 +24,21 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         'Dezember' => 12,
     ];
 
-    public function getIcon() {
-		return self::URI . '/typo3conf/ext/nak_naksued_de/Resources/Public/Images/favicon.ico';
-	}
+    public function getIcon()
+    {
+        return self::URI . '/typo3conf/ext/nak_naksued_de/Resources/Public/Images/favicon.ico';
+    }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         $swr1Dom = getSimpleHTMLDOM(self::SWR1_ROOT_URI);
         $bayern2Dom = getSimpleHTMLDOM(self::BAYERN2_ROOT_URI);
         $description = $swr1Dom->find('div.csc-default', 0)->plaintext . ' ' . $bayern2Dom->find('div.csc-default', 0)->plaintext;
         return $description;
-	}
+    }
 
-    private function parseTimestamp($title) {
+    private function parseTimestamp($title)
+    {
         if (preg_match('/([0-9]+)\.\s*([^\s]+)\s*([0-9]+)/', $title, $matches)) {
             $day = $matches[1];
             $month = self::MONTHS[$matches[2]];
@@ -46,7 +49,8 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         }
     }
 
-    private function collectDataForSWR1($parent, $item) {
+    private function collectDataForSWR1($parent, $item)
+    {
         # Parse link
         $sourceURI = $parent->find('a', 1)->href;
         $item['enclosures'] = [self::URI . $sourceURI];
@@ -65,7 +69,8 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         return $item;
     }
 
-    private function collectDataForBayern2($parent, $item) {
+    private function collectDataForBayern2($parent, $item)
+    {
         # Find link
         $playerDom = getSimpleHTMLDOMCached(self::URI . $parent->find('a', 0)->href);
         $sourceURI = $playerDom->find('source', 0)->src;
@@ -79,7 +84,8 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         return $item;
     }
 
-    private function collectDataInList($pageURI, $customizeItemCall) {
+    private function collectDataInList($pageURI, $customizeItemCall)
+    {
         $page = getSimpleHTMLDOM(self::URI . $pageURI);
 
         foreach ($page->find('div.grids') as $parent) {
@@ -102,7 +108,8 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         }
     }
 
-    private function collectDataFromAllPages($rootURI, $customizeItemCall) {
+    private function collectDataFromAllPages($rootURI, $customizeItemCall)
+    {
         $rootPage = getSimpleHTMLDOM($rootURI);
         $pages = $rootPage->find('div#tabmenu', 0);
         foreach ($pages->find('a') as $page) {
@@ -110,13 +117,14 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
         }
     }
 
-    public function collectData() {
+    public function collectData()
+    {
         self::collectDataFromAllPages(self::BAYERN2_ROOT_URI, 'collectDataForBayern2');
         self::collectDataFromAllPages(self::SWR1_ROOT_URI, 'collectDataForSWR1');
 
         # Sort items by decreasing timestamp
         usort($this->items, function ($a, $b) {
-            return strtotime($b["timestamp"]) <=> strtotime($a["timestamp"]);
+            return strtotime($b['timestamp']) <=> strtotime($a['timestamp']);
         });
     }
 }
