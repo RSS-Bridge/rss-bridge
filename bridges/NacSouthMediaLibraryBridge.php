@@ -2,13 +2,14 @@
 
 class NacSouthMediaLibraryBridge extends BridgeAbstract
 {
-    const NAME = 'NAK Süd Mediathek (https://www.nak-sued.de/mediathek)';
+    const NAME = 'NAK Süd Mediathek';
     const DESCRIPTION = 'RSS Feed für die Runkfunkbeiträge der NAK Süd auf Bayern 2 und SWR 1.';
-    const URI = 'https://www.nak-sued.de';
+    private const BASE_URI = 'https://www.nak-sued.de';
+    const URI = self::BASE_URI . '/mediathek';
     const CACHE_TIMEOUT = 7200;
 
-    private const BAYERN2_ROOT_URI = self::URI . '/mediathek/rundfunksendungen-auf-bayern-2/aktuelle-sendungen';
-    private const SWR1_ROOT_URI = self::URI . '/mediathek/rundfunksendungen-auf-swr1/aktuelle-sendungen';
+    private const BAYERN2_ROOT_URI = self::BASE_URI . '/mediathek/rundfunksendungen-auf-bayern-2/aktuelle-sendungen';
+    private const SWR1_ROOT_URI = self::BASE_URI . '/mediathek/rundfunksendungen-auf-swr1/aktuelle-sendungen';
 
     private const MONTHS = [
         'Januar' => 1,
@@ -27,7 +28,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        return self::URI . '/typo3conf/ext/nak_naksued_de/Resources/Public/Images/favicon.ico';
+        return self::BASE_URI . '/typo3conf/ext/nak_naksued_de/Resources/Public/Images/favicon.ico';
     }
 
     private static function parseTimestamp($title)
@@ -46,7 +47,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
     {
         # Parse link
         $sourceURI = $parent->find('a', 1)->href;
-        $item['enclosures'] = [self::URI . $sourceURI];
+        $item['enclosures'] = [self::BASE_URI . $sourceURI];
 
         # Add time to timestamp
         $item['timestamp'] .= ' 07:27';
@@ -65,9 +66,9 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
     private static function collectDataForBayern2($parent, $item)
     {
         # Find link
-        $playerDom = getSimpleHTMLDOMCached(self::URI . $parent->find('a', 0)->href);
+        $playerDom = getSimpleHTMLDOMCached(self::BASE_URI . $parent->find('a', 0)->href);
         $sourceURI = $playerDom->find('source', 0)->src;
-        $item['enclosures'] = [self::URI . $sourceURI];
+        $item['enclosures'] = [self::BASE_URI . $sourceURI];
 
         # Add time to timestamp
         $item['timestamp'] .= ' 06:45';
@@ -79,7 +80,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
 
     private function collectDataInList($pageURI, $customizeItemCall)
     {
-        $page = getSimpleHTMLDOM(self::URI . $pageURI);
+        $page = getSimpleHTMLDOM(self::BASE_URI . $pageURI);
 
         foreach ($page->find('div.grids') as $parent) {
             # Find title
