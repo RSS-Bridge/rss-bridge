@@ -45,7 +45,7 @@ class NacSouthMediaLibraryBridge extends BridgeAbstract
 
     private static function collectDataForSWR1($parent, $item)
     {
-        # Parse link
+        # Find link
         $sourceURI = $parent->find('a', 1)->href;
         $item['enclosures'] = [self::BASE_URI . $sourceURI];
 
