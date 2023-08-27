@@ -920,10 +920,11 @@ class FurAffinityBridge extends BridgeAbstract
                         $item['categories'][] = $keyword->plaintext;
                     }
 
-                    $previewSrc = $submissionHTML->find('#submissionImg', 0)
-                        ->{'data-preview-src'};
+                    $previewSrc = $submissionHTML->find('#submissionImg', 0);
                     if ($previewSrc) {
-                        $imgURL = 'https:' . $previewSrc;
+                        $imgURL = 'https:' . $previewSrc->{'data-preview-src'};
+                    } else {
+                        $imgURL = 'https:' . $submissionHTML->find('[property="og:image"]', 0)->{'content'};
                     }
 
                     $description = $submissionHTML->find('div.submission-description', 0);
