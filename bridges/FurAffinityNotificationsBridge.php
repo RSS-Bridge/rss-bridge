@@ -345,7 +345,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         if ($type != 'shout') { //journal / submission comment
             $html = $this->getFASimpleHTMLDOM($url, true)
                 or returnServerError("Could not load {$url}. Check your cookies?");
-            $isDisabled = $this->checkDisabled($html); //disabled user preventing journal access
+            $isDisabled = $this->checkHidden($html); //disabled user preventing journal access
             if (!$isDisabled) {
                 if ($oldUI) {
                     $comment = $html->find("[id='$cid']", 0);
@@ -433,7 +433,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
             'categories' => ['journal']
         ];
 
-        if ($this->checkDisabled($html)) {
+        if ($this->checkHidden($html)) {
             $item['title'] = $record->find('a', 0)->plaintext;
             $item['timestamp'] = substr($record->find('.popup_date', 0)->getAttribute('title'), 3);
             $item['author'] = $record->find('a', 1)->plaintext;
@@ -517,7 +517,7 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         $html = $this->getFASimpleHTMLDOM($url, true)
             or returnServerError('Could not load: ' . $uri . '- Check your cookies?');
 
-        if ($this->checkRequireMature($html)) {
+        if ($this->checkHidden($html)) {
             return null;
         }
 
@@ -567,19 +567,19 @@ class FurAffinityNotificationsBridge extends BridgeAbstract
         return $isOldUI;
     }
 
-    private function checkDisabled($html)
+    private function checkHidden($html)
     {
-        //You can choose to disable your account. Disabling your account prevents your userpage, gallery, favorites and JOURNALS from being viewed by others. While disabled, you will not be able to post or submit content.
-
-        return $html->find('title', 0)->plaintext === 'Account disabled. -- Fur Affinity [dot] net';
-    }
-
-    private function checkRequireMature($html)
-    {
-        $system_message = $html->find('.section-body', 0);
+        $oldUI = $this->isOldUI($html);
+        //Disabled accounts prevents their userpage, gallery, favorites and JOURNALS from being viewed.
+        //Submissions can require maturity limit or logged-in account.
+        if ($oldUI) {
+            $system_message = $html->find('.maintable .cat', 0);
+        } else {
+            $system_message = $html->find('.section-body.alignleft', 0);
+        }
         $system_message = $system_message ? $system_message->plaintext : '';
 
-        return str_contains($system_message, 'To view this submission you must log in');
+        return str_contains($system_message, 'System Message');
     }
 
     private function findParentComment($comment, $oldUI)
