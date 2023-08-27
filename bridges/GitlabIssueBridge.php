@@ -18,12 +18,12 @@ class GitlabIssueBridge extends BridgeAbstract
             ],
             'u' => [
                 'name' => 'User/Organization name',
-                'exampleValue' => 'fdroid',
+                'exampleValue' => 'gitlab-org',
                 'required' => true
             ],
             'p' => [
                 'name' => 'Project name',
-                'exampleValue' => 'fdroidclient',
+                'exampleValue' => 'gitlab-foss',
                 'required' => true
             ]
 
@@ -32,7 +32,7 @@ class GitlabIssueBridge extends BridgeAbstract
             'i' => [
                 'name' => 'Issue number',
                 'type' => 'number',
-                'exampleValue' => '2099',
+                'exampleValue' => '1',
                 'required' => true
             ]
         ],
@@ -40,7 +40,7 @@ class GitlabIssueBridge extends BridgeAbstract
             'i' => [
                 'name' => 'Merge Request number',
                 'type' => 'number',
-                'exampleValue' => '2099',
+                'exampleValue' => '1',
                 'required' => true
             ]
         ],
@@ -48,7 +48,7 @@ class GitlabIssueBridge extends BridgeAbstract
             'i' => [
                 'name' => 'Epic number',
                 'type' => 'number',
-                'exampleValue' => '2099',
+                'exampleValue' => '1',
                 'required' => true
             ]
         ]
@@ -86,7 +86,7 @@ class GitlabIssueBridge extends BridgeAbstract
                 $uri .= '-/merge_requests';
                 break;
             case 'Epic comments':
-                $uri .= '-/epics';
+                $uri = 'https://' . $host . '/groups/' . $this->getInput('u') . '/-/epics';
                 break;
             default:
                 return $uri;
