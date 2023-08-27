@@ -3,10 +3,10 @@
 class GitlabIssueBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Mynacol';
-    const NAME = 'Gitlab Issue/Merge Request';
+    const NAME = 'Gitlab Issue/Merge Request/Epic';
     const URI = 'https://gitlab.com/';
     const CACHE_TIMEOUT = 1800; // 30min
-    const DESCRIPTION = 'Returns  comments of an issue/MR of a gitlab project';
+    const DESCRIPTION = 'Returns  comments of an issue/MR/Epic of a gitlab project';
 
     const PARAMETERS = [
         'global' => [
@@ -43,6 +43,14 @@ class GitlabIssueBridge extends BridgeAbstract
                 'exampleValue' => '2099',
                 'required' => true
             ]
+        ],
+        'Epic comments' => [
+            'i' => [
+                'name' => 'Epic number',
+                'type' => 'number',
+                'exampleValue' => '2099',
+                'required' => true
+            ]
         ]
     ];
 
@@ -55,6 +63,9 @@ class GitlabIssueBridge extends BridgeAbstract
                 break;
             case 'Merge Request comments':
                 $name .= ' MR !' . $this->getInput('i');
+                break;
+            case 'Epic comments':
+                $name .= ' Epic &' . $this->getInput('i');
                 break;
             default:
                 return parent::getName();
@@ -73,6 +84,9 @@ class GitlabIssueBridge extends BridgeAbstract
                 break;
             case 'Merge Request comments':
                 $uri .= '-/merge_requests';
+                break;
+            case 'Epic comments':
+                $uri .= '-/epics';
                 break;
             default:
                 return $uri;
@@ -107,8 +121,10 @@ class GitlabIssueBridge extends BridgeAbstract
         foreach ($comments as $value) {
             foreach ($value->notes as $comment) {
                 $item = [];
-                $item['uri'] = $comment->noteable_note_url;
-                $item['uid'] = $item['uri'];
+                if ($comment->noteable_note_url !== null) {
+                    $item['uri'] = $comment->noteable_note_url;
+                    $item['uid'] = $item['uri'];
+                }
 
                 // TODO fix invalid timestamps (fdroid bot)
                 $item['timestamp'] = $comment->created_at ?? $comment->updated_at ?? $comment->last_edited_at;
