@@ -899,7 +899,7 @@ class ItakuUserBridge extends BridgeAbstract
 
             foreach ($tag_types as $type => $str) {
                 if (strlen($str) > 0) {
-                    $content .= "🏷 <b>{$type}:</b>: {$str}<br/>";
+                    $content .= "🏷 <b>{$type}:</b> {$str}<br/>";
                 }
             }
         }
