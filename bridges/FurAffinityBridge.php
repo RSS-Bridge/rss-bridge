@@ -674,9 +674,11 @@ class FurAffinityBridge extends BridgeAbstract
                 . $this->getInput('folder-id');
             default:
                 $name = parent::getName();
-                $username = $this->loadCacheValue('username');
-                if ($username !== null) {
-                    $name = $username . '\'s ' . parent::getName();
+                if ($this->getOption('aCookie') !== null) {
+                    $username = $this->loadCacheValue('username');
+                    if ($username !== null) {
+                        $name = $username . '\'s ' . parent::getName();
+                    }
                 }
                 return $name;
         }
