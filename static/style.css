@@ -462,6 +462,7 @@ button {
   display: flex;
   position: relative;
   text-align: left;
+  margin-bottom: 15px;
 }
 @media (prefers-color-scheme: dark) {
     .search-result {
