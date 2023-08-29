@@ -121,31 +121,106 @@ EOD
         ]
     ];
 
+    private $apiKey     = null;
+    private $guestToken = null;
+    private $authHeaders = [];
     private ?string $feedIconUrl = null;
-    private CacheInterface $cache;
 
-    public function __construct()
+    public function detectParameters($url)
     {
-        $this->cache = RssBridge::getCache();
+        $params = [];
+
+        // By keyword or hashtag (search)
+        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/search.*(\?|&)q=([^\/&?\n]+)/';
+        if (preg_match($regex, $url, $matches) > 0) {
+            $params['q'] = urldecode($matches[4]);
+            return $params;
+        }
+
+        // By hashtag
+        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/hashtag\/([^\/?\n]+)/';
+        if (preg_match($regex, $url, $matches) > 0) {
+            $params['q'] = urldecode($matches[3]);
+            return $params;
+        }
+
+        // By list
+        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/lists\/([^\/?\n]+)/';
+        if (preg_match($regex, $url, $matches) > 0) {
+            $params['user'] = urldecode($matches[3]);
+            $params['list'] = urldecode($matches[4]);
+            return $params;
+        }
+
+        // By username
+        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)/';
+        if (preg_match($regex, $url, $matches) > 0) {
+            $params['u'] = urldecode($matches[3]);
+            return $params;
+        }
+
+        return null;
+    }
+
+    public function getName()
+    {
+        switch ($this->queriedContext) {
+            case 'By keyword or hashtag':
+                $specific = 'search ';
+                $param = 'q';
+                break;
+            case 'By username':
+                $specific = '@';
+                $param = 'u';
+                break;
+            case 'By list':
+                return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
+            case 'By list ID':
+                return 'Twitter List #' . $this->getInput('listid');
+            default:
+                return parent::getName();
+        }
+        return 'Twitter ' . $specific . $this->getInput($param);
+    }
+
+    public function getURI()
+    {
+        switch ($this->queriedContext) {
+            case 'By keyword or hashtag':
+                return self::URI
+            . 'search?q='
+            . urlencode($this->getInput('q'))
+            . '&f=tweets';
+            case 'By username':
+                return self::URI
+            . urlencode($this->getInput('u'));
+            // Always return without replies!
+            // . ($this->getInput('norep') ? '' : '/with_replies');
+            case 'By list':
+                return self::URI
+            . urlencode($this->getInput('user'))
+            . '/lists/'
+            . str_replace(' ', '-', strtolower($this->getInput('list')));
+            case 'By list ID':
+                return self::URI
+            . 'i/lists/'
+            . urlencode($this->getInput('listid'));
+            default:
+                return parent::getURI();
+        }
+    }
+
+    private function getFullText($id)
+    {
+        $url = sprintf(
+            'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en',
+            $id
+        );
+
+        return json_decode(getContents($url), false);
     }
 
     public function collectData()
-    {
-        $cacheKey = 'twitter_rate_limit';
-        if ($this->cache->get($cacheKey)) {
-            throw new HttpException('429 Too Many Requests', 429);
-        }
-        try {
-            $this->collectDataInternal();
-        } catch (HttpException $e) {
-            if ($e->getCode() === 429) {
-                $this->cache->set($cacheKey, true, 60 * 16);
-                throw $e;
-            }
-        }
-    }
-
-    private function collectDataInternal(): void
     {
         // $data will contain an array of all found tweets (unfiltered)
         $data = null;
@@ -155,15 +230,17 @@ EOD
         $tweets = [];
 
         // Get authentication information
-
-        $api = new TwitterClient($this->cache);
+        $cache = RssBridge::getCache();
+        $api = new TwitterClient($cache);
         // Try to get all tweets
         switch ($this->queriedContext) {
             case 'By username':
                 $screenName = $this->getInput('u');
                 $screenName = trim($screenName);
                 $screenName = ltrim($screenName, '@');
+
                 $data = $api->fetchUserTweets($screenName);
+
                 break;
 
             case 'By keyword or hashtag':
@@ -216,10 +293,10 @@ EOD
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
                     returnServerError('twitter: No results for this query.');
-                // fall-through
+                    // fall-through
                 case 'By username':
                     returnServerError('Requested username can\'t be found.');
-                // fall-through
+                    // fall-through
                 case 'By list':
                     returnServerError('Requested username or list can\'t be found');
             }
@@ -311,9 +388,9 @@ EOD
             $item['timestamp'] = $realtweet->created_at;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
             $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '')
-                . $item['fullname']
-                . ' (@'
-                . $item['username'] . ')';
+                         . $item['fullname']
+                         . ' (@'
+                         . $item['username'] . ')';
 
             // Convert plain text URLs into HTML hyperlinks
             if (isset($realtweet->full_text)) {
@@ -477,100 +554,6 @@ EOD;
         usort($this->items, ['TwitterBridge', 'compareTweetId']);
     }
 
-    public function detectParameters($url)
-    {
-        $params = [];
-
-        // By keyword or hashtag (search)
-        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/search.*(\?|&)q=([^\/&?\n]+)/';
-        if (preg_match($regex, $url, $matches) > 0) {
-            $params['q'] = urldecode($matches[4]);
-            return $params;
-        }
-
-        // By hashtag
-        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/hashtag\/([^\/?\n]+)/';
-        if (preg_match($regex, $url, $matches) > 0) {
-            $params['q'] = urldecode($matches[3]);
-            return $params;
-        }
-
-        // By list
-        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/lists\/([^\/?\n]+)/';
-        if (preg_match($regex, $url, $matches) > 0) {
-            $params['user'] = urldecode($matches[3]);
-            $params['list'] = urldecode($matches[4]);
-            return $params;
-        }
-
-        // By username
-        $regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)/';
-        if (preg_match($regex, $url, $matches) > 0) {
-            $params['u'] = urldecode($matches[3]);
-            return $params;
-        }
-
-        return null;
-    }
-
-    public function getName()
-    {
-        switch ($this->queriedContext) {
-            case 'By keyword or hashtag':
-                $specific = 'search ';
-                $param = 'q';
-                break;
-            case 'By username':
-                $specific = '@';
-                $param = 'u';
-                break;
-            case 'By list':
-                return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
-            case 'By list ID':
-                return 'Twitter List #' . $this->getInput('listid');
-            default:
-                return parent::getName();
-        }
-        return 'Twitter ' . $specific . $this->getInput($param);
-    }
-
-    public function getURI()
-    {
-        switch ($this->queriedContext) {
-            case 'By keyword or hashtag':
-                return self::URI
-            . 'search?q='
-            . urlencode($this->getInput('q'))
-            . '&f=tweets';
-            case 'By username':
-                return self::URI
-            . urlencode($this->getInput('u'));
-            // Always return without replies!
-            // . ($this->getInput('norep') ? '' : '/with_replies');
-            case 'By list':
-                return self::URI
-            . urlencode($this->getInput('user'))
-            . '/lists/'
-            . str_replace(' ', '-', strtolower($this->getInput('list')));
-            case 'By list ID':
-                return self::URI
-            . 'i/lists/'
-            . urlencode($this->getInput('listid'));
-            default:
-                return parent::getURI();
-        }
-    }
-
-    private function getFullText($id)
-    {
-        $url = sprintf(
-            'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en',
-            $id
-        );
-
-        return json_decode(getContents($url), false);
-    }
-
     public function getIcon()
     {
         return $this->feedIconUrl ?? parent::getIcon();
@@ -579,5 +562,157 @@ EOD;
     private static function compareTweetId($tweet1, $tweet2)
     {
         return (intval($tweet1['id']) < intval($tweet2['id']) ? 1 : -1);
+    }
+
+    //The aim of this function is to get an API key and a guest token
+    //This function takes 2 requests, and therefore is cached
+    private function getApiKey($forceNew = 0)
+    {
+        $r_cache = RssBridge::getCache();
+        $scope = 'TwitterBridge';
+        $r_cache->setScope($scope);
+        $r_cache->setKey(['refresh']);
+        $data = $r_cache->loadData();
+
+        $refresh = null;
+        if ($data === null) {
+            $refresh = time();
+            $r_cache->saveData($refresh);
+        } else {
+            $refresh = $data;
+        }
+
+        $cacheFactory = new CacheFactory();
+
+        $cache = RssBridge::getCache();
+        $cache->setScope($scope);
+        $cache->setKey(['api_key']);
+        $data = $cache->loadData();
+
+        $apiKey = null;
+        if ($forceNew || $data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
+            $twitterPage = getContents('https://twitter.com');
+
+            $jsLink = false;
+            $jsMainRegexArray = [
+                '/(https:\/\/abs\.twimg\.com\/responsive-web\/web\/main\.[^\.]+\.js)/m',
+                '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m',
+                '/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web\/main\.[^\.]+\.js)/m',
+                '/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web-legacy\/main\.[^\.]+\.js)/m',
+            ];
+            foreach ($jsMainRegexArray as $jsMainRegex) {
+                if (preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0)) {
+                    $jsLink = $jsMainMatches[0][0];
+                    break;
+                }
+            }
+            if (!$jsLink) {
+                returnServerError('Could not locate main.js link');
+            }
+
+            $jsContent = getContents($jsLink);
+            $apiKeyRegex = '/([a-zA-Z0-9]{59}%[a-zA-Z0-9]{44})/m';
+            preg_match_all($apiKeyRegex, $jsContent, $apiKeyMatches, PREG_SET_ORDER, 0);
+            $apiKey = $apiKeyMatches[0][0];
+            $cache->saveData($apiKey);
+        } else {
+            $apiKey = $data;
+        }
+
+        $gt_cache = RssBridge::getCache();
+        $gt_cache->setScope($scope);
+        $gt_cache->setKey(['guest_token']);
+        $guestTokenUses = $gt_cache->loadData();
+
+        $guestToken = null;
+        if (
+            $forceNew || $guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
+            || $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY
+        ) {
+            $guestToken = $this->getGuestToken($apiKey);
+            if ($guestToken === null) {
+                if ($guestTokenUses === null) {
+                    returnServerError('Could not parse guest token');
+                } else {
+                    $guestToken = $guestTokenUses[1];
+                }
+            } else {
+                $gt_cache->saveData([self::GUEST_TOKEN_USES, $guestToken]);
+                $r_cache->saveData(time());
+            }
+        } else {
+            $guestTokenUses[0] -= 1;
+            $gt_cache->saveData($guestTokenUses);
+            $guestToken = $guestTokenUses[1];
+        }
+
+        $this->apiKey      = $apiKey;
+        $this->guestToken  = $guestToken;
+        $this->authHeaders = [
+            'authorization: Bearer ' . $apiKey,
+            'x-guest-token: ' . $guestToken,
+        ];
+
+        return [$apiKey, $guestToken];
+    }
+
+    // Get a guest token. This is different to an API key,
+    // and it seems to change more regularly than the API key.
+    private function getGuestToken($apiKey)
+    {
+        $headers = [
+            'authorization: Bearer ' . $apiKey,
+        ];
+        $opts = [
+            CURLOPT_POST => 1,
+        ];
+
+        try {
+            $pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
+            $guestToken = json_decode($pageContent['content'])->guest_token;
+        } catch (Exception $e) {
+            $guestToken = null;
+        }
+        return $guestToken;
+    }
+
+    /**
+     * Tries to make an API call to twitter.
+     * @param $api string API entry point
+     * @param $params array additional URI parmaeters
+     * @return object json data
+     */
+    private function makeApiCall($api, $params)
+    {
+        $uri = self::API_URI . $api . '?' . http_build_query($params);
+
+        $retries = 1;
+        $retry = 0;
+        do {
+            $retry = 0;
+
+            try {
+                $result = getContents($uri, $this->authHeaders, [], true);
+            } catch (HttpException $e) {
+                switch ($e->getCode()) {
+                    case 401:
+                        // fall-through
+                    case 403:
+                        if ($retries) {
+                            $retries--;
+                            $retry = 1;
+                            $this->getApiKey(1);
+                            continue 2;
+                        }
+                        // fall-through
+                    default:
+                        throw $e;
+                }
+            }
+        } while ($retry);
+
+        $data = json_decode($result['content']);
+
+        return $data;
     }
 }
