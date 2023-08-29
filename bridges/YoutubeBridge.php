@@ -84,22 +84,6 @@ class YoutubeBridge extends BridgeAbstract
         $this->cache = RssBridge::getCache();
     }
 
-    public function collectData()
-    {
-        $cacheKey = 'youtube_rate_limit';
-        if ($this->cache->get($cacheKey)) {
-            throw new HttpException('429 Too Many Requests', 429);
-        }
-        try {
-            $this->collectDataInternal();
-        } catch (HttpException $e) {
-            if ($e->getCode() === 429) {
-                $this->cache->set($cacheKey, true, 60 * 16);
-                throw $e;
-            }
-        }
-    }
-
     private function collectDataInternal()
     {
         $xml = '';
@@ -207,6 +191,22 @@ class YoutubeBridge extends BridgeAbstract
             /* no valid mode */
             returnClientError("You must either specify either:\n - YouTube
  username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
+        }
+    }
+
+    public function collectData()
+    {
+        $cacheKey = 'youtube_rate_limit';
+        if ($this->cache->get($cacheKey)) {
+            throw new HttpException('429 Too Many Requests', 429);
+        }
+        try {
+            $this->collectDataInternal();
+        } catch (HttpException $e) {
+            if ($e->getCode() === 429) {
+                $this->cache->set($cacheKey, true, 60 * 16);
+                throw $e;
+            }
         }
     }
 
