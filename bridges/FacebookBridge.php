@@ -88,6 +88,7 @@ class FacebookBridge extends BridgeAbstract
         // By profile
         $regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/profile\.php\?id\=([^\/?&\n]+)?(.*)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'User';
             $params['u'] = urldecode($matches[3]);
             return $params;
         }
@@ -95,6 +96,7 @@ class FacebookBridge extends BridgeAbstract
         // By group
         $regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/groups\/([^\/?\n]+)?(.*)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Group';
             $params['g'] = urldecode($matches[3]);
             return $params;
         }
@@ -103,6 +105,7 @@ class FacebookBridge extends BridgeAbstract
         $regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/([^\/?\n]+)/';
 
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = '';
             $params['u'] = urldecode($matches[3]);
             return $params;
         }

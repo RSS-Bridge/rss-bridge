@@ -393,10 +393,10 @@ HEREDOC;
      */
     private function getSource($deal)
     {
-        if ($deal->find('a[class*=text--color-greyShade]', 0) != null) {
-            return '<div>' . $this->i8n('origin') . ' : '
-                . $deal->find('a[class*=text--color-greyShade]', 0)->outertext
-                . '</div>';
+        if (($origin = $deal->find('button[class*=text--color-greyShade]', 0)) != null) {
+            $path = str_replace(' ', '/', trim(Json::decode($origin->{'data-cloak-link'})['path']));
+            $text = $origin->find('span[class*=cept-merchant-name]', 0);
+            return '<div>' . $this->i8n('origin') . ' : <a href="' . static::URI . $path . '">' . $text . '</a></div>';
         } else {
             return '';
         }

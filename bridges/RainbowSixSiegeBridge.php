@@ -9,7 +9,7 @@ class RainbowSixSiegeBridge extends BridgeAbstract
     const DESCRIPTION = 'Latest news about Rainbow Six Siege';
 
     // API key to call Ubisoft API, extracted from the React frontend
-    const NIMBUS_API_KEY = '3u0FfSBUaTSew-2NVfAOSYWevVQHWtY9q3VM8Xx9Lto';
+    const NIMBUS_API_KEY = '3b5a8be6dde511ec9d640242ac120002';
 
     public function getIcon()
     {
@@ -32,18 +32,23 @@ class RainbowSixSiegeBridge extends BridgeAbstract
         for ($i = 0; $i < count($json); $i++) {
             $jsonItem = $json[$i];
 
-            $uri = 'https://www.ubisoft.com/en-us/game/rainbow-six/siege';
+            $uri = 'https://www.ubisoft.com/en-us/game/rainbow-six/siege/news-updates';
             $uri = $uri . $jsonItem['button']['buttonUrl'];
 
-            $thumbnail = '<img src="' . $jsonItem['thumbnail']['url'] . '" alt="Thumbnail">';
+            $thumbnail = '<img src="' . $jsonItem['thumbnail']['url'] . '" alt="Thumbnail" />';
             $content = $thumbnail . '<br />' . markdownToHtml($jsonItem['content']);
 
             $item = [];
+
+            // The date string includes (Coordinated Universal Time) at the end
+            // so remove it to use strtotime
+            $date_str = str_replace('(Coordinated Universal Time)', '', $jsonItem['date']);
+            $item['timestamp'] = strtotime($date_str);
+
             $item['uri'] = $uri;
             $item['id'] = $jsonItem['id'];
             $item['title'] = $jsonItem['title'];
             $item['content'] = $content;
-            $item['timestamp'] = strtotime($jsonItem['date']);
 
             $this->items[] = $item;
         }

@@ -35,6 +35,11 @@ class MastodonBridge extends BridgeAbstract
             'exampleValue' => '@sebsauvage@framapiaf.org',
             'required' => true,
         ],
+        'noregular' => [
+            'name' => 'Without regular statuses',
+            'type' => 'checkbox',
+            'title' => 'Hide regular statuses (i.e. non-boosts, replies, etc.)',
+        ],
         'norep' => [
             'name' => 'Without replies',
             'type' => 'checkbox',
@@ -61,6 +66,10 @@ class MastodonBridge extends BridgeAbstract
 
     public function collectData()
     {
+        if ($this->getInput('norep') && $this->getInput('noboost') && $this->getInput('noregular')) {
+            throw new \Exception('replies, boosts, or regular statuses must be allowed');
+        }
+
         $user = $this->fetchAP($this->getURI());
         if (!isset($user['outbox'])) {
             throw new \Exception('Unable to find the outbox');
@@ -115,12 +124,18 @@ class MastodonBridge extends BridgeAbstract
                 if ($this->getInput('norep') && isset($content['inReplyTo'])) {
                     return null;
                 }
+                if ($this->getInput('noregular') && !isset($content['inReplyTo'])) {
+                    return null;
+                }
                 $item['title'] = '';
                 $item['author'] = $this->getInput('canusername');
                 $item = $this->parseObject($content, $item);
                 break;
             case 'Create': // posts
                 if ($this->getInput('norep') && isset($content['object']['inReplyTo'])) {
+                    return null;
+                }
+                if ($this->getInput('noregular') && !isset($content['object']['inReplyTo'])) {
                     return null;
                 }
                 $item['title'] = '';
@@ -147,7 +162,7 @@ class MastodonBridge extends BridgeAbstract
 
         if (isset($object['name'])) {
             $item['title'] = $object['name'];
-        } else if (mb_strlen($strippedContent) > 75) {
+        } elseif (mb_strlen($strippedContent) > 75) {
             $contentSubstring = mb_substr($strippedContent, 0, mb_strpos(wordwrap($strippedContent, 75), "\n"));
             $item['title'] .= $contentSubstring . '...';
         } else {

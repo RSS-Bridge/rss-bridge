@@ -6,7 +6,18 @@ class FurAffinityBridge extends BridgeAbstract
     const URI = 'https://www.furaffinity.net';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns posts from various sections of FurAffinity';
-    const MAINTAINER = 'Roliga';
+    const MAINTAINER = 'Roliga, mruac';
+    const CONFIGURATION = [
+        'aCookie' => [
+            'required' => false,
+            'defaultValue' => 'ca6e4566-9d81-4263-9444-653b142e35f8'
+
+        ],
+        'bCookie' => [
+            'required' => false,
+            'defaultValue' => '4ce65691-b50f-4742-a990-bf28d6de16ee'
+        ]
+    ];
     const PARAMETERS = [
         'Search' => [
             'q' => [
@@ -594,7 +605,7 @@ class FurAffinityBridge extends BridgeAbstract
      * This was aquired by creating a new user on FA then
      * extracting the cookie from the browsers dev console.
      */
-    const FA_AUTH_COOKIE = 'b=4ce65691-b50f-4742-a990-bf28d6de16ee; a=ca6e4566-9d81-4263-9444-653b142e35f8';
+    private $FA_AUTH_COOKIE;
 
     public function detectParameters($url)
     {
@@ -603,6 +614,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Single journal
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/journal\/(\d+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Single Journal';
             $params['journal-id'] = urldecode($matches[3]);
             return $params;
         }
@@ -610,6 +622,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Journals
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/journals\/([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Journals';
             $params['username-journals'] = urldecode($matches[3]);
             return $params;
         }
@@ -617,6 +630,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Gallery folder
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/gallery\/([^\/&?\n]+)\/folder\/(\d+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Gallery Folder';
             $params['username-folder'] = urldecode($matches[3]);
             $params['folder-id'] = urldecode($matches[4]);
             $params['full'] = 'on';
@@ -626,6 +640,7 @@ class FurAffinityBridge extends BridgeAbstract
         // Gallery (must be after gallery folder)
         $regex = '/^(https?:\/\/)?(www\.)?furaffinity.net\/(gallery|scraps|favorites)\/([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
+            $params['context'] = 'Gallery';
             $params['username-' . $matches[3]] = urldecode($matches[4]);
             $params['full'] = 'on';
             return $params;
@@ -658,7 +673,14 @@ class FurAffinityBridge extends BridgeAbstract
                 . '\'s Folder '
                 . $this->getInput('folder-id');
             default:
-                return parent::getName();
+                $name = parent::getName();
+                if ($this->getOption('aCookie') !== null) {
+                    $username = $this->loadCacheValue('username');
+                    if ($username !== null) {
+                        $name = $username . '\'s ' . parent::getName();
+                    }
+                }
+                return $name;
         }
     }
 
@@ -737,6 +759,7 @@ class FurAffinityBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $this->FA_AUTH_COOKIE = 'b=' . $this->getOption('bCookie') . '; a=' . $this->getOption('aCookie');
         switch ($this->queriedContext) {
             case 'Search':
                 $data = [
@@ -802,19 +825,19 @@ class FurAffinityBridge extends BridgeAbstract
         $header = [
                 'Host: ' . parse_url(self::URI, PHP_URL_HOST),
                 'Content-Type: application/x-www-form-urlencoded',
-                'Cookie: ' . self::FA_AUTH_COOKIE
+                'Cookie: ' . $this->FA_AUTH_COOKIE
             ];
 
         $html = getSimpleHTMLDOM($this->getURI(), $header, $opts);
         $html = defaultLinkTo($html, $this->getURI());
-
+        $this->saveLoggedInUser($html);
         return $html;
     }
 
     private function getFASimpleHTMLDOM($url, $cache = false)
     {
         $header = [
-                'Cookie: ' . self::FA_AUTH_COOKIE
+                'Cookie: ' . $this->FA_AUTH_COOKIE
             ];
 
         if ($cache) {
@@ -822,10 +845,22 @@ class FurAffinityBridge extends BridgeAbstract
         } else {
             $html = getSimpleHTMLDOM($url, $header);
         }
-
+        $this->saveLoggedInUser($html);
         $html = defaultLinkTo($html, $url);
 
         return $html;
+    }
+
+    private function saveLoggedInUser($html)
+    {
+        $current_user = $html->find('#my-username', 0);
+        if ($current_user !== null) {
+            preg_match('/^(?:My FA \( |~)(.*?)(?: \)|)$/', trim($current_user->plaintext), $matches);
+            $current_user = $current_user ? $matches[1] : null;
+            if ($current_user !== null) {
+                $this->saveCacheValue('username', $current_user);
+            }
+        }
     }
 
     private function itemsFromJournalList($html, $limit)
@@ -888,7 +923,7 @@ class FurAffinityBridge extends BridgeAbstract
             $item = [];
 
             $submissionURL = $figure->find('b u a', 0)->href;
-            $imgURL = 'https:' . $figure->find('b u a img', 0)->src;
+            $imgURL = $figure->find('b u a img', 0)->src;
 
             $item['uri'] = $submissionURL;
             $item['title'] = html_entity_decode(
@@ -896,52 +931,43 @@ class FurAffinityBridge extends BridgeAbstract
             );
             $item['author'] = $figure->find('figcaption p a[href*=/user/]', 0)->title;
 
+            $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\" referrerpolicy=\"no-referrer\"/></a>";
+
             if ($this->getInput('full') === true) {
                 $submissionHTML = $this->getFASimpleHTMLDOM($submissionURL, $cache);
+                if (!$this->isHiddenSubmission($submissionHTML)) {
+                    $stats = $submissionHTML->find('.stats-container', 0);
+                    $popupDate = $stats->find('.popup_date', 0);
+                    if ($popupDate) {
+                        $item['timestamp'] = strtotime($popupDate->title);
+                    }
 
-                $stats = $submissionHTML->find('.stats-container', 0);
-                $popupDate = $stats->find('.popup_date', 0);
-                if ($popupDate) {
-                    $item['timestamp'] = strtotime($popupDate->title);
+                    $var = $submissionHTML->find('.actions a[href^=https://d.facdn]', 0);
+                    if ($var) {
+                        $item['enclosures'] = [$var->href];
+                    }
+
+                    foreach ($stats->find('#keywords a') as $keyword) {
+                        $item['categories'][] = $keyword->plaintext;
+                    }
+
+                    $previewSrc = $submissionHTML->find('#submissionImg', 0);
+                    if ($previewSrc) {
+                        $imgURL = 'https:' . $previewSrc->{'data-preview-src'};
+                    } else {
+                        $imgURL = $submissionHTML->find('[property="og:image"]', 0)->{'content'};
+                    }
+
+                    $description = $submissionHTML->find('div.submission-description', 0);
+                    if ($description) {
+                        $this->setReferrerPolicy($description);
+                        $description = trim($description->innertext);
+                    } else {
+                        $description = '';
+                    }
+
+                    $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\" referrerpolicy=\"no-referrer\"/></a><p>{$description}</p>";
                 }
-
-                $var = $submissionHTML->find('.actions a[href^=https://d.facdn]', 0);
-                if ($var) {
-                    $item['enclosures'] = [$var->href];
-                }
-
-                foreach ($stats->find('#keywords a') as $keyword) {
-                    $item['categories'][] = $keyword->plaintext;
-                }
-
-                $previewSrc = $submissionHTML->find('#submissionImg', 0)
-                    ->{'data-preview-src'};
-                if ($previewSrc) {
-                    $imgURL = 'https:' . $previewSrc;
-                }
-
-                $description = $submissionHTML->find('div.submission-description', 0);
-                if ($description) {
-                    $this->setReferrerPolicy($description);
-                    $description = trim($description->innertext);
-                } else {
-                    $description = '';
-                }
-
-                $item['content'] = <<<EOD
-<a href="$submissionURL">
-	<img src="{$imgURL}" referrerpolicy="no-referrer" />
-</a>
-<p>
-{$description}
-</p>
-EOD;
-            } else {
-                $item['content'] = <<<EOD
-<a href="$submissionURL">
-	<img src="$imgURL" referrerpolicy="no-referrer" />
-</a>
-EOD;
             }
 
             $this->items[] = $item;
@@ -959,5 +985,15 @@ EOD;
              */
             $img->referrerpolicy = 'no-referrer';
         }
+    }
+
+    private function isHiddenSubmission($html)
+    {
+        //Disabled accounts prevents their userpage, gallery, favorites and journals from being viewed.
+        //Submissions can require maturity limit or logged-in account.
+        $system_message = $html->find('.section-body.alignleft', 0);
+        $system_message = $system_message ? $system_message->plaintext : '';
+
+        return str_contains($system_message, 'System Message');
     }
 }

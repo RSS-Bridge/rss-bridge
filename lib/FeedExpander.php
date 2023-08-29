@@ -308,7 +308,16 @@ abstract class FeedExpander extends BridgeAbstract
             $item['author'] = (string)$feedItem->author->name;
         }
         if (isset($feedItem->content)) {
-            $item['content'] = (string)$feedItem->content;
+            $contentChildren = $feedItem->content->children();
+            if (count($contentChildren) > 0) {
+                $content = '';
+                foreach ($contentChildren as $contentChild) {
+                    $content .= $contentChild->asXML();
+                }
+                $item['content'] = $content;
+            } else {
+                $item['content'] = (string)$feedItem->content;
+            }
         }
 
         //When "link" field is present, URL is more reliable than "id" field

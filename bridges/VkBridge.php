@@ -453,7 +453,7 @@ class VkBridge extends BridgeAbstract
     {
         $content = explode('<br>', $content)[0];
         $content = strip_tags($content);
-        preg_match('/^[:,"\w\ \p{L}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
+        preg_match('/.+?(?=[\.\n])/mu', htmlspecialchars_decode($content), $result);
         if (count($result) == 0) {
             return 'untitled';
         }
