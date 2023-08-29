@@ -892,7 +892,7 @@ class FurAffinityBridge extends BridgeAbstract
             $item = [];
 
             $submissionURL = $figure->find('b u a', 0)->href;
-            $imgURL = 'https:' . $figure->find('b u a img', 0)->src;
+            $imgURL = $figure->find('b u a img', 0)->src;
 
             $item['uri'] = $submissionURL;
             $item['title'] = html_entity_decode(
@@ -900,52 +900,43 @@ class FurAffinityBridge extends BridgeAbstract
             );
             $item['author'] = $figure->find('figcaption p a[href*=/user/]', 0)->title;
 
+            $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\" referrerpolicy=\"no-referrer\"/></a>";
+
             if ($this->getInput('full') === true) {
                 $submissionHTML = $this->getFASimpleHTMLDOM($submissionURL, $cache);
+                if (!$this->isHiddenSubmission($submissionHTML)) {
+                    $stats = $submissionHTML->find('.stats-container', 0);
+                    $popupDate = $stats->find('.popup_date', 0);
+                    if ($popupDate) {
+                        $item['timestamp'] = strtotime($popupDate->title);
+                    }
 
-                $stats = $submissionHTML->find('.stats-container', 0);
-                $popupDate = $stats->find('.popup_date', 0);
-                if ($popupDate) {
-                    $item['timestamp'] = strtotime($popupDate->title);
+                    $var = $submissionHTML->find('.actions a[href^=https://d.facdn]', 0);
+                    if ($var) {
+                        $item['enclosures'] = [$var->href];
+                    }
+
+                    foreach ($stats->find('#keywords a') as $keyword) {
+                        $item['categories'][] = $keyword->plaintext;
+                    }
+
+                    $previewSrc = $submissionHTML->find('#submissionImg', 0);
+                    if ($previewSrc) {
+                        $imgURL = 'https:' . $previewSrc->{'data-preview-src'};
+                    } else {
+                        $imgURL = $submissionHTML->find('[property="og:image"]', 0)->{'content'};
+                    }
+
+                    $description = $submissionHTML->find('div.submission-description', 0);
+                    if ($description) {
+                        $this->setReferrerPolicy($description);
+                        $description = trim($description->innertext);
+                    } else {
+                        $description = '';
+                    }
+
+                    $item['content'] = "<a href=\"$submissionURL\"> <img src=\"{$imgURL}\" referrerpolicy=\"no-referrer\"/></a><p>{$description}</p>";
                 }
-
-                $var = $submissionHTML->find('.actions a[href^=https://d.facdn]', 0);
-                if ($var) {
-                    $item['enclosures'] = [$var->href];
-                }
-
-                foreach ($stats->find('#keywords a') as $keyword) {
-                    $item['categories'][] = $keyword->plaintext;
-                }
-
-                $previewSrc = $submissionHTML->find('#submissionImg', 0)
-                    ->{'data-preview-src'};
-                if ($previewSrc) {
-                    $imgURL = 'https:' . $previewSrc;
-                }
-
-                $description = $submissionHTML->find('div.submission-description', 0);
-                if ($description) {
-                    $this->setReferrerPolicy($description);
-                    $description = trim($description->innertext);
-                } else {
-                    $description = '';
-                }
-
-                $item['content'] = <<<EOD
-<a href="$submissionURL">
-	<img src="{$imgURL}" referrerpolicy="no-referrer" />
-</a>
-<p>
-{$description}
-</p>
-EOD;
-            } else {
-                $item['content'] = <<<EOD
-<a href="$submissionURL">
-	<img src="$imgURL" referrerpolicy="no-referrer" />
-</a>
-EOD;
             }
 
             $this->items[] = $item;
@@ -963,5 +954,15 @@ EOD;
              */
             $img->referrerpolicy = 'no-referrer';
         }
+    }
+
+    private function isHiddenSubmission($html)
+    {
+        //Disabled accounts prevents their userpage, gallery, favorites and journals from being viewed.
+        //Submissions can require maturity limit or logged-in account.
+        $system_message = $html->find('.section-body.alignleft', 0);
+        $system_message = $system_message ? $system_message->plaintext : '';
+
+        return str_contains($system_message, 'System Message');
     }
 }
