@@ -18,6 +18,66 @@ class TwitterClient
 
         $this->data = $this->cache->loadData() ?? [];
         $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
+        $this->tw_consumer_key = '3nVuSoBZnx6U4vzUxf5w';
+        $this->tw_consumer_secret = 'Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys';
+        $this->oauth_token = ''; //Fill here
+        $this->oauth_token_secret = ''; //Fill here
+    }
+
+    private function getOauthAuthorization(
+        $oauth_token,
+        $oauth_token_secret,
+        $method = 'GET',
+        $url = '',
+        $body = '',
+        $timestamp = null,
+        $oauth_nonce = null
+    ) {
+        if (!$url) {
+            return '';
+        }
+        $method = strtoupper($method);
+        $parseUrl = parse_url($url);
+        $link = $parseUrl['scheme'] . '://' . $parseUrl['host'] . $parseUrl['path'];
+        parse_str($parseUrl['query'], $query_params);
+        if ($body) {
+            parse_str($body, $body_params);
+            $query_params = array_merge($query_params, $body_params);
+        }
+        $payload = [
+            'oauth_version' => '1.0',
+            'oauth_signature_method' => 'HMAC-SHA1',
+            'oauth_consumer_key' => $this->tw_consumer_key,
+            'oauth_token' => $oauth_token,
+            'oauth_nonce' => $oauth_nonce ? $oauth_nonce : implode('', array_fill(0, 3, strval(time()))),
+            'oauth_timestamp' => $timestamp ? $timestamp : time(),
+        ];
+        $payload = array_merge($payload, $query_params);
+        ksort($payload);
+
+        $url_parts = parse_url($url);
+        $url_parts['query'] = http_build_query($payload, '', '&', PHP_QUERY_RFC3986);
+        $base_url = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'];
+        $signature_base_string = strtoupper($method) . '&' . rawurlencode($base_url) . '&' . rawurlencode($url_parts['query']);
+        $hmac_key = $this->tw_consumer_secret . '&' . $oauth_token_secret;
+        $hex_signature = hash_hmac('sha1', $signature_base_string, $hmac_key, true);
+        $signature = base64_encode($hex_signature);
+
+        $header_params = [
+            'oauth_version' => '1.0',
+            'oauth_token' => $oauth_token,
+            'oauth_nonce' => $payload['oauth_nonce'],
+            'oauth_timestamp' => $payload['oauth_timestamp'],
+            'oauth_signature' => $signature,
+            'oauth_consumer_key' => $this->tw_consumer_key,
+            'oauth_signature_method' => 'HMAC-SHA1',
+        ];
+        // ksort($header_params);
+        $header_values = [];
+        foreach ($header_params as $key => $value) {
+            $header_values[] = rawurlencode($key) . '="' . (is_int($value) ? $value : rawurlencode($value)) . '"';
+        }
+        return 'OAuth realm="http://api.twitter.com/", ' . implode(', ', $header_values);
     }
 
     private function extractTweetAndUsersFromGraphQL($timeline)
@@ -25,13 +85,24 @@ class TwitterClient
         if (isset($timeline->data->user)) {
             $result = $timeline->data->user->result;
             $instructions = $result->timeline_v2->timeline->instructions;
-        } else {
-            $result = $timeline->data->list->timeline_response;
+        } elseif (isset($timeline->data->user_result)) {
+            $result = $timeline->data->user_result->result->timeline_response;
             $instructions = $result->timeline->instructions;
         }
+
         if (isset($result->__typename) && $result->__typename === 'UserUnavailable') {
             throw new \Exception('UserUnavailable');
         }
+
+        if (isset($timeline->data->list)) {
+            $result = $timeline->data->list->timeline_response;
+            $instructions = $result->timeline->instructions;
+        }
+
+        if (!isset($result) && !isset($instructions)) {
+            throw new \Exception('Unable to fetch user/list timeline');
+        }
+
         $instructionTypes = [
             'TimelineAddEntries',
             'TimelineClearCache',
@@ -78,14 +149,14 @@ class TwitterClient
                 if (!isset($entry->content->itemContent->tweet_results->result->legacy)) {
                     continue;
                 }
-                $tweets[] = $entry->content->itemContent->tweet_results->result->legacy;
+                $tweets[] = $entry->content->itemContent->tweet_results->result;
 
                 $userIds[] = $entry->content->itemContent->tweet_results->result->core->user_results->result;
             } else {
                 if (!isset($entry->content->content->tweetResult->result->legacy)) {
                     continue;
                 }
-                $tweets[] = $entry->content->content->tweetResult->result->legacy;
+                $tweets[] = $entry->content->content->tweetResult->result;
 
                 $userIds[] = $entry->content->content->tweetResult->result->core->user_result->result;
             }
@@ -117,19 +188,22 @@ class TwitterClient
             }
         }
 
-        try {
-            $timeline = $this->fetchTimelineUsingSearch($screenName);
-        } catch (HttpException $e) {
-            if ($e->getCode() === 403) {
-                $this->data['guest_token'] = null;
-                $this->fetchGuestToken();
-                $timeline = $this->fetchTimelineUsingSearch($screenName);
-            } else {
-                throw $e;
-            }
-        }
+        $timeline = $this->fetchTimeline($userInfo->rest_id);
+        // try {
+        //     // $timeline = $this->fetchTimelineUsingSearch($screenName);
+        // } catch (HttpException $e) {
+        //     if ($e->getCode() === 403) {
+        //         $this->data['guest_token'] = null;
+        //         $this->fetchGuestToken();
+        //         // $timeline = $this->fetchTimelineUsingSearch($screenName);
+        //         $timeline = $this->fetchTimeline($userInfo->rest_id);
+        //     } else {
+        //         throw $e;
+        //     }
+        // }
 
-        $tweets = $this->extractTweetFromSearch($timeline);
+        // $tweets = $this->extractTweetFromSearch($timeline);
+        $tweets = $this->extractTweetAndUsersFromGraphQL($timeline)->tweets;
 
         return (object) [
             'user_info' => $userInfo,
@@ -155,7 +229,7 @@ class TwitterClient
                     throw $e;
                 }
             }
-        } elseif ($operation === 'By list ID') {
+        } else if ($operation == 'By list ID') {
             $id = $query['listId'];
         } else {
             throw new \Exception('Unknown operation to make list tweets');
@@ -223,43 +297,40 @@ class TwitterClient
     private function fetchTimeline($userId)
     {
         $variables = [
-            'userId' => $userId,
+            'autoplay_enabled' => true,
             'count' => 40,
-            'includePromotedContent' => true,
-            'withQuickPromoteEligibilityTweetFields' => true,
-            'withSuperFollowsUserFields' => true,
-            'withDownvotePerspective' => false,
-            'withReactionsMetadata' => false,
-            'withReactionsPerspective' => false,
-            'withSuperFollowsTweetFields' => true,
-            'withVoice' => true,
-            'withV2Timeline' => true,
+            'includeEditControl' => true,
+            'includeEditPerspective' => false,
+            'includeHasBirdwatchNotes' => false,
+            'includeTweetImpression' => true,
+            'includeTweetVisibilityNudge' => true,
+            'rest_id' => $userId
         ];
         $features = [
-            'responsive_web_twitter_blue_verified_badge_is_enabled' => true,
-            'responsive_web_graphql_exclude_directive_enabled' => false,
-            'verified_phone_label_enabled' => false,
-            'responsive_web_graphql_timeline_navigation_enabled' => true,
-            'responsive_web_graphql_skip_user_profile_image_extensions_enabled' => false,
+            'android_graphql_skip_api_media_color_palette' => true,
+            'blue_business_profile_image_shape_enabled' => true,
+            'creator_subscriptions_subscription_count_enabled' => true,
+            'creator_subscriptions_tweet_preview_api_enabled' => true,
+            'freedom_of_speech_not_reach_fetch_enabled' => true,
             'longform_notetweets_consumption_enabled' => true,
+            'longform_notetweets_inline_media_enabled' => true,
+            'longform_notetweets_rich_text_read_enabled' => true,
+            'subscriptions_verification_info_enabled' => true,
+            'super_follow_badge_privacy_enabled' => true,
+            'super_follow_exclusive_tweet_notifications_enabled' => true,
+            'super_follow_tweet_api_enabled' => true,
+            'super_follow_user_api_enabled' => true,
+            'tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled' => true,
             'tweetypie_unmention_optimization_enabled' => true,
-            'vibe_api_enabled' => true,
-            'responsive_web_edit_tweet_api_enabled' => true,
-            'graphql_is_translatable_rweb_tweet_is_translatable_enabled' => true,
-            'view_counts_everywhere_api_enabled' => true,
-            'freedom_of_speech_not_reach_appeal_label_enabled' => false,
-            'standardized_nudges_misinfo' => true,
-            'tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled' => false,
-            'interactive_text_enabled' => true,
-            'responsive_web_text_conversations_enabled' => false,
-            'responsive_web_enhance_cards_enabled' => false,
+            'unified_cards_ad_metadata_container_dynamic_card_content_query_enabled' => true,
         ];
         $url = sprintf(
-            'https://twitter.com/i/api/graphql/WZT7sCTrLvSOaWOXLDsWbQ/UserTweets?variables=%s&features=%s',
+            'https://api.twitter.com/graphql/3JNH4e9dq1BifLxAa3UMWg/UserWithProfileTweetsQueryV2?variables=%s&features=%s',
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
+        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, 'GET', $url);
+        $response = Json::decode(getContents($url, $this->createHttpHeaders($oauth)), false);
         return $response;
     }
 
@@ -280,7 +351,8 @@ class TwitterClient
              'https://api.twitter.com/1.1/search/tweets.json?%s',
              http_build_query($queryParam)
          );
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
+        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, 'GET', $url);
+        $response = Json::decode(getContents($url, $this->createHttpHeaders($oauth)), false);
         return $response;
     }
 
@@ -348,11 +420,6 @@ class TwitterClient
             // Grab the first error message
             throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
         }
-        if (!isset($response->data->user_by_screen_name->list)) {
-            throw new \Exception(
-                sprintf('Unable to find list in twitter response for %s, %s', $screenName, $listSlug)
-            );
-        }
         $listInfo = $response->data->user_by_screen_name->list;
         $this->data[$screenName . '-' . $listSlug] = $listInfo;
 
@@ -412,23 +479,28 @@ class TwitterClient
         ];
 
         $url = sprintf(
-            'https://twitter.com/i/api/graphql/BbGLL1ZfMibdFNWlk7a0Pw/ListTimeline?variables=%s&features=%s',
+            'https://api.twitter.com/graphql/BbGLL1ZfMibdFNWlk7a0Pw/ListTimeline?variables=%s&features=%s',
             urlencode(json_encode($variables)),
             urlencode(json_encode($features))
         );
-        $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
+        $oauth = $this->getOauthAuthorization($this->oauth_token, $this->oauth_token_secret, 'GET', $url);
+        $response = Json::decode(getContents($url, $this->createHttpHeaders($oauth)), false);
         return $response;
     }
 
-    private function createHttpHeaders(): array
+    private function createHttpHeaders($oauth = null): array
     {
         $headers = [
             'authorization' => sprintf('Bearer %s', $this->authorization),
             'x-guest-token' => $this->data['guest_token'] ?? null,
         ];
-        foreach ($headers as $key => $value) {
-            $headers[] = sprintf('%s: %s', $key, $value);
+        if (isset($oauth)) {
+            $headers['authorization'] = $oauth;
+            unset($headers['x-guest-token']);
         }
-        return $headers;
+        foreach ($headers as $key => $value) {
+            $headers2[] = sprintf('%s: %s', $key, $value);
+        }
+        return $headers2;
     }
 }

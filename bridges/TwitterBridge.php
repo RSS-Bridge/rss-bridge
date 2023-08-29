@@ -306,15 +306,22 @@ EOD
             }
         }
 
+        // Array of Tweet IDs
+        $tweetIds = [];
         // Filter out unwanted tweets
         foreach ($data->tweets as $tweet) {
+            if (isset($tweet->rest_id)) {
+                $tweetIds[] = $tweet->rest_id;
+                $tweet = $tweet->legacy;
+            }
+
             if (!$tweet) {
                 continue;
             }
             // Filter out retweets to remove possible duplicates of original tweet
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
-                    if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
+                    if ((isset($tweet->retweeted_status) || isset($tweet->retweeted_status_result)) && substr($tweet->full_text, 0, 4) === 'RT @') {
                         continue 2;
                     }
                     break;
@@ -351,9 +358,13 @@ EOD
             $item = [];
 
             $realtweet = $tweet;
+            $tweetId = (isset($tweetIds[$i]) ? $tweetIds[$i] : $realtweet->conversation_id_str);
             if (isset($tweet->retweeted_status)) {
                 // Tweet is a Retweet, so set author based on original tweet and set realtweet for reference to the right content
                 $realtweet = $tweet->retweeted_status;
+            } elseif (isset($tweet->retweeted_status_result)) {
+                $tweetId = $tweet->retweeted_status_result->result->rest_id;
+                $realtweet = $tweet->retweeted_status_result->result->legacy;
             }
 
             if (isset($realtweet->truncated) && $realtweet->truncated) {
@@ -364,6 +375,10 @@ EOD
                 }
             }
 
+            if (!$realtweet) {
+                $realtweet = $tweet;
+            }
+
             switch ($this->queriedContext) {
                 case 'By username':
                     if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id)) {
@@ -372,7 +387,7 @@ EOD
                     $item['username']  = $data->user_info->legacy->screen_name;
                     $item['fullname']  = $data->user_info->legacy->name;
                     $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
-                    $item['id']        = $realtweet->id_str;
+                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : $tweetId);
                     break;
                 case 'By list':
                 case 'By list ID':
@@ -391,7 +406,7 @@ EOD
 
             $item['timestamp'] = $realtweet->created_at;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
-            $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '')
+            $item['author']    = ((isset($tweet->retweeted_status) || (isset($tweet->retweeted_status_result))) ? 'RT: ' : '')
                          . $item['fullname']
                          . ' (@'
                          . $item['username'] . ')';
