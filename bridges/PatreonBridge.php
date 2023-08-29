@@ -34,13 +34,18 @@ class PatreonBridge extends BridgeAbstract
                 'attachments',
                 'user_defined_tags',
                 //'campaign',
-                //'poll.choices',
+                'poll.choices',
                 //'poll.current_user_responses.user',
                 //'poll.current_user_responses.choice',
                 //'poll.current_user_responses.poll',
                 //'access_rules.tier.null',
-                //'images.null',
-                //'audio.null'
+                'images.null',
+                'audio.null',
+                // 'user.null',
+                'attachments.null',
+                'audio_preview.null',
+                'poll.choices.null'
+                // 'poll.current_user_responses.null'
             ]),
             'fields' => [
                 'post' => implode(',', [
@@ -50,7 +55,7 @@ class PatreonBridge extends BridgeAbstract
                     //'current_user_can_delete',
                     //'current_user_can_view',
                     //'current_user_has_liked',
-                    //'embed',
+                    'embed',
                     'image',
                     //'is_paid',
                     //'like_count',
@@ -58,9 +63,9 @@ class PatreonBridge extends BridgeAbstract
                     //'patreon_url',
                     //'patron_count',
                     //'pledge_url',
-                    //'post_file',
-                    //'post_metadata',
-                    //'post_type',
+                    // 'post_file',
+                    // 'post_metadata',
+                    'post_type',
                     'published_at',
                     'teaser_text',
                     //'thumbnail_url',
@@ -68,11 +73,24 @@ class PatreonBridge extends BridgeAbstract
                     //'upgrade_url',
                     'url',
                     //'was_posted_by_campaign_owner'
+                    // 'content_teaser_text',
+                    // 'current_user_can_report',
+                    'thumbnail',
+                    // 'video_preview'
                 ]),
                 'user' => implode(',', [
                     //'image_url',
                     'full_name',
                     //'url'
+                ]),
+                'media' => implode(',', [
+                    'id',
+                    'image_urls',
+                    'download_url',
+                    'metadata',
+                    'file_name',
+                    'mimetype',
+                    'size_bytes'
                 ])
             ],
             'filter' => [
@@ -97,41 +115,129 @@ class PatreonBridge extends BridgeAbstract
                 $posts,
                 'user',
                 $post->relationships->user->data->id
-            );
+            )->attributes;
             $item['author'] = $user->full_name;
 
-            $image = $post->attributes->image ?? null;
-            if ($image) {
-                $logo = sprintf(
-                    '<p><a href="%s"><img src="%s" /></a></p>',
-                    $post->attributes->url,
-                    $image->thumb_url ?? $image->url ?? $this->getURI()
-                );
-                $item['content'] .= $logo;
+            //image, video, audio, link (featured post content)
+            switch ($post->attributes->post_type) {
+                case 'audio_file':
+                    //check if download_url is null before assigning $audio
+                    $id = $post->relationships->audio->data->id ?? null;
+                    if (isset($id)) {
+                        $audio = $this->findInclude($posts, 'media', $id)->attributes ?? null;
+                    }
+                    if (!isset($audio->download_url)) { //if not unlocked
+                        $id = $post->relationships->audio_preview->data->id ?? null;
+                        if (isset($id)) {
+                            $audio = $this->findInclude($posts, 'media', $id)->attributes ?? null;
+                        }
+                    }
+                    $thumbnail = $post->attributes->thumbnail->large ?? $post->attributes->thumbnail->url;
+                    $thumbnail = $thumbnail ?? $post->attributes->image->thumb_url;
+                    $thumbnail = $thumbnail ?? $post->attributes->image->url;
+                    $audio_filename = $audio->file_name ?? $item['title'];
+                    $download_url = $audio->download_url ?? $item['uri'];
+                    $item['content'] .= "<p><a href\"{$download_url}\"><img src=\"{$thumbnail}\"><br/>🎧 {$audio_filename}</a><br/>";
+                    if ($download_url !== $item['uri']) {
+                        $item['enclosures'][] = $download_url;
+                        $item['content'] .= "<audio controls src=\"{$download_url}\"></audio>";
+                    }
+                    $item['content'] .= '</p>';
+                    break;
+
+                case 'video_embed':
+                    $thumbnail = $post->attributes->thumbnail->large ?? $post->attributes->thumbnail->url;
+                    $thumbnail = $thumbnail ?? $post->attributes->image->thumb_url;
+                    $thumbnail = $thumbnail ?? $post->attributes->image->url;
+                    $item['content'] .= "<p><a href=\"{$item['uri']}\">🎬 {$item['title']}<br><img src=\"{$thumbnail}\"></a></p>";
+                    break;
+
+                case 'video_external_file':
+                    $thumbnail = $post->attributes->thumbnail->large ?? $post->attributes->thumbnail->url;
+                    $thumbnail = $thumbnail ?? $post->attributes->image->thumb_url;
+                    $thumbnail = $thumbnail ?? $post->attributes->image->url;
+                    $item['content'] .= "<p><a href=\"{$item['uri']}\">🎬 {$item['title']}<br><img src=\"{$thumbnail}\"></a></p>";
+                    break;
+
+                case 'image_file':
+                    $item['content'] .= '<p>';
+                    foreach ($post->relationships->images->data as $key => $image) {
+                        $image = $this->findInclude($posts, 'media', $image->id)->attributes;
+                        $image_fullres = $image->download_url ?? $image->image_urls->url ?? $image->image_urls->original;
+                        $filename = $image->file_name ?? '';
+                        $image_url = $image->image_urls->url ?? $image->image_urls->original;
+                        $item['enclosures'][] = $image_fullres;
+                        $item['content'] .= "<a href=\"{$image_fullres}\">{$filename}<br/><img src=\"{$image_url}\"></a><br/><br/>";
+                    }
+                    $item['content'] .= '</p>';
+                    break;
+
+                case 'link':
+                    //make it locked safe
+                    if (isset($post->attributes->embed)) {
+                        $embed = $post->attributes->embed;
+                        $thumbnail = $post->attributes->image->large_url ?? $post->attributes->image->thumb_url ?? $post->attributes->image->url;
+                        $item['content'] .= '<p><table>';
+                        $item['content'] .= "<tr><td><a href=\"{$embed->url}\"><img src=\"{$thumbnail}\"></a></td></tr>";
+                        $item['content'] .= "<tr><td><b>{$embed->subject}</b></td></tr>";
+                        $item['content'] .= "<tr><td>{$embed->description}</td></tr>";
+                        $item['content'] .= '</table></p><hr/>';
+                    }
+                    break;
             }
 
+            //content of the post
             if (isset($post->attributes->content)) {
                 $item['content'] .= $post->attributes->content;
             } elseif (isset($post->attributes->teaser_text)) {
                 $item['content'] .= '<p>'
-                    . $post->attributes->teaser_text
-                    . '</p>';
+                    . $post->attributes->teaser_text;
+                if (strlen($post->attributes->teaser_text) === 140) {
+                    $item['content'] .= '…';
+                }
+                $item['content'] .= '</p>';
             }
 
+            //post tags
             if (isset($post->relationships->user_defined_tags)) {
                 $item['categories'] = [];
                 foreach ($post->relationships->user_defined_tags->data as $tag) {
-                    $attrs = $this->findInclude($posts, 'post_tag', $tag->id);
+                    $attrs = $this->findInclude($posts, 'post_tag', $tag->id)->attributes;
                     $item['categories'][] = $attrs->value;
                 }
             }
 
-            if (isset($post->relationships->attachments)) {
-                $item['enclosures'] = [];
-                foreach ($post->relationships->attachments->data as $attachment) {
-                    $attrs = $this->findInclude($posts, 'attachment', $attachment->id);
-                    $item['enclosures'][] = $attrs->url;
+            //poll
+            if (isset($post->relationships->poll->data)) {
+                $poll = $this->findInclude($posts, 'poll', $post->relationships->poll->data->id);
+                $item['content'] .= "<p><table><tr><th><b>Poll: {$poll->attributes->question_text}</b></th></tr>";
+                foreach ($poll->relationships->choices->data as $key => $poll_option) {
+                    $poll_option = $this->findInclude($posts, 'poll_choice', $poll_option->id);
+                    $poll_option_text = $poll_option->attributes->text_content ?? null;
+                    if (isset($poll_option_text)) {
+                        $item['content'] .= "<tr><td><a href=\"{$item['uri']}\">{$poll_option_text}</a></td></tr>";
+                    }
                 }
+                $item['content'] .= '</table></p>';
+            }
+
+
+            //post attachments
+            if (
+                isset($post->relationships->attachments->data) &&
+                sizeof($post->relationships->attachments->data) > 0
+            ) {
+                $item['enclosures'] = [];
+                $item['content'] .= '<hr><p><b>Attachments:</b><ul>';
+                foreach ($post->relationships->attachments->data as $attachment) {
+                    $attrs = $this->findInclude($posts, 'attachment', $attachment->id)->attributes;
+                    $filename = $attrs->name;
+                    $n = strrpos($filename, '.');
+                    $ext = ($n === false) ? '' : substr($filename, $n);
+                    $item['enclosures'][] = $attrs->url . '#' . $ext;
+                    $item['content'] .= '<li><a href="' . $attrs->url . '">' . $filename . '</a></li>';
+                }
+                $item['content'] .= '</ul></p>';
             }
 
             $this->items[] = $item;
@@ -139,14 +245,16 @@ class PatreonBridge extends BridgeAbstract
     }
 
     /*
-     * Searches the "included" array in an API response and returns attributes
-     * for the first match.
+     * Searches the "included" array in an API response and returns the result for the first match.
+     * A result will include attributes containing further details of the included object
+     * (e.g. an audio object), and an optional relationships object that links to more "included"
+     * objects. (e.g. a poll object with related poll_choice(s))
      */
     private function findInclude($data, $type, $id)
     {
         foreach ($data->included as $include) {
             if ($include->type === $type && $include->id === $id) {
-                return $include->attributes;
+                return $include;
             }
         }
     }
