@@ -6,7 +6,18 @@ class FurAffinityBridge extends BridgeAbstract
     const URI = 'https://www.furaffinity.net';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns posts from various sections of FurAffinity';
-    const MAINTAINER = 'Roliga';
+    const MAINTAINER = 'Roliga, mruac';
+    const CONFIGURATION = [
+        'aCookie' => [
+            'required' => false,
+            'defaultValue' => 'ca6e4566-9d81-4263-9444-653b142e35f8'
+
+        ],
+        'bCookie' => [
+            'required' => false,
+            'defaultValue' => '4ce65691-b50f-4742-a990-bf28d6de16ee'
+        ]
+    ];
     const PARAMETERS = [
         'Search' => [
             'q' => [
@@ -594,7 +605,7 @@ class FurAffinityBridge extends BridgeAbstract
      * This was aquired by creating a new user on FA then
      * extracting the cookie from the browsers dev console.
      */
-    const FA_AUTH_COOKIE = 'b=4ce65691-b50f-4742-a990-bf28d6de16ee; a=ca6e4566-9d81-4263-9444-653b142e35f8';
+    private $FA_AUTH_COOKIE;
 
     public function detectParameters($url)
     {
@@ -662,7 +673,14 @@ class FurAffinityBridge extends BridgeAbstract
                 . '\'s Folder '
                 . $this->getInput('folder-id');
             default:
-                return parent::getName();
+                $name = parent::getName();
+                if ($this->getOption('aCookie') !== null) {
+                    $username = $this->loadCacheValue('username');
+                    if ($username !== null) {
+                        $name = $username . '\'s ' . parent::getName();
+                    }
+                }
+                return $name;
         }
     }
 
@@ -741,6 +759,7 @@ class FurAffinityBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $this->FA_AUTH_COOKIE = 'b=' . $this->getOption('bCookie') . '; a=' . $this->getOption('aCookie');
         switch ($this->queriedContext) {
             case 'Search':
                 $data = [
@@ -806,19 +825,19 @@ class FurAffinityBridge extends BridgeAbstract
         $header = [
                 'Host: ' . parse_url(self::URI, PHP_URL_HOST),
                 'Content-Type: application/x-www-form-urlencoded',
-                'Cookie: ' . self::FA_AUTH_COOKIE
+                'Cookie: ' . $this->FA_AUTH_COOKIE
             ];
 
         $html = getSimpleHTMLDOM($this->getURI(), $header, $opts);
         $html = defaultLinkTo($html, $this->getURI());
-
+        $this->saveLoggedInUser($html);
         return $html;
     }
 
     private function getFASimpleHTMLDOM($url, $cache = false)
     {
         $header = [
-                'Cookie: ' . self::FA_AUTH_COOKIE
+                'Cookie: ' . $this->FA_AUTH_COOKIE
             ];
 
         if ($cache) {
@@ -826,10 +845,22 @@ class FurAffinityBridge extends BridgeAbstract
         } else {
             $html = getSimpleHTMLDOM($url, $header);
         }
-
+        $this->saveLoggedInUser($html);
         $html = defaultLinkTo($html, $url);
 
         return $html;
+    }
+
+    private function saveLoggedInUser($html)
+    {
+        $current_user = $html->find('#my-username', 0);
+        if ($current_user !== null) {
+            preg_match('/^(?:My FA \( |~)(.*?)(?: \)|)$/', trim($current_user->plaintext), $matches);
+            $current_user = $current_user ? $matches[1] : null;
+            if ($current_user !== null) {
+                $this->saveCacheValue('username', $current_user);
+            }
+        }
     }
 
     private function itemsFromJournalList($html, $limit)
