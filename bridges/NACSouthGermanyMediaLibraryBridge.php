@@ -5,7 +5,8 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
     private const BASE_URI = 'https://www.nak-sued.de';
 
     const NAME = 'NAK Süd Mediathek';
-    const DESCRIPTION = 'RSS Feed für die Runkfunkbeiträge der NAK Süd auf Bayern 2 und SWR 1.';
+    const DESCRIPTION = 'RSS Feed für die Runkfunkbeiträge der NAK Süd auf Bayern 2 und SWR 1.
+         (Technical note: This bridge might not work on certain server instances because of blacklisted IP ranges to the website.)';
     const URI = self::BASE_URI . '/mediathek';
     const MAINTAINER = 'R3dError';
     const CACHE_TIMEOUT = 7200;
