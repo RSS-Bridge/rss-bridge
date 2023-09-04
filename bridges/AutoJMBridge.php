@@ -22,7 +22,9 @@ class AutoJMBridge extends BridgeAbstract
 
     const TEST_DETECT_PARAMETERS = [
         'https://www.autojm.fr/recherche?brands%5B%5D=PEUGEOT&ranges%5B%5D=PEUGEOT%20308'
-            => ['url' => 'recherche?brands%5B%5D=PEUGEOT&ranges%5B%5D=PEUGEOT%20308']
+            => ['url' => 'recherche?brands%5B%5D=PEUGEOT&ranges%5B%5D=PEUGEOT%20308',
+                'context' => 'Afficher les offres de véhicules disponible sur la recheche AutoJM'
+            ]
     ];
 
     public function getIcon()
