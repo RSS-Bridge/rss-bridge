@@ -7,6 +7,7 @@ class PixivBridge extends BridgeAbstract
     const NAME = 'Pixiv Bridge';
     const URI = 'https://www.pixiv.net/';
     const DESCRIPTION = 'Returns the tag search from pixiv.net';
+    const MAINTAINER = 'mruac';
     const CONFIGURATION = [
         'cookie' => [
             'required' => false,
@@ -35,6 +36,14 @@ class PixivBridge extends BridgeAbstract
                     'Novels' => 'novels/'
                 ]
             ],
+            'mature' => [
+                'name' => 'Include R-18 works',
+                'type' => 'checkbox'
+            ],
+            'ai' => [
+                'name' => 'Include AI-Generated works',
+                'type' => 'checkbox'
+            ]
         ],
         'Tag' => [
             'tag' => [
@@ -186,10 +195,28 @@ class PixivBridge extends BridgeAbstract
         $content = array_filter($content, function ($v, $k) {
             return !array_key_exists('isAdContainer', $v);
         }, ARRAY_FILTER_USE_BOTH);
+
         // Sort by updateDate to get newest works
         usort($content, function ($a, $b) {
             return $b['updateDate'] <=> $a['updateDate'];
         });
+
+        //exclude AI generated works if unchecked.
+        if ($this->getInput('ai') !== true) {
+            $content = array_filter($content, function ($v) {
+                $isAI = $v['aiType'] === 2;
+                return !$isAI;
+            });
+        }
+
+        //exclude R-18 works if unchecked.
+        if ($this->getInput('mature') !== true) {
+            $content = array_filter($content, function ($v) {
+                $isMature = $v['xRestrict'] > 0;
+                return !$isMature;
+            });
+        }
+
         $content = array_slice($content, 0, $this->getInput('posts'));
 
         foreach ($content as $result) {
