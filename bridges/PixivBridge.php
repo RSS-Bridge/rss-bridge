@@ -7,7 +7,13 @@ class PixivBridge extends BridgeAbstract
     const NAME = 'Pixiv Bridge';
     const URI = 'https://www.pixiv.net/';
     const DESCRIPTION = 'Returns the tag search from pixiv.net';
-
+    const MAINTAINER = 'mruac';
+    const CONFIGURATION = [
+        'proxy_url' => [
+            'required' => false,
+            'defaultValue' => null
+        ]
+    ];
 
     const PARAMETERS = [
         'global' => [
@@ -23,10 +29,12 @@ class PixivBridge extends BridgeAbstract
             'mode' => [
                 'name' => 'Post Type',
                 'type' => 'list',
-                'values' => ['All Works' => 'all',
-                                  'Illustrations' => 'illustrations/',
-                                  'Manga' => 'manga/',
-                                  'Novels' => 'novels/']
+                'values' => [
+                    'All Works' => 'all',
+                    'Illustrations' => 'illustrations/',
+                    'Manga' => 'manga/',
+                    'Novels' => 'novels/'
+                ]
             ],
         ],
         'Tag' => [
@@ -76,7 +84,7 @@ class PixivBridge extends BridgeAbstract
             default:
                 return parent::getName();
         }
-        return 'Pixiv ' . $this->getKey('mode') . " from ${context} ${query}";
+        return 'Pixiv ' . $this->getKey('mode') . " from {$context} {$query}";
     }
 
     public function getURI()
@@ -106,7 +114,7 @@ class PixivBridge extends BridgeAbstract
                 break;
             case 'User':
                 $uri = static::URI . 'ajax/user/' . $this->getInput('userid')
-                 . '/profile/top';
+                    . '/profile/top';
                 break;
             default:
                 returnClientError('Invalid Context');
@@ -144,6 +152,10 @@ class PixivBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $this->checkOptions();
+        $proxy_url = $this->getOption('proxy_url');
+        $proxy_url = $proxy_url ? rtrim($proxy_url, '/') : null;
+
         $content = $this->collectWorksArray();
         $content = array_filter($content, function ($v, $k) {
             return !array_key_exists('isAdContainer', $v);
@@ -168,12 +180,25 @@ class PixivBridge extends BridgeAbstract
             $item['author'] = $result['userName'];
             $item['timestamp'] = $result['updateDate'];
             $item['categories'] = $result['tags'];
-            $cached_image = $this->cacheImage(
-                $result['url'],
-                $result['id'],
-                array_key_exists('illustType', $result)
-            );
-            $item['content'] = "<img src='" . $cached_image . "' />";
+
+            if ($proxy_url) {
+                //use proxy image host if set.
+                if ($this->getInput('fullsize')) {
+                    $ajax_uri = static::URI . 'ajax/illust/' . $result['id'];
+                    $imagejson = json_decode(getContents($ajax_uri), true);
+                    $img_url = preg_replace('/https:\/\/i\.pximg\.net/', $proxy_url, $imagejson['body']['urls']['original']);
+                } else {
+                    $img_url = preg_replace('/https:\/\/i\.pximg\.net/', $proxy_url, $result['url']);
+                }
+            } else {
+                //else cache and use image.
+                $img_url = $this->cacheImage(
+                    $result['url'],
+                    $result['id'],
+                    array_key_exists('illustType', $result)
+                );
+            }
+            $item['content'] = "<img src='" . $img_url . "' />";
 
             // Additional content items
             if (array_key_exists('pageCount', $result)) {
@@ -223,5 +248,20 @@ class PixivBridge extends BridgeAbstract
         }
 
         return get_home_page_url() . 'cache/pixiv_img/' . preg_replace('/.*\//', '', $path);
+    }
+
+    private function checkOptions()
+    {
+        $proxy = $this->getOption('proxy_url');
+        if ($proxy) {
+            if (
+                strlen($proxy) > 0 &&
+                preg_match('/https?:\/\/.*/', $proxy)
+            ) {
+                return;
+            } else {
+                return returnServerError('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
+            }
+        }
     }
 }
