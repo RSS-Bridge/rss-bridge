@@ -13,11 +13,19 @@ class AutoJMBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'URL d\'une recherche avec filtre de véhicules sans le http://www.autojm.fr/',
-                'exampleValue' => 'recherche?brands[]=peugeot&ranges[]=peugeot-nouvelle-308-2021-5p'
+                'exampleValue' => 'recherche?brands[]=PEUGEOT&ranges[]=PEUGEOT 308'
             ],
         ]
     ];
+
     const CACHE_TIMEOUT = 3600;
+
+    const TEST_DETECT_PARAMETERS = [
+        'https://www.autojm.fr/recherche?brands%5B%5D=PEUGEOT&ranges%5B%5D=PEUGEOT%20308'
+            => ['url' => 'recherche?brands%5B%5D=PEUGEOT&ranges%5B%5D=PEUGEOT%20308',
+                'context' => 'Afficher les offres de véhicules disponible sur la recheche AutoJM'
+            ]
+    ];
 
     public function getIcon()
     {
@@ -32,6 +40,17 @@ class AutoJMBridge extends BridgeAbstract
             break;
             default:
                 return parent::getName();
+        }
+    }
+
+    public function getURI()
+    {
+        switch ($this->queriedContext) {
+            case 'Afficher les offres de véhicules disponible sur la recheche AutoJM':
+                return self::URI . $this->getInput('url');
+            break;
+            default:
+                return self::URI;
         }
     }
 
@@ -52,7 +71,7 @@ class AutoJMBridge extends BridgeAbstract
         $data = json_decode($json);
 
         $nb_results = $data->nbResults;
-        $total_pages = ceil($nb_results / 15);
+        $total_pages = ceil($nb_results / 14);
 
         // Limit the number of page to analyse to 10
         for ($page = 1; $page <= $total_pages && $page <= 10; $page++) {
@@ -66,8 +85,8 @@ class AutoJMBridge extends BridgeAbstract
                 $image = $car->find('div[class=card-car__header__img]', 0)->find('img', 0)->src;
                 // Decode HTML attribute JSON data
                 $car_data = json_decode(html_entity_decode($car->{'data-layer'}));
-                $car_model = $car->{'data-title'} . ' ' . $car->{'data-suptitle'};
-                $availability = $car->find('div[class=card-car__modalites]', 0)->find('div[class=col]', 0)->plaintext;
+                $car_model = $car_data->title;
+                $availability = $car->find('div[class*=card-car__modalites]', 0)->find('div[class=col]', 0)->plaintext;
                 $warranty = $car->find('div[data-type=WarrantyCard]', 0)->plaintext;
                 $discount_html = $car->find('div[class=subtext vehicle_reference_element]', 0);
                 // Check if there is any discount info displayed
@@ -131,5 +150,19 @@ class AutoJMBridge extends BridgeAbstract
         $html = getSimpleHTMLDOMCached($search_url);
 
         return $html;
+    }
+
+    public function detectParameters($url)
+    {
+        $params = [];
+        $regex = '/^(https?:\/\/)?(www\.|)autojm.fr\/(recherche\?.*|recherche\/[0-9]{1,10}\?.*)$/m';
+        if (preg_match($regex, $url, $matches) > 0) {
+            $url = preg_replace('#(recherche|recherche/[0-9]{1,10})#', 'recherche', $matches[3]);
+
+            $params['url'] = $url;
+            $params['context'] = 'Afficher les offres de véhicules disponible sur la recheche AutoJM';
+
+            return $params;
+        }
     }
 }
