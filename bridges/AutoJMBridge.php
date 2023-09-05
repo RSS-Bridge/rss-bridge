@@ -13,7 +13,7 @@ class AutoJMBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'URL d\'une recherche avec filtre de véhicules sans le http://www.autojm.fr/',
-                'exampleValue' => 'recherche?brands[]=peugeot&ranges[]=peugeot-nouvelle-308-2021-5p'
+                'exampleValue' => 'recherche?brands[]=PEUGEOT&ranges[]=PEUGEOT 308'
             ],
         ]
     ];
