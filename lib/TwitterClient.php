@@ -146,9 +146,14 @@ class TwitterClient
             }
 
             if (isset($timeline->data->user)) {
-                if (!isset($entry->content->itemContent->tweet_results->result->legacy)) {
+                if (!isset($entry->content->itemContent->tweet_results->result)) {
                     continue;
                 }
+
+                if (isset($entry->content->itemContent->promotedMetadata)) {
+                    continue;
+                }
+
                 $tweets[] = $entry->content->itemContent->tweet_results->result;
 
                 $userIds[] = $entry->content->itemContent->tweet_results->result->core->user_results->result;
@@ -156,6 +161,12 @@ class TwitterClient
                 if (!isset($entry->content->content->tweetResult->result->legacy)) {
                     continue;
                 }
+
+                // Filter out any advertise tweet
+                if (isset($entry->content->content->tweetPromotedMetadata)) {
+                    continue;
+                }
+
                 $tweets[] = $entry->content->content->tweetResult->result;
 
                 $userIds[] = $entry->content->content->tweetResult->result->core->user_result->result;
