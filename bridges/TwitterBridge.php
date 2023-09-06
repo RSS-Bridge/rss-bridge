@@ -306,7 +306,7 @@ EOD
             }
         }
 
-	$hidePictures = $this->getInput('nopic');
+        $hidePictures = $this->getInput('nopic');
 
         $hidePinned = $this->getInput('nopinned');
         if ($hidePinned) {
@@ -320,7 +320,6 @@ EOD
         $tweetIds = [];
         // Filter out unwanted tweets
         foreach ($data->tweets as $tweet) {
-
             if (!$tweet) {
                 continue;
             }
@@ -334,6 +333,7 @@ EOD
             // Filter out retweets to remove possible duplicates of original tweet
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
+		    // phpcs:ignore
                     if ((isset($legacy_info->retweeted_status) || isset($legacy_info->retweeted_status_result)) && substr($legacy_info->full_text, 0, 4) === 'RT @') {
                         continue 2;
                     }
@@ -343,6 +343,7 @@ EOD
             // Skip own Retweets...
             if (isset($legacy_info->retweeted_status) && $legacy_info->retweeted_status->user->id_str === $tweet->user->id_str) {
                 continue;
+            // phpcs:ignore
             } elseif (isset($legacy_info->retweeted_status_result) && $tweet->retweeted_status_result->result->legacy->user_id_str === $legacy_info->user_id_str) {
                 continue;
             }
@@ -366,7 +367,6 @@ EOD
 
         $i = 0;
         foreach ($tweets as $tweet) {
-
             $item = [];
 
             $realtweet = $tweet;
