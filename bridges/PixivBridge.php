@@ -156,10 +156,18 @@ class PixivBridge extends BridgeAbstract
             if ($this->getOption('cookie') !== null) {
                 switch ($json_key) {
                     case 'illust':
-                        $json = array_reduce($json, function ($acc, $i) {if ($i['illustType'] === 0) {$acc[] = $i;}return $acc;}, []);
+                        $json = array_reduce($json, function ($acc, $i) {
+                            if ($i['illustType'] === 0) {
+                                $acc[] = $i;
+                            }return $acc;
+                        }, []);
                         break;
                     case 'manga':
-                        $json = array_reduce($json, function ($acc, $i) {if ($i['illustType'] === 1) {$acc[] = $i;}return $acc;}, []);
+                        $json = array_reduce($json, function ($acc, $i) {
+                            if ($i['illustType'] === 1) {
+                                $acc[] = $i;
+                            }return $acc;
+                        }, []);
                         break;
                 }
             }
@@ -308,12 +316,21 @@ class PixivBridge extends BridgeAbstract
         $proxy = $this->getOption('proxy_url');
         if ($proxy) {
             if (
-                strlen($proxy) > 0 &&
-                preg_match('/https?:\/\/.*/', $proxy)
+                !(strlen($proxy) > 0 && preg_match('/https?:\/\/.*/', $proxy))
             ) {
-                return;
-            } else {
                 return returnServerError('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
+            }
+        }
+
+        $cookie = $this->getCookie();
+        if ($cookie) {
+            $isAuth = $this->loadCacheValue('is_authenticated');
+            if (!$isAuth) {
+                $res = $this->getData('https://www.pixiv.net/ajax/webpush', true, true)
+                    or returnServerError('Invalid PHPSESSID cookie provided. Please check the 🍪 and try again.');
+                if ($res['error'] === false) {
+                    $this->saveCacheValue('is_authenticated', true);
+                }
             }
         }
     }
