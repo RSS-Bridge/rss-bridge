@@ -217,7 +217,7 @@ EOD
     private function getFullText($id)
     {
         $url = sprintf(
-            'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en',
+            'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en&token=449yf2pc4g',
             $id
         );
 
@@ -306,37 +306,59 @@ EOD
             }
         }
 
-        // Array of Tweet IDs
-        $tweetIds = [];
-        // Filter out unwanted tweets
-        foreach ($data->tweets as $tweet) {
-            if (isset($tweet->rest_id)) {
-                $tweetIds[] = $tweet->rest_id;
-                $tweet = $tweet->legacy;
-            }
-
-            if (!$tweet) {
-                continue;
-            }
-            // Filter out retweets to remove possible duplicates of original tweet
-            switch ($this->queriedContext) {
-                case 'By keyword or hashtag':
-                    if ((isset($tweet->retweeted_status) || isset($tweet->retweeted_status_result)) && substr($tweet->full_text, 0, 4) === 'RT @') {
-                        continue 2;
-                    }
-                    break;
-            }
-            $tweets[] = $tweet;
-        }
-
         $hidePictures = $this->getInput('nopic');
 
         $hidePinned = $this->getInput('nopinned');
         if ($hidePinned) {
             $pinnedTweetId = null;
-            if ($user && $user->pinned_tweet_ids_str) {
-                $pinnedTweetId = $user->pinned_tweet_ids_str;
+            if ($data->user_info && $data->user_info->legacy->pinned_tweet_ids_str) {
+                $pinnedTweetId = $data->user_info->legacy->pinned_tweet_ids_str[0];
             }
+        }
+
+        // Array of Tweet IDs
+        $tweetIds = [];
+        // Filter out unwanted tweets
+        foreach ($data->tweets as $tweet) {
+            if (!$tweet) {
+                continue;
+            }
+
+            if (isset($tweet->legacy)) {
+                $legacy_info = $tweet->legacy;
+            } else {
+                $legacy_info = $tweet;
+            }
+
+            // Filter out retweets to remove possible duplicates of original tweet
+            switch ($this->queriedContext) {
+                case 'By keyword or hashtag':
+		    // phpcs:ignore
+                    if ((isset($legacy_info->retweeted_status) || isset($legacy_info->retweeted_status_result)) && substr($legacy_info->full_text, 0, 4) === 'RT @') {
+                        continue 2;
+                    }
+                    break;
+            }
+
+            // Skip own Retweets...
+            if (isset($legacy_info->retweeted_status) && $legacy_info->retweeted_status->user->id_str === $tweet->user->id_str) {
+                continue;
+            // phpcs:ignore
+            } elseif (isset($legacy_info->retweeted_status_result) && $tweet->retweeted_status_result->result->legacy->user_id_str === $legacy_info->user_id_str) {
+                continue;
+            }
+
+            $tweetId = (isset($legacy_info->id_str) ? $legacy_info->id_str : $tweet->rest_id);
+            // Skip pinned tweet
+            if ($hidePinned && ($tweetId === $pinnedTweetId)) {
+                continue;
+            }
+
+            if (isset($tweet->rest_id)) {
+                $tweetIds[] = $tweetId;
+            }
+            $rtweet = $legacy_info;
+            $tweets[] = $rtweet;
         }
 
         if ($this->queriedContext === 'By username') {
@@ -345,16 +367,6 @@ EOD
 
         $i = 0;
         foreach ($tweets as $tweet) {
-            // Skip own Retweets...
-            if (isset($tweet->retweeted_status) && $tweet->retweeted_status->user->id_str === $tweet->user->id_str) {
-                continue;
-            }
-
-            // Skip pinned tweet
-            if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
-                continue;
-            }
-
             $item = [];
 
             $realtweet = $tweet;
