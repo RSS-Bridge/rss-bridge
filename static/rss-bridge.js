@@ -56,7 +56,7 @@ var rssbridge_feed_finder = (function() {
     // Start the Feed search
     async function rssbridge_feed_search(event) {
         const input = document.getElementById('searchfield');
-        let content = encodeURI(input.value);
+        let content = encodeURIComponent(input.value);
         if (content) {
             const findfeedresults = document.getElementById('findfeedresults');
             findfeedresults.innerHTML = 'Searching for matching feeds ...';
