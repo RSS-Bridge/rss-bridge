@@ -213,6 +213,7 @@ class PixivBridge extends BridgeAbstract
 
     /**
      * todo: remove manual file cache
+     * See bridge specific documentation for alternative option.
      */
     private function cacheImage($url, $illustId, $isImage)
     {
