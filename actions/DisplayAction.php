@@ -131,7 +131,7 @@ class DisplayAction implements ActionInterface
         } else {
             try {
                 $params = $bridge->getParameters();
-                foreach ($params['global']??[] as $input => $values) {
+                foreach ($params['global'] ?? [] as $input => $values) {
                     if (
                         isset($values['defaultValue']) &&
                         $values['defaultValue'] === 'checked'
@@ -151,7 +151,7 @@ class DisplayAction implements ActionInterface
                         }
                     }
                 }
-        
+
                 $bridge->setDatas($bridge_params);
                 $bridge->collectData();
                 $items = $bridge->getItems();
