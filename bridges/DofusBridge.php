@@ -12,7 +12,6 @@ class DofusBridge extends FeedExpander
             'c' => [
                 'name' => 'Category',
                 'type' => 'list',
-                'required' => true,
                 'values' => [
                     'News' => 'news',
                     'Changelog' => 'changelog',
@@ -22,7 +21,6 @@ class DofusBridge extends FeedExpander
             'l' => [
                 'name' => 'Language',
                 'type' => 'list',
-                'required' => true,
                 'values' => [
                     'English' => 'en',
                     'French' => 'fr',
