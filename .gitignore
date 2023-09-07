@@ -245,3 +245,4 @@ config/*
 
 #Crawler
 robots.txt
+bridges/TestBridge.php
