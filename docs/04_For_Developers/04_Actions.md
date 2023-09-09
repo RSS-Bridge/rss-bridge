@@ -20,7 +20,7 @@ The `detect` action attempts to redirect the user to an appropriate `display` ac
 
 If an appropriate bridge is found, a `301 Moved Permanently` HTTP status code is returned with a relative location for a `display` action. If no appropriate bridge is found or a required parameter is missing, a `400 Bad Request` status code is returned.
 
-The parameters for this action are listed bellow:
+The parameters for this action are listed below:
 
 Parameter | Required | Description
 ----------|----------|------------
@@ -80,13 +80,13 @@ This parameter represents the total number of bridges available to the current i
 
 ## FindFeed
 
-The `findfeed` action attempts to list all available feeds based on a supplied URL. As bridges have to individually implement `detectParameters` this it may not work for every bridge.
+The `findfeed` action attempts to list all available feeds based on a supplied URL for the active bridges of this instance. As bridges have to individually implement `detectParameters`, this it may not work for every bridge.
 
-If some bridges return some feeds, a JSON data structure is returned. If no feed is found, a `404 Not Found` status code is returned.
+If one or more bridges return a feed, a JSON data array structure is returned. If no feeds were found, a `404 Not Found` status code is returned. If a required parameter is missing, a `400 Bad Request` status code is returned.
 
-For each feed, the whole feed URL is sent in the `url` member, the feed specific bridge parameters meta data in `bridgeData` member and the Bridge Meta data in the `bridgeMeta` member.
+For each feed, the whole feed URL is sent in the `url` member, the feed specific bridge parameters metadata in the `bridgeData` member and the Bridge metadata in the `bridgeMeta` member.
 
-This example shows JSON data for a the NASA Instragram account URL (https://www.instagram.com/nasa/) for the Html format :
+This example shows JSON data for the NASA Instagram account URL (`https://www.instagram.com/nasa/`) using the `Html` format :
 
 ```JSON
 [
@@ -158,9 +158,9 @@ This example shows JSON data for a the NASA Instragram account URL (https://www.
 ]
 ```
 
-The parameters for this action are listed bellow:
+The parameters for this action are listed below:
 
 Parameter | Required | Description
 ----------|----------|------------
 `url`     | yes      | Specifies the URL to attempt to find a feed from. The value of this should be URL encoded.
-`format`  | yes      | Specifies the name of the format to use for the URL of the feed. This is passed to the detected `display` action. Possible values are determined from the formats available to the current instance of RSS-Bridge.
+`format`  | yes      | Specifies the name of the format to use for the URL of the feeds. This is passed to the detected `display` action. Possible values are determined from the formats available to the current instance of RSS-Bridge.
