@@ -130,28 +130,6 @@ class DisplayAction implements ActionInterface
             }
         } else {
             try {
-                $params = $bridge->getParameters();
-                foreach ($params['global'] ?? [] as $input => $values) {
-                    if (
-                        isset($values['defaultValue']) &&
-                        $values['defaultValue'] === 'checked'
-                    ) {
-                        if (!isset($request[$input])) {
-                            $request[$input] = false;
-                        }
-                    }
-                }
-                foreach ($params[$request['context']] as $input => $values) {
-                    if (
-                        isset($values['defaultValue']) &&
-                        $values['defaultValue'] === 'checked'
-                    ) {
-                        if (!isset($request[$input])) {
-                            $request[$input] = false;
-                        }
-                    }
-                }
-
                 $bridge->setDatas($bridge_params);
                 $bridge->collectData();
                 $items = $bridge->getItems();
