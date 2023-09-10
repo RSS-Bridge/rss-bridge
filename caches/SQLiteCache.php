@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+/**
+ * The storage table has a column `updated` which is incorrectly named.
+ * It should have been named `expiration` and the code treats it as an expiration date (in unix timestamp)
+ */
 class SQLiteCache implements CacheInterface
 {
     private \SQLite3 $db;
