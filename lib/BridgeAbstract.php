@@ -160,11 +160,7 @@ abstract class BridgeAbstract implements BridgeInterface
 
                 switch ($type) {
                     case 'checkbox':
-                        if (!isset($properties['defaultValue'])) {
-                            $this->inputs[$context][$name]['value'] = false;
-                        } else {
-                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
-                        }
+                        $this->inputs[$context][$name]['value'] = $inputs[$context][$name]['value'] ?? false;
                         break;
                     case 'list':
                         if (!isset($properties['defaultValue'])) {
@@ -191,10 +187,14 @@ abstract class BridgeAbstract implements BridgeInterface
             foreach (static::PARAMETERS['global'] as $name => $properties) {
                 if (isset($inputs[$name])) {
                     $value = $inputs[$name];
-                } elseif (isset($properties['defaultValue'])) {
-                    $value = $properties['defaultValue'];
                 } else {
-                    continue;
+                    if ($properties['type'] === 'checkbox') {
+                        $value = false;
+                    } elseif (isset($properties['defaultValue'])) {
+                        $value = $properties['defaultValue'];
+                    } else {
+                        continue;
+                    }
                 }
                 $this->inputs[$queriedContext][$name]['value'] = $value;
             }
