@@ -353,10 +353,12 @@ class PixivBridge extends BridgeAbstract
     private function getCookie()
     {
         // checks if cookie is set, if not initialise it with the cookie from the config
-        $value = $this->loadCacheValue('cookie', 2678400 /* 30 days + 1 day to let cookie chance to renew */);
+        $value = $this->loadCacheValue('cookie');
         if (!isset($value)) {
             $value = $this->getOption('cookie');
-            $this->saveCacheValue('cookie', $this->getOption('cookie'));
+
+            // 30 days + 1 day to let cookie chance to renew
+            $this->saveCacheValue('cookie', $this->getOption('cookie'), 2678400);
         }
         return $value;
     }
@@ -370,7 +372,7 @@ class PixivBridge extends BridgeAbstract
         }
 
         if ($cache) {
-            $data = $this->loadCacheValue($url, 86400); // 24 hours
+            $data = $this->loadCacheValue($url);
             if (!$data) {
                 $data = getContents($url, $httpHeaders, $curlOptions, true) or returnServerError("Could not load $url");
                 $this->saveCacheValue($url, $data);
