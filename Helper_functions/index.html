@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Helper_functions/index.html">Helper functions</a></h1>
                 <span class="ModifiedDate">
-            September 9, 2023 at 7:03 PM        </span>
+            September 10, 2023 at 12:50 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/06_Helper_functions/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -112,9 +112,11 @@
 <p>The <code>getInput</code> function is used to receive a value for a parameter, specified in <code>const PARAMETERS</code></p>
 <pre><code class="language-PHP">$this-&gt;getInput('your input name here');
 </code></pre>
-<p><code>getInput</code> will either return the value for your parameter or <code>null</code> if the parameter is unknown or not specified.</p>
+<p><code>getInput</code> will either return the value for your parameter
+or <code>null</code> if the parameter is unknown or not specified.</p>
 <h1><a id="getkey" href="#getkey" class="Permalink" aria-hidden="true" title="Permalink">#</a>getKey</h1>
-<p>The <code>getKey</code> function is used to receive the key name to a selected list value given the name of the list, specified in <code>const PARAMETERS</code>
+<p>The <code>getKey</code> function is used to receive the key name to a selected list
+value given the name of the list, specified in <code>const PARAMETERS</code>
 Is able to work with multidimensional list arrays.</p>
 <pre><code class="language-PHP">// Given a multidimensional array like this
 const PARAMETERS = [[
@@ -137,7 +139,8 @@ const PARAMETERS = [[
 $this-&gt;getKey('country');
 // if the selected value was &quot;ve&quot;, this function will return &quot;Venezuela&quot;
 </code></pre>
-<p><code>getKey</code> will either return the key name for your parameter or <code>null</code> if the parameter is unknown or not specified.</p>
+<p><code>getKey</code> will either return the key name for your parameter or <code>null</code> if the parameter
+is unknown or not specified.</p>
 <h1><a id="getcontents" href="#getcontents" class="Permalink" aria-hidden="true" title="Permalink">#</a>getContents</h1>
 <p>The <code>getContents</code> function uses <a href="https://secure.php.net/manual/en/book.curl.php" class="Link--external" rel="noopener noreferrer">cURL</a> to acquire data from the specified URI while respecting the various settings defined at a global level by RSS-Bridge (i.e., proxy host, user agent, etc.). This function accepts a few parameters:</p>
 <table>
@@ -181,22 +184,23 @@ $opts = array(CURLOPT_POST =&gt; 1);
 $html = getContents($url, $header, $opts);
 </code></pre>
 <h1><a id="getsimplehtmldom" href="#getsimplehtmldom" class="Permalink" aria-hidden="true" title="Permalink">#</a>getSimpleHTMLDOM</h1>
-<p>The <code>getSimpleHTMLDOM</code> function is a wrapper for the <a href="https://simplehtmldom.sourceforge.io/" class="Link--external" rel="noopener noreferrer">simple_html_dom</a> <a href="https://simplehtmldom.sourceforge.io/docs/1.9/api/file_get_html/" class="Link--external" rel="noopener noreferrer">file_get_html</a> function in order to provide context by design.</p>
+<p>The <code>getSimpleHTMLDOM</code> function is a wrapper for the
+<a href="https://simplehtmldom.sourceforge.io/" class="Link--external" rel="noopener noreferrer">simple_html_dom</a> <a href="https://simplehtmldom.sourceforge.io/docs/1.9/api/file_get_html/" class="Link--external" rel="noopener noreferrer">file_get_html</a> function in order to provide context by design.</p>
 <pre><code class="language-PHP">$html = getSimpleHTMLDOM('your URI');
 </code></pre>
 <h1><a id="getsimplehtmldomcached" href="#getsimplehtmldomcached" class="Permalink" aria-hidden="true" title="Permalink">#</a>getSimpleHTMLDOMCached</h1>
-<p>The <code>getSimpleHTMLDOMCached</code> function does the same as the <a href="#getsimplehtmldom"><code>getSimpleHTMLDOM</code></a> function, except that the content received for the given URI is stored in a cache and loaded from cache on the next request if the specified cache duration was not reached. Use this function for data that is very unlikely to change between consecutive requests to <strong>RSS-Bridge</strong>. This function allows to specify the cache duration with the second parameter (default is 24 hours / 86400 seconds).</p>
+<p>The <code>getSimpleHTMLDOMCached</code> function does the same as the
+<a href="#getsimplehtmldom"><code>getSimpleHTMLDOM</code></a> function,
+except that the content received for the given URI is stored in a cache
+and loaded from cache on the next request if the specified cache duration
+was not reached.</p>
+<p>Use this function for data that is very unlikely to change between consecutive requests to <strong>RSS-Bridge</strong>.
+This function allows to specify the cache duration with the second parameter.</p>
 <pre><code class="language-PHP">$html = getSimpleHTMLDOMCached('your URI', 86400); // Duration 24h
 </code></pre>
-<p><strong>Notice:</strong> Due to the current implementation a value greater than 86400 seconds (24 hours) will not work as the cache is purged every 24 hours automatically.</p>
-<h1><a id="returnerror" href="#returnerror" class="Permalink" aria-hidden="true" title="Permalink">#</a>returnError</h1>
-<p><strong>Notice:</strong> Whenever possible make use of <a href="#returnclienterror"><code>returnClientError</code></a> or <a href="#returnservererror"><code>returnServerError</code></a></p>
-<p>The <code>returnError</code> function aborts execution of the current bridge and returns the given error message with the provided error number:</p>
-<pre><code class="language-PHP">returnError('Your error message', 404);
-</code></pre>
-<p>Check the <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes" class="Link--external" rel="noopener noreferrer">list of error codes</a> for applicable error numbers.</p>
 <h1><a id="returnclienterror" href="#returnclienterror" class="Permalink" aria-hidden="true" title="Permalink">#</a>returnClientError</h1>
-<p>The <code>returnClientError</code> function aborts execution of the current bridge and returns the given error message with error code <strong>400</strong>:</p>
+<p>The <code>returnClientError</code> function aborts execution of the current bridge
+and returns the given error message with error code <strong>400</strong>:</p>
 <pre><code class="language-PHP">returnClientError('Your error message')
 </code></pre>
 <p>Use this function when the user provided invalid parameter or a required parameter is missing.</p>
@@ -204,9 +208,11 @@ $html = getContents($url, $header, $opts);
 <p>The <code>returnServerError</code> function aborts execution of the current bridge and returns the given error message with error code <strong>500</strong>:</p>
 <pre><code class="language-PHP">returnServerError('Your error message')
 </code></pre>
-<p>Use this function when a problem occurs that has nothing to do with the parameters provided by the user. (like: Host service gone missing, empty data received, etc…)</p>
+<p>Use this function when a problem occurs that has nothing to do with the parameters provided by the user.
+(like: Host service gone missing, empty data received, etc…)</p>
 <h1><a id="defaultlinkto" href="#defaultlinkto" class="Permalink" aria-hidden="true" title="Permalink">#</a>defaultLinkTo</h1>
-<p>Automatically replaces any relative URL in a given string or DOM object (i.e. the one returned by <a href="#getsimplehtmldom">getSimpleHTMLDOM</a>) with an absolute URL.</p>
+<p>Automatically replaces any relative URL in a given string or DOM object
+(i.e. the one returned by <a href="#getsimplehtmldom">getSimpleHTMLDOM</a>) with an absolute URL.</p>
 <pre><code class="hljs php">defaultLinkTo ( mixed $content, string $server ) : object
 </code></pre>
 <p>Returns a DOM object (even if provided a string).</p>
