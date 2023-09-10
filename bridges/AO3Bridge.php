@@ -33,6 +33,7 @@ class AO3Bridge extends BridgeAbstract
             ],
         ]
     ];
+    private $title;
 
     public function collectData()
     {
@@ -94,11 +95,12 @@ class AO3Bridge extends BridgeAbstract
         $url = self::URI . "/works/$id/navigate";
         $httpClient = RssBridge::getHttpClient();
 
+        $version = 'v0.0.1';
         $response = $httpClient->request($url, [
-            'useragent' => 'rss-bridge bot (https://github.com/RSS-Bridge/rss-bridge)',
+            'useragent' => "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)",
         ]);
 
-        $html = \str_get_html($response['body']);
+        $html = \str_get_html($response->getBody());
         $html = defaultLinkTo($html, self::URI);
 
         $this->title = $html->find('h2 a', 0)->plaintext;

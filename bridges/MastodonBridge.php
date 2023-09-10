@@ -100,7 +100,7 @@ class MastodonBridge extends BridgeAbstract
                 // We fetch the boosted content.
                 try {
                     $rtContent = $this->fetchAP($content['object']);
-                    $rtUser = $this->loadCacheValue($rtContent['attributedTo'], 86400);
+                    $rtUser = $this->loadCacheValue($rtContent['attributedTo']);
                     if (!isset($rtUser)) {
                         // We fetch the author, since we cannot always assume the format of the URL.
                         $user = $this->fetchAP($rtContent['attributedTo']);

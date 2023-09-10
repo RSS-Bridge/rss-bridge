@@ -1,4 +1,8 @@
-**RSS-Bridge** is free and open source software for generating Atom or RSS feeds from websites which don't have one. It is written in PHP and intended to run on a Web server. See the [Screenshots](01_General/04_Screenshots.md) for a quick introduction to **RSS-Bridge**
+RSS-Bridge is a web application.
+
+It generates web feeds for websites that don't have one.
+
+Officially hosted instance: https://rss-bridge.org/bridge01/
 
   - You want to know more about **RSS-Bridge**?  
 Check out our **[project goals](01_General/01_Project-goals.md)**.

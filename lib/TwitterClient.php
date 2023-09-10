@@ -12,11 +12,9 @@ class TwitterClient
     {
         $this->cache = $cache;
 
-        $cache->setScope('twitter');
-        $cache->setKey(['cache']);
-        $cache->purgeCache(60 * 60 * 3);
+        $data = $this->cache->get('twitter') ?? [];
+        $this->data = $data;
 
-        $this->data = $this->cache->loadData() ?? [];
         $this->authorization = 'AAAAAAAAAAAAAAAAAAAAAGHtAgAAAAAA%2Bx7ILXNILCqkSGIzy6faIHZ9s3Q%3DQy97w6SIrzE7lQwPJEYQBsArEE2fC25caFwRBvAGi456G09vGR';
         $this->tw_consumer_key = '3nVuSoBZnx6U4vzUxf5w';
         $this->tw_consumer_secret = 'Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys';
@@ -273,9 +271,7 @@ class TwitterClient
         $guest_token = json_decode($response)->guest_token;
         $this->data['guest_token'] = $guest_token;
 
-        $this->cache->setScope('twitter');
-        $this->cache->setKey(['cache']);
-        $this->cache->saveData($this->data);
+        $this->cache->set('twitter', $this->data);
     }
 
     private function fetchUserInfoByScreenName(string $screenName)
@@ -299,9 +295,7 @@ class TwitterClient
         $userInfo = $response->data->user;
         $this->data[$screenName] = $userInfo;
 
-        $this->cache->setScope('twitter');
-        $this->cache->setKey(['cache']);
-        $this->cache->saveData($this->data);
+        $this->cache->set('twitter', $this->data);
         return $userInfo;
     }
 
@@ -434,9 +428,7 @@ class TwitterClient
         $listInfo = $response->data->user_by_screen_name->list;
         $this->data[$screenName . '-' . $listSlug] = $listInfo;
 
-        $this->cache->setScope('twitter');
-        $this->cache->setKey(['cache']);
-        $this->cache->saveData($this->data);
+        $this->cache->set('twitter', $this->data);
         return $listInfo;
     }
 

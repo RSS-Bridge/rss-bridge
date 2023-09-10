@@ -37,6 +37,6 @@ class ListAction implements ActionInterface
             ];
         }
         $list->total = count($list->bridges);
-        return new Response(Json::encode($list), 200, ['Content-Type' => 'application/json']);
+        return new Response(Json::encode($list), 200, ['content-type' => 'application/json']);
     }
 }

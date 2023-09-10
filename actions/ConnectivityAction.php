@@ -34,7 +34,7 @@ class ConnectivityAction implements ActionInterface
     public function execute(array $request)
     {
         if (!Debug::isEnabled()) {
-            throw new \Exception('This action is only available in debug mode!');
+            return new Response('This action is only available in debug mode!');
         }
 
         $bridgeName = $request['bridge'] ?? null;
@@ -43,7 +43,7 @@ class ConnectivityAction implements ActionInterface
         }
         $bridgeClassName = $this->bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
-            throw new \Exception(sprintf('Bridge not found: %s', $bridgeName));
+            return new Response('Bridge not found', 404);
         }
         return $this->reportBridgeConnectivity($bridgeClassName);
     }
@@ -54,29 +54,25 @@ class ConnectivityAction implements ActionInterface
             throw new \Exception('Bridge is not whitelisted!');
         }
 
-        $retVal = [
-            'bridge' => $bridgeClassName,
-            'successful' => false,
-            'http_code' => 200,
-        ];
-
         $bridge = $this->bridgeFactory->create($bridgeClassName);
         $curl_opts = [
-            CURLOPT_CONNECTTIMEOUT => 5
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_FOLLOWLOCATION => true,
+        ];
+        $result = [
+            'bridge'        => $bridgeClassName,
+            'successful'    => false,
+            'http_code'     => null,
         ];
         try {
-            $reply = getContents($bridge::URI, [], $curl_opts, true);
-
-            if ($reply['code'] === 200) {
-                $retVal['successful'] = true;
-                if (strpos(implode('', $reply['status_lines']), '301 Moved Permanently')) {
-                    $retVal['http_code'] = 301;
-                }
+            $response = getContents($bridge::URI, [], $curl_opts, true);
+            $result['http_code'] = $response['code'];
+            if (in_array($response['code'], [200])) {
+                $result['successful'] = true;
             }
         } catch (\Exception $e) {
-            $retVal['successful'] = false;
         }
 
-        return new Response(Json::encode($retVal), 200, ['Content-Type' => 'text/json']);
+        return new Response(Json::encode($result), 200, ['content-type' => 'text/json']);
     }
 }

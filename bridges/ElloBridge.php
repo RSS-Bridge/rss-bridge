@@ -114,18 +114,17 @@ class ElloBridge extends BridgeAbstract
     private function getAPIKey()
     {
         $cache = RssBridge::getCache();
-        $cache->setScope('ElloBridge');
-        $cache->setKey(['key']);
-        $key = $cache->loadData();
+        $cacheKey = 'ElloBridge_key';
+        $apiKey = $cache->get($cacheKey);
 
-        if ($key == null) {
-            $keyInfo = getContents(self::URI . 'api/webapp-token') or
-                returnServerError('Unable to get token.');
-            $key = json_decode($keyInfo)->token->access_token;
-            $cache->saveData($key);
+        if (!$apiKey) {
+            $keyInfo = getContents(self::URI . 'api/webapp-token') or returnServerError('Unable to get token.');
+            $apiKey = json_decode($keyInfo)->token->access_token;
+            $ttl = 60 * 60 * 20;
+            $cache->set($cacheKey, $apiKey, $ttl);
         }
 
-        return $key;
+        return $apiKey;
     }
 
     public function getName()

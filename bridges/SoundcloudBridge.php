@@ -36,7 +36,7 @@ class SoundCloudBridge extends BridgeAbstract
 
     private $feedTitle = null;
     private $feedIcon = null;
-    private $cache = null;
+    private CacheInterface $cache;
 
     private $clientIdRegex = '/client_id.*?"(.+?)"/';
     private $widgetRegex = '/widget-.+?\.js/';
@@ -44,8 +44,6 @@ class SoundCloudBridge extends BridgeAbstract
     public function collectData()
     {
         $this->cache = RssBridge::getCache();
-        $this->cache->setScope('SoundCloudBridge');
-        $this->cache->setKey(['client_id']);
 
         $res = $this->getUser($this->getInput('u'));
 
@@ -121,11 +119,9 @@ HTML;
 
     private function getClientID()
     {
-        $this->cache->setScope('SoundCloudBridge');
-        $this->cache->setKey(['client_id']);
-        $clientID = $this->cache->loadData();
+        $clientID = $this->cache->get('SoundCloudBridge_client_id');
 
-        if ($clientID == null) {
+        if (!$clientID) {
             return $this->refreshClientID();
         } else {
             return $clientID;
@@ -151,10 +147,7 @@ HTML;
 
             if (preg_match($this->clientIdRegex, $widgetJS, $matches)) {
                 $clientID = $matches[1];
-                $this->cache->setScope('SoundCloudBridge');
-                $this->cache->setKey(['client_id']);
-                $this->cache->saveData($clientID);
-
+                $this->cache->set('SoundCloudBridge_client_id', $clientID);
                 return $clientID;
             }
         }

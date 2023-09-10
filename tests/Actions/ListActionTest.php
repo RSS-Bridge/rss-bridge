@@ -17,7 +17,8 @@ class ListActionTest extends TestCase
         $action = new \ListAction();
         $response = $action->execute([]);
         $headers = $response->getHeaders();
-        $this->assertSame($headers['Content-Type'], 'application/json');
+        $contentType = $response->getHeader('content-type');
+        $this->assertSame($contentType, 'application/json');
     }
 
     public function testOutput()

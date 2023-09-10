@@ -66,13 +66,24 @@ final class Logger
                 }
             }
         }
-        // Intentionally not sanitizing $message
+
+        if ($context) {
+            try {
+                $context = Json::encode($context);
+            } catch (\JsonException $e) {
+                $context['message'] = null;
+                $context = Json::encode($context);
+            }
+        } else {
+            $context = '';
+        }
         $text = sprintf(
             "[%s] rssbridge.%s %s %s\n",
             now()->format('Y-m-d H:i:s'),
             $level,
+            // Intentionally not sanitizing $message
             $message,
-            $context ? Json::encode($context) : ''
+            $context
         );
 
         // Log to stderr/stdout whatever that is
@@ -81,6 +92,6 @@ final class Logger
 
         // Log to file
         // todo: extract to log handler
-        // file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND | LOCK_EX);
+        //$bytes = file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND | LOCK_EX);
     }
 }

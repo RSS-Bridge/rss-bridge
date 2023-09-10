@@ -159,7 +159,7 @@ class BugzillaBridge extends BridgeAbstract
     protected function getUser($user)
     {
         // Check if the user endpoint is available
-        if ($this->loadCacheValue($this->instance . 'userEndpointClosed', 86400)) {
+        if ($this->loadCacheValue($this->instance . 'userEndpointClosed')) {
             return $user;
         }
 

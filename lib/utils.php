@@ -1,18 +1,17 @@
 <?php
 
-class HttpException extends \Exception
-{
-}
-
-final class CloudFlareException extends HttpException
-{
-}
-
+// https://github.com/nette/utils/blob/master/src/Utils/Json.php
 final class Json
 {
-    public static function encode($value): string
+    public static function encode($value, $pretty = true, bool $asciiSafe = false): string
     {
-        $flags = JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES;
+        if (!$asciiSafe) {
+            $flags = $flags | JSON_UNESCAPED_UNICODE;
+        }
+        if ($pretty) {
+            $flags = $flags | JSON_PRETTY_PRINT;
+        }
         return \json_encode($value, $flags);
     }
 
@@ -236,4 +235,14 @@ function now(): \DateTimeImmutable
 function create_random_string(int $bytes = 16): string
 {
     return bin2hex(openssl_random_pseudo_bytes($bytes));
+}
+
+function returnClientError($message)
+{
+    throw new \Exception($message, 400);
+}
+
+function returnServerError($message)
+{
+    throw new \Exception($message, 500);
 }

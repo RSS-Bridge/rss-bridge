@@ -116,6 +116,10 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     private array $configuration = [];
 
+    public function __construct()
+    {
+    }
+
     /** {@inheritdoc} */
     public function getItems()
     {
@@ -410,15 +414,13 @@ abstract class BridgeAbstract implements BridgeInterface
     /**
      * Loads a cached value for the specified key
      *
-     * @param int $timeout Cache duration (optional)
      * @return mixed Cached value or null if the key doesn't exist or has expired
      */
-    protected function loadCacheValue(string $key, int $timeout = 86400)
+    protected function loadCacheValue(string $key)
     {
         $cache = RssBridge::getCache();
-        $cache->setScope($this->getShortName());
-        $cache->setKey([$key]);
-        return $cache->loadData($timeout);
+        $cacheKey = $this->getShortName() . '_' . $key;
+        return $cache->get($cacheKey);
     }
 
     /**
@@ -426,12 +428,11 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @param mixed $value Value to cache
      */
-    protected function saveCacheValue(string $key, $value)
+    protected function saveCacheValue(string $key, $value, $ttl = 86400)
     {
         $cache = RssBridge::getCache();
-        $cache->setScope($this->getShortName());
-        $cache->setKey([$key]);
-        $cache->saveData($value);
+        $cacheKey = $this->getShortName() . '_' . $key;
+        $cache->set($cacheKey, $value, $ttl);
     }
 
     public function getShortName(): string

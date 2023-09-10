@@ -27,17 +27,13 @@ class CacheTest extends TestCase
             'path' => $temporaryFolder,
             'enable_purge' => true,
         ]);
-        $sut->setScope('scope');
-        $sut->purgeCache(-1);
-        $sut->setKey(['key']);
+        $sut->clear();
 
-        $this->assertNull($sut->getTime());
-        $this->assertNull($sut->loadData());
+        $this->assertNull($sut->get('key'));
 
-        $sut->saveData('data');
-        $this->assertSame('data', $sut->loadData());
-        $this->assertIsNumeric($sut->getTime());
-        $sut->purgeCache(-1);
+        $sut->set('key', 'data', 5);
+        $this->assertSame('data', $sut->get('key'));
+        $sut->clear();
 
         // Intentionally not deleting the temp folder
     }
