@@ -27,18 +27,26 @@ class SteamAppNewsBridge extends BridgeAbstract
             'title' => '# of posts to retrieve (default 20)',
             'type' => 'number',
             'defaultValue' => 20
+        ],
+        'tags' => [
+            'name' => 'Tag Filter',
+            'title' => 'Comma-separated list of tags to filter by',
+            'type' => 'text',
+            'exampleValue' => 'patchnotes'
         ]
     ]];
 
     public function collectData()
     {
-        $api = 'https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/';
+        $apiTarget = 'https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/';
         // Example with params: https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=730&maxlength=0&count=20
         // More info at dev docs https://partner.steamgames.com/doc/webapi/ISteamNews
-        $url = $api . '?appid='
-        . $this->getInput('appid') . '&maxlength='
-        . $this->getInput('maxlength') . '&count='
-        . $this->getInput('count');
+        $url =
+            $apiTarget
+            . '?appid=' . $this->getInput('appid')
+            . '&maxlength=' . $this->getInput('maxlength')
+            . '&count=' . $this->getInput('count')
+            . '&tags=' . $this->getInput('tags');
 
         // Get the JSON content
         $json = getContents($url);
