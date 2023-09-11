@@ -116,6 +116,10 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     private array $configuration = [];
 
+    public function __construct()
+    {
+    }
+
     /** {@inheritdoc} */
     public function getItems()
     {
@@ -160,11 +164,7 @@ abstract class BridgeAbstract implements BridgeInterface
 
                 switch ($type) {
                     case 'checkbox':
-                        if (!isset($properties['defaultValue'])) {
-                            $this->inputs[$context][$name]['value'] = false;
-                        } else {
-                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
-                        }
+                        $this->inputs[$context][$name]['value'] = $inputs[$context][$name]['value'] ?? false;
                         break;
                     case 'list':
                         if (!isset($properties['defaultValue'])) {
@@ -191,10 +191,14 @@ abstract class BridgeAbstract implements BridgeInterface
             foreach (static::PARAMETERS['global'] as $name => $properties) {
                 if (isset($inputs[$name])) {
                     $value = $inputs[$name];
-                } elseif (isset($properties['defaultValue'])) {
-                    $value = $properties['defaultValue'];
                 } else {
-                    continue;
+                    if ($properties['type'] === 'checkbox') {
+                        $value = false;
+                    } elseif (isset($properties['defaultValue'])) {
+                        $value = $properties['defaultValue'];
+                    } else {
+                        continue;
+                    }
                 }
                 $this->inputs[$queriedContext][$name]['value'] = $value;
             }
@@ -410,15 +414,13 @@ abstract class BridgeAbstract implements BridgeInterface
     /**
      * Loads a cached value for the specified key
      *
-     * @param int $timeout Cache duration (optional)
      * @return mixed Cached value or null if the key doesn't exist or has expired
      */
-    protected function loadCacheValue(string $key, int $timeout = 86400)
+    protected function loadCacheValue(string $key)
     {
         $cache = RssBridge::getCache();
-        $cache->setScope($this->getShortName());
-        $cache->setKey([$key]);
-        return $cache->loadData($timeout);
+        $cacheKey = $this->getShortName() . '_' . $key;
+        return $cache->get($cacheKey);
     }
 
     /**
@@ -426,12 +428,11 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @param mixed $value Value to cache
      */
-    protected function saveCacheValue(string $key, $value)
+    protected function saveCacheValue(string $key, $value, $ttl = 86400)
     {
         $cache = RssBridge::getCache();
-        $cache->setScope($this->getShortName());
-        $cache->setKey([$key]);
-        $cache->saveData($value);
+        $cacheKey = $this->getShortName() . '_' . $key;
+        $cache->set($cacheKey, $value, $ttl);
     }
 
     public function getShortName(): string

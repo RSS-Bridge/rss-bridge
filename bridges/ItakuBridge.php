@@ -664,7 +664,7 @@ class ItakuBridge extends BridgeAbstract
         // Debug::log($url);
         if ($getJSON) { //get JSON object
             if ($cache) {
-                $data = $this->loadCacheValue($url, 86400); // 24 hours
+                $data = $this->loadCacheValue($url);
                 if (is_null($data)) {
                     $data = getContents($url, $httpHeaders, $curlOptions) or returnServerError("Could not load $url");
                     $this->saveCacheValue($url, $data);

@@ -65,6 +65,7 @@ class ThePirateBayBridge extends BridgeAbstract
         '207' => 'HD Movies',
         '208' => 'HD TV-Shows',
         '209' => '3D',
+        '212' => 'UHD/4k TV-Shows',
         '299' => 'Other',
         '301' => 'Windows',
         '302' => 'Mac/Apple',

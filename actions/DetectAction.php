@@ -45,7 +45,7 @@ class DetectAction implements ActionInterface
             $bridgeParams['format'] = $format;
 
             $url = '?action=display&' . http_build_query($bridgeParams);
-            return new Response('', 301, ['Location' => $url]);
+            return new Response('', 301, ['location' => $url]);
         }
 
         throw new \Exception('No bridge found for given URL: ' . $targetURL);

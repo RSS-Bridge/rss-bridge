@@ -66,8 +66,6 @@ class ZeitBridge extends FeedExpander
         $item['enclosures'] = [];
 
         $headers = [
-            'User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-            'X-Forwarded-For: 66.249.66.1',
             'Cookie: zonconsent=' . date('Y-m-d\TH:i:s.v\Z'),
         ];
 

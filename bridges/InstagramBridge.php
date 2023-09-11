@@ -99,23 +99,22 @@ class InstagramBridge extends BridgeAbstract
         }
 
         $cache = RssBridge::getCache();
-        $cache->setScope('InstagramBridge');
-        $cache->setKey([$username]);
-        $key = $cache->loadData();
+        $cacheKey = 'InstagramBridge_' . $username;
+        $pk = $cache->get($cacheKey);
 
-        if ($key == null) {
+        if (!$pk) {
             $data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
             foreach (json_decode($data)->users as $user) {
                 if (strtolower($user->user->username) === strtolower($username)) {
-                    $key = $user->user->pk;
+                    $pk = $user->user->pk;
                 }
             }
-            if ($key == null) {
+            if (!$pk) {
                 returnServerError('Unable to find username in search result.');
             }
-            $cache->saveData($key);
+            $cache->set($cacheKey, $pk);
         }
-        return $key;
+        return $pk;
     }
 
     public function collectData()

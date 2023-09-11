@@ -19,7 +19,10 @@ class SetBridgeCacheAction implements ActionInterface
         $authenticationMiddleware = new ApiAuthenticationMiddleware();
         $authenticationMiddleware($request);
 
-        $key = $request['key'] or returnClientError('You must specify key!');
+        $key = $request['key'] ?? null;
+        if (!$key) {
+            returnClientError('You must specify key!');
+        }
 
         $bridgeFactory = new BridgeFactory();
 
@@ -40,13 +43,10 @@ class SetBridgeCacheAction implements ActionInterface
         $value = $request['value'];
 
         $cache = RssBridge::getCache();
-        $cache->setScope(get_class($bridge));
-        if (!is_array($key)) {
-            // not sure if $key is an array when it comes in from request
-            $key = [$key];
-        }
-        $cache->setKey($key);
-        $cache->saveData($value);
+
+        $cacheKey = get_class($bridge) . '_' . $key;
+        $ttl = 86400 * 3;
+        $cache->set($cacheKey, $value, $ttl);
 
         header('Content-Type: text/plain');
         echo 'done';

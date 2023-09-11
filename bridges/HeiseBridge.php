@@ -137,10 +137,8 @@ class HeiseBridge extends FeedExpander
         if (strpos($item['uri'], 'https://www.heise.de') !== 0) {
             return $item;
         }
-
-        // abort on heise+ articles and link to archive.ph for full-text content
+        // abort on heise+ articles
         if ($sessioncookie == '' && str_starts_with($item['title'], 'heise+ |')) {
-            $item['uri'] = 'https://archive.ph/?run=1&url=' . urlencode($item['uri']);
             return $item;
         }
 
