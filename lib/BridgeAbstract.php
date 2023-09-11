@@ -188,7 +188,7 @@ abstract class BridgeAbstract implements BridgeInterface
                 if (isset($inputs[$name])) {
                     $value = $inputs[$name];
                 } else {
-                    if ($properties['type'] === 'checkbox') {
+                    if ($properties['type'] ?? null === 'checkbox' ) {
                         $value = false;
                     } elseif (isset($properties['defaultValue'])) {
                         $value = $properties['defaultValue'];
