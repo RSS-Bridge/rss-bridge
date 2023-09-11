@@ -41,8 +41,7 @@ class SteamAppNewsBridge extends BridgeAbstract
         $apiTarget = 'https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/';
         // Example with params: https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=730&maxlength=0&count=20
         // More info at dev docs https://partner.steamgames.com/doc/webapi/ISteamNews
-        $url =
-            $apiTarget
+        $url = $apiTarget
             . '?appid=' . $this->getInput('appid')
             . '&maxlength=' . $this->getInput('maxlength')
             . '&count=' . $this->getInput('count')
