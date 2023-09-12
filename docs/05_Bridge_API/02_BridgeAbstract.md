@@ -437,9 +437,9 @@ If no icon is specified by the bridge, RSS-Bridge will use a default location: `
 # detectParameters
 The `detectParameters` function takes a URL and attempts to extract a valid set of parameters for the current bridge.
 
-If the passed URL is valid for this bridge the function should return an array of parameter -> value pairs that can be used by this bridge including context if available, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge the function should return `null`.
+If the passed URL is valid for this bridge, the function should return an array of parameter -> value pairs that can be used by this bridge, including context if available, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge, the function should return `null`.
 
-**Notice:** Implementing this function is optional. By default **RSS-Bridge** tries to match the supplied URL to the `URI` constant defined in the bridge which may be enough for bridges without any parameters defined.
+**Notice:** Implementing this function is optional. By default, **RSS-Bridge** tries to match the supplied URL to the `URI` constant defined in the bridge, which may be enough for bridges without any parameters defined.
 
 ```PHP
 public function detectParameters($url){
