@@ -437,7 +437,7 @@ If no icon is specified by the bridge, RSS-Bridge will use a default location: `
 # detectParameters
 The `detectParameters` function takes a URL and attempts to extract a valid set of parameters for the current bridge.
 
-If the passed URL is valid for this bridge the function should return an array of parameter -> value pairs that can be used by this bridge, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge the function should return `null`.
+If the passed URL is valid for this bridge the function should return an array of parameter -> value pairs that can be used by this bridge including context if available, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge the function should return `null`.
 
 **Notice:** Implementing this function is optional. By default **RSS-Bridge** tries to match the supplied URL to the `URI` constant defined in the bridge which may be enough for bridges without any parameters defined.
 
@@ -454,6 +454,21 @@ public function detectParameters($url){
 	}
 }
 ```
+
+You can implement automated tests for the `detectParameters` function by adding the `TEST_DETECT_PARAMETERS` constant to your bridge class constant.
+
+`TEST_DETECT_PARAMETERS` is an array, with as key the URL passed to the `detectParameters`function and as value, the array of parameters returned by `detectParameters` 
+
+```PHP
+    const TEST_DETECT_PARAMETERS = [
+        'https://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+        'https://instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+        'http://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+    ];
+```
+
+**Notice:** Adding this constant is optional. If the constant is not present, no automated test will be executed.
+
 
 ***
 
