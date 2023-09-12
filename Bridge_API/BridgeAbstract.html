@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></h1>
                 <span class="ModifiedDate">
-            September 10, 2023 at 12:50 PM        </span>
+            September 12, 2023 at 3:16 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/02_BridgeAbstract.md" target="_blank">
                 Edit on GitHub            </a>
@@ -472,8 +472,8 @@ $item['uid']        // A unique ID to identify the current item
 </code></pre>
 <h1><a id="detectparameters" href="#detectparameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>detectParameters</h1>
 <p>The <code>detectParameters</code> function takes a URL and attempts to extract a valid set of parameters for the current bridge.</p>
-<p>If the passed URL is valid for this bridge the function should return an array of parameter -&gt; value pairs that can be used by this bridge, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge the function should return <code>null</code>.</p>
-<p><strong>Notice:</strong> Implementing this function is optional. By default <strong>RSS-Bridge</strong> tries to match the supplied URL to the <code>URI</code> constant defined in the bridge which may be enough for bridges without any parameters defined.</p>
+<p>If the passed URL is valid for this bridge, the function should return an array of parameter -&gt; value pairs that can be used by this bridge, including context if available, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge, the function should return <code>null</code>.</p>
+<p><strong>Notice:</strong> Implementing this function is optional. By default, <strong>RSS-Bridge</strong> tries to match the supplied URL to the <code>URI</code> constant defined in the bridge, which may be enough for bridges without any parameters defined.</p>
 <pre><code class="language-PHP">public function detectParameters($url){
 	$regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
 	if(empty(static::PARAMETERS)
@@ -486,6 +486,16 @@ $item['uid']        // A unique ID to identify the current item
 	}
 }
 </code></pre>
+<p><strong>Notice:</strong> This function is also used by the <a href="../For_Developers/Actions.html#findfeed">findFeed</a> action. This action allows an user to get a list of all feeds corresponding to an URL.</p>
+<p>You can implement automated tests for the <code>detectParameters</code> function by adding the <code>TEST_DETECT_PARAMETERS</code> constant to your bridge class constant.</p>
+<p><code>TEST_DETECT_PARAMETERS</code> is an array, with as key the URL passed to the <code>detectParameters</code>function and as value, the array of parameters returned by <code>detectParameters</code></p>
+<pre><code class="language-PHP">    const TEST_DETECT_PARAMETERS = [
+        'https://www.instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
+        'https://instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
+        'http://www.instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
+    ];
+</code></pre>
+<p><strong>Notice:</strong> Adding this constant is optional. If the constant is not present, no automated test will be executed.</p>
 <hr />
 <h1><a id="helper-methods" href="#helper-methods" class="Permalink" aria-hidden="true" title="Permalink">#</a>Helper Methods</h1>
 <p><code>BridgeAbstract</code> implements helper methods to make it easier for bridge maintainers to create bridges. Use these methods whenever possible instead of writing your own.</p>
