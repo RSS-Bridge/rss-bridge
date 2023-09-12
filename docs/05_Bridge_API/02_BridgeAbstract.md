@@ -455,6 +455,8 @@ public function detectParameters($url){
 }
 ```
 
+**Notice:** This function is also used by the [findFeed](/docs/04_For_Developers/04_Actions.md#findfeed) action. This action allows an user to get a list of all feeds corresponding to an URL.
+
 You can implement automated tests for the `detectParameters` function by adding the `TEST_DETECT_PARAMETERS` constant to your bridge class constant.
 
 `TEST_DETECT_PARAMETERS` is an array, with as key the URL passed to the `detectParameters`function and as value, the array of parameters returned by `detectParameters` 
