@@ -15,6 +15,18 @@ final class RssBridge
         }
         Configuration::loadConfiguration($customConfig, getenv());
 
+        // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
+        date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
+
+        self::$httpClient = new CurlHttpClient();
+
+        $cacheFactory = new CacheFactory();
+        if (Debug::isEnabled()) {
+            self::$cache = $cacheFactory->create('array');
+        } else {
+            self::$cache = $cacheFactory->create();
+        }
+
         set_exception_handler(function (\Throwable $e) {
             Logger::error('Uncaught Exception', ['e' => $e]);
             http_response_code(500);
@@ -56,23 +68,6 @@ final class RssBridge
                 }
             }
         });
-
-        // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
-        date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
-
-        self::$httpClient = new CurlHttpClient();
-
-        $cacheFactory = new CacheFactory();
-        if (Debug::isEnabled()) {
-            self::$cache = $cacheFactory->create('array');
-        } else {
-            self::$cache = $cacheFactory->create();
-        }
-
-        if (Configuration::getConfig('authentication', 'enable')) {
-            $authenticationMiddleware = new AuthenticationMiddleware();
-            $authenticationMiddleware();
-        }
     }
 
     public function main(array $argv = []): void
@@ -81,6 +76,10 @@ final class RssBridge
             parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
             $request = $cliArgs;
         } else {
+            if (Configuration::getConfig('authentication', 'enable')) {
+                $authenticationMiddleware = new AuthenticationMiddleware();
+                $authenticationMiddleware();
+            }
             $request = array_merge($_GET, $_POST);
         }
 

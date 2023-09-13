@@ -119,7 +119,7 @@ final class CurlHttpClient implements HttpClient
             }
         }
 
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $statusCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         curl_close($ch);
         return new Response($data, $statusCode, $responseHeaders);
     }

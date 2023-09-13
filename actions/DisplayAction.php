@@ -110,8 +110,6 @@ class DisplayAction implements ActionInterface
                 'icon' => $bridge->getIcon()
             ];
         } catch (\Exception $e) {
-            $errorOutput = Configuration::getConfig('error', 'output');
-            $reportLimit = Configuration::getConfig('error', 'report_limit');
             if ($e instanceof HttpException) {
                 // Reproduce (and log) these responses regardless of error output and report limit
                 if ($e->getCode() === 429) {
@@ -124,6 +122,8 @@ class DisplayAction implements ActionInterface
                 }
             }
             Logger::error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
+            $errorOutput = Configuration::getConfig('error', 'output');
+            $reportLimit = Configuration::getConfig('error', 'report_limit');
             $errorCount = 1;
             if ($reportLimit > 1) {
                 $errorCount = $this->logBridgeError($bridge->getName(), $e->getCode());
