@@ -237,132 +237,41 @@ class InstructablesBridge extends BridgeAbstract
 
     public function collectData()
     {
-        // Enable the following line to get the category list (dev mode)
-        // $this->listCategories();
+        $category = $this->getInput('category');
+        $filter = $this->getInput('filter');
 
-        $html = getSimpleHTMLDOM($this->getURI());
-        $html = defaultLinkTo($html, $this->getURI());
+        $api = 'https://www.instructables.com/api_proxy/search/collections/projects/documents/search';
+        //$sortBy = 'views:desc';
+        $sortBy = 'publishDate:desc';
+        //$filterBy = 'featureFlag:=true && category:=Circuits && channel: [Apple,Linux]';
+        $filterBy = 'featureFlag:=true && category:=Circuits';
+        //$filterBy = 'featureFlag:=true && teachers:=Teachers';
+        //$filterBy = 'featureFlag:=true && category:=Craft';
+        $params = [
+            'q'                 => '*',
+            'query_by'          => 'title,stepBody,screenName',
+            'page'              => '1',
+            'sort_by'           => $sortBy,
+            'include_fields'    => 'title,urlString,coverImageUrl,screenName,favorites,views,primaryClassification,featureFlag,prizeLevel,IMadeItCount',
+            'filter_by'         => $filterBy,
+            'per_page'          => '50',
+        ];
 
-        $covers = $html->find('
-			.category-projects-list > div,
-			.category-landing-projects-list > div,
-		');
+        $url = $api . '?' . http_build_query($params);
+        /* phpcs:ignore */
+        $key = 'TUIxY0xkNjdHV09KaFV1dEVxYVRHNGs1QW1sbzlNVVZBaVZKV2VrODc0VT02ZWFYeyJleGNsdWRlX2ZpZWxkcyI6WyJvdXRfb2YiLCJzZWFyY2hfdGltZV9tcyIsInN0ZXBCb2R5Il0sInBlcl9wYWdlIjo2MH0=';
+        $json = getContents($url, ["x-typesense-api-key: $key"]);
+        $data = Json::decode($json, false);
 
-        foreach ($covers as $cover) {
+        foreach ($data->hits as $hit) {
+            $document = $hit->document;
             $item = [];
-
-            $item['uri'] = $cover->find('a.ible-title', 0)->href;
-            $item['title'] = $cover->find('a.ible-title', 0)->innertext;
-            $item['author'] = $this->getCategoryAuthor($cover);
-            $item['content'] = '<a href='
-            . $item['uri']
-            . '><img src='
-            . $cover->find('img', 0)->getAttribute('data-src')
-            . '></a>';
-
-            $item['enclosures'][] = str_replace(
-                '.RECTANGLE1',
-                '.LARGE',
-                $cover->find('img', 0)->getAttribute('data-src')
-            );
-
+            $item['uri'] = 'https://www.instructables.com/' . $document->urlString;
+            $item['author'] = $document->screenName;
+            $item['title'] = $document->title;
+            $item['content'] = '<pre>' . Json::encode($document) . '</pre>';
+            $item['enclosures'] = [$document->coverImageUrl];
             $this->items[] = $item;
         }
-    }
-
-    public function getName()
-    {
-        switch ($this->queriedContext) {
-            case 'Category':
-                foreach (self::PARAMETERS[$this->queriedContext]['category']['values'] as $key => $value) {
-                    $subcategory = array_search($this->getInput('category'), $value);
-
-                    if ($subcategory !== false) {
-                        break;
-                    }
-                }
-
-                $filter = array_search(
-                    $this->getInput('filter'),
-                    self::PARAMETERS[$this->queriedContext]['filter']['values']
-                );
-
-                return $subcategory . ' (' . $filter . ') - ' . static::NAME;
-        }
-
-        return parent::getName();
-    }
-
-    public function getURI()
-    {
-        switch ($this->queriedContext) {
-            case 'Category':
-                return self::URI
-                . $this->getInput('category')
-                . $this->getInput('filter');
-        }
-
-        return parent::getURI();
-    }
-
-    /**
-     * Returns a list of categories for development purposes (used to build the
-     * parameters list)
-     */
-    private function listCategories()
-    {
-        // Use home page to acquire main categories
-        $html = getSimpleHTMLDOM(self::URI);
-        $html = defaultLinkTo($html, self::URI);
-
-        foreach ($html->find('.home-content-explore-link') as $category) {
-            // Use arbitrary category to receive full list
-            $html = getSimpleHTMLDOM($category->href);
-
-            foreach ($html->find('.channel-thumbnail a') as $channel) {
-                $name = html_entity_decode(trim($channel->title));
-
-                // Remove unwanted entities
-                $name = str_replace("'", '', $name);
-                $name = str_replace('&#39;', '', $name);
-
-                $uri = $channel->href;
-
-                $category_name = explode('/', $uri)[1];
-
-                if (
-                    !isset($categories)
-                    || !array_key_exists($category_name, $categories)
-                    || !in_array($uri, $categories[$category_name])
-                ) {
-                    $categories[$category_name][$name] = $uri;
-                }
-            }
-        }
-
-        // Build PHP array manually
-        foreach ($categories as $key => $value) {
-            $name = ucfirst($key);
-            echo "'{$name}' => array(\n";
-            echo "\t'All' => '/{$key}/',\n";
-            foreach ($value as $name => $uri) {
-                echo "\t'{$name}' => '{$uri}',\n";
-            }
-            echo "),\n";
-        }
-
-        die;
-    }
-
-    /**
-     * Returns the author as anchor for a given cover.
-     */
-    private function getCategoryAuthor($cover)
-    {
-        return '<a href='
-        . $cover->find('.ible-author a', 0)->href
-        . '>'
-        . $cover->find('.ible-author a', 0)->innertext
-        . '</a>';
     }
 }
