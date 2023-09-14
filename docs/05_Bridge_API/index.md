@@ -1,4 +1,8 @@
-A _Bridge_ is an class that allows **RSS-Bridge** to create an RSS-feed from a website. A _Bridge_ represents one element on the [Welcome screen](../01_General/04_Screenshots.md) and covers one or more sites to return feeds for. It is developed in a PHP file located in the `bridges/` folder (see [Folder structure](../04_For_Developers/03_Folder_structure.md)) and extends one of the base classes of **RSS-Bridge**:
+A _Bridge_ is a class that allows **RSS-Bridge** to create an RSS-feed from a website.
+A _Bridge_ represents one element on the [Welcome screen](../01_General/04_Screenshots.md)
+and covers one or more sites to return feeds for.
+It is developed in a PHP file located in the `bridges/` folder (see [Folder structure](../04_For_Developers/03_Folder_structure.md))
+and extends one of the base classes of **RSS-Bridge**:
 
 Base class | Description
 -----------|------------

@@ -94,7 +94,7 @@ class MyBridge extends BridgeAbstract {
 	const MAINTAINER  = 'ghost';
 
 	public function collectData() {
-		$item = array(); // Create an empty item
+		$item = []; // Create an empty item
 
 		$item['title'] = 'Hello World!';
 
@@ -121,11 +121,11 @@ class MyBridge extends BridgeAbstract {
 	const URI = '';
 	const DESCRIPTION = 'No description provided';
 	const MAINTAINER = 'No maintainer';
-	const PARAMETERS = array(); // Can be omitted!
+	const PARAMETERS = []; // Can be omitted!
 	const CACHE_TIMEOUT = 3600; // Can be omitted!
 
 	public function collectData() {
-		$item = array(); // Create an empty item
+		$item = []; // Create an empty item
 
 		$item['title'] = 'Hello World!';
 
@@ -145,7 +145,7 @@ For information on how to read parameter values during execution, please refer t
 
 ## Adding parameters to a bridge
 
-Parameters are specified as part of the bridge class. An empty list of parameters is defined as `const PARAMETERS = array();`
+Parameters are specified as part of the bridge class. An empty list of parameters is defined as `const PARAMETERS = [];`
 
 <details><summary>Show example</summary><div>
 
@@ -153,7 +153,7 @@ Parameters are specified as part of the bridge class. An empty list of parameter
 <?PHP
 class MyBridge extends BridgeAbstract {
 	/* ... */
-	const PARAMETERS = array(); // Empty list of parameters (can be omitted)
+	const PARAMETERS = []; // Empty list of parameters (can be omitted)
 	/* ... */
 }
 ```
@@ -172,10 +172,10 @@ A context is defined as a associative array of parameters. The name of a context
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	'My Context 1' => array(),
-	'My Context 2' => array()
-);
+const PARAMETERS = [
+	'My Context 1' => [],
+	'My Context 2' => [],
+];
 ```
 
 **Output**
@@ -189,9 +189,9 @@ _Notice_: The name of a context can be left empty if only one context is needed!
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	array()
-);
+const PARAMETERS = [
+	[]
+];
 ```
 
 </div></details><br>
@@ -201,25 +201,28 @@ You can also define a set of parameters that will be applied to every possible c
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	'global' => array() // Applies to all contexts!
-);
+const PARAMETERS = [
+	'global' => [] // Applies to all contexts!
+];
 ```
 
 </div></details>
 
 ## Level 2 - Parameter
 
-Parameters are placed inside a context. They are defined as associative array of parameter specifications. Each parameter is defined by it's internal input name, a definition in the form `'n' => array();`, where `n` is the name with which the bridge can access the parameter during execution.
+Parameters are placed inside a context.
+They are defined as associative array of parameter specifications.
+Each parameter is defined by it's internal input name, a definition in the form `'n' => [];`, 
+where `n` is the name with which the bridge can access the parameter during execution.
 
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	'My Context' => array(
-		'n' => array()
-	)
-);
+const PARAMETERS = [
+	'My Context' => [
+		'n' => []
+	]
+];
 ```
 
 </div></details><br>
@@ -351,7 +354,7 @@ Elements collected by this function must be stored in `$this->items`. The `items
 
 ```PHP
 
-$item = array(); // Create a new item
+$item = []; // Create a new item
 
 $item['title'] = 'Hello World!';
 
@@ -448,7 +451,7 @@ public function detectParameters($url){
 	&& preg_match($regex, $url, $urlMatches) > 0
 	&& preg_match($regex, static::URI, $bridgeUriMatches) > 0
 	&& $urlMatches[3] === $bridgeUriMatches[3]) {
-		return array();
+		return [];
 	} else {
 		return null;
 	}

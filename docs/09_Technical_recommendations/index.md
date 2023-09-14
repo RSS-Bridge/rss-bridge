@@ -15,7 +15,7 @@ class TestBridge extends BridgeAbstract {
 	const URI = '';
 	const DESCRIPTION = 'No description provided';
 	const MAINTAINER = 'No maintainer';
-	const PARAMETERS = array();
+	const PARAMETERS = [];
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
