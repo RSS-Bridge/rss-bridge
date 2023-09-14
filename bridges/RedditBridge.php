@@ -90,8 +90,8 @@ class RedditBridge extends BridgeAbstract
         } catch (HttpException $e) {
             if ($e->getCode() === 429) {
                 $this->cache->set($cacheKey, true, 60 * 16);
-                throw $e;
             }
+            throw $e;
         }
     }
 
