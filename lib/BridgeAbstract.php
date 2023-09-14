@@ -1,76 +1,15 @@
 <?php
 
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
-abstract class BridgeAbstract implements BridgeInterface
+abstract class BridgeAbstract
 {
-    /**
-     * Name of the bridge
-     *
-     * Use {@see BridgeAbstract::getName()} to read this parameter
-     */
     const NAME = 'Unnamed bridge';
-
-    /**
-     * URI to the site the bridge is intended to be used for.
-     *
-     * Use {@see BridgeAbstract::getURI()} to read this parameter
-     */
     const URI = '';
-
-    /**
-     * Donation URI to the site the bridge is intended to be used for.
-     *
-     * Use {@see BridgeAbstract::getDonationURI()} to read this parameter
-     */
     const DONATION_URI = '';
-
-    /**
-     * A brief description of what the bridge can do
-     *
-     * Use {@see BridgeAbstract::getDescription()} to read this parameter
-     */
     const DESCRIPTION = 'No description provided';
-
-    /**
-     * The name of the maintainer. Multiple maintainers can be separated by comma
-     *
-     * Use {@see BridgeAbstract::getMaintainer()} to read this parameter
-     */
     const MAINTAINER = 'No maintainer';
-
-    /**
-     * The default cache timeout for the bridge
-     *
-     * Use {@see BridgeAbstract::getCacheTimeout()} to read this parameter
-     */
     const CACHE_TIMEOUT = 3600;
-
-    /**
-     * Configuration for the bridge
-     */
     const CONFIGURATION = [];
-
-    /**
-     * Parameters for the bridge
-     *
-     * Use {@see BridgeAbstract::getParameters()} to read this parameter
-     */
     const PARAMETERS = [];
-
-    /**
-     * Test cases for detectParameters for the bridge
-     */
     const TEST_DETECT_PARAMETERS = [];
 
     /**
@@ -83,47 +22,65 @@ abstract class BridgeAbstract implements BridgeInterface
         'title'         => 'Maximum number of items to return',
     ];
 
-    /**
-     * Holds the list of items collected by the bridge
-     *
-     * Items must be collected by {@see BridgeInterface::collectData()}
-     *
-     * Use {@see BridgeAbstract::getItems()} to access items.
-     *
-     * @var array
-     */
     protected array $items = [];
-
-    /**
-     * Holds the list of input parameters used by the bridge
-     *
-     * Do not access this parameter directly!
-     * Use {@see BridgeAbstract::setInputs()} and {@see BridgeAbstract::getInput()} instead!
-     *
-     * @var array
-     */
     protected array $inputs = [];
-
-    /**
-     * Holds the name of the queried context
-     *
-     * @var string
-     */
-    protected $queriedContext = '';
-
-    /**
-     * Holds the list of bridge-specific configurations from config.ini.php, used by the bridge.
-     */
+    protected string $queriedContext = '';
     private array $configuration = [];
 
     public function __construct()
     {
     }
 
-    /** {@inheritdoc} */
+    abstract public function collectData();
+
     public function getItems()
     {
         return $this->items;
+    }
+
+    public function getOption(string $name)
+    {
+        return $this->configuration[$name] ?? null;
+    }
+
+    public function getDescription()
+    {
+        return static::DESCRIPTION;
+    }
+
+    public function getMaintainer(): string
+    {
+        return static::MAINTAINER;
+    }
+
+    public function getName()
+    {
+        return static::NAME;
+    }
+
+    public function getIcon()
+    {
+        return static::URI . '/favicon.ico';
+    }
+
+    public function getParameters(): array
+    {
+        return static::PARAMETERS;
+    }
+
+    public function getURI()
+    {
+        return static::URI;
+    }
+
+    public function getDonationURI(): string
+    {
+        return static::DONATION_URI;
+    }
+
+    public function getCacheTimeout()
+    {
+        return static::CACHE_TIMEOUT;
     }
 
     /**
@@ -299,10 +256,7 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     protected function getInput($input)
     {
-        if (!isset($this->inputs[$this->queriedContext][$input]['value'])) {
-            return null;
-        }
-        return $this->inputs[$this->queriedContext][$input]['value'];
+        return $this->inputs[$this->queriedContext][$input]['value'] ?? null;
     }
 
     /**
@@ -340,63 +294,6 @@ abstract class BridgeAbstract implements BridgeInterface
         }
     }
 
-    /**
-     * Get bridge configuration value
-     */
-    public function getOption($name)
-    {
-        return $this->configuration[$name] ?? null;
-    }
-
-    /** {@inheritdoc} */
-    public function getDescription()
-    {
-        return static::DESCRIPTION;
-    }
-
-    /** {@inheritdoc} */
-    public function getMaintainer()
-    {
-        return static::MAINTAINER;
-    }
-
-    /** {@inheritdoc} */
-    public function getName()
-    {
-        return static::NAME;
-    }
-
-    /** {@inheritdoc} */
-    public function getIcon()
-    {
-        return static::URI . '/favicon.ico';
-    }
-
-    /** {@inheritdoc} */
-    public function getParameters()
-    {
-        return static::PARAMETERS;
-    }
-
-    /** {@inheritdoc} */
-    public function getURI()
-    {
-        return static::URI;
-    }
-
-    /** {@inheritdoc} */
-    public function getDonationURI()
-    {
-        return static::DONATION_URI;
-    }
-
-    /** {@inheritdoc} */
-    public function getCacheTimeout()
-    {
-        return static::CACHE_TIMEOUT;
-    }
-
-    /** {@inheritdoc} */
     public function detectParameters($url)
     {
         $regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
@@ -411,11 +308,6 @@ abstract class BridgeAbstract implements BridgeInterface
         return null;
     }
 
-    /**
-     * Loads a cached value for the specified key
-     *
-     * @return mixed Cached value or null if the key doesn't exist or has expired
-     */
     protected function loadCacheValue(string $key)
     {
         $cache = RssBridge::getCache();
@@ -423,11 +315,6 @@ abstract class BridgeAbstract implements BridgeInterface
         return $cache->get($cacheKey);
     }
 
-    /**
-     * Stores a value to cache with the specified key
-     *
-     * @param mixed $value Value to cache
-     */
     protected function saveCacheValue(string $key, $value, $ttl = 86400)
     {
         $cache = RssBridge::getCache();

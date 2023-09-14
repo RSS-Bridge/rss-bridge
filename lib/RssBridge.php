@@ -123,10 +123,4 @@ final class RssBridge
     {
         return self::$cache ?? new NullCache();
     }
-
-    public function clearCache()
-    {
-        $cache = self::getCache();
-        $cache->clear();
-    }
 }

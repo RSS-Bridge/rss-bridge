@@ -74,7 +74,7 @@ abstract class FeedExpander extends BridgeAbstract
     /**
      * Collects data from an existing feed.
      *
-     * Children should call this function in {@see BridgeInterface::collectData()}
+     * Children should call this function in {@see BridgeAbstract::collectData()}
      * to extract a feed.
      *
      * @param string $url URL to the feed.

@@ -84,7 +84,7 @@ class DisplayAction implements ActionInterface
         return $response;
     }
 
-    private function createResponse(array $request, BridgeInterface $bridge, FormatInterface $format)
+    private function createResponse(array $request, BridgeAbstract $bridge, FormatInterface $format)
     {
         $items = [];
         $infos = [];
@@ -152,7 +152,7 @@ class DisplayAction implements ActionInterface
         return new Response($format->stringify(), 200, $headers);
     }
 
-    private function createFeedItemFromException($e, BridgeInterface $bridge): FeedItem
+    private function createFeedItemFromException($e, BridgeAbstract $bridge): FeedItem
     {
         $item = new FeedItem();
 

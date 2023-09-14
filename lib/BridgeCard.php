@@ -25,7 +25,7 @@ final class BridgeCard
     /**
      * Gets a single bridge card
      *
-     * @param class-string<BridgeInterface> $bridgeClassName The bridge name
+     * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
      * @param array $formats A list of formats
      * @param bool $isActive Indicates if the bridge is active or not
      * @return string The bridge card
@@ -116,7 +116,7 @@ CARD;
     /**
      * Get the form header for a bridge card
      *
-     * @param class-string<BridgeInterface> $bridgeClassName The bridge name
+     * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
      * @param bool $isHttps If disabled, adds a warning to the form
      * @return string The form header
      */
@@ -143,7 +143,7 @@ This bridge is not fetching its content through a secure connection</div>';
     /**
      * Get the form body for a bridge
      *
-     * @param class-string<BridgeInterface> $bridgeClassName The bridge name
+     * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
      * @param array $formats A list of supported formats
      * @param bool $isActive Indicates if a bridge is enabled or not
      * @param bool $isHttps Indicates if a bridge uses HTTPS or not

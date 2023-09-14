@@ -3,7 +3,6 @@
 namespace RssBridge\Tests\Bridges;
 
 use BridgeAbstract;
-use BridgeInterface;
 use FeedExpander;
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +28,7 @@ class BridgeImplementationTest extends TestCase
     public function testClassType($path)
     {
         $this->setBridge($path);
-        $this->assertInstanceOf(BridgeInterface::class, $this->obj);
+        $this->assertInstanceOf(BridgeAbstract::class, $this->obj);
     }
 
     /**
