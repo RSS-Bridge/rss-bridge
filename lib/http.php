@@ -6,6 +6,21 @@ class HttpException extends \Exception
 
 final class CloudFlareException extends HttpException
 {
+    public static function isCloudFlareResponse(Response $response): bool
+    {
+        $cloudflareTitles = [
+            '<title>Just a moment...',
+            '<title>Please Wait...',
+            '<title>Attention Required!',
+            '<title>Security | Glassdoor',
+        ];
+        foreach ($cloudflareTitles as $cloudflareTitle) {
+            if (str_contains($response->getBody(), $cloudflareTitle)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 interface HttpClient

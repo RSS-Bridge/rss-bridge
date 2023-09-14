@@ -16,6 +16,13 @@ function getContents(
 ) {
     $httpClient = RssBridge::getHttpClient();
 
+    $httpHeadersNormalized = [];
+    foreach ($httpHeaders as $httpHeader) {
+        $parts = explode(':', $httpHeader);
+        $headerName = trim($parts[0]);
+        $headerValue = trim(implode(':', array_slice($parts, 1)));
+        $httpHeadersNormalized[$headerName] = $headerValue;
+    }
     // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
     $defaultHttpHeaders = [
         'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -27,13 +34,6 @@ function getContents(
         'Sec-Fetch-User' => '?1',
         'TE' => 'trailers',
     ];
-    $httpHeadersNormalized = [];
-    foreach ($httpHeaders as $httpHeader) {
-        $parts = explode(':', $httpHeader);
-        $headerName = trim($parts[0]);
-        $headerValue = trim(implode(':', array_slice($parts, 1)));
-        $httpHeadersNormalized[$headerName] = $headerValue;
-    }
     $config = [
         'useragent' => Configuration::getConfig('http', 'useragent'),
         'timeout' => Configuration::getConfig('http', 'timeout'),
@@ -43,7 +43,7 @@ function getContents(
 
     $maxFileSize = Configuration::getConfig('http', 'max_filesize');
     if ($maxFileSize) {
-        // Multiply with 2^20 (1M) to the value in bytes
+        // Convert from MB to B by multiplying with 2^20 (1M)
         $config['max_filesize'] = $maxFileSize * 2 ** 20;
     }
 
@@ -57,7 +57,6 @@ function getContents(
     /** @var Response $cachedResponse */
     $cachedResponse = $cache->get($cacheKey);
     if ($cachedResponse) {
-        // considering popping
         $cachedLastModified = $cachedResponse->getHeader('last-modified');
         if ($cachedLastModified) {
             $cachedLastModified = new \DateTimeImmutable($cachedLastModified);
@@ -101,21 +100,13 @@ function getContents(
                 Debug::isEnabled() ? mb_substr($response->getBody(), 0, 500) : '',
             );
 
-            // The following code must be extracted if it grows too much
-            $cloudflareTitles = [
-                '<title>Just a moment...',
-                '<title>Please Wait...',
-                '<title>Attention Required!',
-                '<title>Security | Glassdoor',
-            ];
-            foreach ($cloudflareTitles as $cloudflareTitle) {
-                if (str_contains($response->getBody(), $cloudflareTitle)) {
-                    throw new CloudFlareException($exceptionMessage, $response->getCode());
-                }
+            if (CloudFlareException::isCloudFlareResponse($response)) {
+                throw new CloudFlareException($exceptionMessage, $response->getCode());
             }
             throw new HttpException(trim($exceptionMessage), $response->getCode());
     }
     if ($returnFull === true) {
+        // todo: return the actual response object
         return [
             'code'      => $response->getCode(),
             'headers'   => $response->getHeaders(),
