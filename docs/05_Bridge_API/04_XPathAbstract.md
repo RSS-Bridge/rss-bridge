@@ -68,6 +68,9 @@ Should return the XPath expression for extracting an item title from the item co
 ### Method `getExpressionItemContent()`
 Should return the XPath expression for extracting an item's content from the item context.
 
+### Method `getSettingUseRawItemContent()`
+Should return the 'Use raw item content' setting value (bool true or false).
+
 ### Method `getExpressionItemUri()`
 Should return the XPath expression for extracting an item link from the item context.
 

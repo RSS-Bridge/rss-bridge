@@ -59,6 +59,17 @@ EOL, 'type' => 'text',
                 'required' => false
             ],
 
+            'raw_content' => [
+                'name' => 'Use raw item description',
+                'title' => <<<"EOL"
+                Whether to use the raw item description or to replace certain characters with
+                special significance in HTML by HTML entities (using the PHP function htmlspecialchars).
+                EOL,
+                'type' => 'checkbox',
+                'defaultValue' => false,
+                'required' => false
+            ],
+
             'uri' => [
                 'name' => 'Item URL selector',
                 'title' => <<<"EOL"
@@ -179,6 +190,15 @@ EOL, 'type' => 'checkbox',
     }
 
     /**
+     * Use raw item content
+     * @return bool
+     */
+    protected function getSettingUseRawItemContent(): bool
+    {
+        return $this->getInput('raw_content');
+    }
+
+    /**
      * XPath expression for extracting an item link from the item context
      * @return string
      */
@@ -226,9 +246,9 @@ EOL, 'type' => 'checkbox',
 
     /**
      * Fix encoding
-     * @return string
+     * @return bool
      */
-    protected function getSettingFixEncoding()
+    protected function getSettingFixEncoding(): bool
     {
         return $this->getInput('fix_encoding');
     }
