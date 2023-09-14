@@ -18,15 +18,6 @@ final class RssBridge
         // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
-        self::$httpClient = new CurlHttpClient();
-
-        $cacheFactory = new CacheFactory();
-        if (Debug::isEnabled()) {
-            self::$cache = $cacheFactory->create('array');
-        } else {
-            self::$cache = $cacheFactory->create();
-        }
-
         set_exception_handler(function (\Throwable $e) {
             Logger::error('Uncaught Exception', ['e' => $e]);
             http_response_code(500);
@@ -68,6 +59,15 @@ final class RssBridge
                 }
             }
         });
+
+        self::$httpClient = new CurlHttpClient();
+
+        $cacheFactory = new CacheFactory();
+        if (Debug::isEnabled()) {
+            self::$cache = $cacheFactory->create('array');
+        } else {
+            self::$cache = $cacheFactory->create();
+        }
     }
 
     public function main(array $argv = []): void
