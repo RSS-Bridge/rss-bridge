@@ -77,6 +77,15 @@ abstract class XPathAbstract extends BridgeAbstract
     const XPATH_EXPRESSION_ITEM_CONTENT = '';
 
     /**
+     * Use raw item content
+     * Whether to use the raw item content or to replace certain characters with
+     * special significance in HTML by HTML entities (using the PHP function htmlspecialchars).
+     *
+     * Use {@see XPathAbstract::getSettingUseRawItemContent()} to read this parameter
+     */
+    const SETTING_USE_RAW_ITEM_CONTENT = false;
+
+    /**
      * XPath expression for extracting an item link from the item context
      * This expression should match a node's attribute containing the article URL
      * (usually the href attribute of an <a> tag). It should start with a dot
@@ -237,6 +246,15 @@ abstract class XPathAbstract extends BridgeAbstract
     }
 
     /**
+     * Use raw item content
+     * @return bool
+     */
+    protected function getSettingUseRawItemContent(): bool
+    {
+        return static::SETTING_USE_RAW_ITEM_CONTENT;
+    }
+
+    /**
      * XPath expression for extracting an item link from the item context
      * @return string
      */
@@ -284,9 +302,9 @@ abstract class XPathAbstract extends BridgeAbstract
 
     /**
      * Fix encoding
-     * @return string
+     * @return bool
      */
-    protected function getSettingFixEncoding()
+    protected function getSettingFixEncoding(): bool
     {
         return static::SETTING_FIX_ENCODING;
     }
@@ -313,6 +331,8 @@ abstract class XPathAbstract extends BridgeAbstract
                 return $this->getExpressionItemTitle();
             case 'content':
                 return $this->getExpressionItemContent();
+            case 'raw_content':
+                return $this->getSettingUseRawItemContent();
             case 'uri':
                 return $this->getExpressionItemUri();
             case 'author':
@@ -417,7 +437,8 @@ abstract class XPathAbstract extends BridgeAbstract
                     continue;
                 }
 
-                $value = $this->getItemValueOrNodeValue($typedResult, $param === 'content');
+                $isContent = $param === 'content';
+                $value = $this->getItemValueOrNodeValue($typedResult, $isContent, $isContent && !$this->getSettingUseRawItemContent());
                 $item->__set($param, $this->formatParamValue($param, $value));
             }
 
@@ -573,7 +594,7 @@ abstract class XPathAbstract extends BridgeAbstract
      * @param $typedResult
      * @return string
      */
-    protected function getItemValueOrNodeValue($typedResult, $returnXML = false)
+    protected function getItemValueOrNodeValue($typedResult, $returnXML = false, $escapeHtml = false)
     {
         if ($typedResult instanceof \DOMNodeList) {
             $item = $typedResult->item(0);
@@ -596,7 +617,7 @@ abstract class XPathAbstract extends BridgeAbstract
 
         $text = trim($text);
 
-        if ($returnXML) {
+        if ($escapeHtml) {
             return htmlspecialchars($text);
         }
         return $text;
