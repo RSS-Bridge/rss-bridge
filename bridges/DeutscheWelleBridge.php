@@ -1,6 +1,7 @@
 <?php
-class DeutscheWelleBridge extends FeedExpander {
 
+class DeutscheWelleBridge extends FeedExpander
+{
     const MAINTAINER = 'No maintainer';
     const NAME = 'Deutsche Welle Bridge';
     const URI = 'https://www.dw.com';
@@ -65,16 +66,18 @@ class DeutscheWelleBridge extends FeedExpander {
         ]
     ]];
 
-    public function collectData() {
+    public function collectData()
+    {
         $this->collectExpandableDatas($this->getInput('feed'));
     }
 
-    protected function parseItem($item) {
+    protected function parseItem($item)
+    {
         $item = parent::parseItem($item);
 
         $parsedUrl = parse_url($item['uri']);
         unset($parsedUrl['query']);
-        $url = $this->unparse_url($parsedUrl);
+        $url = $this->unparseUrl($parsedUrl);
 
         $page = getSimpleHTMLDOM($url);
         $page = defaultLinkTo($page, $url);
@@ -124,13 +127,14 @@ class DeutscheWelleBridge extends FeedExpander {
     }
 
     // https://www.php.net/manual/en/function.parse-url.php#106731
-    private function unparse_url($parsed_url) {
+    private function unparseUrl($parsed_url)
+    {
         $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
         $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
         $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
         $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
         $pass = isset($parsed_url['pass']) ? $parsed_url['pass'] : '';
-        $pass = ($user || $pass) ?"$pass@" : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
         $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
         $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
