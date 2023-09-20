@@ -34,7 +34,7 @@ final class BridgeFactory
         }
     }
 
-    public function create(string $name): BridgeInterface
+    public function create(string $name): BridgeAbstract
     {
         return new $name();
     }

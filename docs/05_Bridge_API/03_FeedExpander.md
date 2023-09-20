@@ -93,10 +93,11 @@ class MySiteBridge extends FeedExpander {
 	const NAME = 'Unnamed bridge';
 	const URI = '';
 	const DESCRIPTION = 'No description provided';
-	const PARAMETERS = array();
+	const PARAMETERS = [];
 	const CACHE_TIMEOUT = 3600;
 
-    public function collectData(){
+    public function collectData()
+    {
         $this->collectExpandableDatas('your feed URI');
     }
 }
