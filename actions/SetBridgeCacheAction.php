@@ -14,6 +14,13 @@
 
 class SetBridgeCacheAction implements ActionInterface
 {
+    private CacheInterface $cache;
+
+    public function __construct()
+    {
+        $this->cache = RssBridge::getCache();
+    }
+
     public function execute(array $request)
     {
         $authenticationMiddleware = new ApiAuthenticationMiddleware();
@@ -35,18 +42,15 @@ class SetBridgeCacheAction implements ActionInterface
         // whitelist control
         if (!$bridgeFactory->isEnabled($bridgeClassName)) {
             throw new \Exception('This bridge is not whitelisted', 401);
-            die;
         }
 
         $bridge = $bridgeFactory->create($bridgeClassName);
         $bridge->loadConfiguration();
         $value = $request['value'];
 
-        $cache = RssBridge::getCache();
-
         $cacheKey = get_class($bridge) . '_' . $key;
         $ttl = 86400 * 3;
-        $cache->set($cacheKey, $value, $ttl);
+        $this->cache->set($cacheKey, $value, $ttl);
 
         header('Content-Type: text/plain');
         echo 'done';

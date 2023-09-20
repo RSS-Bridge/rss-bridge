@@ -72,12 +72,6 @@ class RedditBridge extends BridgeAbstract
             ]
         ]
     ];
-    private CacheInterface $cache;
-
-    public function __construct()
-    {
-        $this->cache = RssBridge::getCache();
-    }
 
     public function collectData()
     {

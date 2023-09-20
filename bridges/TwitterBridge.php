@@ -234,8 +234,7 @@ EOD
         $tweets = [];
 
         // Get authentication information
-        $cache = RssBridge::getCache();
-        $api = new TwitterClient($cache);
+        $api = new TwitterClient($this->cache);
         // Try to get all tweets
         switch ($this->queriedContext) {
             case 'By username':
