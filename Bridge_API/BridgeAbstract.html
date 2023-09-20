@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></h1>
                 <span class="ModifiedDate">
-            September 14, 2023 at 4:58 PM        </span>
+            September 19, 2023 at 5:46 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/02_BridgeAbstract.md" target="_blank">
                 Edit on GitHub            </a>
@@ -169,7 +169,7 @@ class MyBridge extends BridgeAbstract {
 	const MAINTAINER  = 'ghost';
 
 	public function collectData() {
-		$item = array(); // Create an empty item
+		$item = []; // Create an empty item
 
 		$item['title'] = 'Hello World!';
 
@@ -189,11 +189,11 @@ class MyBridge extends BridgeAbstract {
 	<span class="hljs-keyword">const</span> URI = <span class="hljs-string">''</span>;
 	<span class="hljs-keyword">const</span> DESCRIPTION = <span class="hljs-string">'No description provided'</span>;
 	<span class="hljs-keyword">const</span> MAINTAINER = <span class="hljs-string">'No maintainer'</span>;
-	<span class="hljs-keyword">const</span> PARAMETERS = <span class="hljs-keyword">array</span>(); <span class="hljs-comment">// Can be omitted!</span>
+	<span class="hljs-keyword">const</span> PARAMETERS = []; <span class="hljs-comment">// Can be omitted!</span>
 	<span class="hljs-keyword">const</span> CACHE_TIMEOUT = <span class="hljs-number">3600</span>; <span class="hljs-comment">// Can be omitted!</span>
 
 	<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span> </span>{
-		$item = <span class="hljs-keyword">array</span>(); <span class="hljs-comment">// Create an empty item</span>
+		$item = []; <span class="hljs-comment">// Create an empty item</span>
 
 		$item[<span class="hljs-string">'title'</span>] = <span class="hljs-string">'Hello World!'</span>;
 
@@ -207,12 +207,12 @@ class MyBridge extends BridgeAbstract {
 <p>For information on how to read parameter values during execution, please refer to the <a href="../Helper_functions/index.html#getinput">getInput</a> function.</p>
 <hr />
 <h2><a id="adding-parameters-to-a-bridge" href="#adding-parameters-to-a-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Adding parameters to a bridge</h2>
-<p>Parameters are specified as part of the bridge class. An empty list of parameters is defined as <code>const PARAMETERS = array();</code></p>
+<p>Parameters are specified as part of the bridge class. An empty list of parameters is defined as <code>const PARAMETERS = [];</code></p>
 <details><summary>Show example</summary><div>
 <pre><code class="language-PHP">&lt;?PHP
 class MyBridge extends BridgeAbstract {
 	/* ... */
-	const PARAMETERS = array(); // Empty list of parameters (can be omitted)
+	const PARAMETERS = []; // Empty list of parameters (can be omitted)
 	/* ... */
 }
 </code></pre>
@@ -223,36 +223,39 @@ class MyBridge extends BridgeAbstract {
 <h2><a id="level-1-context" href="#level-1-context" class="Permalink" aria-hidden="true" title="Permalink">#</a>Level 1 - Context</h2>
 <p>A context is defined as a associative array of parameters. The name of a context is displayed by RSS-Bridge.</p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">const PARAMETERS = array(
-	'My Context 1' =&gt; array(),
-	'My Context 2' =&gt; array()
-);
+<pre><code class="language-PHP">const PARAMETERS = [
+	'My Context 1' =&gt; [],
+	'My Context 2' =&gt; [],
+];
 </code></pre>
 <p><strong>Output</strong></p>
 <p><img src="../images/bridge_context_named.png" alt="bridge context named" /></p>
 </div></details><br>
 <p><em>Notice</em>: The name of a context can be left empty if only one context is needed!</p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">const PARAMETERS = array(
-	array()
-);
+<pre><code class="language-PHP">const PARAMETERS = [
+	[]
+];
 </code></pre>
 </div></details><br>
 <p>You can also define a set of parameters that will be applied to every possible context of your bridge. To do this, specify a context named <code>global</code>.</p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">const PARAMETERS = array(
-	'global' =&gt; array() // Applies to all contexts!
-);
+<pre><code class="language-PHP">const PARAMETERS = [
+	'global' =&gt; [] // Applies to all contexts!
+];
 </code></pre>
 </div></details>
 <h2><a id="level-2-parameter" href="#level-2-parameter" class="Permalink" aria-hidden="true" title="Permalink">#</a>Level 2 - Parameter</h2>
-<p>Parameters are placed inside a context. They are defined as associative array of parameter specifications. Each parameter is defined by it’s internal input name, a definition in the form <code>'n' =&gt; array();</code>, where <code>n</code> is the name with which the bridge can access the parameter during execution.</p>
+<p>Parameters are placed inside a context.
+They are defined as associative array of parameter specifications.
+Each parameter is defined by it’s internal input name, a definition in the form <code>'n' =&gt; [];</code>,
+where <code>n</code> is the name with which the bridge can access the parameter during execution.</p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">const PARAMETERS = array(
-	'My Context' =&gt; array(
-		'n' =&gt; array()
-	)
-);
+<pre><code class="language-PHP">const PARAMETERS = [
+	'My Context' =&gt; [
+		'n' =&gt; []
+	]
+];
 </code></pre>
 </div></details><br>
 <p>The parameter specification consists of various fields, listed in the table below.</p>
@@ -414,7 +417,7 @@ It provides a way to identify which context the bridge is called with.</p>
 <p>Elements collected by this function must be stored in <code>$this-&gt;items</code>. The <code>items</code> variable is an array of item elements, each of which is an associative array that may contain arbitrary keys. RSS-Bridge specifies common keys which are used to generate most common feed formats.</p>
 <details><summary>Show example</summary><div>
 <pre><code class="language-PHP">
-$item = array(); // Create a new item
+$item = []; // Create a new item
 
 $item['title'] = 'Hello World!';
 
@@ -480,7 +483,7 @@ $item['uid']        // A unique ID to identify the current item
 	&amp;&amp; preg_match($regex, $url, $urlMatches) &gt; 0
 	&amp;&amp; preg_match($regex, static::URI, $bridgeUriMatches) &gt; 0
 	&amp;&amp; $urlMatches[3] === $bridgeUriMatches[3]) {
-		return array();
+		return [];
 	} else {
 		return null;
 	}
