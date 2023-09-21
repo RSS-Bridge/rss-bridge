@@ -74,7 +74,7 @@ class YoutubeBridge extends BridgeAbstract
 
     private $feedName = '';
     private $feeduri = '';
-    private $channel_name = '';
+    private $feedIconUrl = '';
     // This took from repo BetterVideoRss of VerifiedJoseph.
     const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
 
@@ -87,16 +87,16 @@ class YoutubeBridge extends BridgeAbstract
 
         if ($this->getInput('u')) {
             /* User and Channel modes */
-            $this->request = $this->getInput('u');
-            $url_feed = self::URI . '/feeds/videos.xml?user=' . urlencode($this->request);
-            $url_listing = self::URI . '/user/' . urlencode($this->request) . '/videos';
+            $request = $this->getInput('u');
+            $url_feed = self::URI . '/feeds/videos.xml?user=' . urlencode($request);
+            $url_listing = self::URI . '/user/' . urlencode($request) . '/videos';
         } elseif ($this->getInput('c')) {
-            $this->request = $this->getInput('c');
-            $url_feed = self::URI . '/feeds/videos.xml?channel_id=' . urlencode($this->request);
-            $url_listing = self::URI . '/channel/' . urlencode($this->request) . '/videos';
+            $request = $this->getInput('c');
+            $url_feed = self::URI . '/feeds/videos.xml?channel_id=' . urlencode($request);
+            $url_listing = self::URI . '/channel/' . urlencode($request) . '/videos';
         } elseif ($this->getInput('custom')) {
-            $this->request = $this->getInput('custom');
-            $url_listing = self::URI . '/' . urlencode($this->request) . '/videos';
+            $request = $this->getInput('custom');
+            $url_listing = self::URI . '/' . urlencode($request) . '/videos';
         }
 
         if (!empty($url_feed) || !empty($url_listing)) {
@@ -105,7 +105,7 @@ class YoutubeBridge extends BridgeAbstract
                 $html = $this->ytGetSimpleHTMLDOM($url_listing);
                 $jsonData = $this->getJSONData($html);
                 $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
-                $this->iconURL = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
+                $this->feedIconUrl = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
             }
             if (!$this->skipFeeds()) {
                 $html = $this->ytGetSimpleHTMLDOM($url_feed);
@@ -123,7 +123,7 @@ class YoutubeBridge extends BridgeAbstract
                     // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
                     $this->parseJSONListing($jsonData);
                 } else {
-                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
+                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $request);
                 }
             }
             $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
@@ -133,9 +133,9 @@ class YoutubeBridge extends BridgeAbstract
             // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
             // This cache will be used to find out, which videos to fetch
             // to make feed of 15 items or more, if there a lot of videos published on that date.
-            $this->request = $this->getInput('p');
-            $url_feed = self::URI . '/feeds/videos.xml?playlist_id=' . urlencode($this->request);
-            $url_listing = self::URI . '/playlist?list=' . urlencode($this->request);
+            $request = $this->getInput('p');
+            $url_feed = self::URI . '/feeds/videos.xml?playlist_id=' . urlencode($request);
+            $url_listing = self::URI . '/playlist?list=' . urlencode($request);
             $html = $this->ytGetSimpleHTMLDOM($url_listing);
             $jsonData = $this->getJSONData($html);
             // TODO: this method returns only first 100 video items
@@ -160,10 +160,10 @@ class YoutubeBridge extends BridgeAbstract
             });
         } elseif ($this->getInput('s')) {
             /* search mode */
-            $this->request = $this->getInput('s');
+            $request = $this->getInput('s');
             $url_listing = self::URI
                 . '/results?search_query='
-                . urlencode($this->request)
+                . urlencode($request)
                 . '&sp=CAI%253D';
 
             $html = $this->ytGetSimpleHTMLDOM($url_listing);
@@ -180,7 +180,7 @@ class YoutubeBridge extends BridgeAbstract
             }
             $this->parseJSONListing($jsonData);
             $this->feeduri = $url_listing;
-            $this->feedName = 'Search: ' . $this->request;
+            $this->feedName = 'Search: ' . $request;
         } else {
             /* no valid mode */
             returnClientError("You must either specify either:\n - YouTube
@@ -503,11 +503,6 @@ class YoutubeBridge extends BridgeAbstract
 
             $vid = $wrapper->videoId;
             $title = $wrapper->title->runs[0]->text;
-            if (isset($wrapper->ownerText)) {
-                $this->channel_name = $wrapper->ownerText->runs[0]->text;
-            } elseif (isset($wrapper->shortBylineText)) {
-                $this->channel_name = $wrapper->shortBylineText->runs[0]->text;
-            }
 
             $author = '';
             $desc = '';
@@ -579,10 +574,10 @@ class YoutubeBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        if (empty($this->iconURL)) {
+        if (empty($this->feedIconUrl)) {
             return parent::getIcon();
         } else {
-            return $this->iconURL;
+            return $this->feedIconUrl;
         }
     }
 }
