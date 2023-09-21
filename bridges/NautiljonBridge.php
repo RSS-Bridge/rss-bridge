@@ -4,7 +4,7 @@ class NautiljonBridge extends BridgeAbstract
 {
     const NAME = 'Nautiljon Bridge';
     const URI = 'https://www.nautiljon.com';
-    const DESCRIPTION = 'Actualités et Brèves de Nautiljon. Nécessite une version NSS de cURL pour fonctionner.';
+    const DESCRIPTION = 'Actualités et Brèves de Nautiljon.';
     const MAINTAINER = 'papjul';
 
     const PARAMETERS = [
