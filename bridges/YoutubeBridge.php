@@ -272,9 +272,9 @@ class YoutubeBridge extends BridgeAbstract
         $enhancements = [];
 
         $boundaryWhitespaceChars = mb_str_split($whitespaceChars);
-        $boundaryStartChars = array_merge($boundaryWhitespaceChars, [':']);
-        $boundaryEndChars = array_merge($boundaryWhitespaceChars, [',', "'"]);
-        $hashtagBoundaryEndChars = array_merge($boundaryEndChars, ['#', '-', '.']);
+        $boundaryStartChars = array_merge($boundaryWhitespaceChars, [':', '-', '(']);
+        $boundaryEndChars = array_merge($boundaryWhitespaceChars, [',', '.', "'", ')']);
+        $hashtagBoundaryEndChars = array_merge($boundaryEndChars, ['#', '-']);
 
         $descriptionContentLength = mb_strlen($descriptionContent);
 
@@ -306,8 +306,8 @@ class YoutubeBridge extends BridgeAbstract
             when some multibyte characters (e.g. emojis, but maybe also others) are used in the plain text video description.
             (probably some difference between php and javascript in handling multibyte characters)
             This loop should correct the position in most cases. It searches for the next word (determined by a set of boundary chars) with the expected length.
-            Several safeguards ensure that the correct word is chosen. Links may be skipped if no matching word is found.
-            In the worst case scenario, an incorrect word with the same length will be linked, but the description should never get corrupted.
+            Several safeguards ensure that the correct word is chosen. When a link can not be matched,
+            everything will be discarded to prevent corrupting the description.
             Hashtags require a different set of boundary chars.
             */
             $isHashtag = $commandMetadata->webPageType === 'WEB_PAGE_TYPE_BROWSE';
@@ -369,6 +369,11 @@ class YoutubeBridge extends BridgeAbstract
             }
 
             $enhancements[] = $enhancement;
+        }
+
+        if (count($enhancements) !== count($commandRuns)) {
+            // At least one link can not be matched. Discard everything to prevent corrupting the description.
+            return [];
         }
 
         // Sort by position in descending order to be able to safely replace values
