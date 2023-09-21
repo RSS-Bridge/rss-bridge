@@ -77,12 +77,6 @@ class YoutubeBridge extends BridgeAbstract
     private $channel_name = '';
     // This took from repo BetterVideoRss of VerifiedJoseph.
     const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
-    private CacheInterface $cache;
-
-    public function __construct()
-    {
-        $this->cache = RssBridge::getCache();
-    }
 
     private function collectDataInternal()
     {
@@ -368,7 +362,7 @@ class YoutubeBridge extends BridgeAbstract
         $scriptRegex = '/var ytInitialData = (.*?);<\/script>/';
         $result = preg_match($scriptRegex, $html, $matches);
         if (! $result) {
-            Logger::debug('Could not find ytInitialData');
+            $this->logger->debug('Could not find ytInitialData');
             return null;
         }
         return json_decode($matches[1]);

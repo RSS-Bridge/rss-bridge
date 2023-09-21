@@ -2,8 +2,9 @@
 
 final class RssBridge
 {
-    private static HttpClient $httpClient;
     private static CacheInterface $cache;
+    private static Logger $logger;
+    private static HttpClient $httpClient;
 
     public function __construct()
     {
@@ -19,7 +20,7 @@ final class RssBridge
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
         set_exception_handler(function (\Throwable $e) {
-            Logger::error('Uncaught Exception', ['e' => $e]);
+            self::$logger->error('Uncaught Exception', ['e' => $e]);
             http_response_code(500);
             print render(__DIR__ . '/../templates/error.html.php', ['e' => $e]);
             exit(1);
@@ -35,7 +36,7 @@ final class RssBridge
                 sanitize_root($file),
                 $line
             );
-            Logger::warning($text);
+            self::$logger->warning($text);
             if (Debug::isEnabled()) {
                 print sprintf("<pre>%s</pre>\n", e($text));
             }
@@ -52,17 +53,23 @@ final class RssBridge
                     sanitize_root($error['file']),
                     $error['line']
                 );
-                Logger::error($message);
+                self::$logger->error($message);
                 if (Debug::isEnabled()) {
-                    // todo: extract to log handler
                     print sprintf("<pre>%s</pre>\n", e($message));
                 }
             }
         });
 
+        self::$logger = new SimpleLogger('rssbridge');
+        if (Debug::isEnabled()) {
+            self::$logger->addHandler(new StreamHandler(Logger::DEBUG));
+        } else {
+            self::$logger->addHandler(new StreamHandler(Logger::INFO));
+        }
+
         self::$httpClient = new CurlHttpClient();
 
-        $cacheFactory = new CacheFactory();
+        $cacheFactory = new CacheFactory(self::$logger);
         if (Debug::isEnabled()) {
             self::$cache = $cacheFactory->create('array');
         } else {
@@ -108,19 +115,24 @@ final class RssBridge
                 $response->send();
             }
         } catch (\Throwable $e) {
-            Logger::error('Exception in RssBridge::main()', ['e' => $e]);
+            self::$logger->error('Exception in RssBridge::main()', ['e' => $e]);
             http_response_code(500);
             print render(__DIR__ . '/../templates/error.html.php', ['e' => $e]);
         }
     }
 
+    public static function getCache(): CacheInterface
+    {
+        return self::$cache;
+    }
+
+    public static function getLogger(): Logger
+    {
+        return self::$logger;
+    }
+
     public static function getHttpClient(): HttpClient
     {
         return self::$httpClient;
-    }
-
-    public static function getCache(): CacheInterface
-    {
-        return self::$cache ?? new NullCache();
     }
 }

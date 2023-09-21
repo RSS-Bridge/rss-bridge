@@ -3,13 +3,19 @@
 class DisplayAction implements ActionInterface
 {
     private CacheInterface $cache;
+    private Logger $logger;
+
+    public function __construct()
+    {
+        $this->cache = RssBridge::getCache();
+        $this->logger = RssBridge::getLogger();
+    }
 
     public function execute(array $request)
     {
         if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
             return new Response('503 Service Unavailable', 503);
         }
-        $this->cache = RssBridge::getCache();
         $cacheKey = 'http_' . json_encode($request);
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
@@ -113,15 +119,15 @@ class DisplayAction implements ActionInterface
             if ($e instanceof HttpException) {
                 // Reproduce (and log) these responses regardless of error output and report limit
                 if ($e->getCode() === 429) {
-                    Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
+                    $this->logger->info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
                     return new Response('429 Too Many Requests', 429);
                 }
                 if ($e->getCode() === 503) {
-                    Logger::info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
+                    $this->logger->info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
                     return new Response('503 Service Unavailable', 503);
                 }
             }
-            Logger::error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
+            $this->logger->error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
             $errorOutput = Configuration::getConfig('error', 'output');
             $reportLimit = Configuration::getConfig('error', 'report_limit');
             $errorCount = 1;

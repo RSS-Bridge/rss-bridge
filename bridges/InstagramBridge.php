@@ -98,9 +98,8 @@ class InstagramBridge extends BridgeAbstract
             return $username;
         }
 
-        $cache = RssBridge::getCache();
         $cacheKey = 'InstagramBridge_' . $username;
-        $pk = $cache->get($cacheKey);
+        $pk = $this->cache->get($cacheKey);
 
         if (!$pk) {
             $data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
@@ -112,7 +111,7 @@ class InstagramBridge extends BridgeAbstract
             if (!$pk) {
                 returnServerError('Unable to find username in search result.');
             }
-            $cache->set($cacheKey, $pk);
+            $this->cache->set($cacheKey, $pk);
         }
         return $pk;
     }

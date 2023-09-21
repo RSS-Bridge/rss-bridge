@@ -8,11 +8,15 @@ declare(strict_types=1);
  */
 class SQLiteCache implements CacheInterface
 {
-    private \SQLite3 $db;
+    private Logger $logger;
     private array $config;
+    private \SQLite3 $db;
 
-    public function __construct(array $config)
-    {
+    public function __construct(
+        Logger $logger,
+        array $config
+    ) {
+        $this->logger = $logger;
         $default = [
             'file'          => null,
             'timeout'       => 5000,
@@ -59,7 +63,7 @@ class SQLiteCache implements CacheInterface
             $blob = $row['value'];
             $value = unserialize($blob);
             if ($value === false) {
-                Logger::error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
+                $this->logger->error(sprintf("Failed to unserialize: '%s'", mb_substr($blob, 0, 100)));
                 // delete?
                 return $default;
             }
@@ -68,6 +72,7 @@ class SQLiteCache implements CacheInterface
         // delete?
         return $default;
     }
+
     public function set(string $key, $value, int $ttl = null): void
     {
         $cacheKey = $this->createCacheKey($key);

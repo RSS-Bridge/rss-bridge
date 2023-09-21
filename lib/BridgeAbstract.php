@@ -27,8 +27,15 @@ abstract class BridgeAbstract
     protected string $queriedContext = '';
     private array $configuration = [];
 
-    public function __construct()
-    {
+    protected CacheInterface $cache;
+    protected Logger $logger;
+
+    public function __construct(
+        CacheInterface $cache,
+        Logger $logger
+    ) {
+        $this->cache = $cache;
+        $this->logger = $logger;
     }
 
     abstract public function collectData();
@@ -310,16 +317,14 @@ abstract class BridgeAbstract
 
     protected function loadCacheValue(string $key)
     {
-        $cache = RssBridge::getCache();
         $cacheKey = $this->getShortName() . '_' . $key;
-        return $cache->get($cacheKey);
+        return $this->cache->get($cacheKey);
     }
 
     protected function saveCacheValue(string $key, $value, $ttl = 86400)
     {
-        $cache = RssBridge::getCache();
         $cacheKey = $this->getShortName() . '_' . $key;
-        $cache->set($cacheKey, $value, $ttl);
+        $this->cache->set($cacheKey, $value, $ttl);
     }
 
     public function getShortName(): string

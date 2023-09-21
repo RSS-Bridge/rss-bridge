@@ -217,7 +217,7 @@ HTML,
         if ($relativeDate) {
             date_sub($date, $relativeDate);
         } else {
-            Logger::info(sprintf('Unable to parse date string: %s', $dateString));
+            $this->logger->info(sprintf('Unable to parse date string: %s', $dateString));
         }
         return date_format($date, 'r');
     }

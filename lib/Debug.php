@@ -24,6 +24,8 @@ class Debug
         array_pop($trace);
         $lastFrame = $trace[array_key_last($trace)];
         $text = sprintf('%s(%s): %s', $lastFrame['file'], $lastFrame['line'], $message);
-        Logger::debug($text);
+
+        $logger = RssBridge::getLogger();
+        $logger->debug($text);
     }
 }

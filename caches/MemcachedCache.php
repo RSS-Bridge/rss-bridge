@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 class MemcachedCache implements CacheInterface
 {
+    private Logger $logger;
     private \Memcached $conn;
 
-    public function __construct(string $host, int $port)
-    {
+    public function __construct(
+        Logger $logger,
+        string $host,
+        int $port
+    ) {
+        $this->logger = $logger;
         $this->conn = new \Memcached();
         // This call does not actually connect to server yet
         if (!$this->conn->addServer($host, $port)) {
@@ -29,7 +34,7 @@ class MemcachedCache implements CacheInterface
         $expiration = $ttl === null ? 0 : time() + $ttl;
         $result = $this->conn->set($key, $value, $expiration);
         if ($result === false) {
-            Logger::warning('Failed to store an item in memcached', [
+            $this->logger->warning('Failed to store an item in memcached', [
                 'key'           => $key,
                 'code'          => $this->conn->getLastErrorCode(),
                 'message'       => $this->conn->getLastErrorMessage(),

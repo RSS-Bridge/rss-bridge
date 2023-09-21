@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 class FileCache implements CacheInterface
 {
+    private Logger $logger;
     private array $config;
 
-    public function __construct(array $config = [])
-    {
+    public function __construct(
+        Logger $logger,
+        array $config = []
+    ) {
+        $this->logger = $logger;
         $default = [
             'path'          => null,
             'enable_purge'  => true,
@@ -28,7 +32,7 @@ class FileCache implements CacheInterface
         }
         $item = unserialize(file_get_contents($cacheFile));
         if ($item === false) {
-            Logger::warning(sprintf('Failed to unserialize: %s', $cacheFile));
+            $this->logger->warning(sprintf('Failed to unserialize: %s', $cacheFile));
             $this->delete($key);
             return $default;
         }

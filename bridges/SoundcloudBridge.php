@@ -36,15 +36,12 @@ class SoundCloudBridge extends BridgeAbstract
 
     private $feedTitle = null;
     private $feedIcon = null;
-    private CacheInterface $cache;
 
     private $clientIdRegex = '/client_id.*?"(.+?)"/';
     private $widgetRegex = '/widget-.+?\.js/';
 
     public function collectData()
     {
-        $this->cache = RssBridge::getCache();
-
         $res = $this->getUser($this->getInput('u'));
 
         $this->feedTitle = $res->username;
