@@ -242,8 +242,8 @@ class YoutubeBridge extends BridgeAbstract
 
         $desc = $videoSecondaryInfo->attributedDescription->content ?? '';
 
-        // Default whitespace chars used by trim + non-breaking_spaces (https://en.wikipedia.org/wiki/Non-breaking_space)
-        $whitespaceChars = " \t\n\r\0\x0B" . "\u{A0}\u{2060}\u{202F}\u{2007}";
+        // Default whitespace chars used by trim + non-breaking spaces (https://en.wikipedia.org/wiki/Non-breaking_space)
+        $whitespaceChars = " \t\n\r\0\x0B\u{A0}\u{2060}\u{202F}\u{2007}";
         $descEnhancements = $this->ytBridgeGetVideoDescriptionEnhancements($videoSecondaryInfo, $desc, self::URI, $whitespaceChars);
         foreach ($descEnhancements as $descEnhancement) {
             if (isset($descEnhancement['url'])) {
@@ -254,16 +254,21 @@ class YoutubeBridge extends BridgeAbstract
                 // Extended trim for the display value of internal links, e.g.:
                 // FAVICON • Video Name
                 // FAVICON / @ChannelName
-                $descValue = trim($descValue, $whitespaceChars . "•/");
+                $descValue = trim($descValue, $whitespaceChars . '•/');
 
-                $desc = sprintf('%s<a href="%s">%s</a>%s', $descBefore, $descEnhancement['url'], $descValue, $descAfter);
+                $desc = sprintf('%s<a href="%s" target="_blank">%s</a>%s', $descBefore, $descEnhancement['url'], $descValue, $descAfter);
             }
         }
 
         $desc = nl2br($desc);
     }
 
-    private function ytBridgeGetVideoDescriptionEnhancements(object $videoSecondaryInfo, string $descriptionContent, string $baseUrl, string $whitespaceChars): array {
+    private function ytBridgeGetVideoDescriptionEnhancements(
+        object $videoSecondaryInfo,
+        string $descriptionContent,
+        string $baseUrl,
+        string $whitespaceChars
+    ): array {
         $commandRuns = $videoSecondaryInfo->attributedDescription->commandRuns ?? [];
         if (count($commandRuns) <= 0) {
             return [];
@@ -347,7 +352,7 @@ class YoutubeBridge extends BridgeAbstract
             }
 
             if (!isset($enhancement)) {
-                Logger::debug(sprintf('Position %d cannot be corrected in "%s"', $commandRun->startIndex, substr($descriptionContent, 0, 50) . '...'));
+                $this->logger->debug(sprintf('Position %d cannot be corrected in "%s"', $commandRun->startIndex, substr($descriptionContent, 0, 50) . '...'));
                 // Skip to prevent the description from becoming corrupted
                 continue;
             }
