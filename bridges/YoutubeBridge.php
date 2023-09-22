@@ -10,7 +10,7 @@
 class YoutubeBridge extends BridgeAbstract
 {
     const NAME = 'YouTube Bridge';
-    const URI = 'https://www.youtube.com/';
+    const URI = 'https://www.youtube.com';
     const CACHE_TIMEOUT = 10800; // 3h
     const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 
@@ -74,7 +74,7 @@ class YoutubeBridge extends BridgeAbstract
 
     private $feedName = '';
     private $feeduri = '';
-    private $channel_name = '';
+    private $feedIconUrl = '';
     // This took from repo BetterVideoRss of VerifiedJoseph.
     const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
 
@@ -87,16 +87,16 @@ class YoutubeBridge extends BridgeAbstract
 
         if ($this->getInput('u')) {
             /* User and Channel modes */
-            $this->request = $this->getInput('u');
-            $url_feed = self::URI . 'feeds/videos.xml?user=' . urlencode($this->request);
-            $url_listing = self::URI . 'user/' . urlencode($this->request) . '/videos';
+            $request = $this->getInput('u');
+            $url_feed = self::URI . '/feeds/videos.xml?user=' . urlencode($request);
+            $url_listing = self::URI . '/user/' . urlencode($request) . '/videos';
         } elseif ($this->getInput('c')) {
-            $this->request = $this->getInput('c');
-            $url_feed = self::URI . 'feeds/videos.xml?channel_id=' . urlencode($this->request);
-            $url_listing = self::URI . 'channel/' . urlencode($this->request) . '/videos';
+            $request = $this->getInput('c');
+            $url_feed = self::URI . '/feeds/videos.xml?channel_id=' . urlencode($request);
+            $url_listing = self::URI . '/channel/' . urlencode($request) . '/videos';
         } elseif ($this->getInput('custom')) {
-            $this->request = $this->getInput('custom');
-            $url_listing = self::URI . urlencode($this->request) . '/videos';
+            $request = $this->getInput('custom');
+            $url_listing = self::URI . '/' . urlencode($request) . '/videos';
         }
 
         if (!empty($url_feed) || !empty($url_listing)) {
@@ -105,7 +105,7 @@ class YoutubeBridge extends BridgeAbstract
                 $html = $this->ytGetSimpleHTMLDOM($url_listing);
                 $jsonData = $this->getJSONData($html);
                 $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
-                $this->iconURL = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
+                $this->feedIconUrl = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
             }
             if (!$this->skipFeeds()) {
                 $html = $this->ytGetSimpleHTMLDOM($url_feed);
@@ -123,7 +123,7 @@ class YoutubeBridge extends BridgeAbstract
                     // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
                     $this->parseJSONListing($jsonData);
                 } else {
-                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
+                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $request);
                 }
             }
             $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
@@ -133,9 +133,9 @@ class YoutubeBridge extends BridgeAbstract
             // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
             // This cache will be used to find out, which videos to fetch
             // to make feed of 15 items or more, if there a lot of videos published on that date.
-            $this->request = $this->getInput('p');
-            $url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
-            $url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
+            $request = $this->getInput('p');
+            $url_feed = self::URI . '/feeds/videos.xml?playlist_id=' . urlencode($request);
+            $url_listing = self::URI . '/playlist?list=' . urlencode($request);
             $html = $this->ytGetSimpleHTMLDOM($url_listing);
             $jsonData = $this->getJSONData($html);
             // TODO: this method returns only first 100 video items
@@ -160,10 +160,10 @@ class YoutubeBridge extends BridgeAbstract
             });
         } elseif ($this->getInput('s')) {
             /* search mode */
-            $this->request = $this->getInput('s');
+            $request = $this->getInput('s');
             $url_listing = self::URI
-                . 'results?search_query='
-                . urlencode($this->request)
+                . '/results?search_query='
+                . urlencode($request)
                 . '&sp=CAI%253D';
 
             $html = $this->ytGetSimpleHTMLDOM($url_listing);
@@ -180,7 +180,7 @@ class YoutubeBridge extends BridgeAbstract
             }
             $this->parseJSONListing($jsonData);
             $this->feeduri = $url_listing;
-            $this->feedName = 'Search: ' . $this->request;
+            $this->feedName = 'Search: ' . $request;
         } else {
             /* no valid mode */
             returnClientError("You must either specify either:\n - YouTube
@@ -206,7 +206,7 @@ class YoutubeBridge extends BridgeAbstract
 
     private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time)
     {
-        $html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
+        $html = $this->ytGetSimpleHTMLDOM(self::URI . "/watch?v=$vid", true);
 
         // Skip unavailable videos
         if (strpos($html->innertext, 'IS_UNAVAILABLE_PAGE') !== false) {
@@ -224,7 +224,7 @@ class YoutubeBridge extends BridgeAbstract
         }
 
         $jsonData = $this->getJSONData($html);
-        if (! isset($jsonData->contents)) {
+        if (!isset($jsonData->contents)) {
             return;
         }
 
@@ -240,34 +240,149 @@ class YoutubeBridge extends BridgeAbstract
             returnServerError('Could not find videoSecondaryInfoRenderer. Error at: ' . $vid);
         }
 
-        if (isset($videoSecondaryInfo->description)) {
-            foreach ($videoSecondaryInfo->description->runs as $description) {
-                if (isset($description->navigationEndpoint)) {
-                    $metadata = $description->navigationEndpoint->commandMetadata->webCommandMetadata;
-                    $web_type = $metadata->webPageType;
-                    $url = $metadata->url;
-                    $text = '';
-                    switch ($web_type) {
-                        case 'WEB_PAGE_TYPE_UNKNOWN':
-                            $url_components = parse_url($url);
-                            if (isset($url_components['query']) && strpos($url_components['query'], '&q=') !== false) {
-                                parse_str($url_components['query'], $params);
-                                $url = urldecode($params['q']);
-                            }
-                            $text = $url;
-                            break;
-                        case 'WEB_PAGE_TYPE_WATCH':
-                        case 'WEB_PAGE_TYPE_BROWSE':
-                            $url = 'https://www.youtube.com' . $url;
-                            $text = $description->text;
-                            break;
-                    }
-                    $desc .= "<a href=\"$url\" target=\"_blank\">$text</a>";
-                } else {
-                    $desc .= nl2br($description->text);
-                }
+        $desc = $videoSecondaryInfo->attributedDescription->content ?? '';
+
+        // Default whitespace chars used by trim + non-breaking spaces (https://en.wikipedia.org/wiki/Non-breaking_space)
+        $whitespaceChars = " \t\n\r\0\x0B\u{A0}\u{2060}\u{202F}\u{2007}";
+        $descEnhancements = $this->ytBridgeGetVideoDescriptionEnhancements($videoSecondaryInfo, $desc, self::URI, $whitespaceChars);
+        foreach ($descEnhancements as $descEnhancement) {
+            if (isset($descEnhancement['url'])) {
+                $descBefore = mb_substr($desc, 0, $descEnhancement['pos']);
+                $descValue = mb_substr($desc, $descEnhancement['pos'], $descEnhancement['len']);
+                $descAfter = mb_substr($desc, $descEnhancement['pos'] + $descEnhancement['len'], null);
+
+                // Extended trim for the display value of internal links, e.g.:
+                // FAVICON • Video Name
+                // FAVICON / @ChannelName
+                $descValue = trim($descValue, $whitespaceChars . '•/');
+
+                $desc = sprintf('%s<a href="%s" target="_blank">%s</a>%s', $descBefore, $descEnhancement['url'], $descValue, $descAfter);
             }
         }
+
+        $desc = nl2br($desc);
+    }
+
+    private function ytBridgeGetVideoDescriptionEnhancements(
+        object $videoSecondaryInfo,
+        string $descriptionContent,
+        string $baseUrl,
+        string $whitespaceChars
+    ): array {
+        $commandRuns = $videoSecondaryInfo->attributedDescription->commandRuns ?? [];
+        if (count($commandRuns) <= 0) {
+            return [];
+        }
+
+        $enhancements = [];
+
+        $boundaryWhitespaceChars = mb_str_split($whitespaceChars);
+        $boundaryStartChars = array_merge($boundaryWhitespaceChars, [':', '-', '(']);
+        $boundaryEndChars = array_merge($boundaryWhitespaceChars, [',', '.', "'", ')']);
+        $hashtagBoundaryEndChars = array_merge($boundaryEndChars, ['#', '-']);
+
+        $descriptionContentLength = mb_strlen($descriptionContent);
+
+        $minPositionOffset = 0;
+
+        $prevStartPosition = 0;
+        $totalLength = 0;
+        $maxPositionByStartIndex = [];
+        foreach (array_reverse($commandRuns) as $commandRun) {
+            $endPosition = $commandRun->startIndex + $commandRun->length;
+            if ($endPosition < $prevStartPosition) {
+                $totalLength += 1;
+            }
+            $totalLength += $commandRun->length;
+            $maxPositionByStartIndex[$commandRun->startIndex] = $totalLength;
+            $prevStartPosition = $commandRun->startIndex;
+        }
+
+        foreach ($commandRuns as $commandRun) {
+            $commandMetadata = $commandRun->onTap->innertubeCommand->commandMetadata->webCommandMetadata ?? null;
+            if (!isset($commandMetadata)) {
+                continue;
+            }
+
+            $enhancement = null;
+
+            /*
+            $commandRun->startIndex can be offset by few positions in the positive direction
+            when some multibyte characters (e.g. emojis, but maybe also others) are used in the plain text video description.
+            (probably some difference between php and javascript in handling multibyte characters)
+            This loop should correct the position in most cases. It searches for the next word (determined by a set of boundary chars) with the expected length.
+            Several safeguards ensure that the correct word is chosen. When a link can not be matched,
+            everything will be discarded to prevent corrupting the description.
+            Hashtags require a different set of boundary chars.
+            */
+            $isHashtag = $commandMetadata->webPageType === 'WEB_PAGE_TYPE_BROWSE';
+            $prevEnhancement = end($enhancements);
+            $minPosition = $prevEnhancement === false ? 0 : $prevEnhancement['pos'] + $prevEnhancement['len'];
+            $maxPosition = $descriptionContentLength - $maxPositionByStartIndex[$commandRun->startIndex];
+            $position = min($commandRun->startIndex - $minPositionOffset, $maxPosition);
+            while ($position >= $minPosition) {
+                // The link display value can only ever include a new line at the end (which will be removed further below), never in between.
+                $newLinePosition = mb_strpos($descriptionContent, "\n", $position);
+                if ($newLinePosition !== false && $newLinePosition < $position + ($commandRun->length - 1)) {
+                    $position = $newLinePosition - ($commandRun->length - 1);
+                    continue;
+                }
+
+                $firstChar = mb_substr($descriptionContent, $position, 1);
+                $boundaryStart = mb_substr($descriptionContent, $position - 1, 1);
+                $boundaryEndIndex = $position + $commandRun->length;
+                $boundaryEnd = mb_substr($descriptionContent, $boundaryEndIndex, 1);
+
+                $boundaryStartIsValid = $position === 0 ||
+                    in_array($boundaryStart, $boundaryStartChars) ||
+                    ($isHashtag && $firstChar === '#');
+                $boundaryEndIsValid = $boundaryEndIndex === $descriptionContentLength ||
+                    in_array($boundaryEnd, $isHashtag ? $hashtagBoundaryEndChars : $boundaryEndChars);
+
+                if ($boundaryStartIsValid && $boundaryEndIsValid) {
+                    $minPositionOffset = $commandRun->startIndex - $position;
+                    $enhancement = [
+                        'pos' => $position,
+                        'len' => $commandRun->length,
+                    ];
+                    break;
+                }
+
+                $position--;
+            }
+
+            if (!isset($enhancement)) {
+                $this->logger->debug(sprintf('Position %d cannot be corrected in "%s"', $commandRun->startIndex, substr($descriptionContent, 0, 50) . '...'));
+                // Skip to prevent the description from becoming corrupted
+                continue;
+            }
+
+            // $commandRun->length sometimes incorrectly includes the newline as last char
+            $lastChar = mb_substr($descriptionContent, $enhancement['pos'] + $enhancement['len'] - 1, 1);
+            if ($lastChar === "\n") {
+                $enhancement['len'] -= 1;
+            }
+
+            $commandUrl = parse_url($commandMetadata->url);
+            if ($commandUrl['path'] === '/redirect') {
+                parse_str($commandUrl['query'], $commandUrlQuery);
+                $enhancement['url'] = urldecode($commandUrlQuery['q']);
+            } else if (isset($commandUrl['host'])) {
+                $enhancement['url'] = $commandMetadata->url;
+            } else {
+                $enhancement['url'] = $baseUrl . $commandMetadata->url;
+            }
+
+            $enhancements[] = $enhancement;
+        }
+
+        if (count($enhancements) !== count($commandRuns)) {
+            // At least one link can not be matched. Discard everything to prevent corrupting the description.
+            return [];
+        }
+
+        // Sort by position in descending order to be able to safely replace values
+        return array_reverse($enhancements);
     }
 
     private function ytBridgeAddItem($vid, $title, $author, $desc, $time, $thumbnail = '')
@@ -277,12 +392,12 @@ class YoutubeBridge extends BridgeAbstract
         $item['title'] = $title;
         $item['author'] = $author;
         $item['timestamp'] = $time;
-        $item['uri'] = self::URI . 'watch?v=' . $vid;
+        $item['uri'] = self::URI . '/watch?v=' . $vid;
         if (!$thumbnail) {
             // Fallback to default thumbnail if there aren't any provided.
             $thumbnail = '0';
         }
-        $thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/' . $thumbnail . '.jpg';
+        $thumbnailUri = str_replace('/www.', '/img.', self::URI) . '/vi/' . $vid . '/' . $thumbnail . '.jpg';
         $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br />' . $desc;
         $this->items[] = $item;
     }
@@ -398,11 +513,6 @@ class YoutubeBridge extends BridgeAbstract
 
             $vid = $wrapper->videoId;
             $title = $wrapper->title->runs[0]->text;
-            if (isset($wrapper->ownerText)) {
-                $this->channel_name = $wrapper->ownerText->runs[0]->text;
-            } elseif (isset($wrapper->shortBylineText)) {
-                $this->channel_name = $wrapper->shortBylineText->runs[0]->text;
-            }
 
             $author = '';
             $desc = '';
@@ -450,7 +560,7 @@ class YoutubeBridge extends BridgeAbstract
     public function getURI()
     {
         if (!is_null($this->getInput('p'))) {
-            return static::URI . 'playlist?list=' . $this->getInput('p');
+            return static::URI . '/playlist?list=' . $this->getInput('p');
         } elseif ($this->feeduri) {
             return $this->feeduri;
         }
@@ -474,10 +584,10 @@ class YoutubeBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        if (empty($this->iconURL)) {
+        if (empty($this->feedIconUrl)) {
             return parent::getIcon();
         } else {
-            return $this->iconURL;
+            return $this->feedIconUrl;
         }
     }
 }
