@@ -96,6 +96,9 @@ EOD;
             throw new \Exception(sprintf('Unable to find channel `%s`', $channel));
         }
         $user = $data->user;
+        if ($user->videos === null) {
+            throw new HttpException('Service Unavailable', 503);
+        }
         foreach ($user->videos->edges as $edge) {
             $video = $edge->node;
 
