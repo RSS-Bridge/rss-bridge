@@ -1,3 +1,8 @@
+<?php
+/**
+ * This template is used for rendering exceptions
+ */
+?>
 <div class="error">
 
     <?php if ($e instanceof HttpException): ?>
@@ -12,7 +17,7 @@
         <?php endif; ?>
 
         <?php if ($e->getCode() === 404): ?>
-            <h2>The website was not found</h2>
+            <h2>404 Page Not Found</h2>
             <p>
                 RSS-Bridge tried to fetch a page on a website.
                 But it doesn't exists.
@@ -20,10 +25,18 @@
         <?php endif; ?>
 
         <?php if ($e->getCode() === 429): ?>
-            <h2>Try again later</h2>
+            <h2>429 Try again later</h2>
             <p>
                 RSS-Bridge tried to fetch a website.
                 They told us to try again later.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($e->getCode() === 503): ?>
+            <h2>503 Service Unavailable</h2>
+            <p>
+                Common causes are a server that is down for maintenance
+                or that is overloaded.
             </p>
         <?php endif; ?>
 

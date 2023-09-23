@@ -34,7 +34,7 @@ class ConnectivityAction implements ActionInterface
     public function execute(array $request)
     {
         if (!Debug::isEnabled()) {
-            return new Response('This action is only available in debug mode!');
+            return new Response('This action is only available in debug mode!', 403);
         }
 
         $bridgeName = $request['bridge'] ?? null;
