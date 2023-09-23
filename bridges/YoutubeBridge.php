@@ -228,7 +228,10 @@ class YoutubeBridge extends BridgeAbstract
             return;
         }
 
-        $jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
+        $jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents ?? null;
+        if (!$jsonData) {
+            throw new \Exception('Unable to find json data');
+        }
         $videoSecondaryInfo = null;
         foreach ($jsonData as $item) {
             if (isset($item->videoSecondaryInfoRenderer)) {

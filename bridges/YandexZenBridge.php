@@ -45,10 +45,12 @@ class YandexZenBridge extends BridgeAbstract
                 $item['timestamp'] = date(DateTimeInterface::ATOM, $publicationDateUnixTimestamp);
             }
 
-            $item['content'] = $post->text . "<br /><img src='$post->image' />";
-            $item['enclosures'] = [
-                $post->image,
-            ];
+            $postImage = $post->image ?? null;
+            $item['content'] = $post->text;
+            if ($postImage) {
+                $item['content'] .= "<br /><img src='$postImage' />";
+                $item['enclosures'] = [$postImage];
+            }
 
             $this->items[] = $item;
         }
