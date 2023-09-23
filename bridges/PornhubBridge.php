@@ -87,11 +87,15 @@ class PornhubBridge extends BridgeAbstract
             $url = $element->find('a', 0)->href;
             $item['uri'] = 'https://www.pornhub.com' . $url;
 
+            // Duration
+            $marker = $element->find('div.marker-overlays var', 0);
+            $duration = $marker->innertext ?? '';
+
             // Content
             $videoImage = $element->find('img', 0);
             $image = $videoImage->getAttribute('data-src') ?: $videoImage->getAttribute('src');
             if ($show_images === true) {
-                $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $image . '"></a>';
+                $item['content'] = sprintf('<a href="%s"><img src="%s"></a><br>%s', $item['uri'], $image, $duration);
             }
 
             $uploaded = explode('/', $image);
