@@ -25,7 +25,7 @@
         <?php endif; ?>
 
         <?php if ($e->getCode() === 429): ?>
-            <h2>429 Try again later</h2>
+            <h2>429 Too Many Requests</h2>
             <p>
                 RSS-Bridge tried to fetch a website.
                 They told us to try again later.

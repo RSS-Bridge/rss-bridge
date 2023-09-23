@@ -390,7 +390,7 @@ abstract class XPathAbstract extends BridgeAbstract
      * Should provide the feed's items.
      *
      * @param \DOMXPath $xpath
-     * @return \DOMNodeList
+     * @return \DOMNodeList|false
      */
     protected function provideFeedItems(\DOMXPath $xpath)
     {
@@ -417,6 +417,7 @@ abstract class XPathAbstract extends BridgeAbstract
 
         $entries = $this->provideFeedItems($xpath);
         if ($entries === false) {
+            // malformed
             return;
         }
 
