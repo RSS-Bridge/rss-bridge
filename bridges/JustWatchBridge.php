@@ -170,22 +170,21 @@ class JustWatchBridge extends BridgeAbstract
                 $item = [];
                 $item['uri'] = $title->find('a', 0)->href;
 
+                $posterImage = $title->find('.title-poster__image > img', 0);
                 $itemTitle = sprintf(
                     '%s - %s',
                     $provider->find('picture > img', 0)->alt ?? '',
-                    $title->find('.title-poster__image > img', 0)->alt ?? ''
+                    $posterImage->alt ?? ''
                 );
                 $item['title'] = $itemTitle;
 
-                $imageUrl = $title->find('.title-poster__image > img', 0)->attr['src'] ?? '';
+                $imageUrl = $posterImage->attr['src'] ?? '';
                 if (str_starts_with($imageUrl, 'data')) {
-                    $imageUrl = $title->find('.title-poster__image > img', 0)->attr['data-src'];
+                    $imageUrl = $posterImage->attr['data-src'];
                 }
 
-                $content  = '<b>Provider:</b> '
-                    . $provider->find('picture > img', 0)->alt . '<br>';
-                $content .= '<b>Media:</b> '
-                    . $title->find('.title-poster__image > img', 0)->alt . '<br>';
+                $content  = '<b>Provider:</b> ' . $provider->find('picture > img', 0)->alt . '<br>';
+                $content .= '<b>Media:</b> ' . ($posterImage->alt ?? '') . '<br>';
 
                 if (isset($title->find('.title-poster__badge', 0)->plaintext)) {
                     $content .= '<b>Type:</b> Series<br>';
