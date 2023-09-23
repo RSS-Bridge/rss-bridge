@@ -24,7 +24,7 @@ abstract class BridgeAbstract
 
     protected array $items = [];
     protected array $inputs = [];
-    protected string $queriedContext = '';
+    protected ?string $queriedContext = '';
     private array $configuration = [];
 
     protected CacheInterface $cache;
