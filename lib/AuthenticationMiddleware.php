@@ -44,6 +44,8 @@ final class AuthenticationMiddleware
     {
         http_response_code(401);
         header('WWW-Authenticate: Basic realm="RSS-Bridge"');
-        return render('access-denied.html.php');
+        return render(__DIR__ . '/../templates/error.html.php', [
+            'message' => 'Please authenticate in order to access this instance!',
+        ]);
     }
 }

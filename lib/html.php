@@ -34,8 +34,9 @@ function render(string $template, array $context = []): string
 }
 
 /**
- * Render template as absolute path or relative to templates folder.
- * Do not pass user input in $template
+ * Render php template with context
+ *
+ * DO NOT PASS USER INPUT IN $template or $context
  */
 function render_template(string $template, array $context = []): string
 {
