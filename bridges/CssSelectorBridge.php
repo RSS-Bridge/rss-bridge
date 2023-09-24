@@ -114,7 +114,7 @@ class CssSelectorBridge extends BridgeAbstract
     {
         if (!empty($url_pattern)) {
             $url_pattern = '/' . str_replace('/', '\/', $url_pattern) . '/';
-            $links = array_filter($links, function ($url) {
+            $links = array_filter($links, function ($url) use ($url_pattern) {
                 return preg_match($url_pattern, $url) === 1;
             });
         }
