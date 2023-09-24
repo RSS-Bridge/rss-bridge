@@ -30,6 +30,9 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract
 
     public function collectData()
     {
+        // this bridge is broken and unmaintained
+        return;
+
         $uri = self::URI . '/monair/commune/' . $this->getInput('cities');
 
         $html = getSimpleHTMLDOM($uri);
