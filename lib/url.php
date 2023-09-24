@@ -6,10 +6,14 @@ final class UrlException extends \Exception
 {
 }
 
+/**
+ * Intentionally restrictive url parser
+ */
 final class Url
 {
     private string $scheme;
     private string $host;
+    private int $port;
     private string $path;
     private ?string $queryString;
 
@@ -19,6 +23,10 @@ final class Url
 
     public static function fromString(string $url): self
     {
+        if (!self::validate($url)) {
+            throw new UrlException(sprintf('Illegal url: "%s"', $url));
+        }
+
         $parts = parse_url($url);
         if ($parts === false) {
             throw new UrlException(sprintf('Invalid url %s', $url));
@@ -27,8 +35,23 @@ final class Url
         return (new self())
             ->withScheme($parts['scheme'] ?? '')
             ->withHost($parts['host'])
+            ->withPort($parts['port'] ?? 80)
             ->withPath($parts['path'] ?? '/')
             ->withQueryString($parts['query'] ?? null);
+    }
+
+    public static function validate(string $url): bool
+    {
+        if (strlen($url) > 1500) {
+            return false;
+        }
+        $pattern = '#^https?://'   // scheme
+            . '([a-z0-9-]+\.?)+'   // one or more domain names
+            . '(\.[a-z]{1,24})?'   // optional global tld
+            . '(:\d+)?'            // optional port
+            . '($|/|\?)#i';        // end of string or slash or question mark
+
+        return preg_match($pattern, $url) === 1;
     }
 
     public function getScheme(): string
@@ -39,6 +62,11 @@ final class Url
     public function getHost(): string
     {
         return $this->host;
+    }
+
+    public function getPort(): int
+    {
+        return $this->port;
     }
 
     public function getPath(): string
@@ -68,6 +96,13 @@ final class Url
         return $clone;
     }
 
+    public function withPort(int $port)
+    {
+        $clone = clone $this;
+        $clone->port = $port;
+        return $clone;
+    }
+
     public function withPath(string $path): self
     {
         if (!str_starts_with($path, '/')) {
@@ -87,12 +122,24 @@ final class Url
 
     public function __toString()
     {
+        if ($this->port === 80) {
+            $port = '';
+        } else {
+            $port = ':' . $this->port;
+        }
+        if ($this->queryString) {
+            $queryString = '?' . $this->queryString;
+        } else {
+            $queryString = '';
+        }
+
         return sprintf(
-            '%s://%s%s%s',
+            '%s://%s%s%s%s',
             $this->scheme,
             $this->host,
+            $port,
             $this->path,
-            $this->queryString ? '?' . $this->queryString : ''
+            $queryString
         );
     }
 }

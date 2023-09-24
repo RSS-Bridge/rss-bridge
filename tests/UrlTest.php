@@ -13,6 +13,7 @@ class UrlTest extends TestCase
     {
         $urls = [
             'http://example.com/',
+            'http://example.com:9000/',
             'https://example.com/',
             'https://example.com/?foo',
             'https://example.com/?foo=bar',
@@ -28,6 +29,7 @@ class UrlTest extends TestCase
             'http://example.com' => 'http://example.com/',
             'https://example.com/?' => 'https://example.com/',
             'https://example.com/foo?' => 'https://example.com/foo',
+            'http://example.com:80/' => 'http://example.com/',
         ];
         foreach ($urls as $from => $to) {
             $this->assertSame($to, Url::fromString($from)->__toString());
