@@ -30,6 +30,8 @@ final class RssBridge
             if ((error_reporting() & $code) === 0) {
                 return false;
             }
+            // In the future, uncomment this:
+            //throw new \ErrorException($message, 0, $code, $file, $line);
             $text = sprintf(
                 '%s at %s line %s',
                 sanitize_root($message),

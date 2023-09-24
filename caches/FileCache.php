@@ -36,7 +36,7 @@ class FileCache implements CacheInterface
             $this->delete($key);
             return $default;
         }
-        $expiration = $item['expiration'];
+        $expiration = $item['expiration'] ?? time();
         if ($expiration === 0 || $expiration > time()) {
             return $item['value'];
         }
@@ -92,7 +92,7 @@ class FileCache implements CacheInterface
                 unlink($cacheFile);
                 continue;
             }
-            $expiration = $item['expiration'];
+            $expiration = $item['expiration'] ?? time();
             if ($expiration === 0 || $expiration > time()) {
                 continue;
             }
