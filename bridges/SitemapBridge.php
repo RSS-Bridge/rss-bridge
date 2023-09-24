@@ -72,7 +72,7 @@ class SitemapBridge extends CssSelectorBridge
         $sitemap_xml = $this->getSitemapXml($sitemap_url, !empty($site_map));
         $links = $this->sitemapXmlToList($sitemap_xml, $url_pattern, empty($limit) ? 10 : $limit);
 
-        if (empty($links) && empty(sitemapXmlToList($sitemap_xml))) {
+        if (empty($links) && empty($this->sitemapXmlToList($sitemap_xml))) {
             returnClientError('Could not retrieve URLs with Timestamps from Sitemap: ' . $sitemap_url);
         }
 

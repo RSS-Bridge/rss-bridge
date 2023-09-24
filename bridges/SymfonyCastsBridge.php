@@ -10,22 +10,27 @@ class SymfonyCastsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM('https://symfonycasts.com/updates/find');
-        $dives = $html->find('div');
+        $url = 'https://symfonycasts.com/updates/find';
+        $html = getSimpleHTMLDOM($url);
 
-        /* @var simple_html_dom $div */
+        /** @var simple_html_dom_node[] $dives */
+        $dives = $html->find('div.user-notification-not-viewed');
+
         foreach ($dives as $div) {
-            $id = $div->getAttribute('data-mark-update-id-value');
             $type = $div->find('h5', 0);
-            $title = $div->find('span', 0);
+            $title = $div->find('a', 0);
             $dateString = $div->find('h5.font-gray', 0);
             $href = $div->find('a', 0);
-            $url = 'https://symfonycasts.com' . $href->getAttribute('href');
+            $hrefAttribute = $href->getAttribute('href');
+            $url = 'https://symfonycasts.com' . $hrefAttribute;
 
-            $item = []; // Create an empty item
-            $item['uid'] = $id;
+            $item = [];
+            $item['uid'] = $div->getAttribute('data-mark-update-update-url-value');
             $item['title'] = $title->innertext;
+
+            // this natural language date string does not work
             $item['timestamp'] = $dateString->innertext;
+
             $item['content'] = $type->plaintext . '<a href="' . $url . '">' . $title . '</a>';
             $item['uri'] = $url;
             $this->items[] = $item; // Add item to the list
