@@ -358,7 +358,7 @@ class CssSelectorBridge extends BridgeAbstract
                 // Look for HTML meta tag
                 $element = null;
                 if ($field === 'canonical') {
-                    $element = $entry_html->find("link[rel=canonical]");
+                    $element = $entry_html->find('link[rel=canonical]');
                 } else {
                     $element = $entry_html->find("meta[property=$field], meta[name=$field]");
                 }
@@ -386,8 +386,7 @@ class CssSelectorBridge extends BridgeAbstract
         }
 
         // Populate author from first name and last name if all we have is nothing or Twitter @username
-        if ((!isset($item['author']) || $item['author'][0] === '@')
-            && (is_string($author_first_name) || is_string($author_last_name))) {
+        if ((!isset($item['author']) || $item['author'][0] === '@') && (is_string($author_first_name) || is_string($author_last_name))) {
             $author = '';
             if (is_string($author_first_name)) {
                 $author = $author_first_name;
@@ -423,7 +422,7 @@ class CssSelectorBridge extends BridgeAbstract
 
         // Utility function for checking if JSON array matches one of the desired ld+json object types
         // A JSON object may have a single ld+json @type as a string OR several types at once as a list
-        $ldjson_is_of_type = function($json, $allowed_types) {
+        $ldjson_is_of_type = function ($json, $allowed_types) {
             if (isset($json['@type'])) {
                 $json_types = $json['@type'];
                 if (!is_array($json_types)) {
@@ -511,9 +510,8 @@ class CssSelectorBridge extends BridgeAbstract
         }
 
         // Attempt to resolve ld+json author if all we have is nothing or Twitter @username
-        if ((!isset($item['author']) || $item['author'][0] === '@')
-            && !is_null($ldjson_author_id) && isset($ldjson_author_mappings[$ldjson_author_id])) {
-                $item['author'] = $ldjson_author_mappings[$ldjson_author_id];
+        if ((!isset($item['author']) || $item['author'][0] === '@') && !is_null($ldjson_author_id) && isset($ldjson_author_mappings[$ldjson_author_id])) {
+            $item['author'] = $ldjson_author_mappings[$ldjson_author_id];
         }
 
         // Adjust item field types
