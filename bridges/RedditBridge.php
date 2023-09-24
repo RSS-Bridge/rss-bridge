@@ -305,25 +305,30 @@ class RedditBridge extends BridgeAbstract
 
     public function detectParameters($url)
     {
-        $parsed_url = parse_url($url);
-
-        $host = $parsed_url['host'] ?? null;
-
-        if ($host != 'www.reddit.com' && $host != 'old.reddit.com') {
+        try {
+            $urlObject = Url::fromString($url);
+        } catch (UrlException $e) {
             return null;
         }
 
-        $path = explode('/', $parsed_url['path']);
+        $host = $urlObject->getHost();
+        $path = $urlObject->getPath();
 
-        if ($path[1] == 'r') {
+        $pathSegments = explode('/', $path);
+
+        if ($host !== 'www.reddit.com' && $host !== 'old.reddit.com') {
+            return null;
+        }
+
+        if ($pathSegments[1] == 'r') {
             return [
                 'context' => 'single',
-                'r' => $path[2]
+                'r' => $pathSegments[2],
             ];
-        } elseif ($path[1] == 'user') {
+        } elseif ($pathSegments[1] == 'user') {
             return [
                 'context' => 'user',
-                'u' => $path[2]
+                'u' => $pathSegments[2],
             ];
         } else {
             return null;
