@@ -53,6 +53,11 @@ class SitemapBridge extends CssSelectorBridge
                     EOT,
                 'exampleValue' => 'https://example.com/sitemap.xml',
             ],
+            'discard_thumbnail' => [
+                'name' => '[Optional] Discard thumbnail set by site author',
+                'title' => 'Some sites set their logo as thumbnail for every article. Use this option to discard it.',
+                'type' => 'checkbox',
+            ],
             'limit' => self::LIMIT
         ]
     ];
@@ -65,6 +70,7 @@ class SitemapBridge extends CssSelectorBridge
         $content_cleanup = $this->getInput('content_cleanup');
         $title_cleanup = $this->getInput('title_cleanup');
         $site_map = $this->getInput('site_map');
+        $discard_thumbnail = $this->getInput('discard_thumbnail');
         $limit = $this->getInput('limit');
 
         $this->feedName = $this->getPageTitle($url, $title_cleanup);
@@ -77,7 +83,11 @@ class SitemapBridge extends CssSelectorBridge
         }
 
         foreach ($links as $link) {
-            $this->items[] = $this->expandEntryWithSelector($link, $content_selector, $content_cleanup, $title_cleanup);
+            $item = $this->expandEntryWithSelector($link, $content_selector, $content_cleanup, $title_cleanup);
+            if ($discard_thumbnail && isset($item['enclosures'])) {
+                unset($item['enclosures']);
+            }
+            $this->items[] = $item;
         }
     }
 
