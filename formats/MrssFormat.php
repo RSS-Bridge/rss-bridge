@@ -32,12 +32,6 @@ class MrssFormat extends FormatAbstract
     protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
     protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
-    const ALLOWED_IMAGE_EXT = [
-        '.gif',
-        '.jpg',
-        '.png',
-    ];
-
     public function stringify()
     {
         $feedUrl = get_current_url();
@@ -72,8 +66,13 @@ class MrssFormat extends FormatAbstract
         $channel->appendChild($description);
         $description->appendChild($document->createTextNode($extraInfos['name']));
 
+        $allowedIconExtensions = [
+            '.gif',
+            '.jpg',
+            '.png',
+        ];
         $icon = $extraInfos['icon'];
-        if (!empty($icon) && in_array(substr($icon, -4), self::ALLOWED_IMAGE_EXT)) {
+        if (!empty($icon) && in_array(substr($icon, -4), $allowedIconExtensions)) {
             $feedImage = $document->createElement('image');
             $channel->appendChild($feedImage);
             $iconUrl = $document->createElement('url');
@@ -164,11 +163,10 @@ class MrssFormat extends FormatAbstract
             }
         }
 
-        $toReturn = $document->saveXML();
-
+        $xml = $document->saveXML();
         // Remove invalid non-UTF8 characters
         ini_set('mbstring.substitute_character', 'none');
-        $toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
-        return $toReturn;
+        $xml = mb_convert_encoding($xml, $this->getCharset(), 'UTF-8');
+        return $xml;
     }
 }
