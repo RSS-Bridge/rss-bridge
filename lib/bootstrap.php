@@ -12,19 +12,11 @@
  * @link    https://github.com/rss-bridge/rss-bridge
  */
 
-/** Path to the root folder of RSS-Bridge (where index.php is located) */
-const PATH_ROOT = __DIR__ . '/../';
-
-/** Path to the bridges library */
-
 /** Path to the formats library */
 const PATH_LIB_FORMATS = __DIR__ . '/../formats/';
 
 /** Path to the caches library */
 const PATH_LIB_CACHES = __DIR__ . '/../caches/';
-
-/** Path to the actions library */
-const PATH_LIB_ACTIONS = __DIR__ . '/../actions/';
 
 /** Path to the cache folder */
 const PATH_CACHE = __DIR__ . '/../cache/';

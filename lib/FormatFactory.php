@@ -33,7 +33,7 @@ class FormatFactory
      * @throws \InvalidArgumentException
      * @param string $name The name of the format e.g. "Atom", "Mrss" or "Json"
      */
-    public function create(string $name): FormatInterface
+    public function create(string $name): FormatAbstract
     {
         if (! preg_match('/^[a-zA-Z0-9-]*$/', $name)) {
             throw new \InvalidArgumentException('Format name invalid!');
