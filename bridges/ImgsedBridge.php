@@ -36,6 +36,12 @@ class ImgsedBridge extends BridgeAbstract
             ],
         ]
     ];
+	const TEST_DETECT_PARAMETERS = [
+        'https://www.instagram.com/instagram' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
+        'https://instagram.com/metaverse' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
+        'https://imgsed.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
+        'https://www.imgsed.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
+    ];
 
     public function getURI()
     {
@@ -216,6 +222,8 @@ HTML,
         $relativeDate = date_interval_create_from_date_string($dateString);
         if ($relativeDate) {
             date_sub($date, $relativeDate);
+            // As the relative interval has the precision of a day for date older than 24 hours, we can remove the hour of the date, as it is not relevant
+            date_time_set($date, 0, 0, 0, 0);
         } else {
             $this->logger->info(sprintf('Unable to parse date string: %s', $dateString));
         }
@@ -244,6 +252,10 @@ HTML,
             if ($this->getInput('tagged')) {
                 $types[] = 'Tags';
             }
+            // If no content type is selected, this bridge does nothing, so we return an error
+            if (count($types) == 0) {
+                returnClientError('You must select at least one of the content type : Post, Stories or Tags !');
+            }
             $typesText = $types[0];
             if (count($types) > 1) {
                 for ($i = 1; $i < count($types) - 1; $i++) {
@@ -264,8 +276,7 @@ HTML,
             'story' => 'on',
             'tagged' => 'on'
         ];
-        $regex = '/^http(s|):\/\/((www\.|)(instagram.com)\/([a-zA-Z0-9_\.]{1,30})\/(reels\/|tagged\/|)
-|(www\.|)(imgsed.com)\/(stories\/|tagged\/|)([a-zA-Z0-9_\.]{1,30})\/)/';
+        $regex = '/^http(s|):\/\/((www\.|)(instagram.com)\/([a-zA-Z0-9_\.]{1,30})\/(reels\/|tagged\/|)|(www\.|)(imgsed.com)\/(stories\/|tagged\/|)([a-zA-Z0-9_\.]{1,30})\/)/';
         if (preg_match($regex, $url, $matches) > 0) {
             $params['context'] = 'Username';
             // Extract detected domain using the regex
