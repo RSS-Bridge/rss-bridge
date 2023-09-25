@@ -6,7 +6,7 @@ class HtmlFormat extends FormatAbstract
 
     public function stringify()
     {
-        $QUERY_STRING = $_SERVER['QUERY_STRING'];
+        $queryString = $_SERVER['QUERY_STRING'];
 
         $extraInfos = $this->getExtraInfos();
         $formatFactory = new FormatFactory();
@@ -17,7 +17,7 @@ class HtmlFormat extends FormatAbstract
             if ($format === 'Html') {
                 continue;
             }
-            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $format, htmlentities($QUERY_STRING));
+            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $format, htmlentities($queryString));
             $buttons[] = [
                 'href' => $formatUrl,
                 'value' => $format,

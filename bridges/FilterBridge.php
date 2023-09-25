@@ -73,6 +73,15 @@ class FilterBridge extends FeedExpander
         ],
     ]];
 
+    public function collectData()
+    {
+        $url = $this->getInput('url');
+        if (!Url::validate($url)) {
+            returnClientError('The url parameter must either refer to http or https protocol.');
+        }
+        $this->collectExpandableDatas($this->getURI());
+    }
+
     protected function parseItem($newItem)
     {
         $item = parent::parseItem($newItem);
@@ -157,14 +166,5 @@ class FilterBridge extends FeedExpander
         }
 
         return $url;
-    }
-
-    public function collectData()
-    {
-        if ($this->getInput('url') && substr($this->getInput('url'), 0, 4) !== 'http') {
-            // just in case someone finds a way to access local files by playing with the url
-            returnClientError('The url parameter must either refer to http or https protocol.');
-        }
-        $this->collectExpandableDatas($this->getURI());
     }
 }
