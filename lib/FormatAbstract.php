@@ -1,132 +1,70 @@
 <?php
 
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license https://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
-/**
- * An abstract class for format implementations
- *
- * This class implements {@see FormatInterface}
- */
-abstract class FormatAbstract implements FormatInterface
+abstract class FormatAbstract
 {
-    /** The default charset (UTF-8) */
-    const DEFAULT_CHARSET = 'UTF-8';
-
-    /** MIME type of format output */
     const MIME_TYPE = 'text/plain';
 
-    /** @var string $charset The charset */
-    protected $charset;
+    protected string $charset = 'UTF-8';
+    protected array $items = [];
+    protected int $lastModified;
+    protected array $extraInfos = [];
 
-    /** @var array $items The items */
-    protected $items;
+    abstract public function stringify();
 
-    /**
-     * @var int $lastModified A timestamp to indicate the last modified time of
-     * the output data.
-     */
-    protected $lastModified;
-
-    /** @var array $extraInfos The extra infos */
-    protected $extraInfos;
-
-    /** {@inheritdoc} */
-    public function getMimeType()
+    public function getMimeType(): string
     {
         return static::MIME_TYPE;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param string $charset {@inheritdoc}
-     */
-    public function setCharset($charset)
+    public function setCharset(string $charset)
     {
         $this->charset = $charset;
-
-        return $this;
     }
 
-    /** {@inheritdoc} */
-    public function getCharset()
+    public function getCharset(): string
     {
-        $charset = $this->charset;
-
-        if (is_null($charset)) {
-            return static::DEFAULT_CHARSET;
-        }
-        return $charset;
+        return $this->charset;
     }
 
-    /**
-     * Set the last modified time
-     *
-     * @param int $lastModified The last modified time
-     * @return void
-     */
-    public function setLastModified($lastModified)
+    public function setLastModified(int $lastModified)
     {
         $this->lastModified = $lastModified;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param array $items {@inheritdoc}
-     */
     public function setItems(array $items)
     {
         $this->items = $items;
-
-        return $this;
-    }
-
-    /** {@inheritdoc} */
-    public function getItems()
-    {
-        if (!is_array($this->items)) {
-            throw new \LogicException(sprintf('Feed the %s with "setItems" method before !', get_class($this)));
-        }
-
-        return $this->items;
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param array $extraInfos {@inheritdoc}
+     * @return FeedItem[] The items
      */
-    public function setExtraInfos(array $extraInfos = [])
+    public function getItems(): array
     {
-        foreach (['name', 'uri', 'icon', 'donationUri'] as $infoName) {
-            if (!isset($extraInfos[$infoName])) {
-                $extraInfos[$infoName] = '';
-            }
-        }
-
-        $this->extraInfos = $extraInfos;
-
-        return $this;
+        return $this->items;
     }
 
-    /** {@inheritdoc} */
-    public function getExtraInfos()
+    public function setExtraInfos(array $infos = [])
     {
-        if (is_null($this->extraInfos)) { // No extra info ?
-            $this->setExtraInfos(); // Define with default value
+        $extras = [
+            'name',
+            'uri',
+            'icon',
+            'donationUri',
+        ];
+        foreach ($extras as $extra) {
+            if (!isset($infos[$extra])) {
+                $infos[$extra] = '';
+            }
         }
+        $this->extraInfos = $infos;
+    }
 
+    public function getExtraInfos(): array
+    {
+        if (!$this->extraInfos) {
+            $this->setExtraInfos();
+        }
         return $this->extraInfos;
     }
 }

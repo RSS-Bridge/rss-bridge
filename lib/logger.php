@@ -148,6 +148,9 @@ final class StreamHandler
             $context
         );
         error_log($text);
+        if (Debug::isEnabled()) {
+            print sprintf("<pre>%s</pre>\n", e($text));
+        }
         //$bytes = file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND | LOCK_EX);
     }
 }
