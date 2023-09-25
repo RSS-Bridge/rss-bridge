@@ -54,7 +54,8 @@ class CNETFranceBridge extends FeedExpander
         }
 
         foreach ($this->bannedURL as $term) {
-            if (preg_match('/' . $term . '/mi', $item['uri']) === 1) {
+            $preg_match = preg_match('#' . $term . '#mi', $item['uri']);
+            if ($preg_match === 1) {
                 return null;
             }
         }
