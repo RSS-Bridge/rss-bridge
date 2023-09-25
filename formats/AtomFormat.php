@@ -14,8 +14,6 @@ class AtomFormat extends FormatAbstract
     protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
     protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
-    const LIMIT_TITLE = 140;
-
     public function stringify()
     {
         $feedUrl = get_current_url();
@@ -109,8 +107,8 @@ class AtomFormat extends FormatAbstract
 
             if (empty($entryTitle)) {
                 $entryTitle = str_replace("\n", ' ', strip_tags($entryContent));
-                if (strlen($entryTitle) > self::LIMIT_TITLE) {
-                    $wrapPos = strpos(wordwrap($entryTitle, self::LIMIT_TITLE), "\n");
+                if (strlen($entryTitle) > 140) {
+                    $wrapPos = strpos(wordwrap($entryTitle, 140), "\n");
                     $entryTitle = substr($entryTitle, 0, $wrapPos) . '...';
                 }
             }
@@ -182,11 +180,11 @@ class AtomFormat extends FormatAbstract
             }
         }
 
-        $toReturn = $document->saveXML();
+        $xml = $document->saveXML();
 
         // Remove invalid characters
         ini_set('mbstring.substitute_character', 'none');
-        $toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
-        return $toReturn;
+        $xml = mb_convert_encoding($xml, $this->getCharset(), 'UTF-8');
+        return $xml;
     }
 }
