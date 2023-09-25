@@ -36,7 +36,7 @@ class ImgsedBridge extends BridgeAbstract
             ],
         ]
     ];
-	const TEST_DETECT_PARAMETERS = [
+    const TEST_DETECT_PARAMETERS = [
         'https://www.instagram.com/instagram' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
         'https://instagram.com/metaverse' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
         'https://imgsed.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
