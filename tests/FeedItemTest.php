@@ -24,7 +24,24 @@ class FeedItemTest extends TestCase
 
         $item = new FeedItem();
         $item->title = 'aa';
-        $this->assertSame('aa', $item->getTitle());
         $this->assertSame('aa', $item->title);
+        $this->assertSame('aa', $item->getTitle());
+    }
+
+    public function testTimestamp()
+    {
+        $item = new FeedItem();
+        $item->setTimestamp(5);
+        $this->assertSame(5, $item->getTimestamp());
+
+        $item->setTimestamp('5');
+        $this->assertSame(5, $item->getTimestamp());
+
+        $item->setTimestamp('1970-01-01 18:00:00');
+        $this->assertSame(64800, $item->getTimestamp());
+
+        $item->setTimestamp('1st jan last year');
+        // This will fail at 2024-01-01 hehe
+        $this->assertSame(1640995200, $item->getTimestamp());
     }
 }
