@@ -1,6 +1,6 @@
 <?php
 
-namespace RssBridge\Tests\Bridges;
+namespace RssBridge\Tests;
 
 use BridgeAbstract;
 use FeedExpander;
@@ -8,8 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 class BridgeImplementationTest extends TestCase
 {
-    private $class;
-    private $obj;
+    private string $className;
+    private BridgeAbstract $bridge;
 
     /**
      * @dataProvider dataBridgesProvider
@@ -17,9 +17,9 @@ class BridgeImplementationTest extends TestCase
     public function testClassName($path)
     {
         $this->setBridge($path);
-        $this->assertTrue($this->class === ucfirst($this->class), 'class name must start with uppercase character');
-        $this->assertEquals(0, substr_count($this->class, ' '), 'class name must not contain spaces');
-        $this->assertStringEndsWith('Bridge', $this->class, 'class name must end with "Bridge"');
+        $this->assertTrue($this->className === ucfirst($this->className), 'class name must start with uppercase character');
+        $this->assertEquals(0, substr_count($this->className, ' '), 'class name must not contain spaces');
+        $this->assertStringEndsWith('Bridge', $this->className, 'class name must end with "Bridge"');
     }
 
     /**
@@ -28,7 +28,7 @@ class BridgeImplementationTest extends TestCase
     public function testClassType($path)
     {
         $this->setBridge($path);
-        $this->assertInstanceOf(BridgeAbstract::class, $this->obj);
+        $this->assertInstanceOf(BridgeAbstract::class, $this->bridge);
     }
 
     /**
@@ -38,18 +38,18 @@ class BridgeImplementationTest extends TestCase
     {
         $this->setBridge($path);
 
-        $this->assertIsString($this->obj::NAME, 'class::NAME');
-        $this->assertNotEmpty($this->obj::NAME, 'class::NAME');
-        $this->assertIsString($this->obj::URI, 'class::URI');
-        $this->assertNotEmpty($this->obj::URI, 'class::URI');
-        $this->assertIsString($this->obj::DESCRIPTION, 'class::DESCRIPTION');
-        $this->assertNotEmpty($this->obj::DESCRIPTION, 'class::DESCRIPTION');
-        $this->assertIsString($this->obj::MAINTAINER, 'class::MAINTAINER');
-        $this->assertNotEmpty($this->obj::MAINTAINER, 'class::MAINTAINER');
+        $this->assertIsString($this->bridge::NAME, 'class::NAME');
+        $this->assertNotEmpty($this->bridge::NAME, 'class::NAME');
+        $this->assertIsString($this->bridge::URI, 'class::URI');
+        $this->assertNotEmpty($this->bridge::URI, 'class::URI');
+        $this->assertIsString($this->bridge::DESCRIPTION, 'class::DESCRIPTION');
+        $this->assertNotEmpty($this->bridge::DESCRIPTION, 'class::DESCRIPTION');
+        $this->assertIsString($this->bridge::MAINTAINER, 'class::MAINTAINER');
+        $this->assertNotEmpty($this->bridge::MAINTAINER, 'class::MAINTAINER');
 
-        $this->assertIsArray($this->obj::PARAMETERS, 'class::PARAMETERS');
-        $this->assertIsInt($this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
-        $this->assertGreaterThanOrEqual(0, $this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
+        $this->assertIsArray($this->bridge::PARAMETERS, 'class::PARAMETERS');
+        $this->assertIsInt($this->bridge::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
+        $this->assertGreaterThanOrEqual(0, $this->bridge::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
     }
 
     /**
@@ -60,23 +60,22 @@ class BridgeImplementationTest extends TestCase
         $this->setBridge($path);
 
         $multiMinimum = 2;
-        if (isset($this->obj::PARAMETERS['global'])) {
+        if (isset($this->bridge::PARAMETERS['global'])) {
             ++$multiMinimum;
         }
-        $multiContexts = (count($this->obj::PARAMETERS) >= $multiMinimum);
+        $multiContexts = (count($this->bridge::PARAMETERS) >= $multiMinimum);
         $paramsSeen = [];
 
         $allowedTypes = [
             'text',
             'number',
             'list',
-            'checkbox'
+            'checkbox',
         ];
 
-        foreach ($this->obj::PARAMETERS as $context => $params) {
+        foreach ($this->bridge::PARAMETERS as $context => $params) {
             if ($multiContexts) {
                 $this->assertIsString($context, 'invalid context name');
-
                 $this->assertNotEmpty($context, 'The context name cannot be empty');
             }
 
@@ -152,11 +151,10 @@ class BridgeImplementationTest extends TestCase
             }
         }
 
-        foreach ($this->obj::TEST_DETECT_PARAMETERS as $url => $params) {
-            $this->assertEquals($this->obj->detectParameters($url), $params);
+        foreach ($this->bridge::TEST_DETECT_PARAMETERS as $url => $params) {
+            $detectedParameters = $this->bridge->detectParameters($url);
+            $this->assertEquals($detectedParameters, $params);
         }
-
-        $this->assertTrue(true);
     }
 
     /**
@@ -164,19 +162,21 @@ class BridgeImplementationTest extends TestCase
      */
     public function testVisibleMethods($path)
     {
-        $allowedBridgeAbstract = get_class_methods(BridgeAbstract::class);
-        sort($allowedBridgeAbstract);
-        $allowedFeedExpander = get_class_methods(FeedExpander::class);
-        sort($allowedFeedExpander);
+        $bridgeAbstractMethods = get_class_methods(BridgeAbstract::class);
+        sort($bridgeAbstractMethods);
+        $feedExpanderMethods = get_class_methods(FeedExpander::class);
+        sort($feedExpanderMethods);
 
         $this->setBridge($path);
 
-        $methods = get_class_methods($this->obj);
-        sort($methods);
-        if ($this->obj instanceof FeedExpander) {
-            $this->assertEquals($allowedFeedExpander, $methods);
-        } else {
-            $this->assertEquals($allowedBridgeAbstract, $methods);
+        $publicMethods = get_class_methods($this->bridge);
+        sort($publicMethods);
+        foreach ($publicMethods as $publicMethod) {
+            if ($this->bridge instanceof FeedExpander) {
+                $this->assertContains($publicMethod, $feedExpanderMethods);
+            } else {
+                $this->assertContains($publicMethod, $bridgeAbstractMethods);
+            }
         }
     }
 
@@ -187,23 +187,23 @@ class BridgeImplementationTest extends TestCase
     {
         $this->setBridge($path);
 
-        $value = $this->obj->getDescription();
+        $value = $this->bridge->getDescription();
         $this->assertIsString($value, '$class->getDescription()');
         $this->assertNotEmpty($value, '$class->getDescription()');
 
-        $value = $this->obj->getMaintainer();
+        $value = $this->bridge->getMaintainer();
         $this->assertIsString($value, '$class->getMaintainer()');
         $this->assertNotEmpty($value, '$class->getMaintainer()');
 
-        $value = $this->obj->getName();
+        $value = $this->bridge->getName();
         $this->assertIsString($value, '$class->getName()');
         $this->assertNotEmpty($value, '$class->getName()');
 
-        $value = $this->obj->getURI();
+        $value = $this->bridge->getURI();
         $this->assertIsString($value, '$class->getURI()');
         $this->assertNotEmpty($value, '$class->getURI()');
 
-        $value = $this->obj->getIcon();
+        $value = $this->bridge->getIcon();
         $this->assertIsString($value, '$class->getIcon()');
     }
 
@@ -214,14 +214,14 @@ class BridgeImplementationTest extends TestCase
     {
         $this->setBridge($path);
 
-        $this->checkUrl($this->obj::URI);
-        $this->checkUrl($this->obj->getURI());
+        $this->assertNotFalse(filter_var($this->bridge::URI, FILTER_VALIDATE_URL));
+        $this->assertNotFalse(filter_var($this->bridge->getURI(), FILTER_VALIDATE_URL));
     }
 
     public function dataBridgesProvider()
     {
         $bridges = [];
-        foreach (glob(__DIR__ . '/../../bridges/*Bridge.php') as $path) {
+        foreach (glob(__DIR__ . '/../bridges/*Bridge.php') as $path) {
             $bridges[basename($path, '.php')] = [$path];
         }
         return $bridges;
@@ -229,16 +229,11 @@ class BridgeImplementationTest extends TestCase
 
     private function setBridge($path)
     {
-        $this->class = '\\' . basename($path, '.php');
-        $this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
-        $this->obj = new $this->class(
+        $this->className = '\\' . basename($path, '.php');
+        $this->assertTrue(class_exists($this->className), 'class ' . $this->className . ' doesn\'t exist');
+        $this->bridge = new $this->className(
             new \NullCache(),
-            new \NullLogger()
+            new \NullLogger(),
         );
-    }
-
-    private function checkUrl($url)
-    {
-        $this->assertNotFalse(filter_var($url, FILTER_VALIDATE_URL), 'no valid URL: ' . $url);
     }
 }
