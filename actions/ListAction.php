@@ -14,14 +14,14 @@ class ListAction implements ActionInterface
             $bridge = $bridgeFactory->create($bridgeClassName);
 
             $list->bridges[$bridgeClassName] = [
-                'status' => $bridgeFactory->isEnabled($bridgeClassName) ? 'active' : 'inactive',
-                'uri' => $bridge->getURI(),
-                'donationUri' => $bridge->getDonationURI(),
-                'name' => $bridge->getName(),
-                'icon' => $bridge->getIcon(),
-                'parameters' => $bridge->getParameters(),
-                'maintainer' => $bridge->getMaintainer(),
-                'description' => $bridge->getDescription()
+                'status'        => $bridgeFactory->isEnabled($bridgeClassName) ? 'active' : 'inactive',
+                'uri'           => $bridge->getURI(),
+                'donationUri'   => $bridge->getDonationURI(),
+                'name'          => $bridge->getName(),
+                'icon'          => $bridge->getIcon(),
+                'parameters'    => $bridge->getParameters(),
+                'maintainer'    => $bridge->getMaintainer(),
+                'description'   => $bridge->getDescription()
             ];
         }
         $list->total = count($list->bridges);

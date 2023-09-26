@@ -1,6 +1,6 @@
 <?php
 
-/** Path to the formats library */
+// Path to the formats library
 const PATH_LIB_FORMATS = __DIR__ . '/../formats/';
 
 /** Path to the caches library */
