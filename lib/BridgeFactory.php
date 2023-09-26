@@ -4,9 +4,9 @@ final class BridgeFactory
 {
     private CacheInterface $cache;
     private Logger $logger;
-    private $bridgeClassNames = [];
-    private $enabledBridges = [];
-    private $missingEnabledBridges = [];
+    private array $bridgeClassNames = [];
+    private array $enabledBridges = [];
+    private array $missingEnabledBridges = [];
 
     public function __construct()
     {
@@ -22,7 +22,7 @@ final class BridgeFactory
 
         $enabledBridges = Configuration::getConfig('system', 'enabled_bridges');
         if ($enabledBridges === null) {
-            throw new \Exception('No bridges are enabled... wtf?');
+            throw new \Exception('No bridges are enabled...');
         }
         foreach ($enabledBridges as $enabledBridge) {
             if ($enabledBridge === '*') {

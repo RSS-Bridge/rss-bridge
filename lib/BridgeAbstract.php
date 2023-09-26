@@ -90,13 +90,6 @@ abstract class BridgeAbstract
         return static::CACHE_TIMEOUT;
     }
 
-    /**
-     * Sets the input values for a given context.
-     *
-     * @param array $inputs Associative array of inputs
-     * @param string $queriedContext The context name
-     * @return void
-     */
     protected function setInputs(array $inputs, $queriedContext)
     {
         // Import and assign all inputs to their context
@@ -176,16 +169,6 @@ abstract class BridgeAbstract
         }
     }
 
-    /**
-     * Set inputs for the bridge
-     *
-     * Returns errors and aborts execution if the provided input parameters are
-     * invalid.
-     *
-     * @param array List of input parameters. Each element in this list must
-     * relate to an item in {@see BridgeAbstract::PARAMETERS}
-     * @return void
-     */
     public function setDatas(array $inputs)
     {
         if (isset($inputs['context'])) { // Context hinting (optional)
@@ -228,14 +211,6 @@ abstract class BridgeAbstract
         $this->setInputs($inputs, $this->queriedContext);
     }
 
-    /**
-     * Loads configuration for the bridge
-     *
-     * Returns errors and aborts execution if the provided configuration is
-     * invalid.
-     *
-     * @return void
-     */
     public function loadConfiguration()
     {
         foreach (static::CONFIGURATION as $optionName => $optionValue) {
@@ -255,12 +230,6 @@ abstract class BridgeAbstract
         }
     }
 
-    /**
-     * Returns the value for the provided input
-     *
-     * @param string $input The input name
-     * @return mixed|null The input value or null if the input is not defined
-     */
     protected function getInput($input)
     {
         return $this->inputs[$this->queriedContext][$input]['value'] ?? null;
