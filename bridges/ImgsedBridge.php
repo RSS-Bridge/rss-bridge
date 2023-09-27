@@ -219,6 +219,11 @@ HTML,
     {
         $date = date_create();
         $dateString = str_replace(' ago', '', $content);
+        // Special case : 'a day' is not a valid interval in PHP, so replace it with it's PHP equivalenbt : '1 day'
+        if($dateString == 'a day') {
+            $dateString = '1 day';
+        }
+
         $relativeDate = date_interval_create_from_date_string($dateString);
         if ($relativeDate) {
             date_sub($date, $relativeDate);
