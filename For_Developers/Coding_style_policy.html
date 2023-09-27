@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Developers/index.html">For Developers</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></h1>
                 <span class="ModifiedDate">
-            September 25, 2023 at 3:27 PM        </span>
+            September 27, 2023 at 2:29 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/04_For_Developers/01_Coding_style_policy.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,9 +108,14 @@
             </div>
 
     <div class="s-content">
-        <p>This section explains the coding style policy for RSS-Bridge with examples and references to external resources. Please make sure your code is compliant before opening a pull request.</p>
-<p>You will automatically be notified if issues were found in your pull request. You must fix those issues before the pull request will be merged. Refer to <a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml" class="Link--external" rel="noopener noreferrer">phpcs.xml</a> for a complete list of policies enforced by Travis-CI.</p>
-<p>If you want to run the checks locally, make sure you have <a href="https://github.com/squizlabs/PHP_CodeSniffer" class="Link--external" rel="noopener noreferrer"><code>phpcs</code></a> and <a href="https://phpunit.de/" class="Link--external" rel="noopener noreferrer"><code>phpunit</code></a> installed on your machine and run following commands in the root directory of RSS-Bridge (tested on Debian):</p>
+        <p>This section explains the coding style policy for RSS-Bridge with examples and references to external resources.
+Please make sure your code is compliant before opening a pull request.</p>
+<p>You will automatically be notified if issues were found in your pull request.
+You must fix those issues before the pull request will be merged.
+Refer to <a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml" class="Link--external" rel="noopener noreferrer">phpcs.xml</a> for a complete list of policies enforced by Travis-CI.</p>
+<p>If you want to run the checks locally, make sure you have
+<a href="https://github.com/squizlabs/PHP_CodeSniffer" class="Link--external" rel="noopener noreferrer"><code>phpcs</code></a> and
+<a href="https://phpunit.de/" class="Link--external" rel="noopener noreferrer"><code>phpunit</code></a> installed on your machine and run following commands in the root directory of RSS-Bridge (tested on Debian):</p>
 <pre><code class="hljs shell">./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
 ./vendor/bin/phpunit
 </code></pre>
@@ -149,7 +154,7 @@
 <h1><a id="indentation" href="#indentation" class="Permalink" aria-hidden="true" title="Permalink">#</a>Indentation</h1>
 <h2><a id="use-spaces-indentation" href="#use-spaces-indentation" class="Permalink" aria-hidden="true" title="Permalink">#</a>Use spaces indentation</h2>
 <h1><a id="maximum-line-length" href="#maximum-line-length" class="Permalink" aria-hidden="true" title="Permalink">#</a>Maximum Line Length</h1>
-<p>There is no maximum line length.</p>
+<p>180</p>
 <h1><a id="strings" href="#strings" class="Permalink" aria-hidden="true" title="Permalink">#</a>Strings</h1>
 <h2><a id="whenever-possible-use-single-quote-strings" href="#whenever-possible-use-single-quote-strings" class="Permalink" aria-hidden="true" title="Permalink">#</a>Whenever possible use single quote strings</h2>
 <p>PHP supports both single quote strings and double quote strings. For pure text you must use single quote strings for consistency. Double quote strings are only allowed for special characters (i.e. <code>&quot;\n&quot;</code>) or inlined variables (i.e. <code>&quot;My name is {$name}&quot;</code>);</p>
