@@ -86,8 +86,13 @@ class SQLiteCache implements CacheInterface
         $stmt->bindValue(':key', $cacheKey);
         $stmt->bindValue(':value', $blob, \SQLITE3_BLOB);
         $stmt->bindValue(':updated', $expiration);
-        $result = $stmt->execute();
-        // Unclear whether we should $result->finalize(); here?
+        try {
+            $result = $stmt->execute();
+            // Should $result->finalize() be called here?
+        } catch (\Exception $e) {
+            $this->logger->warning(create_sane_exception_message($e));
+            // Intentionally not rethrowing exception
+        }
     }
 
     public function delete(string $key): void
