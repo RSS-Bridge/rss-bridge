@@ -1,5 +1,6 @@
 ﻿import argparse
 import requests
+import re
 from bs4 import BeautifulSoup
 from datetime import datetime
 from typing import Iterable
@@ -16,18 +17,18 @@ class Instance:
     name = ''
     url = ''
 
-def main(instances: Iterable[Instance], with_upload: bool, comment_title: str):
+def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: bool, title: str, output_file: str):
     start_date = datetime.now()
     table_rows = []
     for instance in instances:
         page = requests.get(instance.url) # Use python requests to grab the rss-bridge main page
         soup = BeautifulSoup(page.content, "html.parser") # use bs4 to turn the page into soup
         bridge_cards = soup.select('.bridge-card') # get a soup-formatted list of all bridges on the rss-bridge page
-        table_rows += testBridges(instance, bridge_cards, with_upload) # run the main scraping code with the list of bridges and the info if this is for the current version or the pr version
-    with open(file=os.getcwd() + '/comment.txt', mode='w+', encoding='utf-8') as file:
+        table_rows += testBridges(instance, bridge_cards, with_upload, with_reduced_upload) # run the main scraping code with the list of bridges
+    with open(file=output_file, mode='w+', encoding='utf-8') as file:
         table_rows_value = '\n'.join(sorted(table_rows))
         file.write(f'''
-## {comment_title}
+## {title}
 | Bridge | Context | Status |
 | - | - | - |
 {table_rows_value}
@@ -35,7 +36,7 @@ def main(instances: Iterable[Instance], with_upload: bool, comment_title: str):
 *last change: {start_date.strftime("%A %Y-%m-%d %H:%M:%S")}*
         '''.strip())
 
-def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool) -> Iterable:
+def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool) -> Iterable:
     instance_suffix = ''
     if instance.name:
         instance_suffix = f' ({instance.name})'
@@ -43,7 +44,7 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool) -
     for bridge_card in bridge_cards:
         bridgeid = bridge_card.get('id')
         bridgeid = bridgeid.split('-')[1] # this extracts a readable bridge name from the bridge metadata
-        print(f'{bridgeid}{instance_suffix}\n')
+        print(f'{bridgeid}{instance_suffix}')
         bridgestring = '/?action=display&bridge=' + bridgeid + '&format=Html'
         bridge_name = bridgeid.replace('Bridge', '')
         context_forms = bridge_card.find_all("form")
@@ -112,20 +113,26 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool) -
                 page_text = response.text.replace('<head>','<head><base href="https://rss-bridge.org/bridge01/" target="_blank">')
                 page_text = page_text.encode("utf_8")
                 soup = BeautifulSoup(page_text, "html.parser")
-                status_messages = list(map(lambda e: f'⚠️ `{e.text.strip().splitlines()[0]}`', soup.find_all('pre')))
+                status_messages = []
                 if response.status_code != 200:
-                    status_messages = [f'❌ `HTTP status {response.status_code} {response.reason}`'] + status_messages
+                    status_messages += [f'❌ `HTTP status {response.status_code} {response.reason}`']
                 else:
                     feed_items = soup.select('.feeditem')
                     feed_items_length = len(feed_items)
                     if feed_items_length <= 0:
                         status_messages += [f'⚠️ `The feed has no items`']
                     elif feed_items_length == 1 and len(soup.select('.error')) > 0:
-                        status_messages = [f'❌ `{feed_items[0].text.strip().splitlines()[0]}`'] + status_messages
+                        status_messages += [f'❌ `{getFirstLine(feed_items[0].text)}`']
+                status_messages += map(lambda e: f'❌ `{getFirstLine(e.text)}`', soup.select('.error .error-type') + soup.select('.error .error-message'))
+                for item_element in soup.select('.feeditem'): # remove all feed items to not accidentally selected <pre> tags from item content
+                    item_element.decompose()
+                status_messages += map(lambda e: f'⚠️ `{getFirstLine(e.text)}`', soup.find_all('pre'))
+                status_messages = list(dict.fromkeys(status_messages)) # remove duplicates
                 status = '<br>'.join(status_messages)
-                if status.strip() == '':
+                status_is_ok = status == '';
+                if status_is_ok:
                     status = '✔️'
-                if with_upload:
+                if with_upload and (not with_reduced_upload or not status_is_ok):
                     termpad = requests.post(url="https://termpad.com/", data=page_text)
                     termpad_url = termpad.text.strip()
                     termpad_url = termpad_url.replace('termpad.com/','termpad.com/raw/')
@@ -133,11 +140,22 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool) -
             form_number += 1
     return table_rows
 
+def getFirstLine(value: str) -> str:
+     # trim whitespace and remove text that can break the table or is simply unnecessary
+    clean_value = re.sub('^\[[^\]]+\]\s*rssbridge\.|[\|`]', '', value.strip())
+    first_line = next(iter(clean_value.splitlines()), '')
+    max_length = 250
+    if (len(first_line) > max_length):
+        first_line = first_line[:max_length] + '...'
+    return first_line
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--instances', nargs='+')
-    parser.add_argument('-nu', '--no-upload', action='store_true')
-    parser.add_argument('-t', '--comment-title', default='Pull request artifacts')
+    parser.add_argument('--instances', nargs='+')
+    parser.add_argument('--no-upload', action='store_true')
+    parser.add_argument('--reduced-upload', action='store_true')
+    parser.add_argument('--title', default='Pull request artifacts')
+    parser.add_argument('--output-file', default=os.getcwd() + '/comment.txt')
     args = parser.parse_args()
     instances = []
     if args.instances:
@@ -156,4 +174,10 @@ if __name__ == '__main__':
         instance.name = 'pr'
         instance.url = 'http://localhost:3001'
         instances.append(instance)
-    main(instances=instances, with_upload=not args.no_upload, comment_title=args.comment_title);
+    main(
+        instances=instances,
+        with_upload=not args.no_upload,
+        with_reduced_upload=args.reduced_upload and not args.no_upload,
+        title=args.title,
+        output_file=args.output_file
+    );
