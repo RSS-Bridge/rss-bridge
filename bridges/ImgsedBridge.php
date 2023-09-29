@@ -244,7 +244,7 @@ HTML,
             if ($this->getInput('tagged')) {
                 $types[] = 'Tags';
             }
-            $typesText = $types[0];
+            $typesText = $types[0] ?? '';
             if (count($types) > 1) {
                 for ($i = 1; $i < count($types) - 1; $i++) {
                     $typesText .= ', ' . $types[$i];
