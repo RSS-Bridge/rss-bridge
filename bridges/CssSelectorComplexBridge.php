@@ -415,10 +415,14 @@ class CssSelectorComplexBridge extends BridgeAbstract
     ) {
         $article_content = convertLazyLoading($entry_html);
 
+        $article_title = '';
         if (is_null($title_selector)) {
             $article_title = $title_default;
         } else {
-            $article_title = trim($entry_html->find($title_selector, 0)->innertext);
+            $titleElement = $entry_html->find($title_selector, 0);
+            if ($titleElement) {
+                $article_title = trim($titleElement->innertext);
+            }
         }
 
         $author = null;

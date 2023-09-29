@@ -463,7 +463,7 @@ HEREDOC;
                 )
             )->{'src'};
         } else {
-            return $deal->find('img[class*=' . $selectorPlain . ']', 0)->src;
+            return $deal->find('img[class*=' . $selectorPlain . ']', 0)->src ?? '';
         }
     }
 
