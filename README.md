@@ -266,7 +266,7 @@ https://alice:cat@rss-bridge.org/bridge01/?action=display&bridge=FabriceBellardB
 
 ### How to create a new output format
 
-[Create a new format](https://rss-bridge.github.io/rss-bridge/Format_API/index.html).
+See `formats/PlaintextFormat.php` for an example.
 
 ### How to run unit tests and linter
 

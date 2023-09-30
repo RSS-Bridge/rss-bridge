@@ -93,7 +93,7 @@ class DisplayAction implements ActionInterface
         return $response;
     }
 
-    private function createResponse(array $request, BridgeAbstract $bridge, FormatInterface $format)
+    private function createResponse(array $request, BridgeAbstract $bridge, FormatAbstract $format)
     {
         $items = [];
         $infos = [];
@@ -108,15 +108,15 @@ class DisplayAction implements ActionInterface
             if (isset($items[0]) && is_array($items[0])) {
                 $feedItems = [];
                 foreach ($items as $item) {
-                    $feedItems[] = new FeedItem($item);
+                    $feedItems[] = FeedItem::fromArray($item);
                 }
                 $items = $feedItems;
             }
             $infos = [
-                'name' => $bridge->getName(),
-                'uri'  => $bridge->getURI(),
-                'donationUri'  => $bridge->getDonationURI(),
-                'icon' => $bridge->getIcon()
+                'name'          => $bridge->getName(),
+                'uri'           => $bridge->getURI(),
+                'donationUri'   => $bridge->getDonationURI(),
+                'icon'          => $bridge->getIcon()
             ];
         } catch (\Exception $e) {
             if ($e instanceof HttpException) {
@@ -167,8 +167,8 @@ class DisplayAction implements ActionInterface
 
         // Create a unique identifier every 24 hours
         $uniqueIdentifier = urlencode((int)(time() / 86400));
-        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $uniqueIdentifier);
-        $item->setTitle($itemTitle);
+        $title = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $uniqueIdentifier);
+        $item->setTitle($title);
         $item->setURI(get_current_url());
         $item->setTimestamp(time());
 

@@ -15,6 +15,7 @@ function getContents(
     bool $returnFull = false
 ) {
     $httpClient = RssBridge::getHttpClient();
+    $cache = RssBridge::getCache();
 
     $httpHeadersNormalized = [];
     foreach ($httpHeaders as $httpHeader) {
@@ -51,7 +52,6 @@ function getContents(
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
 
-    $cache = RssBridge::getCache();
     $cacheKey = 'server_' . $url;
 
     /** @var Response $cachedResponse */

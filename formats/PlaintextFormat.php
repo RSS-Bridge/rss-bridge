@@ -6,18 +6,14 @@ class PlaintextFormat extends FormatAbstract
 
     public function stringify()
     {
-        $items = $this->getItems();
         $data = [];
-
-        foreach ($items as $item) {
+        foreach ($this->getItems() as $item) {
             $data[] = $item->toArray();
         }
-
-        $toReturn = print_r($data, true);
-
+        $text = print_r($data, true);
         // Remove invalid non-UTF8 characters
         ini_set('mbstring.substitute_character', 'none');
-        $toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
-        return $toReturn;
+        $text = mb_convert_encoding($text, $this->getCharset(), 'UTF-8');
+        return $text;
     }
 }

@@ -6,6 +6,8 @@ class HtmlFormat extends FormatAbstract
 
     public function stringify()
     {
+        $queryString = $_SERVER['QUERY_STRING'];
+
         $extraInfos = $this->getExtraInfos();
         $formatFactory = new FormatFactory();
         $buttons = [];
@@ -15,7 +17,7 @@ class HtmlFormat extends FormatAbstract
             if ($format === 'Html') {
                 continue;
             }
-            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
+            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $format, htmlentities($queryString));
             $buttons[] = [
                 'href' => $formatUrl,
                 'value' => $format,
@@ -57,6 +59,7 @@ class HtmlFormat extends FormatAbstract
         ]);
         // Remove invalid characters
         ini_set('mbstring.substitute_character', 'none');
-        return mb_convert_encoding($html, $this->getCharset(), 'UTF-8');
+        $html = mb_convert_encoding($html, $this->getCharset(), 'UTF-8');
+        return $html;
     }
 }
