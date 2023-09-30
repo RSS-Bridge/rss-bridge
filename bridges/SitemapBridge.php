@@ -73,7 +73,7 @@ class SitemapBridge extends CssSelectorBridge
         $discard_thumbnail = $this->getInput('discard_thumbnail');
         $limit = $this->getInput('limit');
 
-        $this->feedName = $this->getPageTitle($url, $title_cleanup);
+        $this->feedName = $this->titleCleanup($this->getPageTitle($url), $title_cleanup);
         $sitemap_url = empty($site_map) ? $url : $site_map;
         $sitemap_xml = $this->getSitemapXml($sitemap_url, !empty($site_map));
         $links = $this->sitemapXmlToList($sitemap_xml, $url_pattern, empty($limit) ? 10 : $limit);
@@ -103,7 +103,13 @@ class SitemapBridge extends CssSelectorBridge
             $robots_txt = getSimpleHTMLDOM(urljoin($url, '/robots.txt'))->outertext;
             preg_match('/Sitemap: ([^ ]+)/', $robots_txt, $matches);
             if (empty($matches)) {
-                returnClientError('Failed to determine Sitemap from robots.txt. Try setting it manually.');
+                $sitemap = getSimpleHTMLDOM(urljoin($url, '/sitemap.xml'));
+                if (!empty($sitemap->find('urlset, sitemap'))) {
+                    $url = urljoin($url, '/sitemap.xml');
+                    return $sitemap;
+                } else {
+                    returnClientError('Failed to locate Sitemap from /robots.txt or /sitemap.xml. Try setting it manually.');
+                }
             }
             $url = $matches[1];
         }
