@@ -60,7 +60,7 @@
     <h2>Details</h2>
 
     <div style="margin-bottom: 15px">
-        <div>
+        <div class="error-type">
             <strong>Type:</strong> <?= e(get_class($e)) ?>
         </div>
 
@@ -68,7 +68,7 @@
             <strong>Code:</strong> <?= e($e->getCode()) ?>
         </div>
 
-        <div>
+        <div class="error-message">
             <strong>Message:</strong> <?= e(sanitize_root($e->getMessage())) ?>
         </div>
 

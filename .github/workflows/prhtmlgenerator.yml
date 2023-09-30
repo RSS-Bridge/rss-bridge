@@ -8,6 +8,8 @@ jobs:
   test-pr:
     name: Generate HTML
     runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: 1
     # Needs additional permissions https://github.com/actions/first-interaction/issues/10#issuecomment-1041402989
     steps:
       - name: Check out self
