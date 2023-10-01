@@ -147,14 +147,16 @@ class FeedItem
         return $this->timestamp;
     }
 
-    public function setTimestamp($timestamp)
+    public function setTimestamp($datetime)
     {
         $this->timestamp = null;
-        if (
-            !is_numeric($timestamp)
-            && !$timestamp = strtotime($timestamp)
-        ) {
-            Debug::log('Unable to parse timestamp!');
+        if (is_numeric($datetime)) {
+            $timestamp = $datetime;
+        } else {
+            $timestamp = strtotime($datetime);
+            if ($timestamp === false) {
+                Debug::log('Unable to parse timestamp!');
+            }
         }
         if ($timestamp <= 0) {
             Debug::log('Timestamp must be greater than zero!');

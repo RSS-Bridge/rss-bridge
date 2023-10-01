@@ -260,7 +260,11 @@ class CodebergBridge extends BridgeAbstract
             }
 
             $item['author'] = $div->find('a.author', 0)->innertext;
-            $item['timestamp'] = $div->find('span.time-since', 0)->title;
+
+            $timeSince = $div->find('span.time-since', 0);
+            if ($timeSince) {
+                $item['timestamp'] = $timeSince->title;
+            }
 
             $this->items[] = $item;
         }

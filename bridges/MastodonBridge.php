@@ -161,8 +161,8 @@ class MastodonBridge extends BridgeAbstract
             $object = $this->fetchAP($object);
         }
 
-        $item['content'] = $object['content'];
-        $strippedContent = strip_tags(str_replace('<br>', ' ', $object['content']));
+        $item['content'] = $object['content'] ?? '';
+        $strippedContent = strip_tags(str_replace('<br>', ' ', $item['content']));
 
         if (isset($object['name'])) {
             $item['title'] = $object['name'];
@@ -186,9 +186,10 @@ class MastodonBridge extends BridgeAbstract
 
         foreach ($object['attachment'] as $attachment) {
             // Only process REMOTE pictures (prevent xss)
+            $mediaType = $attachment['mediaType'] ?? null;
             if (
-                $attachment['mediaType']
-                && preg_match('/^image\//', $attachment['mediaType'], $match)
+                $mediaType
+                && preg_match('/^image\//', $mediaType, $match)
                 && preg_match('/^http(s|):\/\//', $attachment['url'], $match)
             ) {
                 $item['content'] = $item['content'] . '<br /><img ';

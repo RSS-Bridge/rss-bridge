@@ -8,6 +8,8 @@ jobs:
   test-pr:
     name: Generate HTML
     runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: 1
     # Needs additional permissions https://github.com/actions/first-interaction/issues/10#issuecomment-1041402989
     steps:
       - name: Check out self
@@ -22,7 +24,7 @@ jobs:
           wget https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester.py;
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
           touch DEBUG;
-          cat $PR.patch | grep "\bbridges/.*Bridge\.php\b" | sed "s=.*\bbridges/\(.*\)Bridge\.php\b.*=\1=g" | sort | uniq > whitelist.txt
+          cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq > whitelist.txt
       - name: Start Docker - Current
         run: |
           docker run -d -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG -p 3000:80 ghcr.io/rss-bridge/rss-bridge:latest

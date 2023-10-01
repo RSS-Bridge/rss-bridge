@@ -40,7 +40,10 @@ function urljoin($base, $rel) {
 	}
 
 	if (isset($prel['scheme'])) {
-		if ($prel['scheme'] != $pbase['scheme'] || in_array($prel['scheme'], $uses_relative) == false) {
+		if (
+			$prel['scheme'] != ($pbase['scheme'] ?? null)
+			|| in_array($prel['scheme'], $uses_relative) == false
+		) {
 			return $rel;
 		}
 	}

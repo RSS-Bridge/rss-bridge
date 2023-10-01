@@ -110,13 +110,8 @@ class JsonFormat extends FormatAbstract
         }
         $data['items'] = $items;
 
-        /**
-         * The intention here is to discard non-utf8 byte sequences.
-         * But the JSON_PARTIAL_OUTPUT_ON_ERROR also discards lots of other errors.
-         * So consider this a hack.
-         * Switch to JSON_INVALID_UTF8_IGNORE when PHP 7.2 is the latest platform requirement.
-         */
-        $json = json_encode($data, \JSON_PRETTY_PRINT | \JSON_PARTIAL_OUTPUT_ON_ERROR);
+        // Ignoring invalid json
+        $json = json_encode($data, \JSON_PRETTY_PRINT | \JSON_INVALID_UTF8_IGNORE);
 
         return $json;
     }

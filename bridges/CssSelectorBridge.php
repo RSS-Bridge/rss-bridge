@@ -91,7 +91,7 @@ class CssSelectorBridge extends BridgeAbstract
         $limit = $this->getInput('limit') ?? 10;
 
         $html = defaultLinkTo(getSimpleHTMLDOM($url), $url);
-        $this->feedName = $this->getPageTitle($html, $title_cleanup);
+        $this->feedName = $this->titleCleanup($this->getPageTitle($html), $title_cleanup);
         $items = $this->htmlFindEntries($html, $url_selector, $url_pattern, $limit, $content_cleanup);
 
         if (empty($content_selector)) {
@@ -139,17 +139,27 @@ class CssSelectorBridge extends BridgeAbstract
     /**
      * Retrieve title from webpage URL or DOM
      * @param string|object $page URL or DOM to retrieve title from
-     * @param string $title_cleanup optional string to remove from webpage title, e.g. " | BlogName"
      * @return string Webpage title
      */
-    protected function getPageTitle($page, $title_cleanup = null)
+    protected function getPageTitle($page)
     {
         if (is_string($page)) {
             $page = getSimpleHTMLDOMCached($page);
         }
         $title = html_entity_decode($page->find('title', 0)->plaintext);
-        if (!empty($title)) {
-            $title = trim(str_replace($title_cleanup, '', $title));
+        return $title;
+    }
+
+    /**
+     * Clean Article title. Remove constant part that appears in every title such as blog name.
+     * @param string $title Title to clean, e.g. "Article Name | BlogName"
+     * @param string $title_cleanup string to remove from webpage title, e.g. " | BlogName"
+     * @return string Cleaned Title
+     */
+    protected function titleCleanup($title, $title_cleanup)
+    {
+        if (!empty($title) && !empty($title_cleanup)) {
+            return trim(str_replace($title_cleanup, '', $title));
         }
         return $title;
     }
@@ -269,6 +279,8 @@ class CssSelectorBridge extends BridgeAbstract
             }
             $item['title'] = $article_title;
         }
+
+        $item['title'] = $this->titleCleanup($item['title'], $title_cleanup);
 
         $article_content = $entry_html->find($content_selector);
 
@@ -484,7 +496,7 @@ class CssSelectorBridge extends BridgeAbstract
                                     // Now we can check for desired field in JSON and populate $item accordingly
                                     if (isset($json_root[$field])) {
                                         $field_value = $json_root[$field];
-                                        if (is_array($field_value)) {
+                                        if (is_array($field_value) && isset($field_value[0])) {
                                             $field_value = $field_value[0]; // Different versions of the same enclosure? Take the first one
                                         }
                                         if (is_string($field_value) && !empty($field_value)) {

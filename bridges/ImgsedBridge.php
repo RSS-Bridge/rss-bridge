@@ -257,11 +257,13 @@ HTML,
             if ($this->getInput('tagged')) {
                 $types[] = 'Tags';
             }
+
             // If no content type is selected, this bridge does nothing, so we return an error
             if (count($types) == 0) {
                 returnClientError('You must select at least one of the content type : Post, Stories or Tags !');
             }
-            $typesText = $types[0];
+            $typesText = $types[0] ?? '';
+
             if (count($types) > 1) {
                 for ($i = 1; $i < count($types) - 1; $i++) {
                     $typesText .= ', ' . $types[$i];
