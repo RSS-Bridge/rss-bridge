@@ -1,154 +1,21 @@
 <?php
 
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
-/**
- * Validator for bridge parameters
- */
 class ParameterValidator
 {
-    /**
-     * Holds the list of invalid parameters
-     *
-     * @var array
-     */
-    private $invalid = [];
+    private array $invalid = [];
 
     /**
-     * Add item to list of invalid parameters
+     * Check that inputs are actually present in the bridge parameters.
      *
-     * @param string $name The name of the parameter
-     * @param string $reason The reason for that parameter being invalid
-     * @return void
+     * Also check whether input values are allowed.
      */
-    private function addInvalidParameter($name, $reason)
+    public function validateInput(&$input, $parameters): bool
     {
-        $this->invalid[] = [
-            'name' => $name,
-            'reason' => $reason,
-        ];
-    }
-
-    /**
-     * Return list of invalid parameters.
-     *
-     * Each element is an array of 'name' and 'reason'.
-     *
-     * @return array List of invalid parameters
-     */
-    public function getInvalidParameters()
-    {
-        return $this->invalid;
-    }
-
-    /**
-     * Validate value for a text input
-     *
-     * @param string $value The value of a text input
-     * @param string|null $pattern (optional) A regex pattern
-     * @return string|null The filtered value or null if the value is invalid
-     */
-    private function validateTextValue($value, $pattern = null)
-    {
-        if (!is_null($pattern)) {
-            $filteredValue = filter_var(
-                $value,
-                FILTER_VALIDATE_REGEXP,
-                ['options' => [
-                    'regexp' => '/^' . $pattern . '$/'
-                ]
-                ]
-            );
-        } else {
-            $filteredValue = filter_var($value);
-        }
-
-        if ($filteredValue === false) {
-            return null;
-        }
-
-        return $filteredValue;
-    }
-
-    /**
-     * Validate value for a number input
-     *
-     * @param int $value The value of a number input
-     * @return int|null The filtered value or null if the value is invalid
-     */
-    private function validateNumberValue($value)
-    {
-        $filteredValue = filter_var($value, FILTER_VALIDATE_INT);
-
-        if ($filteredValue === false) {
-            return null;
-        }
-
-        return $filteredValue;
-    }
-
-    /**
-     * Validate value for a checkbox
-     *
-     * @param bool $value The value of a checkbox
-     * @return bool The filtered value
-     */
-    private function validateCheckboxValue($value)
-    {
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-    }
-
-    /**
-     * Validate value for a list
-     *
-     * @param string $value The value of a list
-     * @param array $expectedValues A list of expected values
-     * @return string|null The filtered value or null if the value is invalid
-     */
-    private function validateListValue($value, $expectedValues)
-    {
-        $filteredValue = filter_var($value);
-
-        if ($filteredValue === false) {
-            return null;
-        }
-
-        if (!in_array($filteredValue, $expectedValues)) { // Check sub-values?
-            foreach ($expectedValues as $subName => $subValue) {
-                if (is_array($subValue) && in_array($filteredValue, $subValue)) {
-                    return $filteredValue;
-                }
-            }
-            return null;
-        }
-
-        return $filteredValue;
-    }
-
-    /**
-     * Check if all required parameters are satisfied
-     *
-     * @param array $data (ref) A list of input values
-     * @param array $parameters The bridge parameters
-     * @return bool True if all parameters are satisfied
-     */
-    public function validateData(&$data, $parameters)
-    {
-        if (!is_array($data)) {
+        if (!is_array($input)) {
             return false;
         }
 
-        foreach ($data as $name => $value) {
+        foreach ($input as $name => $value) {
             // Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
             if ($name === '_') {
                 continue;
@@ -156,54 +23,60 @@ class ParameterValidator
 
             $registered = false;
             foreach ($parameters as $context => $set) {
-                if (array_key_exists($name, $set)) {
-                    $registered = true;
-                    if (!isset($set[$name]['type'])) {
-                        $set[$name]['type'] = 'text';
-                    }
+                if (!array_key_exists($name, $set)) {
+                    continue;
+                }
+                $registered = true;
+                if (!isset($set[$name]['type'])) {
+                    // Default type is text
+                    $set[$name]['type'] = 'text';
+                }
 
-                    switch ($set[$name]['type']) {
-                        case 'number':
-                            $data[$name] = $this->validateNumberValue($value);
-                            break;
-                        case 'checkbox':
-                            $data[$name] = $this->validateCheckboxValue($value);
-                            break;
-                        case 'list':
-                            $data[$name] = $this->validateListValue($value, $set[$name]['values']);
-                            break;
-                        default:
-                        case 'text':
-                            if (isset($set[$name]['pattern'])) {
-                                $data[$name] = $this->validateTextValue($value, $set[$name]['pattern']);
-                            } else {
-                                $data[$name] = $this->validateTextValue($value);
-                            }
-                            break;
-                    }
+                switch ($set[$name]['type']) {
+                    case 'number':
+                        $input[$name] = $this->validateNumberValue($value);
+                        break;
+                    case 'checkbox':
+                        $input[$name] = $this->validateCheckboxValue($value);
+                        break;
+                    case 'list':
+                        $input[$name] = $this->validateListValue($value, $set[$name]['values']);
+                        break;
+                    default:
+                    case 'text':
+                        if (isset($set[$name]['pattern'])) {
+                            $input[$name] = $this->validateTextValue($value, $set[$name]['pattern']);
+                        } else {
+                            $input[$name] = $this->validateTextValue($value);
+                        }
+                        break;
+                }
 
-                    if (is_null($data[$name]) && isset($set[$name]['required']) && $set[$name]['required']) {
-                        $this->addInvalidParameter($name, 'Parameter is invalid!');
-                    }
+                if (
+                    is_null($input[$name])
+                    && isset($set[$name]['required'])
+                    && $set[$name]['required']
+                ) {
+                    $this->invalid[] = ['name' => $name, 'reason' => 'Parameter is invalid!'];
                 }
             }
 
             if (!$registered) {
-                $this->addInvalidParameter($name, 'Parameter is not registered!');
+                $this->invalid[] = ['name' => $name, 'reason' => 'Parameter is not registered!'];
             }
         }
 
-        return empty($this->invalid);
+        return $this->invalid === [];
     }
 
     /**
      * Get the name of the context matching the provided inputs
      *
-     * @param array $data Associative array of user data
+     * @param array $input Associative array of user data
      * @param array $parameters Array of bridge parameters
      * @return string|null Returns the context name or null if no match was found
      */
-    public function getQueriedContext($data, $parameters)
+    public function getQueriedContext($input, $parameters)
     {
         $queriedContexts = [];
 
@@ -212,7 +85,7 @@ class ParameterValidator
             $queriedContexts[$context] = null;
 
             // Ensure all user data exist in the current context
-            $notInContext = array_diff_key($data, $set);
+            $notInContext = array_diff_key($input, $set);
             if (array_key_exists('global', $parameters)) {
                 $notInContext = array_diff_key($notInContext, $parameters['global']);
             }
@@ -222,7 +95,7 @@ class ParameterValidator
 
             // Check if all parameters of the context are satisfied
             foreach ($set as $id => $properties) {
-                if (isset($data[$id]) && !empty($data[$id])) {
+                if (isset($input[$id]) && !empty($input[$id])) {
                     $queriedContexts[$context] = true;
                 } elseif (
                     isset($properties['type'])
@@ -248,8 +121,8 @@ class ParameterValidator
         switch (array_sum($queriedContexts)) {
             case 0:
                 // Found no match, is there a context without parameters?
-                if (isset($data['context'])) {
-                    return $data['context'];
+                if (isset($input['context'])) {
+                    return $input['context'];
                 }
                 foreach ($queriedContexts as $context => $queried) {
                     if (is_null($queried)) {
@@ -263,5 +136,56 @@ class ParameterValidator
             default:
                 return false;
         }
+    }
+
+    public function getInvalidParameters(): array
+    {
+        return $this->invalid;
+    }
+
+    private function validateTextValue($value, $pattern = null)
+    {
+        if (is_null($pattern)) {
+            // No filtering taking place
+            $filteredValue = filter_var($value);
+        } else {
+            $filteredValue = filter_var($value, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => '/^' . $pattern . '$/']]);
+        }
+        if ($filteredValue === false) {
+            return null;
+        }
+        return $filteredValue;
+    }
+
+    private function validateNumberValue($value)
+    {
+        $filteredValue = filter_var($value, FILTER_VALIDATE_INT);
+        if ($filteredValue === false) {
+            return null;
+        }
+        return $filteredValue;
+    }
+
+    private function validateCheckboxValue($value)
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    }
+
+    private function validateListValue($value, $expectedValues)
+    {
+        $filteredValue = filter_var($value);
+        if ($filteredValue === false) {
+            return null;
+        }
+        if (!in_array($filteredValue, $expectedValues)) {
+            // Check sub-values?
+            foreach ($expectedValues as $subName => $subValue) {
+                if (is_array($subValue) && in_array($filteredValue, $subValue)) {
+                    return $filteredValue;
+                }
+            }
+            return null;
+        }
+        return $filteredValue;
     }
 }

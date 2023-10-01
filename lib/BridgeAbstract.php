@@ -90,17 +90,70 @@ abstract class BridgeAbstract
         return static::CACHE_TIMEOUT;
     }
 
-    /**
-     * Sets the input values for a given context.
-     *
-     * @param array $inputs Associative array of inputs
-     * @param string $queriedContext The context name
-     * @return void
-     */
-    protected function setInputs(array $inputs, $queriedContext)
+    public function loadConfiguration()
+    {
+        foreach (static::CONFIGURATION as $optionName => $optionValue) {
+            $section = $this->getShortName();
+            $configurationOption = Configuration::getConfig($section, $optionName);
+
+            if ($configurationOption !== null) {
+                $this->configuration[$optionName] = $configurationOption;
+                continue;
+            }
+
+            if (isset($optionValue['required']) && $optionValue['required'] === true) {
+                throw new \Exception(sprintf('Missing configuration option: %s', $optionName));
+            } elseif (isset($optionValue['defaultValue'])) {
+                $this->configuration[$optionName] = $optionValue['defaultValue'];
+            }
+        }
+    }
+
+    public function setInput(array $input)
+    {
+        $context = $input['context'] ?? null;
+        if ($context) {
+            // Context hinting (optional)
+            $this->queriedContext = $context;
+            unset($input['context']);
+        }
+
+        $parameters = $this->getParameters();
+
+        if (!$parameters) {
+            if ($input) {
+                throw new \Exception('Invalid parameters value(s)');
+            }
+            return;
+        }
+
+        $validator = new ParameterValidator();
+
+        // $input is passed by reference!
+        if (!$validator->validateInput($input, $parameters)) {
+            $invalidParameterKeys = array_column($validator->getInvalidParameters(), 'name');
+            throw new \Exception(sprintf('Invalid parameters value(s): %s', implode(', ', $invalidParameterKeys)));
+        }
+
+        // Guess the context from input data
+        if (empty($this->queriedContext)) {
+            $queriedContext = $validator->getQueriedContext($input, $parameters);
+            $this->queriedContext = $queriedContext;
+        }
+
+        if (is_null($this->queriedContext)) {
+            throw new \Exception('Required parameter(s) missing');
+        } elseif ($this->queriedContext === false) {
+            throw new \Exception('Mixed context parameters');
+        }
+
+        $this->setInputWithContext($input, $this->queriedContext);
+    }
+
+    private function setInputWithContext(array $input, $queriedContext)
     {
         // Import and assign all inputs to their context
-        foreach ($inputs as $name => $value) {
+        foreach ($input as $name => $value) {
             foreach (static::PARAMETERS as $context => $set) {
                 if (array_key_exists($name, static::PARAMETERS[$context])) {
                     $this->inputs[$context][$name]['value'] = $value;
@@ -128,7 +181,7 @@ abstract class BridgeAbstract
 
                 switch ($type) {
                     case 'checkbox':
-                        $this->inputs[$context][$name]['value'] = $inputs[$context][$name]['value'] ?? false;
+                        $this->inputs[$context][$name]['value'] = $input[$context][$name]['value'] ?? false;
                         break;
                     case 'list':
                         if (!isset($properties['defaultValue'])) {
@@ -153,8 +206,8 @@ abstract class BridgeAbstract
         // Copy global parameter values to the guessed context
         if (array_key_exists('global', static::PARAMETERS)) {
             foreach (static::PARAMETERS['global'] as $name => $properties) {
-                if (isset($inputs[$name])) {
-                    $value = $inputs[$name];
+                if (isset($input[$name])) {
+                    $value = $input[$name];
                 } else {
                     if ($properties['type'] ?? null === 'checkbox') {
                         $value = false;
@@ -176,91 +229,6 @@ abstract class BridgeAbstract
         }
     }
 
-    /**
-     * Set inputs for the bridge
-     *
-     * Returns errors and aborts execution if the provided input parameters are
-     * invalid.
-     *
-     * @param array List of input parameters. Each element in this list must
-     * relate to an item in {@see BridgeAbstract::PARAMETERS}
-     * @return void
-     */
-    public function setDatas(array $inputs)
-    {
-        if (isset($inputs['context'])) { // Context hinting (optional)
-            $this->queriedContext = $inputs['context'];
-            unset($inputs['context']);
-        }
-
-        if (empty(static::PARAMETERS)) {
-            if (!empty($inputs)) {
-                throw new \Exception('Invalid parameters value(s)');
-            }
-
-            return;
-        }
-
-        $validator = new ParameterValidator();
-
-        if (!$validator->validateData($inputs, static::PARAMETERS)) {
-            $parameters = array_map(
-                function ($i) {
-                    return $i['name'];
-                }, // Just display parameter names
-                $validator->getInvalidParameters()
-            );
-
-            throw new \Exception(sprintf('Invalid parameters value(s): %s', implode(', ', $parameters)));
-        }
-
-        // Guess the context from input data
-        if (empty($this->queriedContext)) {
-            $this->queriedContext = $validator->getQueriedContext($inputs, static::PARAMETERS);
-        }
-
-        if (is_null($this->queriedContext)) {
-            throw new \Exception('Required parameter(s) missing');
-        } elseif ($this->queriedContext === false) {
-            throw new \Exception('Mixed context parameters');
-        }
-
-        $this->setInputs($inputs, $this->queriedContext);
-    }
-
-    /**
-     * Loads configuration for the bridge
-     *
-     * Returns errors and aborts execution if the provided configuration is
-     * invalid.
-     *
-     * @return void
-     */
-    public function loadConfiguration()
-    {
-        foreach (static::CONFIGURATION as $optionName => $optionValue) {
-            $section = $this->getShortName();
-            $configurationOption = Configuration::getConfig($section, $optionName);
-
-            if ($configurationOption !== null) {
-                $this->configuration[$optionName] = $configurationOption;
-                continue;
-            }
-
-            if (isset($optionValue['required']) && $optionValue['required'] === true) {
-                throw new \Exception(sprintf('Missing configuration option: %s', $optionName));
-            } elseif (isset($optionValue['defaultValue'])) {
-                $this->configuration[$optionName] = $optionValue['defaultValue'];
-            }
-        }
-    }
-
-    /**
-     * Returns the value for the provided input
-     *
-     * @param string $input The input name
-     * @return mixed|null The input value or null if the input is not defined
-     */
     protected function getInput($input)
     {
         return $this->inputs[$this->queriedContext][$input]['value'] ?? null;

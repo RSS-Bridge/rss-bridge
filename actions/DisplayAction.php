@@ -101,8 +101,8 @@ class DisplayAction implements ActionInterface
         try {
             $bridge->loadConfiguration();
             // Remove parameters that don't concern bridges
-            $bridgeData = array_diff_key($request, array_fill_keys(['action', 'bridge', 'format', '_noproxy', '_cache_timeout', '_error_time'], ''));
-            $bridge->setDatas($bridgeData);
+            $input = array_diff_key($request, array_fill_keys(['action', 'bridge', 'format', '_noproxy', '_cache_timeout', '_error_time'], ''));
+            $bridge->setInput($input);
             $bridge->collectData();
             $items = $bridge->getItems();
             if (isset($items[0]) && is_array($items[0])) {
