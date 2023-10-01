@@ -177,9 +177,18 @@ This bridge is not fetching its content through a secure connection</div>';
                     $form .= self::getCheckboxInput($inputEntry, $idArg, $id);
                 }
 
+                $infoText = [];
+                $infoTextScript = '';
                 if (isset($inputEntry['title'])) {
-                    $title_filtered = filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                    $form .= '<i class="info" title="' . $title_filtered . '">i</i>';
+                    $infoText[] = filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                }
+                if ($inputEntry['exampleValue'] !== '') {
+                    $infoText[] = "Example (right click to use):\n" . filter_var($inputEntry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                    $infoTextScript = 'rssbridge_use_placeholder_value(this);';
+                }
+
+                if (count($infoText) > 0) {
+                    $form .= '<i class="info" data-for="' . $idArg . '" title="' . implode("\n\n", $infoText) . '" oncontextmenu="' . $infoTextScript . 'return false">i</i>';
                 } else {
                     $form .= '<i class="no-info"></i>';
                 }

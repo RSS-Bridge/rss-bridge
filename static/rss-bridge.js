@@ -48,6 +48,12 @@ function rssbridge_toggle_bridge(){
     }
 }
 
+function rssbridge_use_placeholder_value(sender) {
+    let inputId = sender.getAttribute('data-for');
+    let inputElement = document.getElementById(inputId);
+    inputElement.value = inputElement.getAttribute("placeholder");
+}
+
 var rssbridge_feed_finder = (function() {
     /*
      * Code for "Find feed by URL" feature
