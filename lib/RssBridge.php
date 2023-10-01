@@ -39,9 +39,6 @@ final class RssBridge
                 $line
             );
             self::$logger->warning($text);
-            if (Debug::isEnabled()) {
-                print sprintf("<pre>%s</pre>\n", e($text));
-            }
         });
 
         // There might be some fatal errors which are not caught by set_error_handler() or \Throwable.
