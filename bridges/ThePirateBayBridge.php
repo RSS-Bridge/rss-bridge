@@ -91,6 +91,7 @@ class ThePirateBayBridge extends BridgeAbstract
         '504' => 'Games',
         '505' => 'HD-Movies',
         '506' => 'Movie Clips',
+        '507' => 'UHD/4k Movies',
         '599' => 'Other',
         '601' => 'E-books',
         '602' => 'Comics',
