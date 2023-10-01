@@ -165,7 +165,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         $url = $this->i8n('bridge-uri') . 'graphql';
 
         // Get Cookies header to do the query
-        $cookies = $this->getCookies($url);
+        $cookiesHeaderValue = $this->getCookiesHeaderValue($url);
 
         // GraphQL String
         // This was extracted from https://www.dealabs.com/assets/js/modern/common_211b99.js
@@ -209,7 +209,7 @@ HEREDOC;
             'X-Pepper-Txn: threads.show',
             'X-Request-Type: application/vnd.pepper.v1+json',
             'X-Requested-With: XMLHttpRequest',
-            $cookies,
+            "Cookie: $cookiesHeaderValue",
         ];
         // CURL Options
         $opts = [
@@ -245,26 +245,12 @@ HEREDOC;
      * Extract the cookies obtained from the URL
      * @return array the array containing the cookies set by the URL
      */
-    private function getCookies($url)
+    private function getCookiesHeaderValue($url)
     {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // get headers too with this line
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        $result = curl_exec($ch);
-        // get cookie
-        // multi-cookie variant contributed by @Combuster in comments
-        preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $result, $matches);
-        $cookies = [];
-        foreach ($matches[1] as $item) {
-            parse_str($item, $cookie);
-            $cookies = array_merge($cookies, $cookie);
-        }
-        $header = 'Cookie: ';
-        foreach ($cookies as $name => $content) {
-            $header .= $name . '=' . $content . '; ';
-        }
-        return $header;
+        $response = getContents($url, [], [], true);
+        $setCookieHeaders = $response['headers']['set-cookie'] ?? [];
+        $cookies = array_map(fn($c): string => explode(';', $c)[0], $setCookieHeaders);
+        return implode('; ', $cookies);
     }
 
     /**
@@ -330,7 +316,7 @@ HEREDOC;
     private function getTalkTitle()
     {
         $html = getSimpleHTMLDOMCached($this->getInput('url'));
-        $title = $html->find('h1[class=thread-title]', 0)->plaintext;
+        $title = $html->find('.thread-title', 0)->plaintext;
         return $title;
     }
 
@@ -356,13 +342,8 @@ HEREDOC;
      */
     private function getDealURI($deal)
     {
-        $uriA = $deal->find('div[class*=threadGrid-title]', 0)->find('a[class*=thread-link]', 0);
-        if ($uriA === null) {
-            $uri = '';
-        } else {
-            $uri = $uriA->href;
-        }
-
+        $dealId = $deal->attr['id'];
+        $uri = $this->i8n('bridge-uri') . $this->i8n('uri-deal') . str_replace('_', '-', $dealId);
         return $uri;
     }
 

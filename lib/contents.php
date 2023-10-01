@@ -52,7 +52,11 @@ function getContents(
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
 
-    $cacheKey = 'server_' . $url;
+    $requestBodyHash = null;
+    if (isset($curlOptions[CURLOPT_POSTFIELDS])) {
+        $requestBodyHash = md5(json_encode($curlOptions[CURLOPT_POSTFIELDS]));
+    }
+    $cacheKey = implode('_', ['server',  $url, $requestBodyHash]);
 
     /** @var Response $cachedResponse */
     $cachedResponse = $cache->get($cacheKey);

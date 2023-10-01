@@ -21,34 +21,18 @@ class FDroidBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        return self::URI . 'assets/favicon.ico?v=8j6PKzW9Mk';
+        return self::URI . 'assets/favicon.ico';
     }
 
     private function getTimestamp($url)
     {
         $curlOptions = [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER         => true,
-            CURLOPT_NOBODY         => true,
-            CURLOPT_CONNECTTIMEOUT => 19,
-            CURLOPT_TIMEOUT        => 19,
+            CURLOPT_CUSTOMREQUEST => 'HEAD',
+            CURLOPT_NOBODY => true,
         ];
-        $ch = curl_init($url);
-        curl_setopt_array($ch, $curlOptions);
-        $curlHeaders = curl_exec($ch);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-        if (!empty($curlError)) {
-            return false;
-        }
-        $curlHeaders = explode("\n", $curlHeaders);
-        $timestamp = false;
-        foreach ($curlHeaders as $header) {
-            if (strpos($header, 'Last-Modified') !== false) {
-                $timestamp = str_replace('Last-Modified: ', '', $header);
-                $timestamp = strtotime($timestamp);
-            }
-        }
+        $reponse = getContents($url, [], $curlOptions, true);
+        $lastModified = $reponse['headers']['last-modified'][0] ?? null;
+        $timestamp = strtotime($lastModified ?? 'today');
         return $timestamp;
     }
 
