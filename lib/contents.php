@@ -54,7 +54,7 @@ function getContents(
 
     $requestBodyHash = null;
     if (isset($curlOptions[CURLOPT_POSTFIELDS])) {
-        $requestBodyHash = md5(json_encode($curlOptions[CURLOPT_POSTFIELDS]));
+        $requestBodyHash = md5(Json::encode($curlOptions[CURLOPT_POSTFIELDS], false));
     }
     $cacheKey = implode('_', ['server',  $url, $requestBodyHash]);
 
