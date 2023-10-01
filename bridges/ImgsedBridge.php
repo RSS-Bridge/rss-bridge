@@ -220,7 +220,7 @@ HTML,
         $date = date_create();
         $dateString = str_replace(' ago', '', $content);
         // Special case : 'a day' is not a valid interval in PHP, so replace it with it's PHP equivalenbt : '1 day'
-        if($dateString == 'a day') {
+        if ($dateString == 'a day') {
             $dateString = '1 day';
         }
 
@@ -279,7 +279,7 @@ HTML,
         $params = [
             'post' => 'on',
             'story' => 'on',
-            'tagged' => 'on'
+            'tagged' => 'on',
         ];
         $regex = '/^http(s|):\/\/((www\.|)(instagram.com)\/([a-zA-Z0-9_\.]{1,30})(\/reels\/|\/tagged\/|\/|)|(www\.|)(imgsed.com)\/(stories\/|tagged\/|)([a-zA-Z0-9_\.]{1,30})\/)/';
         if (preg_match($regex, $url, $matches) > 0) {
@@ -289,7 +289,7 @@ HTML,
             if ($domain == 'imgsed.com') {
                 $params['u'] = $matches[10];
                 return $params;
-            } else if ($domain == 'instagram.com') {
+            } elseif ($domain == 'instagram.com') {
                 $params['u'] = $matches[5];
                 return $params;
             } else {
