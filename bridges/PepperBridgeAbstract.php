@@ -128,9 +128,9 @@ class PepperBridgeAbstract extends BridgeAbstract
                     $clock = end($clocks);
 
                     // Find the text corresponding to the clock
-                    $spanDateDiv = $clock->parent()->find('span[class=hide--toW3]', 0);
-                    $itemDate = $spanDateDiv->plaintext ?? '';
-                    // In case of a Local deal, there is no date, but we can use
+                    $spanDateDiv = $clock->next_sibling();
+                    $itemDate = $spanDateDiv->plaintext;
+                    // In some case of a Local deal, there is no date, but we can use
                     // this case for other reason (like date not in the last field)
                     if ($this->contains($itemDate, $this->i8n('localdeal'))) {
                         $item['timestamp'] = time();
