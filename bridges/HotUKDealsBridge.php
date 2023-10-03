@@ -3316,6 +3316,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract
             'and '
         ],
         'date-prefixes' => [
+            'Posted ',
             'Found ',
             'Refreshed ',
             'Made hot '
