@@ -466,6 +466,10 @@ EOD;
                     }
                     $rows = $content['rows'];
                     foreach ($rows as $row) {
+                        if (!is_array($row)) {
+                            // some rows are null
+                            continue;
+                        }
                         $tr = '<tr>';
                         foreach ($row as $data) {
                             $tr .= '<td>' . $data . '</td>';

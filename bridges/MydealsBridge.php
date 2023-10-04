@@ -2020,6 +2020,7 @@ class MydealsBridge extends PepperBridgeAbstract
         'context-group' => 'Deals pro Gruppen',
         'context-talk' => 'Überwachung Diskussion',
         'uri-group' => 'gruppe/',
+        'uri-deal' => 'deals/',
         'request-error' => 'Could not request mydeals',
         'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
         'no-results' => 'Ups, wir konnten keine Deals zu',

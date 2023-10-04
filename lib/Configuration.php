@@ -1,25 +1,13 @@
 <?php
 
 /**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
-/**
  * Configuration module for RSS-Bridge.
  *
  * This class implements a configuration module for RSS-Bridge.
  */
 final class Configuration
 {
-    private const VERSION = 'dev.2023-07-11';
+    private const VERSION = '2023-09-24';
 
     private static $config = [];
 
@@ -37,10 +25,6 @@ final class Configuration
      */
     public static function verifyInstallation()
     {
-        if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
-            throw new \Exception('RSS-Bridge requires at least PHP version 7.4.0!');
-        }
-
         $errors = [];
 
         // OpenSSL: https://www.php.net/manual/en/book.openssl.php
@@ -210,6 +194,9 @@ final class Configuration
 
         if (!is_string(self::getConfig('error', 'output'))) {
             self::throwConfigError('error', 'output', 'Is not a valid String');
+        }
+        if (!in_array(self::getConfig('error', 'output'), ['feed', 'http', 'none'])) {
+            self::throwConfigError('error', 'output', 'Invalid output');
         }
 
         if (

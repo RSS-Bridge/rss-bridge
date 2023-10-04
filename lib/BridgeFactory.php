@@ -2,12 +2,17 @@
 
 final class BridgeFactory
 {
-    private $bridgeClassNames = [];
-    private $enabledBridges = [];
-    private $missingEnabledBridges = [];
+    private CacheInterface $cache;
+    private Logger $logger;
+    private array $bridgeClassNames = [];
+    private array $enabledBridges = [];
+    private array $missingEnabledBridges = [];
 
     public function __construct()
     {
+        $this->cache = RssBridge::getCache();
+        $this->logger = RssBridge::getLogger();
+
         // Create all possible bridge class names from fs
         foreach (scandir(__DIR__ . '/../bridges/') as $file) {
             if (preg_match('/^([^.]+Bridge)\.php$/U', $file, $m)) {
@@ -17,7 +22,7 @@ final class BridgeFactory
 
         $enabledBridges = Configuration::getConfig('system', 'enabled_bridges');
         if ($enabledBridges === null) {
-            throw new \Exception('No bridges are enabled... wtf?');
+            throw new \Exception('No bridges are enabled...');
         }
         foreach ($enabledBridges as $enabledBridge) {
             if ($enabledBridge === '*') {
@@ -29,14 +34,14 @@ final class BridgeFactory
                 $this->enabledBridges[] = $bridgeClassName;
             } else {
                 $this->missingEnabledBridges[] = $enabledBridge;
-                Logger::info(sprintf('Bridge not found: %s', $enabledBridge));
+                $this->logger->info(sprintf('Bridge not found: %s', $enabledBridge));
             }
         }
     }
 
-    public function create(string $name): BridgeInterface
+    public function create(string $name): BridgeAbstract
     {
-        return new $name();
+        return new $name($this->cache, $this->logger);
     }
 
     public function isEnabled(string $bridgeName): bool

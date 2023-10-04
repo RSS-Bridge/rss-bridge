@@ -40,6 +40,10 @@ class TikTokBridge extends BridgeAbstract
         $SIGI_STATE_RAW = $var->innertext;
         $SIGI_STATE = Json::decode($SIGI_STATE_RAW, false);
 
+        if (!isset($SIGI_STATE->ItemModule)) {
+            return;
+        }
+
         foreach ($SIGI_STATE->ItemModule as $key => $value) {
             $item = [];
 

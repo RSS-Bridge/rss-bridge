@@ -1,8 +1,9 @@
-RSS-Bridge currently supports three 'actions' which it can operate:
+RSS-Bridge currently supports four 'actions' which it can operate:
 
 1) [Display](#display) (`?action=display`)
 2) [Detect](#detect) (`?action=detect`)
 3) [List](#list) (`?action=list`)
+3) [FindFeed](#findfeed) (`?action=findfeed`)
 
 ## Display
 
@@ -19,7 +20,7 @@ The `detect` action attempts to redirect the user to an appropriate `display` ac
 
 If an appropriate bridge is found, a `301 Moved Permanently` HTTP status code is returned with a relative location for a `display` action. If no appropriate bridge is found or a required parameter is missing, a `400 Bad Request` status code is returned.
 
-The parameters for this action are listed bellow:
+The parameters for this action are listed below:
 
 Parameter | Required | Description
 ----------|----------|------------
@@ -76,3 +77,90 @@ Parameter     | Optional | Description
 ### `total`
 
 This parameter represents the total number of bridges available to the current instance of RSS-Bridge.
+
+## FindFeed
+
+The `findfeed` action attempts to list all available feeds based on a supplied URL for the active bridges of this instance. As bridges have to individually implement `detectParameters`, this it may not work for every bridge.
+
+If one or more bridges return a feed, a JSON data array structure is returned. If no feeds were found, a `404 Not Found` status code is returned. If a required parameter is missing, a `400 Bad Request` status code is returned.
+
+For each feed, the whole feed URL is sent in the `url` member, the feed specific bridge parameters metadata in the `bridgeData` member and the Bridge metadata in the `bridgeMeta` member.
+
+This example shows JSON data for the NASA Instagram account URL (`https://www.instagram.com/nasa/`) using the `Html` format :
+
+```JSON
+[
+    {
+        "url": "https://rssbridge.host/?action=display&context=Username&u=nasa&bridge=InstagramBridge&format=Html",
+        "bridgeParams": {
+            "context": "Username",
+            "u": "nasa",
+            "bridge": "InstagramBridge",
+            "format": "Html"
+        },
+        "bridgeData": {
+            "context": {
+                "name": "Context",
+                "value": "Username"
+            },
+            "u": {
+                "name": "username",
+                "value": "nasa"
+            }
+        },
+        "bridgeMeta": {
+            "name": "Instagram Bridge",
+            "description": "Returns the newest images",
+            "parameters": {
+                "Username": {
+                    "u": {
+                        "name": "username",
+                        "exampleValue": "aesoprockwins",
+                        "required": true
+                    }
+                },
+                "Hashtag": {
+                    "h": {
+                        "name": "hashtag",
+                        "exampleValue": "beautifulday",
+                        "required": true
+                    }
+                },
+                "Location": {
+                    "l": {
+                        "name": "location",
+                        "exampleValue": "london",
+                        "required": true
+                    }
+                },
+                "global": {
+                    "media_type": {
+                        "name": "Media type",
+                        "type": "list",
+                        "required": false,
+                        "values": {
+                            "All": "all",
+                            "Video": "video",
+                            "Picture": "picture",
+                            "Multiple": "multiple"
+                        },
+                        "defaultValue": "all"
+                    },
+                    "direct_links": {
+                        "name": "Use direct media links",
+                        "type": "checkbox"
+                    }
+                }
+            },
+            "icon": "https://www.instagram.com//favicon.ico"
+        }
+    }
+]
+```
+
+The parameters for this action are listed below:
+
+Parameter | Required | Description
+----------|----------|------------
+`url`     | yes      | Specifies the URL to attempt to find a feed from. The value of this should be URL encoded.
+`format`  | yes      | Specifies the name of the format to use for the URL of the feeds. This is passed to the detected `display` action. Possible values are determined from the formats available to the current instance of RSS-Bridge.

@@ -24,7 +24,7 @@ class FormatImplementationTest extends TestCase
     public function testClassType($path)
     {
         $this->setFormat($path);
-        $this->assertInstanceOf(FormatInterface::class, $this->obj);
+        $this->assertInstanceOf(FormatAbstract::class, $this->obj);
     }
 
     public function dataFormatsProvider()

@@ -8,13 +8,13 @@ class CacheTest extends TestCase
 {
     public function testConfig()
     {
-        $sut = new \FileCache(['path' => '/tmp/']);
+        $sut = new \FileCache(new \NullLogger(), ['path' => '/tmp/']);
         $this->assertSame(['path' => '/tmp/', 'enable_purge' => true], $sut->getConfig());
 
-        $sut = new \FileCache(['path' => '/', 'enable_purge' => false]);
+        $sut = new \FileCache(new \NullLogger(), ['path' => '/', 'enable_purge' => false]);
         $this->assertSame(['path' => '/', 'enable_purge' => false], $sut->getConfig());
 
-        $sut = new \FileCache(['path' => '/tmp', 'enable_purge' => true]);
+        $sut = new \FileCache(new \NullLogger(), ['path' => '/tmp', 'enable_purge' => true]);
         $this->assertSame(['path' => '/tmp/', 'enable_purge' => true], $sut->getConfig());
     }
 
@@ -23,21 +23,17 @@ class CacheTest extends TestCase
         $temporaryFolder = sprintf('%s/rss_bridge_%s/', sys_get_temp_dir(), create_random_string());
         mkdir($temporaryFolder);
 
-        $sut = new \FileCache([
+        $sut = new \FileCache(new \NullLogger(), [
             'path' => $temporaryFolder,
             'enable_purge' => true,
         ]);
-        $sut->setScope('scope');
-        $sut->purgeCache(-1);
-        $sut->setKey(['key']);
+        $sut->clear();
 
-        $this->assertNull($sut->getTime());
-        $this->assertNull($sut->loadData());
+        $this->assertNull($sut->get('key'));
 
-        $sut->saveData('data');
-        $this->assertSame('data', $sut->loadData());
-        $this->assertIsNumeric($sut->getTime());
-        $sut->purgeCache(-1);
+        $sut->set('key', 'data', 5);
+        $this->assertSame('data', $sut->get('key'));
+        $sut->clear();
 
         // Intentionally not deleting the temp folder
     }

@@ -1,8 +1,13 @@
-This section explains the coding style policy for RSS-Bridge with examples and references to external resources. Please make sure your code is compliant before opening a pull request.
+This section explains the coding style policy for RSS-Bridge with examples and references to external resources.
+Please make sure your code is compliant before opening a pull request.
 
-You will automatically be notified if issues were found in your pull request. You must fix those issues before the pull request will be merged. Refer to [phpcs.xml](https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml) for a complete list of policies enforced by Travis-CI.
+You will automatically be notified if issues were found in your pull request.
+You must fix those issues before the pull request will be merged.
+Refer to [phpcs.xml](https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml) for a complete list of policies enforced by Travis-CI.
 
-If you want to run the checks locally, make sure you have [`phpcs`](https://github.com/squizlabs/PHP_CodeSniffer) and [`phpunit`](https://phpunit.de/) installed on your machine and run following commands in the root directory of RSS-Bridge (tested on Debian):
+If you want to run the checks locally, make sure you have
+[`phpcs`](https://github.com/squizlabs/PHP_CodeSniffer) and
+[`phpunit`](https://phpunit.de/) installed on your machine and run following commands in the root directory of RSS-Bridge (tested on Debian):
 
 ```console
 ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
@@ -73,7 +78,7 @@ _Reference_: [`Squiz.WhiteSpace.SuperfluousWhitespace`](https://github.com/squiz
 
 # Maximum Line Length
 
-There is no maximum line length.
+180
 
 # Strings
 

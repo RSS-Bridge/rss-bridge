@@ -1,30 +1,10 @@
 <?php
 
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
-/** Path to the root folder of RSS-Bridge (where index.php is located) */
-const PATH_ROOT = __DIR__ . '/../';
-
-/** Path to the bridges library */
-
-/** Path to the formats library */
+// Path to the formats library
 const PATH_LIB_FORMATS = __DIR__ . '/../formats/';
 
 /** Path to the caches library */
 const PATH_LIB_CACHES = __DIR__ . '/../caches/';
-
-/** Path to the actions library */
-const PATH_LIB_ACTIONS = __DIR__ . '/../actions/';
 
 /** Path to the cache folder */
 const PATH_CACHE = __DIR__ . '/../cache/';
@@ -39,10 +19,12 @@ const MAX_FILE_SIZE = 10000000;
 // Files
 $files = [
     __DIR__ . '/../lib/html.php',
-    __DIR__ . '/../lib/error.php',
     __DIR__ . '/../lib/contents.php',
     __DIR__ . '/../lib/php8backports.php',
     __DIR__ . '/../lib/utils.php',
+    __DIR__ . '/../lib/http.php',
+    __DIR__ . '/../lib/logger.php',
+    __DIR__ . '/../lib/url.php',
     // Vendor
     __DIR__ . '/../vendor/parsedown/Parsedown.php',
     __DIR__ . '/../vendor/php-urljoin/src/urljoin.php',

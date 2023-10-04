@@ -2,28 +2,11 @@
 
 final class RssBridge
 {
-    private static HttpClient $httpClient;
     private static CacheInterface $cache;
+    private static Logger $logger;
+    private static HttpClient $httpClient;
 
-    public function main(array $argv = [])
-    {
-        if ($argv) {
-            parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
-            $request = $cliArgs;
-        } else {
-            $request = array_merge($_GET, $_POST);
-        }
-
-        try {
-            $this->run($request);
-        } catch (\Throwable $e) {
-            Logger::error(sprintf('Exception in RssBridge::main(): %s', create_sane_exception_message($e)), ['e' => $e]);
-            http_response_code(500);
-            print render(__DIR__ . '/../templates/error.html.php', ['e' => $e]);
-        }
-    }
-
-    private function run($request): void
+    public function __construct()
     {
         Configuration::verifyInstallation();
 
@@ -33,21 +16,29 @@ final class RssBridge
         }
         Configuration::loadConfiguration($customConfig, getenv());
 
+        // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
+        date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
+
+        set_exception_handler(function (\Throwable $e) {
+            self::$logger->error('Uncaught Exception', ['e' => $e]);
+            http_response_code(500);
+            print render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]);
+            exit(1);
+        });
+
         set_error_handler(function ($code, $message, $file, $line) {
             if ((error_reporting() & $code) === 0) {
                 return false;
             }
+            // In the future, uncomment this:
+            //throw new \ErrorException($message, 0, $code, $file, $line);
             $text = sprintf(
                 '%s at %s line %s',
                 sanitize_root($message),
                 sanitize_root($file),
                 $line
             );
-            Logger::warning($text);
-            if (Debug::isEnabled()) {
-                // todo: extract to log handler
-                print sprintf("<pre>%s</pre>\n", e($text));
-            }
+            self::$logger->warning($text);
         });
 
         // There might be some fatal errors which are not caught by set_error_handler() or \Throwable.
@@ -61,59 +52,86 @@ final class RssBridge
                     sanitize_root($error['file']),
                     $error['line']
                 );
-                Logger::error($message);
+                self::$logger->error($message);
                 if (Debug::isEnabled()) {
-                    // todo: extract to log handler
                     print sprintf("<pre>%s</pre>\n", e($message));
                 }
             }
         });
 
-        // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
-        date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
-
-        $cacheFactory = new CacheFactory();
+        self::$logger = new SimpleLogger('rssbridge');
+        if (Debug::isEnabled()) {
+            self::$logger->addHandler(new StreamHandler(Logger::DEBUG));
+        } else {
+            self::$logger->addHandler(new StreamHandler(Logger::INFO));
+        }
 
         self::$httpClient = new CurlHttpClient();
-        self::$cache = $cacheFactory->create();
 
-        if (Configuration::getConfig('authentication', 'enable')) {
-            $authenticationMiddleware = new AuthenticationMiddleware();
-            $authenticationMiddleware();
-        }
-
-        foreach ($request as $key => $value) {
-            if (!is_string($value)) {
-                throw new \Exception("Query parameter \"$key\" is not a string.");
-            }
-        }
-
-        $actionName = $request['action'] ?? 'Frontpage';
-        $actionName = strtolower($actionName) . 'Action';
-        $actionName = implode(array_map('ucfirst', explode('-', $actionName)));
-
-        $filePath = __DIR__ . '/../actions/' . $actionName . '.php';
-        if (!file_exists($filePath)) {
-            throw new \Exception(sprintf('Invalid action: %s', $actionName));
-        }
-        $className = '\\' . $actionName;
-        $action = new $className();
-
-        $response = $action->execute($request);
-        if (is_string($response)) {
-            print $response;
-        } elseif ($response instanceof Response) {
-            $response->send();
+        $cacheFactory = new CacheFactory(self::$logger);
+        if (Debug::isEnabled()) {
+            self::$cache = $cacheFactory->create('array');
+        } else {
+            self::$cache = $cacheFactory->create();
         }
     }
 
-    public static function getHttpClient(): HttpClient
+    public function main(array $argv = []): void
     {
-        return self::$httpClient;
+        if ($argv) {
+            parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
+            $request = $cliArgs;
+        } else {
+            if (Configuration::getConfig('authentication', 'enable')) {
+                $authenticationMiddleware = new AuthenticationMiddleware();
+                $authenticationMiddleware();
+            }
+            $request = array_merge($_GET, $_POST);
+        }
+
+        try {
+            foreach ($request as $key => $value) {
+                if (!is_string($value)) {
+                    throw new \Exception("Query parameter \"$key\" is not a string.");
+                }
+            }
+
+            $actionName = $request['action'] ?? 'Frontpage';
+            $actionName = strtolower($actionName) . 'Action';
+            $actionName = implode(array_map('ucfirst', explode('-', $actionName)));
+
+            $filePath = __DIR__ . '/../actions/' . $actionName . '.php';
+            if (!file_exists($filePath)) {
+                throw new \Exception('Invalid action', 400);
+            }
+            $className = '\\' . $actionName;
+            $action = new $className();
+
+            $response = $action->execute($request);
+            if (is_string($response)) {
+                print $response;
+            } elseif ($response instanceof Response) {
+                $response->send();
+            }
+        } catch (\Throwable $e) {
+            self::$logger->error('Exception in RssBridge::main()', ['e' => $e]);
+            http_response_code(500);
+            print render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]);
+        }
     }
 
     public static function getCache(): CacheInterface
     {
         return self::$cache;
+    }
+
+    public static function getLogger(): Logger
+    {
+        return self::$logger;
+    }
+
+    public static function getHttpClient(): HttpClient
+    {
+        return self::$httpClient;
     }
 }

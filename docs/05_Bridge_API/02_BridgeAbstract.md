@@ -94,7 +94,7 @@ class MyBridge extends BridgeAbstract {
 	const MAINTAINER  = 'ghost';
 
 	public function collectData() {
-		$item = array(); // Create an empty item
+		$item = []; // Create an empty item
 
 		$item['title'] = 'Hello World!';
 
@@ -121,11 +121,11 @@ class MyBridge extends BridgeAbstract {
 	const URI = '';
 	const DESCRIPTION = 'No description provided';
 	const MAINTAINER = 'No maintainer';
-	const PARAMETERS = array(); // Can be omitted!
+	const PARAMETERS = []; // Can be omitted!
 	const CACHE_TIMEOUT = 3600; // Can be omitted!
 
 	public function collectData() {
-		$item = array(); // Create an empty item
+		$item = []; // Create an empty item
 
 		$item['title'] = 'Hello World!';
 
@@ -145,7 +145,7 @@ For information on how to read parameter values during execution, please refer t
 
 ## Adding parameters to a bridge
 
-Parameters are specified as part of the bridge class. An empty list of parameters is defined as `const PARAMETERS = array();`
+Parameters are specified as part of the bridge class. An empty list of parameters is defined as `const PARAMETERS = [];`
 
 <details><summary>Show example</summary><div>
 
@@ -153,7 +153,7 @@ Parameters are specified as part of the bridge class. An empty list of parameter
 <?PHP
 class MyBridge extends BridgeAbstract {
 	/* ... */
-	const PARAMETERS = array(); // Empty list of parameters (can be omitted)
+	const PARAMETERS = []; // Empty list of parameters (can be omitted)
 	/* ... */
 }
 ```
@@ -172,10 +172,10 @@ A context is defined as a associative array of parameters. The name of a context
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	'My Context 1' => array(),
-	'My Context 2' => array()
-);
+const PARAMETERS = [
+	'My Context 1' => [],
+	'My Context 2' => [],
+];
 ```
 
 **Output**
@@ -189,9 +189,9 @@ _Notice_: The name of a context can be left empty if only one context is needed!
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	array()
-);
+const PARAMETERS = [
+	[]
+];
 ```
 
 </div></details><br>
@@ -201,25 +201,28 @@ You can also define a set of parameters that will be applied to every possible c
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	'global' => array() // Applies to all contexts!
-);
+const PARAMETERS = [
+	'global' => [] // Applies to all contexts!
+];
 ```
 
 </div></details>
 
 ## Level 2 - Parameter
 
-Parameters are placed inside a context. They are defined as associative array of parameter specifications. Each parameter is defined by it's internal input name, a definition in the form `'n' => array();`, where `n` is the name with which the bridge can access the parameter during execution.
+Parameters are placed inside a context.
+They are defined as associative array of parameter specifications.
+Each parameter is defined by it's internal input name, a definition in the form `'n' => [];`, 
+where `n` is the name with which the bridge can access the parameter during execution.
 
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	'My Context' => array(
-		'n' => array()
-	)
-);
+const PARAMETERS = [
+	'My Context' => [
+		'n' => []
+	]
+];
 ```
 
 </div></details><br>
@@ -351,7 +354,7 @@ Elements collected by this function must be stored in `$this->items`. The `items
 
 ```PHP
 
-$item = array(); // Create a new item
+$item = []; // Create a new item
 
 $item['title'] = 'Hello World!';
 
@@ -437,9 +440,9 @@ If no icon is specified by the bridge, RSS-Bridge will use a default location: `
 # detectParameters
 The `detectParameters` function takes a URL and attempts to extract a valid set of parameters for the current bridge.
 
-If the passed URL is valid for this bridge the function should return an array of parameter -> value pairs that can be used by this bridge, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge the function should return `null`.
+If the passed URL is valid for this bridge, the function should return an array of parameter -> value pairs that can be used by this bridge, including context if available, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge, the function should return `null`.
 
-**Notice:** Implementing this function is optional. By default **RSS-Bridge** tries to match the supplied URL to the `URI` constant defined in the bridge which may be enough for bridges without any parameters defined.
+**Notice:** Implementing this function is optional. By default, **RSS-Bridge** tries to match the supplied URL to the `URI` constant defined in the bridge, which may be enough for bridges without any parameters defined.
 
 ```PHP
 public function detectParameters($url){
@@ -448,12 +451,29 @@ public function detectParameters($url){
 	&& preg_match($regex, $url, $urlMatches) > 0
 	&& preg_match($regex, static::URI, $bridgeUriMatches) > 0
 	&& $urlMatches[3] === $bridgeUriMatches[3]) {
-		return array();
+		return [];
 	} else {
 		return null;
 	}
 }
 ```
+
+**Notice:** This function is also used by the [findFeed](../04_For_Developers/04_Actions.md#findfeed) action. This action allows an user to get a list of all feeds corresponding to an URL.
+
+You can implement automated tests for the `detectParameters` function by adding the `TEST_DETECT_PARAMETERS` constant to your bridge class constant.
+
+`TEST_DETECT_PARAMETERS` is an array, with as key the URL passed to the `detectParameters`function and as value, the array of parameters returned by `detectParameters` 
+
+```PHP
+    const TEST_DETECT_PARAMETERS = [
+        'https://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+        'https://instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+        'http://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+    ];
+```
+
+**Notice:** Adding this constant is optional. If the constant is not present, no automated test will be executed.
+
 
 ***
 

@@ -46,4 +46,14 @@ final class UtilsTest extends TestCase
         $this->assertSame(4, strlen(create_random_string(2)));
         $this->assertSame(6, strlen(create_random_string(3)));
     }
+
+    public function testUrljoin()
+    {
+        $base = '/';
+        $rel = 'https://example.com/foo';
+
+        $url = urljoin($base, $rel);
+
+        $this->assertSame($rel, $url);
+    }
 }

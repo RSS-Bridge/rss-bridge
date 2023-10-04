@@ -217,7 +217,7 @@ EOD
     private function getFullText($id)
     {
         $url = sprintf(
-            'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en',
+            'https://cdn.syndication.twimg.com/tweet-result?id=%s&lang=en&token=449yf2pc4g',
             $id
         );
 
@@ -234,8 +234,7 @@ EOD
         $tweets = [];
 
         // Get authentication information
-        $cache = RssBridge::getCache();
-        $api = new TwitterClient($cache);
+        $api = new TwitterClient($this->cache);
         // Try to get all tweets
         switch ($this->queriedContext) {
             case 'By username':
@@ -306,30 +305,59 @@ EOD
             }
         }
 
-        // Filter out unwanted tweets
-        foreach ($data->tweets as $tweet) {
-            if (!$tweet) {
-                continue;
-            }
-            // Filter out retweets to remove possible duplicates of original tweet
-            switch ($this->queriedContext) {
-                case 'By keyword or hashtag':
-                    if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
-                        continue 2;
-                    }
-                    break;
-            }
-            $tweets[] = $tweet;
-        }
-
         $hidePictures = $this->getInput('nopic');
 
         $hidePinned = $this->getInput('nopinned');
         if ($hidePinned) {
             $pinnedTweetId = null;
-            if ($user && $user->pinned_tweet_ids_str) {
-                $pinnedTweetId = $user->pinned_tweet_ids_str;
+            if ($data->user_info && $data->user_info->legacy->pinned_tweet_ids_str) {
+                $pinnedTweetId = $data->user_info->legacy->pinned_tweet_ids_str[0];
             }
+        }
+
+        // Array of Tweet IDs
+        $tweetIds = [];
+        // Filter out unwanted tweets
+        foreach ($data->tweets as $tweet) {
+            if (!$tweet) {
+                continue;
+            }
+
+            if (isset($tweet->legacy)) {
+                $legacy_info = $tweet->legacy;
+            } else {
+                $legacy_info = $tweet;
+            }
+
+            // Filter out retweets to remove possible duplicates of original tweet
+            switch ($this->queriedContext) {
+                case 'By keyword or hashtag':
+		    // phpcs:ignore
+                    if ((isset($legacy_info->retweeted_status) || isset($legacy_info->retweeted_status_result)) && substr($legacy_info->full_text, 0, 4) === 'RT @') {
+                        continue 2;
+                    }
+                    break;
+            }
+
+            // Skip own Retweets...
+            if (isset($legacy_info->retweeted_status) && $legacy_info->retweeted_status->user->id_str === $tweet->user->id_str) {
+                continue;
+            // phpcs:ignore
+            } elseif (isset($legacy_info->retweeted_status_result) && $tweet->retweeted_status_result->result->legacy->user_id_str === $legacy_info->user_id_str) {
+                continue;
+            }
+
+            $tweetId = (isset($legacy_info->id_str) ? $legacy_info->id_str : $tweet->rest_id);
+            // Skip pinned tweet
+            if ($hidePinned && ($tweetId === $pinnedTweetId)) {
+                continue;
+            }
+
+            if (isset($tweet->rest_id)) {
+                $tweetIds[] = $tweetId;
+            }
+            $rtweet = $legacy_info;
+            $tweets[] = $rtweet;
         }
 
         if ($this->queriedContext === 'By username') {
@@ -338,22 +366,16 @@ EOD
 
         $i = 0;
         foreach ($tweets as $tweet) {
-            // Skip own Retweets...
-            if (isset($tweet->retweeted_status) && $tweet->retweeted_status->user->id_str === $tweet->user->id_str) {
-                continue;
-            }
-
-            // Skip pinned tweet
-            if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
-                continue;
-            }
-
             $item = [];
 
             $realtweet = $tweet;
+            $tweetId = (isset($tweetIds[$i]) ? $tweetIds[$i] : $realtweet->conversation_id_str);
             if (isset($tweet->retweeted_status)) {
                 // Tweet is a Retweet, so set author based on original tweet and set realtweet for reference to the right content
                 $realtweet = $tweet->retweeted_status;
+            } elseif (isset($tweet->retweeted_status_result)) {
+                $tweetId = $tweet->retweeted_status_result->result->rest_id;
+                $realtweet = $tweet->retweeted_status_result->result->legacy;
             }
 
             if (isset($realtweet->truncated) && $realtweet->truncated) {
@@ -364,6 +386,10 @@ EOD
                 }
             }
 
+            if (!$realtweet) {
+                $realtweet = $tweet;
+            }
+
             switch ($this->queriedContext) {
                 case 'By username':
                     if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id)) {
@@ -372,7 +398,7 @@ EOD
                     $item['username']  = $data->user_info->legacy->screen_name;
                     $item['fullname']  = $data->user_info->legacy->name;
                     $item['avatar']    = $data->user_info->legacy->profile_image_url_https;
-                    $item['id']        = $realtweet->id_str;
+                    $item['id']        = (isset($realtweet->id_str) ? $realtweet->id_str : $tweetId);
                     break;
                 case 'By list':
                 case 'By list ID':
@@ -391,7 +417,7 @@ EOD
 
             $item['timestamp'] = $realtweet->created_at;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
-            $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '')
+            $item['author']    = ((isset($tweet->retweeted_status) || (isset($tweet->retweeted_status_result))) ? 'RT: ' : '')
                          . $item['fullname']
                          . ' (@'
                          . $item['username'] . ')';
@@ -566,157 +592,5 @@ EOD;
     private static function compareTweetId($tweet1, $tweet2)
     {
         return (intval($tweet1['id']) < intval($tweet2['id']) ? 1 : -1);
-    }
-
-    //The aim of this function is to get an API key and a guest token
-    //This function takes 2 requests, and therefore is cached
-    private function getApiKey($forceNew = 0)
-    {
-        $r_cache = RssBridge::getCache();
-        $scope = 'TwitterBridge';
-        $r_cache->setScope($scope);
-        $r_cache->setKey(['refresh']);
-        $data = $r_cache->loadData();
-
-        $refresh = null;
-        if ($data === null) {
-            $refresh = time();
-            $r_cache->saveData($refresh);
-        } else {
-            $refresh = $data;
-        }
-
-        $cacheFactory = new CacheFactory();
-
-        $cache = RssBridge::getCache();
-        $cache->setScope($scope);
-        $cache->setKey(['api_key']);
-        $data = $cache->loadData();
-
-        $apiKey = null;
-        if ($forceNew || $data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
-            $twitterPage = getContents('https://twitter.com');
-
-            $jsLink = false;
-            $jsMainRegexArray = [
-                '/(https:\/\/abs\.twimg\.com\/responsive-web\/web\/main\.[^\.]+\.js)/m',
-                '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m',
-                '/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web\/main\.[^\.]+\.js)/m',
-                '/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web-legacy\/main\.[^\.]+\.js)/m',
-            ];
-            foreach ($jsMainRegexArray as $jsMainRegex) {
-                if (preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0)) {
-                    $jsLink = $jsMainMatches[0][0];
-                    break;
-                }
-            }
-            if (!$jsLink) {
-                returnServerError('Could not locate main.js link');
-            }
-
-            $jsContent = getContents($jsLink);
-            $apiKeyRegex = '/([a-zA-Z0-9]{59}%[a-zA-Z0-9]{44})/m';
-            preg_match_all($apiKeyRegex, $jsContent, $apiKeyMatches, PREG_SET_ORDER, 0);
-            $apiKey = $apiKeyMatches[0][0];
-            $cache->saveData($apiKey);
-        } else {
-            $apiKey = $data;
-        }
-
-        $gt_cache = RssBridge::getCache();
-        $gt_cache->setScope($scope);
-        $gt_cache->setKey(['guest_token']);
-        $guestTokenUses = $gt_cache->loadData();
-
-        $guestToken = null;
-        if (
-            $forceNew || $guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
-            || $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY
-        ) {
-            $guestToken = $this->getGuestToken($apiKey);
-            if ($guestToken === null) {
-                if ($guestTokenUses === null) {
-                    returnServerError('Could not parse guest token');
-                } else {
-                    $guestToken = $guestTokenUses[1];
-                }
-            } else {
-                $gt_cache->saveData([self::GUEST_TOKEN_USES, $guestToken]);
-                $r_cache->saveData(time());
-            }
-        } else {
-            $guestTokenUses[0] -= 1;
-            $gt_cache->saveData($guestTokenUses);
-            $guestToken = $guestTokenUses[1];
-        }
-
-        $this->apiKey      = $apiKey;
-        $this->guestToken  = $guestToken;
-        $this->authHeaders = [
-            'authorization: Bearer ' . $apiKey,
-            'x-guest-token: ' . $guestToken,
-        ];
-
-        return [$apiKey, $guestToken];
-    }
-
-    // Get a guest token. This is different to an API key,
-    // and it seems to change more regularly than the API key.
-    private function getGuestToken($apiKey)
-    {
-        $headers = [
-            'authorization: Bearer ' . $apiKey,
-        ];
-        $opts = [
-            CURLOPT_POST => 1,
-        ];
-
-        try {
-            $pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
-            $guestToken = json_decode($pageContent['content'])->guest_token;
-        } catch (Exception $e) {
-            $guestToken = null;
-        }
-        return $guestToken;
-    }
-
-    /**
-     * Tries to make an API call to twitter.
-     * @param $api string API entry point
-     * @param $params array additional URI parmaeters
-     * @return object json data
-     */
-    private function makeApiCall($api, $params)
-    {
-        $uri = self::API_URI . $api . '?' . http_build_query($params);
-
-        $retries = 1;
-        $retry = 0;
-        do {
-            $retry = 0;
-
-            try {
-                $result = getContents($uri, $this->authHeaders, [], true);
-            } catch (HttpException $e) {
-                switch ($e->getCode()) {
-                    case 401:
-                        // fall-through
-                    case 403:
-                        if ($retries) {
-                            $retries--;
-                            $retry = 1;
-                            $this->getApiKey(1);
-                            continue 2;
-                        }
-                        // fall-through
-                    default:
-                        throw $e;
-                }
-            }
-        } while ($retry);
-
-        $data = json_decode($result['content']);
-
-        return $data;
     }
 }

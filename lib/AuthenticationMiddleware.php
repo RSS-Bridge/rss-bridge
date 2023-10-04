@@ -1,17 +1,5 @@
 <?php
 
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
 final class AuthenticationMiddleware
 {
     public function __construct()
@@ -44,6 +32,8 @@ final class AuthenticationMiddleware
     {
         http_response_code(401);
         header('WWW-Authenticate: Basic realm="RSS-Bridge"');
-        return render('access-denied.html.php');
+        return render(__DIR__ . '/../templates/error.html.php', [
+            'message' => 'Please authenticate in order to access this instance!',
+        ]);
     }
 }

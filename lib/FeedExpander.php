@@ -1,18 +1,6 @@
 <?php
 
 /**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
-/**
  * An abstract class for bridges that need to transform existing RSS or Atom
  * feeds.
  *
@@ -74,7 +62,7 @@ abstract class FeedExpander extends BridgeAbstract
     /**
      * Collects data from an existing feed.
      *
-     * Children should call this function in {@see BridgeInterface::collectData()}
+     * Children should call this function in {@see BridgeAbstract::collectData()}
      * to extract a feed.
      *
      * @param string $url URL to the feed.
@@ -100,8 +88,8 @@ abstract class FeedExpander extends BridgeAbstract
             '*/*',
         ];
         $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
-        $content = getContents($url, $httpHeaders);
-        if ($content === '') {
+        $xml = getContents($url, $httpHeaders);
+        if ($xml === '') {
             throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url), 10);
         }
         // Maybe move this call earlier up the stack frames
@@ -109,11 +97,11 @@ abstract class FeedExpander extends BridgeAbstract
         libxml_use_internal_errors(true);
         // Consider replacing libxml with https://www.php.net/domdocument
         // Intentionally not using the silencing operator (@) because it has no effect here
-        $rssContent = simplexml_load_string(trim($content));
+        $rssContent = simplexml_load_string(trim($xml));
         if ($rssContent === false) {
             $xmlErrors = libxml_get_errors();
             foreach ($xmlErrors as $xmlError) {
-                Logger::debug(trim($xmlError->message));
+                Debug::log(trim($xmlError->message));
             }
             if ($xmlErrors) {
                 // Render only the first error into exception message

@@ -181,7 +181,12 @@ class CodebergBridge extends BridgeAbstract
             $item['title'] = $message->find('span.message-wrapper', 0)->plaintext;
             $item['uri'] = $tr->find('td.sha', 0)->find('a', 0)->href;
             $item['author'] = $tr->find('td.author', 0)->plaintext;
-            $item['timestamp'] = $tr->find('td', 3)->find('span', 0)->title;
+
+            $var = $tr->find('td', 3);
+            $var1 = $var->find('span', 0);
+            if ($var1) {
+                $item['timestamp'] = $var1->title;
+            }
 
             if ($message->find('pre.commit-body', 0)) {
                 $message->find('pre.commit-body', 0)->style = '';
@@ -255,7 +260,11 @@ class CodebergBridge extends BridgeAbstract
             }
 
             $item['author'] = $div->find('a.author', 0)->innertext;
-            $item['timestamp'] = $div->find('span.time-since', 0)->title;
+
+            $timeSince = $div->find('span.time-since', 0);
+            if ($timeSince) {
+                $item['timestamp'] = $timeSince->title;
+            }
 
             $this->items[] = $item;
         }

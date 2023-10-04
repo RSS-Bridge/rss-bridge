@@ -278,11 +278,9 @@ class SpotifyBridge extends BridgeAbstract
 
     private function fetchAccessToken()
     {
-        $cache = RssBridge::getCache();
-        $cacheKey = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
-        $cache->setScope('SpotifyBridge');
-        $cache->setKey([$cacheKey]);
-        $token = $cache->loadData(3600);
+        $cacheKey = sprintf('SpotifyBridge:%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
+
+        $token = $this->cache->get($cacheKey);
         if ($token) {
             $this->token = $token;
         } else {
@@ -294,9 +292,8 @@ class SpotifyBridge extends BridgeAbstract
             ]);
             $data = Json::decode($json);
             $this->token = $data['access_token'];
-            $cache->setScope('SpotifyBridge');
-            $cache->setKey([$cacheKey]);
-            $cache->saveData($this->token);
+
+            $this->cache->set($cacheKey, $this->token, 3600);
         }
     }
 

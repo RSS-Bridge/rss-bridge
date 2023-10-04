@@ -90,11 +90,15 @@ EOD;
             'channel' => $channel,
             'types' => self::BROADCAST_TYPES[$type]
         ];
-        $data = $this->apiRequest($query, $variables);
+        $response = $this->apiRequest($query, $variables);
+        $data = $response->data;
         if ($data->user === null) {
             throw new \Exception(sprintf('Unable to find channel `%s`', $channel));
         }
         $user = $data->user;
+        if ($user->videos === null) {
+            throw new HttpException('Service Unavailable', 503);
+        }
         foreach ($user->videos->edges as $edge) {
             $video = $edge->node;
 
@@ -153,9 +157,11 @@ EOD;
 
             // Add played games list to content
             $item['content'] .= '<p><b>Played games:</b><ul>';
-            if (count($video->moments->edges) > 0) {
-                foreach ($video->moments->edges as $edge) {
-                    $moment = $edge->node;
+
+            $momentEdges = $video->moments->edges ?? [];
+            if (count($momentEdges) > 0) {
+                foreach ($momentEdges as $momentEdge) {
+                    $moment = $momentEdge->node;
 
                     $item['categories'][] = $moment->description;
                     $item['content'] .= '<li><a href="'
@@ -205,37 +211,29 @@ EOD;
         );
     }
 
-    // GraphQL: https://graphql.org/
-    // Tool for developing/testing queries: https://github.com/skevy/graphiql-app
+    /**
+     * GraphQL: https://graphql.org/
+     * Tool for developing/testing queries: https://github.com/skevy/graphiql-app
+     *
+     * Official instructions for obtaining your own client ID can be found here:
+     * https://dev.twitch.tv/docs/v5/#getting-a-client-id
+     */
     private function apiRequest($query, $variables)
     {
         $request = [
-            'query' => $query,
-            'variables' => $variables
+            'query'     => $query,
+            'variables' => $variables,
         ];
-        /**
-         * Official instructions for obtaining your own client ID can be found here:
-         * https://dev.twitch.tv/docs/v5/#getting-a-client-id
-         */
-        $header = [
-            'Client-ID: kimne78kx3ncx6brgo4mv6wki5h1ko'
+        $headers = [
+            'Client-ID: kimne78kx3ncx6brgo4mv6wki5h1ko',
         ];
         $opts = [
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($request)
+            CURLOPT_POSTFIELDS => json_encode($request),
         ];
-
-        Logger::debug("Sending GraphQL query:\n" . $query);
-        Logger::debug("Sending GraphQL variables:\n" . json_encode($variables, JSON_PRETTY_PRINT));
-        $response = json_decode(getContents('https://gql.twitch.tv/gql', $header, $opts));
-        Logger::debug("Got GraphQL response:\n" . json_encode($response, JSON_PRETTY_PRINT));
-
-        if (isset($response->errors)) {
-            $messages = array_column($response->errors, 'message');
-            throw new \Exception(sprintf('twitch api: `%s`', implode("\n", $messages)));
-        }
-
-        return $response->data;
+        $json = getContents('https://gql.twitch.tv/gql', $headers, $opts);
+        $result = Json::decode($json, false);
+        return $result;
     }
 
     public function getName()

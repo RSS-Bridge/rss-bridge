@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 class CacheFactory
 {
+    private Logger $logger;
+
+    public function __construct(
+        Logger $logger
+    ) {
+        $this->logger = $logger;
+    }
+
     public function create(string $name = null): CacheInterface
     {
         $name ??= Configuration::getConfig('cache', 'type');
@@ -49,7 +57,7 @@ class CacheFactory
                 if (!is_writable($fileCacheConfig['path'])) {
                     throw new \Exception(sprintf('The FileCache path is not writable: %s', $fileCacheConfig['path']));
                 }
-                return new FileCache($fileCacheConfig);
+                return new FileCache($this->logger, $fileCacheConfig);
             case SQLiteCache::class:
                 if (!extension_loaded('sqlite3')) {
                     throw new \Exception('"sqlite3" extension not loaded. Please check "php.ini"');
@@ -66,13 +74,35 @@ class CacheFactory
                 } elseif (!is_dir(dirname($file))) {
                     throw new \Exception(sprintf('Invalid configuration for %s', 'SQLiteCache'));
                 }
-                return new SQLiteCache([
+                return new SQLiteCache($this->logger, [
                     'file'          => $file,
                     'timeout'       => Configuration::getConfig('SQLiteCache', 'timeout'),
                     'enable_purge'  => Configuration::getConfig('SQLiteCache', 'enable_purge'),
                 ]);
             case MemcachedCache::class:
-                return new MemcachedCache();
+                if (!extension_loaded('memcached')) {
+                    throw new \Exception('"memcached" extension not loaded. Please check "php.ini"');
+                }
+                $section = 'MemcachedCache';
+                $host = Configuration::getConfig($section, 'host');
+                $port = Configuration::getConfig($section, 'port');
+                if (empty($host) && empty($port)) {
+                    throw new \Exception('Configuration for ' . $section . ' missing.');
+                }
+                if (empty($host)) {
+                    throw new \Exception('"host" param is not set for ' . $section);
+                }
+                if (empty($port)) {
+                    throw new \Exception('"port" param is not set for ' . $section);
+                }
+                if (!ctype_digit($port)) {
+                    throw new \Exception('"port" param is invalid for ' . $section);
+                }
+                $port = intval($port);
+                if ($port < 1 || $port > 65535) {
+                    throw new \Exception('"port" param is invalid for ' . $section);
+                }
+                return new MemcachedCache($this->logger, $host, $port);
             default:
                 if (!file_exists(PATH_LIB_CACHES . $className . '.php')) {
                     throw new \Exception('Unable to find the cache file');

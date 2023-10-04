@@ -29,8 +29,16 @@
 <?= raw($bridges) ?>
 
 <section class="footer">
-    <a href="https://github.com/rss-bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br>
-    <p class="version"><?= e(Configuration::getVersion()) ?></p>
+    <a href="https://github.com/RSS-Bridge/rss-bridge">
+        https://github.com/RSS-Bridge/rss-bridge
+    </a>
+
+    <br>
+    <br>
+
+    <p class="version">
+        <?= e(Configuration::getVersion()) ?>
+    </p>
 
     <?= $active_bridges ?>/<?= $total_bridges ?> active bridges.<br>
 
