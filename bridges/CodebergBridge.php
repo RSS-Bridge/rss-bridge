@@ -403,6 +403,9 @@ EOD;
      */
     private function stripSvg($html)
     {
+        if ($html === null) {
+            return null;
+        }
         if ($html->find('svg', 0)) {
             $html->find('svg', 0)->outertext = '';
         }
