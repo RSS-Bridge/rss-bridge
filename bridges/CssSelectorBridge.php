@@ -60,11 +60,12 @@ class CssSelectorBridge extends BridgeAbstract
         ]
     ];
 
-    private $feedName = '';
+    protected $feedName = '';
+    protected $homepageUrl = '';
 
     public function getURI()
     {
-        $url = $this->getInput('home_page');
+        $url = $this->homepageUrl;
         if (empty($url)) {
             $url = parent::getURI();
         }
@@ -81,7 +82,7 @@ class CssSelectorBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = $this->getInput('home_page');
+        $this->homepageUrl = $this->getInput('home_page');
         $url_selector = $this->getInput('url_selector');
         $url_pattern = $this->getInput('url_pattern');
         $content_selector = $this->getInput('content_selector');
@@ -90,7 +91,7 @@ class CssSelectorBridge extends BridgeAbstract
         $discard_thumbnail = $this->getInput('discard_thumbnail');
         $limit = $this->getInput('limit') ?? 10;
 
-        $html = defaultLinkTo(getSimpleHTMLDOM($url), $url);
+        $html = defaultLinkTo(getSimpleHTMLDOM($this->homepageUrl), $this->homepageUrl);
         $this->feedName = $this->titleCleanup($this->getPageTitle($html), $title_cleanup);
         $items = $this->htmlFindEntries($html, $url_selector, $url_pattern, $limit, $content_cleanup);
 
