@@ -4,7 +4,8 @@ if (!class_exists('CssSelectorFeedExpanderBridgeInternal')) {
     // Utility class used internally by CssSelectorFeedExpanderBridge
     class CssSelectorFeedExpanderBridgeInternal extends FeedExpander
     {
-        public function collectData() {
+        public function collectData()
+        {
             // Unused. Call collectExpandableDatas($url) inherited from FeedExpander instead
         }
     }
@@ -67,7 +68,6 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
         $this->feedName = $feed_expander->getName();
 
         foreach ($items as $item_from_feed) {
-
             $item_expanded = $this->expandEntryWithSelector(
                 $item_from_feed['uri'],
                 $content_selector,
