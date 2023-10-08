@@ -28,7 +28,7 @@ class FiaBridge extends BridgeAbstract
             $item['timestamp'] = (string) DateTime::createFromFormat('d.m.y H:i', $date)->getTimestamp();
             ;
             $item['author'] = 'Fia';
-            $item['content'] = 'Document on date ' . $date . ':' . $title . '<br />' . '<a href=\'' . $url . '\'>' . $url . '</a>';
+            $item['content'] = "Document on date $date: $title <br /><a href='$url'>$url</a>";
             $item['categories'] = 'Document';
             $item['uid'] = $title . $date;
 
