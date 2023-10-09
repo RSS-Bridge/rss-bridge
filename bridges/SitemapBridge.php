@@ -64,7 +64,7 @@ class SitemapBridge extends CssSelectorBridge
 
     public function collectData()
     {
-        $url = $this->getInput('home_page');
+        $this->homepageUrl = $this->getInput('home_page');
         $url_pattern = $this->getInput('url_pattern');
         $content_selector = $this->getInput('content_selector');
         $content_cleanup = $this->getInput('content_cleanup');
@@ -73,8 +73,8 @@ class SitemapBridge extends CssSelectorBridge
         $discard_thumbnail = $this->getInput('discard_thumbnail');
         $limit = $this->getInput('limit');
 
-        $this->feedName = $this->titleCleanup($this->getPageTitle($url), $title_cleanup);
-        $sitemap_url = empty($site_map) ? $url : $site_map;
+        $this->feedName = $this->titleCleanup($this->getPageTitle($this->homepageUrl), $title_cleanup);
+        $sitemap_url = empty($site_map) ? $this->homepageUrl : $site_map;
         $sitemap_xml = $this->getSitemapXml($sitemap_url, !empty($site_map));
         $links = $this->sitemapXmlToList($sitemap_xml, $url_pattern, empty($limit) ? 10 : $limit);
 
