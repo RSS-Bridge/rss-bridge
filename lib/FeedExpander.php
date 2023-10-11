@@ -45,29 +45,32 @@ abstract class FeedExpander extends BridgeAbstract
         }
         // Restore previous behaviour in case other code relies on it being off
         libxml_use_internal_errors(false);
-        switch (true) {
-            case isset($xml->item[0]):
-                $this->feedType = self::FEED_TYPE_RSS_1_0;
-                $this->collectRss1($xml, $maxItems);
-                break;
-            case isset($xml->channel[0]):
-                $this->feedType = self::FEED_TYPE_RSS_2_0;
-                $this->collectRss2($xml, $maxItems);
-                break;
-            case isset($xml->entry[0]):
-                $this->feedType = self::FEED_TYPE_ATOM_1_0;
-                $this->collectAtom1($xml, $maxItems);
-                break;
-            default:
-                throw new \Exception(sprintf('Unable to detect feed format from `%s`', $url));
+
+        if (isset($xml->item[0])) {
+            $this->feedType = self::FEED_TYPE_RSS_1_0;
+            $this->collectRss1($xml, $maxItems);
+        } elseif (isset($xml->channel[0])) {
+            $this->feedType = self::FEED_TYPE_RSS_2_0;
+            $this->collectRss2($xml, $maxItems);
+        } elseif (isset($xml->entry[0])) {
+            $this->feedType = self::FEED_TYPE_ATOM_1_0;
+            $this->collectAtom1($xml, $maxItems);
+        } else {
+            throw new \Exception(sprintf('Unable to detect feed format from `%s`', $url));
         }
         return $this;
     }
 
     protected function collectRss1(\SimpleXMLElement $xml, $maxItems)
     {
+        // loadRss2Data
         $channel = $xml->channel[0];
-        $this->loadRss2Data($channel);
+        $this->title = trim((string)$channel->title);
+        $this->uri = trim((string)$channel->link);
+        if (!empty($channel->image)) {
+            $this->icon = trim((string)$channel->image->url);
+        }
+        // todo: set title, link, description, language, and so on
         foreach ($xml->item as $item) {
             $parsedItem = $this->parseItem($item);
             if (!empty($parsedItem)) {
@@ -81,8 +84,14 @@ abstract class FeedExpander extends BridgeAbstract
 
     protected function collectRss2(\SimpleXMLElement $xml, $maxItems)
     {
+        // loadRss2Data
         $channel = $xml->channel[0];
-        $this->loadRss2Data($channel);
+        $this->title = trim((string)$channel->title);
+        $this->uri = trim((string)$channel->link);
+        if (!empty($channel->image)) {
+            $this->icon = trim((string)$channel->image->url);
+        }
+        // todo: set title, link, description, language, and so on
         foreach ($channel->item as $item) {
             $parsedItem = $this->parseItem($item);
             if (!empty($parsedItem)) {
@@ -96,7 +105,28 @@ abstract class FeedExpander extends BridgeAbstract
 
     protected function collectAtom1(\SimpleXMLElement $xml, $maxItems)
     {
-        $this->loadAtomData($xml);
+        // loadAtomData
+        $this->title = (string)$xml->title;
+        // Find best link (only one, or first of 'alternate')
+        if (!isset($xml->link)) {
+            $this->uri = '';
+        } elseif (count($xml->link) === 1) {
+            $this->uri = (string)$xml->link[0]['href'];
+        } else {
+            $this->uri = '';
+            foreach ($xml->link as $link) {
+                if (strtolower($link['rel']) === 'alternate') {
+                    $this->uri = (string)$link['href'];
+                    break;
+                }
+            }
+        }
+        if (!empty($xml->icon)) {
+            $this->icon = (string)$xml->icon;
+        } elseif (!empty($xml->logo)) {
+            $this->icon = (string)$xml->logo;
+        }
+        // parse items
         foreach ($xml->entry as $item) {
             $parsedItem = $this->parseItem($item);
             if (!empty($parsedItem)) {
@@ -122,42 +152,6 @@ abstract class FeedExpander extends BridgeAbstract
                 return $this->parseATOMItem($item);
             default:
                 throw new \Exception(sprintf('Unknown version %s!', $this->getInput('version')));
-        }
-    }
-
-    protected function loadRss2Data(\SimpleXMLElement $channel)
-    {
-        // loadRss2Data
-        $this->title = trim((string)$channel->title);
-        $this->uri = trim((string)$channel->link);
-        if (!empty($channel->image)) {
-            $this->icon = trim((string)$channel->image->url);
-        }
-        // todo: set title, link, description, language, and so on
-    }
-
-    protected function loadAtomData(\SimpleXMLElement $xml)
-    {
-        // loadAtomData
-        $this->title = (string)$xml->title;
-        // Find best link (only one, or first of 'alternate')
-        if (!isset($xml->link)) {
-            $this->uri = '';
-        } elseif (count($xml->link) === 1) {
-            $this->uri = (string)$xml->link[0]['href'];
-        } else {
-            $this->uri = '';
-            foreach ($xml->link as $link) {
-                if (strtolower($link['rel']) === 'alternate') {
-                    $this->uri = (string)$link['href'];
-                    break;
-                }
-            }
-        }
-        if (!empty($xml->icon)) {
-            $this->icon = (string)$xml->icon;
-        } elseif (!empty($xml->logo)) {
-            $this->icon = (string)$xml->logo;
         }
     }
 
