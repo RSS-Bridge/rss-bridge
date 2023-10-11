@@ -108,8 +108,26 @@ abstract class FeedExpander extends BridgeAbstract
         }
     }
 
+    /**
+     * @param \SimpleXMLElement $item The feed item to be parsed
+     */
+    protected function parseItem($item)
+    {
+        switch ($this->feedType) {
+            case self::FEED_TYPE_RSS_1_0:
+                return $this->parseRss1Item($item);
+            case self::FEED_TYPE_RSS_2_0:
+                return $this->parseRss2Item($item);
+            case self::FEED_TYPE_ATOM_1_0:
+                return $this->parseATOMItem($item);
+            default:
+                throw new \Exception(sprintf('Unknown version %s!', $this->getInput('version')));
+        }
+    }
+
     protected function loadRss2Data(\SimpleXMLElement $channel)
     {
+        // loadRss2Data
         $this->title = trim((string)$channel->title);
         $this->uri = trim((string)$channel->link);
         if (!empty($channel->image)) {
@@ -120,8 +138,8 @@ abstract class FeedExpander extends BridgeAbstract
 
     protected function loadAtomData(\SimpleXMLElement $xml)
     {
+        // loadAtomData
         $this->title = (string)$xml->title;
-
         // Find best link (only one, or first of 'alternate')
         if (!isset($xml->link)) {
             $this->uri = '';
@@ -136,7 +154,6 @@ abstract class FeedExpander extends BridgeAbstract
                 }
             }
         }
-
         if (!empty($xml->icon)) {
             $this->icon = (string)$xml->icon;
         } elseif (!empty($xml->logo)) {
@@ -279,23 +296,6 @@ abstract class FeedExpander extends BridgeAbstract
         }
 
         return $item;
-    }
-
-    /**
-     * @param \SimpleXMLElement $item The feed item to be parsed
-     */
-    protected function parseItem($item)
-    {
-        switch ($this->feedType) {
-            case self::FEED_TYPE_RSS_1_0:
-                return $this->parseRss1Item($item);
-            case self::FEED_TYPE_RSS_2_0:
-                return $this->parseRss2Item($item);
-            case self::FEED_TYPE_ATOM_1_0:
-                return $this->parseATOMItem($item);
-            default:
-                throw new \Exception(sprintf('Unknown version %s!', $this->getInput('version')));
-        }
     }
 
     public function getURI()
