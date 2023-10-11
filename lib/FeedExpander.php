@@ -1,95 +1,29 @@
 <?php
 
 /**
- * An abstract class for bridges that need to transform existing RSS or Atom
- * feeds.
- *
- * This class extends {@see BridgeAbstract} with functions to extract contents
- * from existing RSS or Atom feeds. Bridges that need to transform existing feeds
- * should inherit from this class instead of {@see BridgeAbstract}.
- *
- * Bridges that extend this class don't need to concern themselves with getting
- * contents from existing feeds, but can focus on adding additional contents
- * (i.e. by downloading additional data), filtering or just transforming a feed
- * into another format.
- *
- * @link http://www.rssboard.org/rss-0-9-1 RSS 0.91 Specification
- * @link http://web.resource.org/rss/1.0/spec RDF Site Summary (RSS) 1.0
- * @link http://www.rssboard.org/rss-specification RSS 2.0 Specification
- * @link https://tools.ietf.org/html/rfc4287 The Atom Syndication Format
- *
- * @todo The parsing functions should all be private. This class is complicated
- * enough without having to consider children overriding functions.
+ * Expands an existing feed
  */
 abstract class FeedExpander extends BridgeAbstract
 {
-    /** Indicates an RSS 1.0 feed */
     const FEED_TYPE_RSS_1_0 = 'RSS_1_0';
-
-    /** Indicates an RSS 2.0 feed */
     const FEED_TYPE_RSS_2_0 = 'RSS_2_0';
-
-    /** Indicates an Atom 1.0 feed */
     const FEED_TYPE_ATOM_1_0 = 'ATOM_1_0';
 
-    /**
-     * Holds the title of the current feed
-     *
-     * @var string
-     */
     private $title;
-
-    /**
-     * Holds the URI of the feed
-     *
-     * @var string
-     */
     private $uri;
-
-    /**
-     * Holds the icon of the feed
-     *
-     */
     private $icon;
-
-    /**
-     * Holds the feed type during internal operations.
-     *
-     * @var string
-     */
     private $feedType;
 
-    /**
-     * Collects data from an existing feed.
-     *
-     * Children should call this function in {@see BridgeAbstract::collectData()}
-     * to extract a feed.
-     *
-     * @param string $url URL to the feed.
-     * @param int $maxItems Maximum number of items to collect from the feed
-     * (`-1`: no limit).
-     * @return self
-     */
     public function collectExpandableDatas($url, $maxItems = -1)
     {
         if (empty($url)) {
             throw new \Exception('There is no $url for this RSS expander');
         }
-
-        Debug::log(sprintf('Loading from %s', $url));
-
-        /* Notice we do not use cache here on purpose:
-         * we want a fresh view of the RSS stream each time
-         */
-
-        $mimeTypes = [
-            MrssFormat::MIME_TYPE,
-            AtomFormat::MIME_TYPE,
-            '*/*',
-        ];
-        $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
-        $xml = getContents($url, $httpHeaders);
-        if ($xml === '') {
+        $accept = [MrssFormat::MIME_TYPE, AtomFormat::MIME_TYPE, '*/*'];
+        $httpHeaders = ['Accept: ' . implode(', ', $accept)];
+        // Notice we do not use cache here on purpose. We want a fresh view of the RSS stream each time
+        $xmlString = getContents($url, $httpHeaders);
+        if ($xmlString === '') {
             throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url), 10);
         }
         // Maybe move this call earlier up the stack frames
@@ -97,8 +31,8 @@ abstract class FeedExpander extends BridgeAbstract
         libxml_use_internal_errors(true);
         // Consider replacing libxml with https://www.php.net/domdocument
         // Intentionally not using the silencing operator (@) because it has no effect here
-        $rssContent = simplexml_load_string(trim($xml));
-        if ($rssContent === false) {
+        $xml = simplexml_load_string(trim($xmlString));
+        if ($xml === false) {
             $xmlErrors = libxml_get_errors();
             foreach ($xmlErrors as $xmlError) {
                 Debug::log(trim($xmlError->message));
@@ -111,54 +45,33 @@ abstract class FeedExpander extends BridgeAbstract
         }
         // Restore previous behaviour in case other code relies on it being off
         libxml_use_internal_errors(false);
-
-        // Commented out because it's spammy
-        // Debug::log(sprintf("RSS content is ===========\n%s===========", var_export($rssContent, true)));
-
         switch (true) {
-            case isset($rssContent->item[0]):
-                Debug::log('Detected RSS 1.0 format');
+            case isset($xml->item[0]):
                 $this->feedType = self::FEED_TYPE_RSS_1_0;
-                $this->collectRss1($rssContent, $maxItems);
+                $this->collectRss1($xml, $maxItems);
                 break;
-            case isset($rssContent->channel[0]):
-                Debug::log('Detected RSS 0.9x or 2.0 format');
+            case isset($xml->channel[0]):
                 $this->feedType = self::FEED_TYPE_RSS_2_0;
-                $this->collectRss2($rssContent, $maxItems);
+                $this->collectRss2($xml, $maxItems);
                 break;
-            case isset($rssContent->entry[0]):
-                Debug::log('Detected ATOM format');
+            case isset($xml->entry[0]):
                 $this->feedType = self::FEED_TYPE_ATOM_1_0;
-                $this->collectAtom1($rssContent, $maxItems);
+                $this->collectAtom1($xml, $maxItems);
                 break;
             default:
-                Debug::log(sprintf('Unable to detect feed format from `%s`', $url));
                 throw new \Exception(sprintf('Unable to detect feed format from `%s`', $url));
         }
-
         return $this;
     }
 
-    /**
-     * Collect data from an RSS 1.0 compatible feed
-     *
-     * @link http://web.resource.org/rss/1.0/spec RDF Site Summary (RSS) 1.0
-     *
-     * @param string $rssContent The RSS content
-     * @param int $maxItems Maximum number of items to collect from the feed
-     * (`-1`: no limit).
-     * @return void
-     *
-     * @todo Instead of passing $maxItems to all functions, just add all items
-     * and remove excessive items later.
-     */
-    protected function collectRss1($rssContent, $maxItems)
+    protected function collectRss1(\SimpleXMLElement $xml, $maxItems)
     {
-        $this->loadRss2Data($rssContent->channel[0]);
-        foreach ($rssContent->item as $item) {
-            $tmp_item = $this->parseItem($item);
-            if (!empty($tmp_item)) {
-                $this->items[] = $tmp_item;
+        $channel = $xml->channel[0];
+        $this->loadRss2Data($channel);
+        foreach ($xml->item as $item) {
+            $parsedItem = $this->parseItem($item);
+            if (!empty($parsedItem)) {
+                $this->items[] = $parsedItem;
             }
             if ($maxItems !== -1 && count($this->items) >= $maxItems) {
                 break;
@@ -166,24 +79,14 @@ abstract class FeedExpander extends BridgeAbstract
         }
     }
 
-    /**
-     * Collect data from a RSS 2.0 compatible feed
-     *
-     * @link http://www.rssboard.org/rss-specification RSS 2.0 Specification
-     *
-     * @param int $maxItems Maximum number of items to collect from the feed (`-1`: no limit).
-     * @return void
-     *
-     * @todo Instead of passing $maxItems to all functions, just add all items and remove excessive items later.
-     */
-    protected function collectRss2(\SimpleXMLElement $rssContent, $maxItems)
+    protected function collectRss2(\SimpleXMLElement $xml, $maxItems)
     {
-        $rssContent = $rssContent->channel[0];
-        $this->loadRss2Data($rssContent);
-        foreach ($rssContent->item as $item) {
-            $tmp_item = $this->parseItem($item);
-            if (!empty($tmp_item)) {
-                $this->items[] = $tmp_item;
+        $channel = $xml->channel[0];
+        $this->loadRss2Data($channel);
+        foreach ($channel->item as $item) {
+            $parsedItem = $this->parseItem($item);
+            if (!empty($parsedItem)) {
+                $this->items[] = $parsedItem;
             }
             if ($maxItems !== -1 && count($this->items) >= $maxItems) {
                 break;
@@ -191,26 +94,13 @@ abstract class FeedExpander extends BridgeAbstract
         }
     }
 
-    /**
-     * Collect data from a Atom 1.0 compatible feed
-     *
-     * @link https://tools.ietf.org/html/rfc4287  The Atom Syndication Format
-     *
-     * @param object $content The Atom content
-     * @param int $maxItems Maximum number of items to collect from the feed
-     * (`-1`: no limit).
-     * @return void
-     *
-     * @todo Instead of passing $maxItems to all functions, just add all items
-     * and remove excessive items later.
-     */
-    protected function collectAtom1($content, $maxItems)
+    protected function collectAtom1(\SimpleXMLElement $xml, $maxItems)
     {
-        $this->loadAtomData($content);
-        foreach ($content->entry as $item) {
-            $tmp_item = $this->parseItem($item);
-            if (!empty($tmp_item)) {
-                $this->items[] = $tmp_item;
+        $this->loadAtomData($xml);
+        foreach ($xml->entry as $item) {
+            $parsedItem = $this->parseItem($item);
+            if (!empty($parsedItem)) {
+                $this->items[] = $parsedItem;
             }
             if ($maxItems !== -1 && count($this->items) >= $maxItems) {
                 break;
@@ -218,42 +108,28 @@ abstract class FeedExpander extends BridgeAbstract
         }
     }
 
-    /**
-     * Load RSS 2.0 feed data into RSS-Bridge
-     *
-     * @param object $rssContent The RSS content
-     * @return void
-     *
-     * @todo set title, link, description, language, and so on
-     */
-    protected function loadRss2Data($rssContent)
+    protected function loadRss2Data(\SimpleXMLElement $channel)
     {
-        $this->title = trim((string)$rssContent->title);
-        $this->uri = trim((string)$rssContent->link);
-
-        if (!empty($rssContent->image)) {
-            $this->icon = trim((string)$rssContent->image->url);
+        $this->title = trim((string)$channel->title);
+        $this->uri = trim((string)$channel->link);
+        if (!empty($channel->image)) {
+            $this->icon = trim((string)$channel->image->url);
         }
+        // todo: set title, link, description, language, and so on
     }
 
-    /**
-     * Load Atom feed data into RSS-Bridge
-     *
-     * @param object $content The Atom content
-     * @return void
-     */
-    protected function loadAtomData($content)
+    protected function loadAtomData(\SimpleXMLElement $xml)
     {
-        $this->title = (string)$content->title;
+        $this->title = (string)$xml->title;
 
         // Find best link (only one, or first of 'alternate')
-        if (!isset($content->link)) {
+        if (!isset($xml->link)) {
             $this->uri = '';
-        } elseif (count($content->link) === 1) {
-            $this->uri = (string)$content->link[0]['href'];
+        } elseif (count($xml->link) === 1) {
+            $this->uri = (string)$xml->link[0]['href'];
         } else {
             $this->uri = '';
-            foreach ($content->link as $link) {
+            foreach ($xml->link as $link) {
                 if (strtolower($link['rel']) === 'alternate') {
                     $this->uri = (string)$link['href'];
                     break;
@@ -261,24 +137,14 @@ abstract class FeedExpander extends BridgeAbstract
             }
         }
 
-        if (!empty($content->icon)) {
-            $this->icon = (string)$content->icon;
-        } elseif (!empty($content->logo)) {
-            $this->icon = (string)$content->logo;
+        if (!empty($xml->icon)) {
+            $this->icon = (string)$xml->icon;
+        } elseif (!empty($xml->logo)) {
+            $this->icon = (string)$xml->logo;
         }
     }
 
-    /**
-     * Parse the contents of a single Atom feed item into a RSS-Bridge item for
-     * further transformation.
-     *
-     * @param object $feedItem A single feed item
-     * @return object The RSS-Bridge item
-     *
-     * @todo To reduce confusion, the RSS-Bridge item should maybe have a class
-     * of its own?
-     */
-    protected function parseATOMItem($feedItem)
+    protected function parseATOMItem(\SimpleXMLElement $feedItem): array
     {
         // Some ATOM entries also contain RSS 2.0 fields
         $item = $this->parseRss2Item($feedItem);
@@ -308,7 +174,7 @@ abstract class FeedExpander extends BridgeAbstract
             }
         }
 
-        //When "link" field is present, URL is more reliable than "id" field
+        // When "link" field is present, URL is more reliable than "id" field
         if (count($feedItem->link) === 1) {
             $item['uri'] = (string)$feedItem->link[0]['href'];
         } else {
@@ -325,17 +191,7 @@ abstract class FeedExpander extends BridgeAbstract
         return $item;
     }
 
-    /**
-     * Parse the contents of a single RSS 0.91 feed item into a RSS-Bridge item
-     * for further transformation.
-     *
-     * @param object $feedItem A single feed item
-     * @return object The RSS-Bridge item
-     *
-     * @todo To reduce confusion, the RSS-Bridge item should maybe have a class
-     * of its own?
-     */
-    protected function parseRss091Item($feedItem)
+    protected function parseRss091Item(\SimpleXMLElement $feedItem): array
     {
         $item = [];
         if (isset($feedItem->link)) {
@@ -353,17 +209,7 @@ abstract class FeedExpander extends BridgeAbstract
         return $item;
     }
 
-    /**
-     * Parse the contents of a single RSS 1.0 feed item into a RSS-Bridge item
-     * for further transformation.
-     *
-     * @param object $feedItem A single feed item
-     * @return object The RSS-Bridge item
-     *
-     * @todo To reduce confusion, the RSS-Bridge item should maybe have a class
-     * of its own?
-     */
-    protected function parseRss1Item($feedItem)
+    protected function parseRss1Item($feedItem): array
     {
         // 1.0 adds optional elements around the 0.91 standard
         $item = $this->parseRss091Item($feedItem);
@@ -382,17 +228,7 @@ abstract class FeedExpander extends BridgeAbstract
         return $item;
     }
 
-    /**
-     * Parse the contents of a single RSS 2.0 feed item into a RSS-Bridge item
-     * for further transformation.
-     *
-     * @param object $feedItem A single feed item
-     * @return object The RSS-Bridge item
-     *
-     * @todo To reduce confusion, the RSS-Bridge item should maybe have a class
-     * of its own?
-     */
-    protected function parseRss2Item($feedItem)
+    protected function parseRss2Item(\SimpleXMLElement $feedItem): array
     {
         // Primary data is compatible to 0.91 with some additional data
         $item = $this->parseRss091Item($feedItem);
@@ -446,11 +282,7 @@ abstract class FeedExpander extends BridgeAbstract
     }
 
     /**
-     * Parse the contents of a single feed item, depending on the current feed
-     * type, into a RSS-Bridge item.
-     *
-     * @param object $item The current feed item
-     * @return object A RSS-Bridge item, with (hopefully) the whole content
+     * @param \SimpleXMLElement $item The feed item to be parsed
      */
     protected function parseItem($item)
     {
@@ -466,7 +298,6 @@ abstract class FeedExpander extends BridgeAbstract
         }
     }
 
-    /** {@inheritdoc} */
     public function getURI()
     {
         if (!empty($this->uri)) {
@@ -475,7 +306,6 @@ abstract class FeedExpander extends BridgeAbstract
         return parent::getURI();
     }
 
-    /** {@inheritdoc} */
     public function getName()
     {
         if (!empty($this->title)) {
@@ -484,7 +314,6 @@ abstract class FeedExpander extends BridgeAbstract
         return parent::getName();
     }
 
-    /** {@inheritdoc} */
     public function getIcon()
     {
         if (!empty($this->icon)) {
