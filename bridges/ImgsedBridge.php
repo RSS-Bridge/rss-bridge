@@ -43,15 +43,6 @@ class ImgsedBridge extends BridgeAbstract
         'https://www.imgsed.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
     ];
 
-    public function getURI()
-    {
-        if (!is_null($this->getInput('u'))) {
-            return urljoin(self::URI, '/' . $this->getInput('u') . '/');
-        }
-
-        return parent::getURI();
-    }
-
     public function collectData()
     {
         $username = $this->getInput('u');
@@ -99,9 +90,6 @@ class ImgsedBridge extends BridgeAbstract
 
             $isMoreContent = (bool) $post->find('svg', 0);
             $moreContentNote = $isMoreContent ? '<p><i>(multiple images and/or videos)</i></p>' : '';
-
-
-
 
             $this->items[] = [
                 'uri'        => $url,
@@ -214,14 +202,17 @@ HTML,
         }
     }
 
-    // Parse date, and transform the date into a timetamp, even in a case of a relative date
     private function parseDate($content)
     {
+        // Parse date, and transform the date into a timetamp, even in a case of a relative date
         $date = date_create();
         $dateString = str_replace(' ago', '', $content);
         // Special case : 'a day' is not a valid interval in PHP, so replace it with it's PHP equivalenbt : '1 day'
         if ($dateString == 'a day') {
             $dateString = '1 day';
+        }
+        if ($dateString === 'an hour') {
+            $dateString = '1 hour';
         }
 
         $relativeDate = date_interval_create_from_date_string($dateString);
@@ -233,6 +224,15 @@ HTML,
             $this->logger->info(sprintf('Unable to parse date string: %s', $dateString));
         }
         return date_format($date, 'r');
+    }
+
+    public function getURI()
+    {
+        if (!is_null($this->getInput('u'))) {
+            return urljoin(self::URI, '/' . $this->getInput('u') . '/');
+        }
+
+        return parent::getURI();
     }
 
     private function convertURLToInstagram($url)
