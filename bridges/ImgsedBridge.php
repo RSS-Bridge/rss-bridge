@@ -211,6 +211,9 @@ HTML,
         if ($dateString == 'a day') {
             $dateString = '1 day';
         }
+        if ($dateString === 'an hour') {
+            $dateString = '1 hour';
+        }
 
         $relativeDate = date_interval_create_from_date_string($dateString);
         if ($relativeDate) {
