@@ -12,10 +12,8 @@ class WeLiveSecurityBridge extends FeedExpander
         ],
     ];
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $html = getSimpleHTMLDOMCached($item['uri']);
         if (!$html) {
             $item['content'] .= '<br /><p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';

@@ -25,10 +25,8 @@ class AcrimedBridge extends FeedExpander
         $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $articlePage = getSimpleHTMLDOM($item['uri']);
         $article = sanitize($articlePage->find('article.article1', 0)->innertext);
         $article = defaultLinkTo($article, static::URI);

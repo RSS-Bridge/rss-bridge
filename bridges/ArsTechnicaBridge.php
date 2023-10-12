@@ -33,10 +33,8 @@ class ArsTechnicaBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $item_html = getSimpleHTMLDOMCached($item['uri'] . '&amp');
         $item_html = defaultLinkTo($item_html, self::URI);
         $item['content'] = $item_html->find('.amp-wp-article-content', 0);

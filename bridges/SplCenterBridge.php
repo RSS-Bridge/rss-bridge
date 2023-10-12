@@ -27,10 +27,8 @@ class SplCenterBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $articleHtml = getSimpleHTMLDOMCached($item['uri']);
 
         foreach ($articleHtml->find('.file') as $index => $media) {

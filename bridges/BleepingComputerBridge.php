@@ -13,10 +13,8 @@ class BleepingComputerBridge extends FeedExpander
         $this->collectExpandableDatas($feed);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $article_html = getSimpleHTMLDOMCached($item['uri']);
         if (!$article_html) {
             $item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';

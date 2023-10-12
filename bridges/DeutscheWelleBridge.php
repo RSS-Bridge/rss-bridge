@@ -71,10 +71,8 @@ class DeutscheWelleBridge extends FeedExpander
         $this->collectExpandableDatas($this->getInput('feed'));
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $parsedUrl = parse_url($item['uri']);
         unset($parsedUrl['query']);
         $url = $this->unparseUrl($parsedUrl);

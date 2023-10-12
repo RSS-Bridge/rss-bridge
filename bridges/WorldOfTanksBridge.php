@@ -30,9 +30,8 @@ class WorldOfTanksBridge extends FeedExpander
         $this->collectExpandableDatas(sprintf('https://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
         $item['content'] = $this->loadFullArticle($item['uri']);
         return $item;
     }

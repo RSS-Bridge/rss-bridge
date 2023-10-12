@@ -12,10 +12,8 @@ class NiceMatinBridge extends FeedExpander
         $this->collectExpandableDatas(self::URI . 'derniere-minute/rss', 10);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $item['content'] = $this->extractContent($item['uri']);
         return $item;
     }

@@ -59,10 +59,8 @@ class ZeitBridge extends FeedExpander
         $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $item['enclosures'] = [];
 
         $headers = [

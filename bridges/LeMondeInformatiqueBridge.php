@@ -12,10 +12,8 @@ class LeMondeInformatiqueBridge extends FeedExpander
         $this->collectExpandableDatas(self::URI . 'rss/rss.xml', 10);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $article_html = getSimpleHTMLDOMCached($item['uri']);
 
         //Deduce thumbnail URL from article image URL

@@ -123,9 +123,8 @@ class OnVaSortirBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
         $dom = getSimpleHTMLDOMCached($item['uri']);
         $text = $dom->find('div.corpsMax', 0)->innertext;
         $item['content'] = utf8_encode($text);

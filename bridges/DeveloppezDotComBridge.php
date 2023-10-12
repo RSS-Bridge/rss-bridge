@@ -176,10 +176,8 @@ class DeveloppezDotComBridge extends FeedExpander
      * Parse the content of every RSS item. And will try to get the full article
      * pointed by the item URL intead of the default abstract.
      */
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         if (count($this->items) >= $this->getInput('limit')) {
             return null;
         }

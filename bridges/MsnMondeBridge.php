@@ -25,10 +25,8 @@ class MsnMondeBridge extends FeedExpander
         $this->collectExpandableDatas(self::FEED_URL, 10);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         if (!preg_match('#fr-fr/actualite.*/ar-(?<id>[\w]*)\?#', $item['uri'], $matches)) {
             return null;
         }

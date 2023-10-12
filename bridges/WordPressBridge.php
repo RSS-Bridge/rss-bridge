@@ -34,10 +34,8 @@ class WordPressBridge extends FeedExpander
         }
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $dom = getSimpleHTMLDOMCached($item['uri']);
 
         // Find article body

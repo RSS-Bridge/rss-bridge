@@ -13,10 +13,8 @@ class VarietyBridge extends FeedExpander
         $this->collectExpandableDatas('https://feeds.feedburner.com/variety/headlines', 15);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-        // $articlePage gets the entire page's contents
         $articlePage = getSimpleHTMLDOM($item['uri']);
 
         // Remove Script tags
