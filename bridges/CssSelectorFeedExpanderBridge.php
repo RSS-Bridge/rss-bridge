@@ -61,6 +61,10 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
         $discard_thumbnail = $this->getInput('discard_thumbnail');
         $limit = $this->getInput('limit');
 
+        //$xmlString = getContents($url);
+        //$feed = (new FeedParser())->parseFeed($xmlString);
+        //$items = $feed['items'];
+
         $feed_expander = new CssSelectorFeedExpanderBridgeInternal();
         $items = $feed_expander->collectExpandableDatas($url)->getItems();
 

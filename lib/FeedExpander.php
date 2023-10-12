@@ -54,6 +54,7 @@ abstract class FeedExpander extends BridgeAbstract
         // Restore previous behaviour in case other code relies on it being off
         libxml_use_internal_errors(false);
 
+        // Currently only feed metadata (not items) are plucked out
         $this->parsedFeed = $this->feedParser->parseFeed($xmlString);
 
         if (isset($xml->item[0])) {
