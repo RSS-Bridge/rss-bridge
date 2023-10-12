@@ -158,13 +158,12 @@ function getSimpleHTMLDOM(
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
 ) {
-    $content = getContents(
-        $url,
-        $header ?? [],
-        $opts ?? []
-    );
+    $html = getContents($url, $header ?? [], $opts ?? []);
+    if ($html === '') {
+        throw new \Exception('Unable to parse dom because the http response was the empty string');
+    }
     return str_get_html(
-        $content,
+        $html,
         $lowercase,
         $forceTagsClosed,
         $target_charset,
