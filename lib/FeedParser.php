@@ -64,7 +64,7 @@ final class FeedParser
                 $feed['items'][] = $this->parseAtomItem($item);
             }
         } else {
-            throw new \Exception(sprintf('Unable to detect feed format from `%s`', $url));
+            throw new \Exception('Unable to detect feed format');
         }
 
         return $feed;
@@ -163,7 +163,9 @@ final class FeedParser
         }
 
         if (isset($feedItem->enclosure) && !empty($feedItem->enclosure['url'])) {
-            $item['enclosures'] = [(string)$feedItem->enclosure['url']];
+            $item['enclosures'] = [
+                (string)$feedItem->enclosure['url'],
+            ];
         }
         return $item;
     }
@@ -189,6 +191,7 @@ final class FeedParser
     {
         $item = [];
         if (isset($feedItem->link)) {
+            // todo: trim uri
             $item['uri'] = (string)$feedItem->link;
         }
         if (isset($feedItem->title)) {
