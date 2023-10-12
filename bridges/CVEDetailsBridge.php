@@ -57,7 +57,7 @@ class CVEDetailsBridge extends BridgeAbstract
             $content = $tr->find('.cvesummarylong', 0)->innertext;
             $cweList = $detailHtml->find('h2', 2)->next_sibling();
             foreach ($cweList->find('li') as $li) {
-                $cweWithDescription = $li->find('a', 0)->innertext;
+                $cweWithDescription = $li->find('a', 0)->innertext ?? '';
 
                 if (preg_match('/CWE-(\d+)/', $cweWithDescription, $cwe)) {
                     $categories[] = 'CWE-' . $cwe[1];
