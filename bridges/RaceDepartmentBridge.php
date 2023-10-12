@@ -14,7 +14,7 @@ class RaceDepartmentBridge extends FeedExpander
 
     protected function parseItem($feedItem)
     {
-        $item = parent::parseRss2Item($feedItem);
+        $item = parent::parseItem($feedItem);
 
         //fetch page
         $articlePage = getSimpleHTMLDOMCached($feedItem->link);
