@@ -26,7 +26,8 @@ class NextgovBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas(self::URI . 'rss/' . $this->getInput('category') . '/', 10);
+        $url = self::URI . 'rss/' . $this->getInput('category') . '/';
+        $this->collectExpandableDatas($url, 10);
     }
 
     protected function parseItem($newsItem)

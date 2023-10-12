@@ -10,17 +10,16 @@ class IGNBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas('http://feeds.ign.com/ign/all', 15);
+        $this->collectExpandableDatas('http://feeds.ign.com/ign/all', 2);
     }
 
     // IGNs feed is both hidden and incomplete. This bridge tries to fix this.
 
-    protected function parseItem($newsItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newsItem);
+        $item = parent::parseItem($item);
 
-        // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = getSimpleHTMLDOM($item['uri']);
 
         // List of BS elements
         $uselessElements = [
@@ -33,7 +32,7 @@ class IGNBridge extends FeedExpander
             '.jsx-4213937408',
             '.commerce-container',
             '.widget-container',
-            '.newsletter-signup-button'
+            '.newsletter-signup-button',
         ];
 
         // Remove useless elements

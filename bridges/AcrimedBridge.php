@@ -20,17 +20,16 @@ class AcrimedBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas(
-            static::URI . 'spip.php?page=backend',
-            $this->getInput('limit')
-        );
+        $url = 'https://www.acrimed.org/spip.php?page=backend';
+        $limit = $this->getInput('limit');
+        $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newsItem);
+        $item = parent::parseItem($item);
 
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = getSimpleHTMLDOM($item['uri']);
         $article = sanitize($articlePage->find('article.article1', 0)->innertext);
         $article = defaultLinkTo($article, static::URI);
         $item['content'] = $article;

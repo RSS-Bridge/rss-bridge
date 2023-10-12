@@ -32,14 +32,14 @@ class ViceBridge extends FeedExpander
         $this->collectExpandableDatas($feedURL, 10);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newsItem);
-        // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $item = parent::parseItem($item);
+
+        $articlePage = getSimpleHTMLDOM($item['uri']);
         // text and embedded content
         $article = $articlePage->find('.article__body', 0);
-        $item['content'] = $article;
+        $item['content'] = $article ?? '';
 
         return $item;
     }

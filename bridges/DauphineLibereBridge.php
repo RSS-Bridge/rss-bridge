@@ -43,9 +43,9 @@ class DauphineLibereBridge extends FeedExpander
         $this->collectExpandableDatas($url, 10);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newsItem);
+        $item = parent::parseItem($item);
         $item['content'] = $this->extractContent($item['uri']);
         return $item;
     }

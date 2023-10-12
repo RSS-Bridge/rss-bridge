@@ -29,9 +29,11 @@ class MediapartBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newsItem);
+        $item = parent::parseItem($item);
+
+        $itemUrl = $item['uri'];
 
         // Mediapart provide multiple type of contents.
         // We only process items relative to the newspaper
@@ -49,12 +51,8 @@ class MediapartBridge extends FeedExpander
                 $opt = [];
                 $opt[CURLOPT_COOKIE] = 'MPSESSID=' . $mpsessid;
 
-                // Get the page
-                $articlePage = getSimpleHTMLDOM(
-                    $newsItem->link . '?onglet=full',
-                    [],
-                    $opt
-                );
+                $pageUrl = $itemUrl . '?onglet=full';
+                $articlePage = getSimpleHTMLDOM($pageUrl, [], $opt);
 
                 // Extract the article content
                 $content = $articlePage->find('div.content-article', 0)->innertext;

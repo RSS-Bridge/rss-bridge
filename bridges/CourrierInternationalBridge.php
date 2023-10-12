@@ -13,11 +13,11 @@ class CourrierInternationalBridge extends FeedExpander
         $this->collectExpandableDatas(static::URI . 'feed/all/rss.xml', 20);
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($feedItem);
+        $item = parent::parseItem($item);
 
-        $articlePage = getSimpleHTMLDOMCached($feedItem->link);
+        $articlePage = getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('.article-text, depeche-text', 0);
         if (!$content) {
             return $item;

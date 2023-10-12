@@ -43,9 +43,4 @@ class FeedExpanderExampleBridge extends FeedExpander
                 returnClientError('Unknown version ' . $this->getInput('version') . '!');
         }
     }
-
-    protected function parseItem($newsItem)
-    {
-        return (array) $newsItem;
-    }
 }

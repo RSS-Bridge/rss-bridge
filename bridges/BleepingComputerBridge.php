@@ -7,6 +7,12 @@ class BleepingComputerBridge extends FeedExpander
     const URI = 'https://www.bleepingcomputer.com/';
     const DESCRIPTION = 'Returns the newest articles.';
 
+    public function collectData()
+    {
+        $feed = static::URI . 'feed/';
+        $this->collectExpandableDatas($feed);
+    }
+
     protected function parseItem($item)
     {
         $item = parent::parseItem($item);
@@ -22,11 +28,5 @@ class BleepingComputerBridge extends FeedExpander
         $item['content'] = trim($article_content);
 
         return $item;
-    }
-
-    public function collectData()
-    {
-        $feed = static::URI . 'feed/';
-        $this->collectExpandableDatas($feed);
     }
 }

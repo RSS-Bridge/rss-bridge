@@ -65,12 +65,14 @@ class NyaaTorrentsBridge extends FeedExpander
         $this->collectExpandableDatas($this->getURI(), 20);
     }
 
-    protected function parseItem($newItem)
+    protected function parseItem($newsItem)
     {
-        $item = parent::parseItem($newItem);
+        $item = parent::parseItem($newsItem);
+
+        $nyaaFields = (array)($newsItem->children('nyaa', true));
+
         $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
 
-        $nyaaFields = (array)($newItem->children('nyaa', true));
         $item = array_merge($item, $nyaaFields);
 
         // Convert URI from torrent file to web page

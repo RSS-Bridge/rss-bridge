@@ -12,12 +12,12 @@ class ForGifsBridge extends FeedExpander
         $this->collectExpandableDatas('https://forgifs.com/gallery/srss/7');
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($feedItem);
+        $item = parent::parseItem($item);
 
-        $content = str_get_html($item['content']);
-        $img = $content->find('img', 0);
+        $dom = str_get_html($item['content']);
+        $img = $dom->find('img', 0);
         $poster = $img->src;
 
         // The actual gif is the same path but its id must be decremented by one.
@@ -34,7 +34,7 @@ class ForGifsBridge extends FeedExpander
         $img->width = 'auto';
         $img->height = 'auto';
 
-        $item['content'] = $content;
+        $item['content'] = (string) $dom;
 
         return $item;
     }
