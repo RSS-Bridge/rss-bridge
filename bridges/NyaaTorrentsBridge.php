@@ -62,7 +62,7 @@ class NyaaTorrentsBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas($this->getURI());
+        $this->collectExpandableDatas($this->getURI(), 20);
     }
 
     protected function parseItem($newItem)
