@@ -15,10 +15,8 @@ class IGNBridge extends FeedExpander
 
     // IGNs feed is both hidden and incomplete. This bridge tries to fix this.
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $articlePage = getSimpleHTMLDOM($item['uri']);
 
         // List of BS elements

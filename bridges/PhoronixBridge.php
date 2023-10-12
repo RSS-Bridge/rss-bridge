@@ -29,10 +29,8 @@ but some RSS readers don\'t support this. "img" tag are supported by most browse
         $this->collectExpandableDatas('https://www.phoronix.com/rss.php', $this->getInput('n'));
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $itemUrl = $item['uri'];
 
         $articlePage = getSimpleHTMLDOM($itemUrl);

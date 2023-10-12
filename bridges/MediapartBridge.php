@@ -29,10 +29,8 @@ class MediapartBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $itemUrl = $item['uri'];
 
         // Mediapart provide multiple type of contents.

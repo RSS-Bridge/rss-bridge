@@ -63,9 +63,8 @@ class GolemBridge extends FeedExpander
         );
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
         $item['content'] ??= '';
         $uri = $item['uri'];
 

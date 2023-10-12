@@ -14,10 +14,10 @@ final class FeedParser
             throw new \Exception('Unable to parse xml');
         }
         $feed = [
-            'title' => null,
-            'url'   => null,
-            'icon'  => null,
-            'items' => [],
+            'title'     => null,
+            'uri'       => null,
+            'icon'      => null,
+            'items'     => [],
         ];
         if (isset($xml->item[0])) {
             // rss 1.0

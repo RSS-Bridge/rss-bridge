@@ -97,9 +97,8 @@ class EconomistBridge extends FeedExpander
         $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
         $dom = getSimpleHTMLDOM($item['uri']);
 
         $article = $dom->find('#new-article-template', 0);

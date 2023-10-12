@@ -12,10 +12,8 @@ class ForGifsBridge extends FeedExpander
         $this->collectExpandableDatas('https://forgifs.com/gallery/srss/7');
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $dom = str_get_html($item['content']);
         $img = $dom->find('img', 0);
         $poster = $img->src;

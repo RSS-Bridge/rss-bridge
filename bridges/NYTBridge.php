@@ -14,10 +14,8 @@ class NYTBridge extends FeedExpander
         $this->collectExpandableDatas($url, 40);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $article = '';
 
         try {

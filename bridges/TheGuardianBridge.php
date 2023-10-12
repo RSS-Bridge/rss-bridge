@@ -56,10 +56,8 @@ class TheGuardianBridge extends FeedExpander
         $this->collectExpandableDatas($url, 10);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $articlePage = getSimpleHTMLDOM($item['uri']);
         // figure contain's the main article image
         $article = $articlePage->find('figure', 0);

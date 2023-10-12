@@ -43,10 +43,8 @@ class TapasBridge extends FeedExpander
         $this->collectExpandableDatas($this->getURI());
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
 //        $namespaces = $feedItem->getNamespaces(true);
 //        if (isset($namespaces['content'])) {
 //            $description = $feedItem->children($namespaces['content']);

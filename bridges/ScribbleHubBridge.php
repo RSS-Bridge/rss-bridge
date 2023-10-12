@@ -42,10 +42,8 @@ class ScribbleHubBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         //For series, filter out other series from 'All' feed
         if (
             $this->queriedContext === 'Series'

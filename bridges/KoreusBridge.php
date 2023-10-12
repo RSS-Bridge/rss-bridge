@@ -7,10 +7,8 @@ class KoreusBridge extends FeedExpander
     const URI = 'https://www.koreus.com/';
     const DESCRIPTION = 'Returns the newest posts from Koreus (full text)';
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $html = getSimpleHTMLDOMCached($item['uri']);
         $text = $html->find('p.itemText', 0)->innertext;
         $item['content'] = utf8_encode($text);

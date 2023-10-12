@@ -12,10 +12,8 @@ class RaceDepartmentBridge extends FeedExpander
         $this->collectExpandableDatas('https://www.racedepartment.com/ams/index.rss', 10);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $articlePage = getSimpleHTMLDOMCached($item['uri']);
 
         $coverImage = $articlePage->find('img.js-articleCoverImage', 0);

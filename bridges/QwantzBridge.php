@@ -11,14 +11,12 @@ class QwantzBridge extends FeedExpander
         $this->collectExpandableDatas(self::URI . 'rssfeed.php');
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $item['author'] = 'Ryan North';
 
         preg_match('/title="(.*?)"/', $item['content'], $matches);
-        $title = $matches[1];
+        $title = $matches[1] ?? '';
 
         $content = str_get_html(html_entity_decode($item['content']));
         $comicURL = $content->find('img')[0]->{'src'};

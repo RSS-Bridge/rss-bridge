@@ -15,10 +15,8 @@ class EngadgetBridge extends FeedExpander
         $this->collectExpandableDatas($url, $max);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $itemUrl = trim($item['uri']);
         if (!$itemUrl) {
             return $item;

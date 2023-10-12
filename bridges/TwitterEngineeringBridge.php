@@ -14,10 +14,8 @@ class TwitterEngineeringBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $dom = getSimpleHTMLDOMCached($item['uri']);
         if (!$dom) {
             $item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';

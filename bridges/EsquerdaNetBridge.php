@@ -31,10 +31,8 @@ class EsquerdaNetBridge extends FeedExpander
         parent::collectExpandableDatas($this->getURI());
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $html = getSimpleHTMLDOMCached($item['uri']);
         $content = $html->find('div#content div.content', 0);
         ## Fix author

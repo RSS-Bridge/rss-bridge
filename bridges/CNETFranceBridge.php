@@ -43,10 +43,8 @@ class CNETFranceBridge extends FeedExpander
         $this->collectExpandableDatas('https://www.cnetfrance.fr/feeds/rss/news/');
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         foreach ($this->bannedTitle as $term) {
             if (preg_match('/' . $term . '/mi', $item['title']) === 1) {
                 return null;

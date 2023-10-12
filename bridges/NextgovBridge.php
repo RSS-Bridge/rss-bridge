@@ -31,10 +31,8 @@ class NextgovBridge extends FeedExpander
         $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $article_thumbnail = 'https://cdn.nextgov.com/nextgov/images/logo.png';
         $item['content'] = '<p><b>' . $item['content'] . '</b></p>';
 

@@ -174,10 +174,8 @@ class ZDNetBridge extends FeedExpander
         $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $article = getSimpleHTMLDOMCached($item['uri']);
         if (!$article) {
             $this->logger->info('Unable to parse the dom from ' . $item['uri']);
