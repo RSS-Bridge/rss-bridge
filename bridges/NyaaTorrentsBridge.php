@@ -67,7 +67,7 @@ class NyaaTorrentsBridge extends FeedExpander
 
     protected function parseItem($newItem)
     {
-        $item = parent::parseRss2Item($newItem);
+        $item = parent::parseItem($newItem);
         $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
 
         $nyaaFields = (array)($newItem->children('nyaa', true));

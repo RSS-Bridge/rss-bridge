@@ -46,21 +46,6 @@ class FeedExpanderExampleBridge extends FeedExpander
 
     protected function parseItem($newsItem)
     {
-        switch ($this->getInput('version')) {
-            case 'rss_0_9_1':
-                return $this->parseRss091Item($newsItem);
-                break;
-            case 'rss_1_0':
-                return $this->parseRss1Item($newsItem);
-                break;
-            case 'rss_2_0':
-                return $this->parseRss2Item($newsItem);
-                break;
-            case 'atom_1_0':
-                return $this->parseATOMItem($newsItem);
-                break;
-            default:
-                returnClientError('Unknown version ' . $this->getInput('version') . '!');
-        }
+        return (array) $newsItem;
     }
 }

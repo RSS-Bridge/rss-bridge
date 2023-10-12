@@ -82,14 +82,14 @@ class MastodonBridge extends BridgeAbstract
         }
         $items = $content['orderedItems'] ?? $content['items'];
         foreach ($items as $status) {
-            $item = $this->parseItem($status);
+            $item = $this->parseStatus($status);
             if ($item) {
                 $this->items[] = $item;
             }
         }
     }
 
-    protected function parseItem($content)
+    protected function parseStatus($content)
     {
         $item = [];
         switch ($content['type']) {
