@@ -4,6 +4,72 @@ declare(strict_types=1);
 
 final class FeedParser
 {
+    public function parseFeed(string $xmlString): array
+    {
+        $xml = simplexml_load_string(trim($xmlString));
+        if ($xml === false) {
+            throw new \Exception('Unable to parse xml');
+        }
+        $feed = [
+            'title' => null,
+            'url'   => null,
+            'icon'  => null,
+            'items' => [],
+        ];
+        if (isset($xml->item[0])) {
+            // rss 1.0
+            $channel = $xml->channel[0];
+            $feed['title'] = trim((string)$channel->title);
+            $feed['uri'] = trim((string)$channel->link);
+            if (!empty($channel->image)) {
+                $feed['icon'] = trim((string)$channel->image->url);
+            }
+            foreach ($xml->item as $item) {
+                $feed['items'][] = $this->parseRss1Item($item);
+            }
+        } elseif (isset($xml->channel[0])) {
+            // rss 2.0
+            $channel = $xml->channel[0];
+            $feed['title'] = trim((string)$channel->title);
+            $feed['uri'] = trim((string)$channel->link);
+            if (!empty($channel->image)) {
+                $feed['icon'] = trim((string)$channel->image->url);
+            }
+            foreach ($channel->item as $item) {
+                $feed['items'][] = $this->parseRss2Item($item);
+            }
+        } elseif (isset($xml->entry[0])) {
+            // atom 1.0
+            $feed['title'] = (string)$xml->title;
+            // Find best link (only one, or first of 'alternate')
+            if (!isset($xml->link)) {
+                $feed['uri'] = '';
+            } elseif (count($xml->link) === 1) {
+                $feed['uri'] = (string)$xml->link[0]['href'];
+            } else {
+                $feed['uri'] = '';
+                foreach ($xml->link as $link) {
+                    if (strtolower((string) $link['rel']) === 'alternate') {
+                        $feed['uri'] = (string)$link['href'];
+                        break;
+                    }
+                }
+            }
+            if (!empty($xml->icon)) {
+                $feed['icon'] = (string)$xml->icon;
+            } elseif (!empty($xml->logo)) {
+                $feed['icon'] = (string)$xml->logo;
+            }
+            foreach ($xml->entry as $item) {
+                $feed['items'][] = $this->parseAtomItem($item);
+            }
+        } else {
+            throw new \Exception(sprintf('Unable to detect feed format from `%s`', $url));
+        }
+
+        return $feed;
+    }
+
     public function parseAtomItem(\SimpleXMLElement $feedItem): array
     {
         // Some ATOM entries also contain RSS 2.0 fields

@@ -9,11 +9,9 @@ abstract class FeedExpander extends BridgeAbstract
     const FEED_TYPE_RSS_2_0 = 'RSS_2_0';
     const FEED_TYPE_ATOM_1_0 = 'ATOM_1_0';
 
-    private $title;
-    private $uri;
-    private $icon;
-    private $feedType;
+    private string $feedType;
     private FeedParser $feedParser;
+    private array $parsedFeed;
 
     public function __construct(CacheInterface $cache, Logger $logger)
     {
@@ -21,10 +19,13 @@ abstract class FeedExpander extends BridgeAbstract
         $this->feedParser = new FeedParser();
     }
 
-    public function collectExpandableDatas($url, $maxItems = -1)
+    public function collectExpandableDatas(string $url, $maxItems = -1)
     {
-        if (empty($url)) {
+        if (!$url) {
             throw new \Exception('There is no $url for this RSS expander');
+        }
+        if ($maxItems === -1) {
+            $maxItems = 999;
         }
         $accept = [MrssFormat::MIME_TYPE, AtomFormat::MIME_TYPE, '*/*'];
         $httpHeaders = ['Accept: ' . implode(', ', $accept)];
@@ -53,79 +54,28 @@ abstract class FeedExpander extends BridgeAbstract
         // Restore previous behaviour in case other code relies on it being off
         libxml_use_internal_errors(false);
 
+        $this->parsedFeed = $this->feedParser->parseFeed($xmlString);
+
         if (isset($xml->item[0])) {
             $this->feedType = self::FEED_TYPE_RSS_1_0;
-            // loadRss2Data
-            $channel = $xml->channel[0];
-            $this->title = trim((string)$channel->title);
-            $this->uri = trim((string)$channel->link);
-            if (!empty($channel->image)) {
-                $this->icon = trim((string)$channel->image->url);
-            }
-            // todo: set title, link, description, language, and so on
-            foreach ($xml->item as $item) {
-                $parsedItem = $this->parseItem($item);
-                if (!empty($parsedItem)) {
-                    $this->items[] = $parsedItem;
-                }
-                if ($maxItems !== -1 && count($this->items) >= $maxItems) {
-                    break;
-                }
-            }
+            $items = $xml->item;
         } elseif (isset($xml->channel[0])) {
             $this->feedType = self::FEED_TYPE_RSS_2_0;
-            // loadRss2Data
-            $channel = $xml->channel[0];
-            $this->title = trim((string)$channel->title);
-            $this->uri = trim((string)$channel->link);
-            if (!empty($channel->image)) {
-                $this->icon = trim((string)$channel->image->url);
-            }
-            // todo: set title, link, description, language, and so on
-            foreach ($channel->item as $item) {
-                $parsedItem = $this->parseItem($item);
-                if (!empty($parsedItem)) {
-                    $this->items[] = $parsedItem;
-                }
-                if ($maxItems !== -1 && count($this->items) >= $maxItems) {
-                    break;
-                }
-            }
+            $items = $xml->channel[0]->item;
         } elseif (isset($xml->entry[0])) {
             $this->feedType = self::FEED_TYPE_ATOM_1_0;
-            // loadAtomData
-            $this->title = (string)$xml->title;
-            // Find best link (only one, or first of 'alternate')
-            if (!isset($xml->link)) {
-                $this->uri = '';
-            } elseif (count($xml->link) === 1) {
-                $this->uri = (string)$xml->link[0]['href'];
-            } else {
-                $this->uri = '';
-                foreach ($xml->link as $link) {
-                    if (strtolower($link['rel']) === 'alternate') {
-                        $this->uri = (string)$link['href'];
-                        break;
-                    }
-                }
-            }
-            if (!empty($xml->icon)) {
-                $this->icon = (string)$xml->icon;
-            } elseif (!empty($xml->logo)) {
-                $this->icon = (string)$xml->logo;
-            }
-            // parse items
-            foreach ($xml->entry as $item) {
-                $parsedItem = $this->parseItem($item);
-                if (!empty($parsedItem)) {
-                    $this->items[] = $parsedItem;
-                }
-                if ($maxItems !== -1 && count($this->items) >= $maxItems) {
-                    break;
-                }
-            }
+            $items = $xml->entry;
         } else {
             throw new \Exception(sprintf('Unable to detect feed format from `%s`', $url));
+        }
+        foreach ($items as $item) {
+            $parsedItem = $this->parseItem($item);
+            if ($parsedItem) {
+                $this->items[] = $parsedItem;
+            }
+            if (count($this->items) >= $maxItems) {
+                break;
+            }
         }
         return $this;
     }
@@ -149,25 +99,16 @@ abstract class FeedExpander extends BridgeAbstract
 
     public function getURI()
     {
-        if (!empty($this->uri)) {
-            return $this->uri;
-        }
-        return parent::getURI();
+        return $this->parsedFeed['uri'] ?? parent::getURI();
     }
 
     public function getName()
     {
-        if (!empty($this->title)) {
-            return $this->title;
-        }
-        return parent::getName();
+        return $this->parsedFeed['title'] ?? parent::getName();
     }
 
     public function getIcon()
     {
-        if (!empty($this->icon)) {
-            return $this->icon;
-        }
-        return parent::getIcon();
+        return $this->parsedFeed['icon'] ?? parent::getIcon();
     }
 }
