@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/FeedExpander.html">FeedExpander</a></h1>
                 <span class="ModifiedDate">
-            September 30, 2023 at 6:07 AM        </span>
+            October 12, 2023 at 4:59 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/03_FeedExpander.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,67 +108,22 @@
             </div>
 
     <div class="s-content">
-        <p><code>FeedExpander</code> extends <a href="BridgeAbstract.html"><code>BridgeAbstract</code></a> and adds functions to collect data from existing feeds.</p>
-<p><strong>Usage example</strong>: <em>You have discovered a site that provides feeds which are hidden and inaccessible by normal means. You want your bridge to directly read the feeds and provide them via <strong>RSS-Bridge</strong></em></p>
-<p>To create a new Bridge extending <code>FeedExpander</code> you must implement all required functions of <a href="BridgeAbstract.html"><code>BridgeAbstract</code></a>. <code>FeedExpander</code> additionally provides following functions:</p>
-<ul>
-<li>
-<a href="#the-parseitem-function"><code>parseItem</code></a>
-</li>
-<li>
-<a href="#the-getname-function"><code>getName</code></a>
-</li>
-<li>
-<a href="#the-geturi-function"><code>getURI</code></a>
-</li>
-<li>
-<a href="#the-getdescription-function"><code>getDescription</code></a>
-</li>
-</ul>
+        <p><strong>Usage example</strong>: <em>You have discovered a site that provides feeds which are hidden and inaccessible by normal means. You want your bridge to directly read the feeds and provide them via <strong>RSS-Bridge</strong></em></p>
 <p>Find a <a href="#template">template</a> at the end of this file.</p>
 <p><strong>Notice:</strong> For a standard feed only <code>collectData</code> need to be implemented. <code>collectData</code> should call <code>$this-&gt;collectExpandableDatas('your URI here');</code> to automatically load feed items and header data (will subsequently call <code>parseItem</code> for each item in the feed). You can limit the number of items to fetch by specifying an additional parameter for: <code>$this-&gt;collectExpandableDatas('your URI here', 10)</code> (limited to 10 items).</p>
-<h2><a id="the-parseitem-function" href="#the-parseitem-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>parseItem</code> function</h2>
-<p>This function receives one item from the current feed and should return one <strong>RSS-Bridge</strong> item.
+<h2><a id="the-parseitem-method" href="#the-parseitem-method" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>parseItem</code> method</h2>
+<p>This method receives one item from the current feed and should return one <strong>RSS-Bridge</strong> item.
 The default function does all the work to get the item data from the feed, whether it is RSS 1.0,
-RSS 2.0 or Atom 1.0. If you have to redefine this function in your <strong>RSS-Bridge</strong> for whatever reason,
-you should first call the parent function to initialize the item, then apply the changes that you require.</p>
+RSS 2.0 or Atom 1.0.</p>
 <p><strong>Notice:</strong> The following code sample is just an example. Implementation depends on your requirements!</p>
-<pre><code class="language-PHP">protected function parseItem($feedItem){
-    $item = parent::parseItem($feedItem);
-    $item['content'] = str_replace('rssbridge','RSS-Bridge',$feedItem-&gt;content);
-
+<pre><code class="language-PHP">protected function parseItem(array $item)
+{
+    $item['content'] = str_replace('rssbridge','RSS-Bridge',$item['content']);
     return $item;
 }
 </code></pre>
-<h3><a id="helper-functions" href="#helper-functions" class="Permalink" aria-hidden="true" title="Permalink">#</a>Helper functions</h3>
-<p>The <code>FeedExpander</code> already provides a set of functions to parse RSS or Atom items based on the specifications. Where possible make use of these functions:</p>
-<table>
-<thead>
-<tr>
-<th>Function</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>parseATOMItem</code></td>
-<td>Parses an Atom 1.0 feed item</td>
-</tr>
-<tr>
-<td><code>parseRSS_0_9_1_Item</code></td>
-<td>Parses an RSS 0.91 feed item</td>
-</tr>
-<tr>
-<td><code>parseRSS_1_0_Item</code></td>
-<td>Parses an RSS 1.0 feed item</td>
-</tr>
-<tr>
-<td><code>parseRSS_2_0_Item</code></td>
-<td>Parses an RSS 2.0 feed item</td>
-</tr>
-</tbody>
-</table>
-<p>In the following list you’ll find the feed tags assigned to the the <strong>RSS-Bridge</strong> item keys:</p>
+<h3><a id="feed-parsing" href="#feed-parsing" class="Permalink" aria-hidden="true" title="Permalink">#</a>Feed parsing</h3>
+<p>How rss-bridge processes xml feeds:</p>
 <table>
 <thead>
 <tr>
@@ -182,7 +137,7 @@ you should first call the parent function to initialize the item, then apply the
 </thead>
 <tbody>
 <tr>
-<td><code>parseATOMItem</code></td>
+<td><code>atom</code></td>
 <td>id</td>
 <td>title</td>
 <td>updated</td>
@@ -190,7 +145,7 @@ you should first call the parent function to initialize the item, then apply the
 <td>content</td>
 </tr>
 <tr>
-<td><code>parseRSS_0_9_1_Item</code></td>
+<td><code>rss 0.91</code></td>
 <td>link</td>
 <td>title</td>
 <td></td>
@@ -198,7 +153,7 @@ you should first call the parent function to initialize the item, then apply the
 <td>description</td>
 </tr>
 <tr>
-<td><code>parseRSS_1_0_Item</code></td>
+<td><code>rss 1.0</code></td>
 <td>link</td>
 <td>title</td>
 <td>dc:date</td>
@@ -206,7 +161,7 @@ you should first call the parent function to initialize the item, then apply the
 <td>description</td>
 </tr>
 <tr>
-<td><code>parseRSS_2_0_Item</code></td>
+<td><code>rss 2.0</code></td>
 <td>link, guid</td>
 <td>title</td>
 <td>pubDate, dc:date</td>
@@ -215,39 +170,24 @@ you should first call the parent function to initialize the item, then apply the
 </tr>
 </tbody>
 </table>
-<h2><a id="the-getname-function" href="#the-getname-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>getName</code> function</h2>
-<p>Returns the name of the current feed.</p>
-<pre><code class="language-PHP">return $this-&gt;name;
-</code></pre>
-<p><strong>Notice:</strong> Only implement this function if you require different behavior!</p>
-<h2><a id="the-geturi-function" href="#the-geturi-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>getURI</code> function</h2>
-<p>Return the uri for the current feed.</p>
-<pre><code class="language-PHP">return $this-&gt;uri;
-</code></pre>
-<p><strong>Notice:</strong> Only implement this function if you require different behavior!</p>
-<h2><a id="the-getdescription-function" href="#the-getdescription-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>getDescription</code> function</h2>
-<p>Returns the description for the current bridge.</p>
-<pre><code class="language-PHP">return $this-&gt;description;
-</code></pre>
-<p><strong>Notice:</strong> Only implement this function if you require different behavior!</p>
 <h1><a id="template" href="#template" class="Permalink" aria-hidden="true" title="Permalink">#</a>Template</h1>
 <p>This is the template for a new bridge:</p>
 <pre><code class="language-PHP">&lt;?php
-class MySiteBridge extends FeedExpander {
+class MySiteBridge extends FeedExpander
+{
 
-	const MAINTAINER = 'No maintainer';
-	const NAME = 'Unnamed bridge';
-	const URI = '';
-	const DESCRIPTION = 'No description provided';
-	const PARAMETERS = [];
-	const CACHE_TIMEOUT = 3600;
+    const MAINTAINER = 'No maintainer';
+    const NAME = 'Unnamed bridge';
+    const URI = '';
+    const DESCRIPTION = 'No description provided';
+    const PARAMETERS = [];
+    const CACHE_TIMEOUT = 3600;
 
     public function collectData()
     {
         $this-&gt;collectExpandableDatas('your feed URI');
     }
 }
-// Imaginary empty line!
 </code></pre>
     </div>
 
