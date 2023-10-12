@@ -33,9 +33,9 @@ class ArsTechnicaBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($newItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newItem);
+        $item = parent::parseItem($item);
 
         $item_html = getSimpleHTMLDOMCached($item['uri'] . '&amp');
         $item_html = defaultLinkTo($item_html, self::URI);

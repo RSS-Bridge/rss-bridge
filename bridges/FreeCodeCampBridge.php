@@ -14,15 +14,17 @@ class FreeCodeCampBridge extends FeedExpander
         $this->collectExpandableDatas('https://www.freecodecamp.org/news/rss/', 15);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newsItem);
-        // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $item = parent::parseItem($item);
+
+        $dom = getSimpleHTMLDOM($item['uri']);
+
         // figure contain's the main article image
-        $article = $articlePage->find('figure', 0);
+        $article = $dom->find('figure', 0);
+
         // the actual article
-        foreach ($articlePage->find('.post-full-content') as $element) {
+        foreach ($dom->find('.post-full-content') as $element) {
             $article = $article . $element;
         }
         $item['content'] = $article;

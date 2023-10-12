@@ -117,18 +117,18 @@ class OnVaSortirBridge extends FeedExpander
             ]
     ];
 
+    public function collectData()
+    {
+        $url = 'https://' . $this->getInput('city') . '.onvasortir.com/rss.php';
+        $this->collectExpandableDatas($url);
+    }
+
     protected function parseItem($item)
     {
         $item = parent::parseItem($item);
-        $html = getSimpleHTMLDOMCached($item['uri']);
-        $text = $html->find('div.corpsMax', 0)->innertext;
+        $dom = getSimpleHTMLDOMCached($item['uri']);
+        $text = $dom->find('div.corpsMax', 0)->innertext;
         $item['content'] = utf8_encode($text);
         return $item;
-    }
-
-    public function collectData()
-    {
-        $this->collectExpandableDatas('https://' .
-            $this->getInput('city') . '.onvasortir.com/rss.php');
     }
 }
