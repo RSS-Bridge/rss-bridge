@@ -43,20 +43,20 @@ class TapasBridge extends FeedExpander
         $this->collectExpandableDatas($this->getURI());
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($feedItem);
+        $item = parent::parseItem($item);
 
-        $namespaces = $feedItem->getNamespaces(true);
-        if (isset($namespaces['content'])) {
-            $description = $feedItem->children($namespaces['content']);
-            if (isset($description->encoded)) {
-                $item['content'] = (string)$description->encoded;
-            }
-        }
+//        $namespaces = $feedItem->getNamespaces(true);
+//        if (isset($namespaces['content'])) {
+//            $description = $feedItem->children($namespaces['content']);
+//            if (isset($description->encoded)) {
+//                $item['content'] = (string)$description->encoded;
+//            }
+//        }
 
         if ($this->getInput('extend_content')) {
-            $html = getSimpleHTMLDOM($item['uri']) or returnServerError('Could not request ' . $this->getURI());
+            $html = getSimpleHTMLDOM($item['uri']);
             if (!$item['content']) {
                 $item['content'] = '';
             }
@@ -79,8 +79,6 @@ class TapasBridge extends FeedExpander
     {
         if ($this->id) {
             return self::URI . 'rss/series/' . $this->id;
-        } else {
-            return self::URI . 'series/' . $this->getInput('title') . '/info/';
         }
         return self::URI;
     }

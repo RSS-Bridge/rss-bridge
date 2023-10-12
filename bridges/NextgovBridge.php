@@ -27,29 +27,30 @@ class NextgovBridge extends FeedExpander
     public function collectData()
     {
         $url = self::URI . 'rss/' . $this->getInput('category') . '/';
-        $this->collectExpandableDatas($url, 10);
+        $limit = 10;
+        $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newsItem);
+        $item = parent::parseItem($item);
 
         $article_thumbnail = 'https://cdn.nextgov.com/nextgov/images/logo.png';
         $item['content'] = '<p><b>' . $item['content'] . '</b></p>';
 
-        $namespaces = $newsItem->getNamespaces(true);
-        if (isset($namespaces['media'])) {
-            $media = $newsItem->children($namespaces['media']);
-            if (isset($media->content)) {
-                $attributes = $media->content->attributes();
-                $item['content'] = '<p><img src="' . $attributes['url'] . '"></p>' . $item['content'];
-                $article_thumbnail = str_replace(
-                    'large.jpg',
-                    'small.jpg',
-                    strval($attributes['url'])
-                );
-            }
-        }
+//        $namespaces = $newsItem->getNamespaces(true);
+//        if (isset($namespaces['media'])) {
+//            $media = $newsItem->children($namespaces['media']);
+//            if (isset($media->content)) {
+//                $attributes = $media->content->attributes();
+//                $item['content'] = '<p><img src="' . $attributes['url'] . '"></p>' . $item['content'];
+//                $article_thumbnail = str_replace(
+//                    'large.jpg',
+//                    'small.jpg',
+//                    strval($attributes['url'])
+//                );
+//            }
+//        }
 
         $item['enclosures'] = [$article_thumbnail];
         $item['content'] .= $this->extractContent($item['uri']);

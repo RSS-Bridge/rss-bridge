@@ -6,7 +6,10 @@ final class FeedParser
 {
     public function parseFeed(string $xmlString): array
     {
+        libxml_use_internal_errors(true);
         $xml = simplexml_load_string(trim($xmlString));
+        $xmlErrors = libxml_get_errors();
+        libxml_use_internal_errors(false);
         if ($xml === false) {
             throw new \Exception('Unable to parse xml');
         }
