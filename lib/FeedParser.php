@@ -142,6 +142,7 @@ final class FeedParser
         }
 
         if (isset($feedItem->guid)) {
+            // Pluck out a url from guid
             foreach ($feedItem->guid->attributes() as $attribute => $value) {
                 if (
                     $attribute === 'isPermaLink'
@@ -207,9 +208,9 @@ final class FeedParser
             'content'       => null,
             'timestamp'     => null,
             'author'        => null,
-            'uid'           => null,
-            'categories'    => [],
-            'enclosures'    => [],
+            //'uid'           => null,
+            //'categories'    => [],
+            //'enclosures'    => [],
         ];
         if (isset($feedItem->link)) {
             // todo: trim uri
