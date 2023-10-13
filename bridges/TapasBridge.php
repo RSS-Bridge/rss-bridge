@@ -40,7 +40,7 @@ class TapasBridge extends FeedExpander
             $this->id = $html->find('meta[property$=":url"]', 0)->content;
             $this->id = str_ireplace(['tapastic://series/', '/info'], '', $this->id);
         }
-        $this->collectExpandableDatas($this->getURI());
+        $this->collectExpandableDatas($this->getURI(), 10);
     }
 
     protected function parseItem(array $item)
@@ -55,9 +55,8 @@ class TapasBridge extends FeedExpander
 
         if ($this->getInput('extend_content')) {
             $html = getSimpleHTMLDOM($item['uri']);
-            if (!$item['content']) {
-                $item['content'] = '';
-            }
+            $item['content'] = $item['content'] ?? '';
+
             if ($html->find('article.main__body', 0)) {
                 foreach ($html->find('article', 0)->find('img') as $line) {
                     $item['content'] .= '<img src="' . $line->{'data-src'} . '">';

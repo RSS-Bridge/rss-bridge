@@ -11,7 +11,10 @@ final class FeedParser
         $xmlErrors = libxml_get_errors();
         libxml_use_internal_errors(false);
         if ($xml === false) {
-            throw new \Exception('Unable to parse xml');
+            if ($xmlErrors) {
+                $firstXmlErrorMessage = $xmlErrors[0]->message;
+            }
+            throw new \Exception(sprintf('Unable to parse xml: %s', $firstXmlErrorMessage ?? ''));
         }
         $feed = [
             'title'     => null,
@@ -123,7 +126,6 @@ final class FeedParser
     {
         // Primary data is compatible to 0.91 with some additional data
         $item = $this->parseRss091Item($feedItem);
-
         $namespaces = $feedItem->getNamespaces(true);
         if (isset($namespaces['dc'])) {
             $dc = $feedItem->children($namespaces['dc']);
@@ -192,7 +194,14 @@ final class FeedParser
 
     public function parseRss091Item(\SimpleXMLElement $feedItem): array
     {
-        $item = [];
+        $item = [
+            'uri'           => null,
+            'title'         => null,
+            'content'       => null,
+            'timestamp'     => null,
+            'author'        => null,
+            'enclosures'    => [],
+        ];
         if (isset($feedItem->link)) {
             // todo: trim uri
             $item['uri'] = (string)$feedItem->link;
