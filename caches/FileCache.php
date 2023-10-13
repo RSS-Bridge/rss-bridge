@@ -30,7 +30,8 @@ class FileCache implements CacheInterface
         if (!file_exists($cacheFile)) {
             return $default;
         }
-        $item = unserialize(file_get_contents($cacheFile));
+        $data = file_get_contents($cacheFile);
+        $item = unserialize($data);
         if ($item === false) {
             $this->logger->warning(sprintf('Failed to unserialize: %s', $cacheFile));
             $this->delete($key);
@@ -87,7 +88,8 @@ class FileCache implements CacheInterface
             if (isset($excluded[$filename]) || !is_file($cacheFile)) {
                 continue;
             }
-            $item = unserialize(file_get_contents($cacheFile));
+            $data = file_get_contents($cacheFile);
+            $item = unserialize($data);
             if ($item === false) {
                 unlink($cacheFile);
                 continue;

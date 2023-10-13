@@ -11,7 +11,7 @@ class YoutubeBridge extends BridgeAbstract
 {
     const NAME = 'YouTube Bridge';
     const URI = 'https://www.youtube.com';
-    const CACHE_TIMEOUT = 10800; // 3h
+    const CACHE_TIMEOUT = 60 * 60 * 3;
     const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 
     const PARAMETERS = [
@@ -421,43 +421,14 @@ class YoutubeBridge extends BridgeAbstract
         }
     }
 
-    private function fetch($url, $cached = false)
+    private function fetch($url, bool $cache = false)
     {
-        $header = [
-            'Accept-Language: en-US',
-        ];
-        $opts = [];
-        $lowercase = true;
-        $forceTagsClosed = true;
-        $target_charset = DEFAULT_TARGET_CHARSET;
-        $stripRN = false;
-        $defaultBRText = DEFAULT_BR_TEXT;
-        $defaultSpanText = DEFAULT_SPAN_TEXT;
-        if ($cached) {
-            return getSimpleHTMLDOMCached(
-                $url,
-                86400,
-                $header,
-                $opts,
-                $lowercase,
-                $forceTagsClosed,
-                $target_charset,
-                $stripRN,
-                $defaultBRText,
-                $defaultSpanText
-            );
+        $header = ['Accept-Language: en-US'];
+        if ($cache) {
+            $ttl = 86400;
+            return getSimpleHTMLDOMCached($url, $ttl, $header);
         }
-        return getSimpleHTMLDOM(
-            $url,
-            $header,
-            $opts,
-            $lowercase,
-            $forceTagsClosed,
-            $target_charset,
-            $stripRN,
-            $defaultBRText,
-            $defaultSpanText
-        );
+        return getSimpleHTMLDOM($url, $header);
     }
 
     private function extractJsonFromHtml($html)
