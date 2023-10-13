@@ -30,7 +30,7 @@ class ArsTechnicaBridge extends FeedExpander
     public function collectData()
     {
         $url = 'https://feeds.arstechnica.com/arstechnica/' . $this->getInput('section');
-        $this->collectExpandableDatas($url);
+        $this->collectExpandableDatas($url, 10);
     }
 
     protected function parseItem(array $item)
