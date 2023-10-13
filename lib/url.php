@@ -7,7 +7,9 @@ final class UrlException extends \Exception
 }
 
 /**
- * Intentionally restrictive url parser
+ * Intentionally restrictive url parser.
+ *
+ * Only absolute http/https urls.
  */
 final class Url
 {
@@ -29,7 +31,7 @@ final class Url
 
         $parts = parse_url($url);
         if ($parts === false) {
-            throw new UrlException(sprintf('Invalid url %s', $url));
+            throw new UrlException(sprintf('Failed to parse_url(): %s', $url));
         }
 
         return (new self())
@@ -38,6 +40,7 @@ final class Url
             ->withPort($parts['port'] ?? 80)
             ->withPath($parts['path'] ?? '/')
             ->withQueryString($parts['query'] ?? null);
+            // todo: add fragment
     }
 
     public static function validate(string $url): bool

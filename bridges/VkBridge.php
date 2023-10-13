@@ -158,8 +158,8 @@ class VkBridge extends BridgeAbstract
                     $article_author_selector = 'div.article_snippet__author';
                     $article_thumb_selector = 'div.article_snippet__image';
                 }
-                $article_title = $article->find($article_title_selector, 0)->innertext;
-                $article_author = $article->find($article_author_selector, 0)->innertext;
+                $article_title = $article->find($article_title_selector, 0)->innertext ?? '';
+                $article_author = $article->find($article_author_selector, 0)->innertext ?? '';
                 $article_link = $article->getAttribute('href');
                 $article_img_element_style = $article->find($article_thumb_selector, 0)->getAttribute('style');
                 preg_match('/background-image: url\((.*)\)/', $article_img_element_style, $matches);
