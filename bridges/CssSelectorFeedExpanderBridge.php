@@ -1,16 +1,5 @@
 <?php
 
-if (!class_exists('CssSelectorFeedExpanderBridgeInternal')) {
-    // Utility class used internally by CssSelectorFeedExpanderBridge
-    class CssSelectorFeedExpanderBridgeInternal extends FeedExpander
-    {
-        public function collectData()
-        {
-            // Unused. Call collectExpandableDatas($url) inherited from FeedExpander instead
-        }
-    }
-}
-
 class CssSelectorFeedExpanderBridge extends CssSelectorBridge
 {
     const MAINTAINER = 'ORelio';
@@ -61,16 +50,29 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
         $discard_thumbnail = $this->getInput('discard_thumbnail');
         $limit = $this->getInput('limit');
 
-        //$xmlString = getContents($url);
-        //$feed = (new FeedParser())->parseFeed($xmlString);
-        //$items = $feed['items'];
+        $source_feed = (new FeedParser())->parseFeed(getContents($url));
+        $items = $source_feed['items'];
 
-        $feed_expander = new CssSelectorFeedExpanderBridgeInternal();
-        $items = $feed_expander->collectExpandableDatas($url)->getItems();
+        // Map Homepage URL (Default: Root page)
+        if (isset($source_feed['uri'])) {
+            $this->homepageUrl = $source_feed['uri'];
+        } else {
+            $this->homepageUrl = urljoin($url, '/');
+        }
 
-        $this->homepageUrl = urljoin($url, '/');
-        $this->feedName = $feed_expander->getName();
+        // Map Feed Name (Default: Domain name)
+        if (isset($source_feed['title'])) {
+            $this->feedName = $source_feed['title'];
+        } else {
+            $this->feedName = explode('/', urljoin($url, '/'))[2];
+        }
 
+        // Apply item limit (Default: Global limit)
+        if ($limit > 0) {
+            $items = array_slice($items, 0, $limit);
+        }
+
+        // Expand feed items (CssSelectorBridge)
         foreach ($items as $item_from_feed) {
             $item_expanded = $this->expandEntryWithSelector(
                 $item_from_feed['uri'],
