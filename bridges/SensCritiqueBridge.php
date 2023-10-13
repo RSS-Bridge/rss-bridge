@@ -56,7 +56,8 @@ class SensCritiqueBridge extends BridgeAbstract
                         break;
                 }
                 $html = getSimpleHTMLDOM($uri);
-                $list = $html->find('ul.elpr-list', 0);
+                // This selector name looks like it's automatically generated
+                $list = $html->find('div.Universes__WrapperProducts-sc-1qa2w66-0.eVdcAv', 0);
 
                 $this->extractDataFromList($list);
             }
@@ -68,36 +69,13 @@ class SensCritiqueBridge extends BridgeAbstract
         if ($list === null) {
             returnClientError('Cannot extract data from list');
         }
-
-        foreach ($list->find('li') as $movie) {
+        foreach ($list->find('div[data-testid="product-list-item"]') as $movie) {
             $item = [];
-            $item['author'] = htmlspecialchars_decode($movie->find('.elco-title a', 0)->plaintext, ENT_QUOTES)
-            . ' '
-            . $movie->find('.elco-date', 0)->plaintext;
-
-            $item['title'] = $movie->find('.elco-title a', 0)->plaintext
-            . ' '
-            . $movie->find('.elco-date', 0)->plaintext;
-
-            $item['content'] = '';
-            $originalTitle = $movie->find('.elco-original-title', 0);
-            $description = $movie->find('.elco-description', 0);
-
-            if ($originalTitle) {
-                $item['content'] = '<em>' . $originalTitle->plaintext . '</em><br><br>';
-            }
-
-            $item['content'] .= $movie->find('.elco-baseline', 0)->plaintext
-            . '<br>'
-            . $movie->find('.elco-baseline', 1)->plaintext
-            . '<br><br>'
-            . ($description ? $description->plaintext : '')
-            . '<br><br>'
-            . trim($movie->find('.erra-ratings .erra-global', 0)->plaintext)
-            . ' / 10';
-
-            $item['id'] = $this->getURI() . ltrim($movie->find('.elco-title a', 0)->href, '/');
-            $item['uri'] = $this->getURI() . ltrim($movie->find('.elco-title a', 0)->href, '/');
+            $item['title'] = $movie->find('h2 a', 0)->plaintext;
+            // todo: fix image
+            $item['content'] = $movie->innertext;
+            $item['id'] = $this->getURI() . ltrim($movie->find('a', 0)->href, '/');
+            $item['uri'] = $this->getURI() . ltrim($movie->find('a', 0)->href, '/');
             $this->items[] = $item;
         }
     }

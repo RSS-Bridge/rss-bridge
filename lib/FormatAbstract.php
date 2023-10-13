@@ -31,7 +31,10 @@ abstract class FormatAbstract
         $this->lastModified = $lastModified;
     }
 
-    public function setItems(array $items)
+    /**
+     * @param FeedItem[] $items
+     */
+    public function setItems(array $items): void
     {
         $this->items = $items;
     }

@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+/**
+ * Very basic and naive feed parser that srapes out rss 0.91, 1.0, 2.0 and atom 1.0.
+ *
+ * Emit arrays meant to be used inside rss-bridge.
+ *
+ * The feed item structure is identical to that of FeedItem
+ */
 final class FeedParser
 {
     public function parseFeed(string $xmlString): array
@@ -200,6 +207,8 @@ final class FeedParser
             'content'       => null,
             'timestamp'     => null,
             'author'        => null,
+            'uid'           => null,
+            'categories'    => [],
             'enclosures'    => [],
         ];
         if (isset($feedItem->link)) {
