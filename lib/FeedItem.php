@@ -260,13 +260,15 @@ class FeedItem
         return $this->uid;
     }
 
-    public function setUid($uid)
+    public function setUid($uid): void
     {
         $this->uid = null;
         if (!is_string($uid)) {
-            Debug::log('Unique id must be a string!');
-        } elseif (preg_match('/^[a-f0-9]{40}$/', $uid)) {
-            // keep id if it already is SHA-1 hash
+            Debug::log(sprintf('uid must be string: %s (%s)', (string) $uid, var_export($uid, true)));
+            return;
+        }
+        if (preg_match('/^[a-f0-9]{40}$/', $uid)) {
+            // Preserve sha1 hash
             $this->uid = $uid;
         } else {
             $this->uid = sha1($uid);

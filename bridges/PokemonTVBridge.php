@@ -64,15 +64,20 @@ class PokemonTVBridge extends BridgeAbstract
                         continue;
                     }
                 }
-                switch ($element->{'media_type'}) {
+                switch ($element->media_type) {
                     case 'movie':
-                        $itemtitle = $element->{'channel_name'};
+                    case 'junior':
+                    case 'original':
+                    case 'non-animation':
+                        $itemtitle = $element->channel_name;
                         break;
                     case 'episode':
                         $season = str_pad($mediaelement->{'season'}, 2, '0', STR_PAD_LEFT);
                         $episode = str_pad($mediaelement->{'episode'}, 2, '0', STR_PAD_LEFT);
                         $itemtitle = $element->{'channel_name'} . ' - S' . $season . 'E' . $episode;
                         break;
+                    default:
+                        $itemtitle = '';
                 }
                 $streamurl = 'https://watch.pokemon.com/' . $this->getCountryCode() . '/#/player?id=' . $mediaelement->{'id'};
                 $item = [];

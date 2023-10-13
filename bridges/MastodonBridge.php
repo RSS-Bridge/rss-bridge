@@ -193,7 +193,7 @@ class MastodonBridge extends BridgeAbstract
                 && preg_match('/^http(s|):\/\//', $attachment['url'], $match)
             ) {
                 $item['content'] = $item['content'] . '<br /><img ';
-                if ($attachment['name']) {
+                if (isset($attachment['name'])) {
                     $item['content'] .= sprintf('alt="%s" ', $attachment['name']);
                 }
                 $item['content'] .= sprintf('src="%s" />', $attachment['url']);
