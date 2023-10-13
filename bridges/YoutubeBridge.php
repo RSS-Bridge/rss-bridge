@@ -418,7 +418,6 @@ class YoutubeBridge extends BridgeAbstract
             $desc = preg_replace(self::URI_REGEX, '<a href="$1" target="_blank">$1</a> ', $desc);
             $time = strtotime($element->find('published', 0)->plaintext);
             $this->addItem($videoId, $title, $author, $desc, $time);
-
         }
     }
 
