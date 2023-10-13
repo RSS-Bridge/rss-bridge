@@ -88,7 +88,7 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
             } else {
                 // Take expanded item, but give priority to metadata already in source item
                 foreach ($item_from_feed as $field => $val) {
-                    if ($field !== 'content') {
+                    if ($field !== 'content' && !empty($val)) {
                         $item_expanded[$field] = $val;
                     }
                 }
