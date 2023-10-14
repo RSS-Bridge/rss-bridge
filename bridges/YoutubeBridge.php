@@ -425,11 +425,12 @@ class YoutubeBridge extends BridgeAbstract
     private function fetch($url, bool $cache = false)
     {
         $header = ['Accept-Language: en-US'];
+        $ttl = 86400;
+        $stripNewlines = false;
         if ($cache) {
-            $ttl = 86400;
-            return getSimpleHTMLDOMCached($url, $ttl, $header);
+            return getSimpleHTMLDOMCached($url, $ttl, $header, [], true, true, DEFAULT_TARGET_CHARSET, $stripNewlines);
         }
-        return getSimpleHTMLDOM($url, $header);
+        return getSimpleHTMLDOM($url, $header, [], true, true, DEFAULT_TARGET_CHARSET, $stripNewlines);
     }
 
     private function extractJsonFromHtml($html)
