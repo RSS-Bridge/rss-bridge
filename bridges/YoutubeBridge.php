@@ -132,6 +132,7 @@ class YoutubeBridge extends BridgeAbstract
             // user, channel or custom
             $this->feeduri = $url_listing;
             if ($custom) {
+                // Extract the feed url for the custom name
                 $html = $this->fetch($url_listing);
                 $jsonData = $this->extractJsonFromHtml($html);
                 // Pluck out the rss feed url
@@ -150,7 +151,7 @@ class YoutubeBridge extends BridgeAbstract
                     $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
                     $jsonData = $jsonData->tabRenderer->content->richGridRenderer->contents;
                     // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
-                    $this->extractItemsFromJsonData($jsonData);
+                    $this->fetchItemsFromFromJsonData($jsonData);
                 } else {
                     returnServerError('Unable to get data from YouTube. Username/Channel: ' . $request);
                 }
@@ -179,7 +180,7 @@ class YoutubeBridge extends BridgeAbstract
             $item_count = count($jsonData);
 
             if ($item_count > 15 || $filterByDuration) {
-                $this->extractItemsFromJsonData($jsonData);
+                $this->fetchItemsFromFromJsonData($jsonData);
             } else {
                 $xml = $this->fetch($url_feed);
                 $this->extractItemsFromXmlFeed($xml);
@@ -207,7 +208,7 @@ class YoutubeBridge extends BridgeAbstract
                     break;
                 }
             }
-            $this->extractItemsFromJsonData($jsonData);
+            $this->fetchItemsFromFromJsonData($jsonData);
             $this->feeduri = $url_listing;
             $this->feedName = 'Search: ' . $request;
         } else {
@@ -216,7 +217,7 @@ class YoutubeBridge extends BridgeAbstract
         }
     }
 
-    private function extractVideoDetails($vid, &$author, &$desc, &$time)
+    private function fetchVideoDetails($vid, &$author, &$desc, &$time)
     {
         $url = self::URI . "/watch?v=$vid";
         $html = $this->fetch($url, true);
@@ -443,7 +444,7 @@ class YoutubeBridge extends BridgeAbstract
         return $data;
     }
 
-    private function extractItemsFromJsonData($jsonData)
+    private function fetchItemsFromFromJsonData($jsonData)
     {
         $duration_min = $this->getInput('duration_min') ?: -1;
         $duration_min = $duration_min * 60;
@@ -504,7 +505,7 @@ class YoutubeBridge extends BridgeAbstract
             if ($duration < $duration_min || $duration > $duration_max) {
                 continue;
             }
-            $this->extractVideoDetails($videoId, $author, $desc, $time);
+            $this->fetchVideoDetails($videoId, $author, $desc, $time);
             $this->addItem($videoId, $title, $author, $desc, $time);
         }
     }
