@@ -11,7 +11,7 @@ class YoutubeBridge extends BridgeAbstract
 {
     const NAME = 'YouTube Bridge';
     const URI = 'https://www.youtube.com';
-    const CACHE_TIMEOUT = 10800; // 3h
+    const CACHE_TIMEOUT = 60 * 60 * 3;
     const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 
     const PARAMETERS = [
@@ -78,116 +78,6 @@ class YoutubeBridge extends BridgeAbstract
     // This took from repo BetterVideoRss of VerifiedJoseph.
     const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
 
-    private function collectDataInternal()
-    {
-        $xml = '';
-        $html = '';
-        $url_feed = '';
-        $url_listing = '';
-
-        if ($this->getInput('u')) {
-            /* User and Channel modes */
-            $request = $this->getInput('u');
-            $url_feed = self::URI . '/feeds/videos.xml?user=' . urlencode($request);
-            $url_listing = self::URI . '/user/' . urlencode($request) . '/videos';
-        } elseif ($this->getInput('c')) {
-            $request = $this->getInput('c');
-            $url_feed = self::URI . '/feeds/videos.xml?channel_id=' . urlencode($request);
-            $url_listing = self::URI . '/channel/' . urlencode($request) . '/videos';
-        } elseif ($this->getInput('custom')) {
-            $request = $this->getInput('custom');
-            $url_listing = self::URI . '/' . urlencode($request) . '/videos';
-        }
-
-        if (!empty($url_feed) || !empty($url_listing)) {
-            $this->feeduri = $url_listing;
-            if (!empty($this->getInput('custom'))) {
-                $html = $this->ytGetSimpleHTMLDOM($url_listing);
-                $jsonData = $this->getJSONData($html);
-                $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
-                $this->feedIconUrl = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
-            }
-            if (!$this->skipFeeds()) {
-                $html = $this->ytGetSimpleHTMLDOM($url_feed);
-                $this->ytBridgeParseXmlFeed($html);
-            } else {
-                if (empty($this->getInput('custom'))) {
-                    $html = $this->ytGetSimpleHTMLDOM($url_listing);
-                    $jsonData = $this->getJSONData($html);
-                }
-                $channel_id = '';
-                if (isset($jsonData->contents)) {
-                    $channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
-                    $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
-                    $jsonData = $jsonData->tabRenderer->content->richGridRenderer->contents;
-                    // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
-                    $this->parseJSONListing($jsonData);
-                } else {
-                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $request);
-                }
-            }
-            $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
-        } elseif ($this->getInput('p')) {
-            /* playlist mode */
-            // TODO: this mode makes a lot of excess video query requests.
-            // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
-            // This cache will be used to find out, which videos to fetch
-            // to make feed of 15 items or more, if there a lot of videos published on that date.
-            $request = $this->getInput('p');
-            $url_feed = self::URI . '/feeds/videos.xml?playlist_id=' . urlencode($request);
-            $url_listing = self::URI . '/playlist?list=' . urlencode($request);
-            $html = $this->ytGetSimpleHTMLDOM($url_listing);
-            $jsonData = $this->getJSONData($html);
-            // TODO: this method returns only first 100 video items
-            // if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
-            $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0];
-            $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
-            $jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
-            $item_count = count($jsonData);
-
-            if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
-                $this->ytBridgeParseXmlFeed($xml);
-            } else {
-                $this->parseJSONListing($jsonData);
-            }
-            $this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
-            usort($this->items, function ($item1, $item2) {
-                if (!is_int($item1['timestamp']) && !is_int($item2['timestamp'])) {
-                    $item1['timestamp'] = strtotime($item1['timestamp']);
-                    $item2['timestamp'] = strtotime($item2['timestamp']);
-                }
-                return $item2['timestamp'] - $item1['timestamp'];
-            });
-        } elseif ($this->getInput('s')) {
-            /* search mode */
-            $request = $this->getInput('s');
-            $url_listing = self::URI
-                . '/results?search_query='
-                . urlencode($request)
-                . '&sp=CAI%253D';
-
-            $html = $this->ytGetSimpleHTMLDOM($url_listing);
-
-            $jsonData = $this->getJSONData($html);
-            $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
-            $jsonData = $jsonData->sectionListRenderer->contents;
-            foreach ($jsonData as $data) {
-                // Search result includes some ads, have to filter them
-                if (isset($data->itemSectionRenderer->contents[0]->videoRenderer)) {
-                    $jsonData = $data->itemSectionRenderer->contents;
-                    break;
-                }
-            }
-            $this->parseJSONListing($jsonData);
-            $this->feeduri = $url_listing;
-            $this->feedName = 'Search: ' . $request;
-        } else {
-            /* no valid mode */
-            returnClientError("You must either specify either:\n - YouTube
- username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
-        }
-    }
-
     public function collectData()
     {
         $cacheKey = 'youtube_rate_limit';
@@ -204,9 +94,133 @@ class YoutubeBridge extends BridgeAbstract
         }
     }
 
-    private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time)
+    private function collectDataInternal()
     {
-        $html = $this->ytGetSimpleHTMLDOM(self::URI . "/watch?v=$vid", true);
+        $xml = '';
+        $html = '';
+        $url_feed = '';
+        $url_listing = '';
+
+        $username = $this->getInput('u');
+        $channel = $this->getInput('c');
+        $custom = $this->getInput('custom');
+
+        if ($username) {
+            // user and channel
+            $request = $username;
+            $url_feed = self::URI . '/feeds/videos.xml?user=' . urlencode($request);
+            $url_listing = self::URI . '/user/' . urlencode($request) . '/videos';
+        } elseif ($channel) {
+            $request = $channel;
+            $url_feed = self::URI . '/feeds/videos.xml?channel_id=' . urlencode($request);
+            $url_listing = self::URI . '/channel/' . urlencode($request) . '/videos';
+        } elseif ($custom) {
+            $request = $custom;
+            $url_listing = self::URI . '/' . urlencode($request) . '/videos';
+        }
+
+        $playlist = $this->getInput('p');
+        $search = $this->getInput('s');
+
+        $durationMin = $this->getInput('duration_min');
+        $durationMax = $this->getInput('duration_max');
+
+        // Whether to discriminate videos by duration
+        $filterByDuration = $durationMin || $durationMax;
+
+        if ($url_feed || $url_listing) {
+            // user, channel or custom
+            $this->feeduri = $url_listing;
+            if ($custom) {
+                // Extract the feed url for the custom name
+                $html = $this->fetch($url_listing);
+                $jsonData = $this->extractJsonFromHtml($html);
+                // Pluck out the rss feed url
+                $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
+                $this->feedIconUrl = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
+            }
+            if ($filterByDuration) {
+                if (!$custom) {
+                    // Fetch the html page
+                    $html = $this->fetch($url_listing);
+                    $jsonData = $this->extractJsonFromHtml($html);
+                }
+                $channel_id = '';
+                if (isset($jsonData->contents)) {
+                    $channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
+                    $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
+                    $jsonData = $jsonData->tabRenderer->content->richGridRenderer->contents;
+                    // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+                    $this->fetchItemsFromFromJsonData($jsonData);
+                } else {
+                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $request);
+                }
+            } else {
+                // Fetch the xml feed
+                $html = $this->fetch($url_feed);
+                $this->extractItemsFromXmlFeed($html);
+            }
+            $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
+        } elseif ($playlist) {
+            // playlist
+            // TODO: this mode makes a lot of excess video query requests.
+            // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
+            // This cache will be used to find out, which videos to fetch
+            // to make feed of 15 items or more, if there a lot of videos published on that date.
+            $request = $playlist;
+            $url_feed = self::URI . '/feeds/videos.xml?playlist_id=' . urlencode($request);
+            $url_listing = self::URI . '/playlist?list=' . urlencode($request);
+            $html = $this->fetch($url_listing);
+            $jsonData = $this->extractJsonFromHtml($html);
+            // TODO: this method returns only first 100 video items
+            // if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
+            $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0];
+            $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
+            $jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
+            $item_count = count($jsonData);
+
+            if ($item_count > 15 || $filterByDuration) {
+                $this->fetchItemsFromFromJsonData($jsonData);
+            } else {
+                $xml = $this->fetch($url_feed);
+                $this->extractItemsFromXmlFeed($xml);
+            }
+            $this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
+            usort($this->items, function ($item1, $item2) {
+                if (!is_int($item1['timestamp']) && !is_int($item2['timestamp'])) {
+                    $item1['timestamp'] = strtotime($item1['timestamp']);
+                    $item2['timestamp'] = strtotime($item2['timestamp']);
+                }
+                return $item2['timestamp'] - $item1['timestamp'];
+            });
+        } elseif ($search) {
+            // search
+            $request = $search;
+            $url_listing = self::URI . '/results?search_query=' . urlencode($request) . '&sp=CAI%253D';
+            $html = $this->fetch($url_listing);
+            $jsonData = $this->extractJsonFromHtml($html);
+            $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
+            $jsonData = $jsonData->sectionListRenderer->contents;
+            foreach ($jsonData as $data) {
+                // Search result includes some ads, have to filter them
+                if (isset($data->itemSectionRenderer->contents[0]->videoRenderer)) {
+                    $jsonData = $data->itemSectionRenderer->contents;
+                    break;
+                }
+            }
+            $this->fetchItemsFromFromJsonData($jsonData);
+            $this->feeduri = $url_listing;
+            $this->feedName = 'Search: ' . $request;
+        } else {
+            returnClientError("You must either specify either:\n - YouTube
+ username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
+        }
+    }
+
+    private function fetchVideoDetails($vid, &$author, &$desc, &$time)
+    {
+        $url = self::URI . "/watch?v=$vid";
+        $html = $this->fetch($url, true);
 
         // Skip unavailable videos
         if (strpos($html->innertext, 'IS_UNAVAILABLE_PAGE') !== false) {
@@ -223,7 +237,7 @@ class YoutubeBridge extends BridgeAbstract
             $time = strtotime($elDatePublished->getAttribute('content'));
         }
 
-        $jsonData = $this->getJSONData($html);
+        $jsonData = $this->extractJsonFromHtml($html);
         if (!isset($jsonData->contents)) {
             return;
         }
@@ -370,7 +384,7 @@ class YoutubeBridge extends BridgeAbstract
             if ($commandUrl['path'] === '/redirect') {
                 parse_str($commandUrl['query'], $commandUrlQuery);
                 $enhancement['url'] = urldecode($commandUrlQuery['q']);
-            } else if (isset($commandUrl['host'])) {
+            } elseif (isset($commandUrl['host'])) {
                 $enhancement['url'] = $commandMetadata->url;
             } else {
                 $enhancement['url'] = $baseUrl . $commandMetadata->url;
@@ -388,94 +402,37 @@ class YoutubeBridge extends BridgeAbstract
         return array_reverse($enhancements);
     }
 
-    private function ytBridgeAddItem($vid, $title, $author, $desc, $time, $thumbnail = '')
+    private function extractItemsFromXmlFeed($xml)
     {
-        $item = [];
-        $item['id'] = $vid;
-        $item['title'] = $title;
-        $item['author'] = $author;
-        $item['timestamp'] = $time;
-        $item['uri'] = self::URI . '/watch?v=' . $vid;
-        if (!$thumbnail) {
-            // Fallback to default thumbnail if there aren't any provided.
-            $thumbnail = '0';
-        }
-        $thumbnailUri = str_replace('/www.', '/img.', self::URI) . '/vi/' . $vid . '/' . $thumbnail . '.jpg';
-        $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br />' . $desc;
-        $this->items[] = $item;
-    }
+        $this->feedName = $this->decodeTitle($xml->find('feed > title', 0)->plaintext);
 
-    private function ytBridgeParseXmlFeed($xml)
-    {
         foreach ($xml->find('entry') as $element) {
-            $title = $this->ytBridgeFixTitle($element->find('title', 0)->plaintext);
+            $videoId = str_replace('yt:video:', '', $element->find('id', 0)->plaintext);
+            if (strpos($videoId, 'googleads') !== false) {
+                continue;
+            }
+            $title = $this->decodeTitle($element->find('title', 0)->plaintext);
             $author = $element->find('name', 0)->plaintext;
             $desc = $element->find('media:description', 0)->innertext;
-
-            // Make sure the description is easy on the eye :)
             $desc = htmlspecialchars($desc);
             $desc = nl2br($desc);
-            $desc = preg_replace(
-                self::URI_REGEX,
-                '<a href="$1" target="_blank">$1</a> ',
-                $desc
-            );
-
-            $vid = str_replace('yt:video:', '', $element->find('id', 0)->plaintext);
+            $desc = preg_replace(self::URI_REGEX, '<a href="$1" target="_blank">$1</a> ', $desc);
             $time = strtotime($element->find('published', 0)->plaintext);
-            if (strpos($vid, 'googleads') === false) {
-                $this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-            }
+            $this->addItem($videoId, $title, $author, $desc, $time);
         }
-        $this->feedName = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);  // feedName will be used by getName()
     }
 
-    private function ytBridgeFixTitle($title)
+    private function fetch($url, bool $cache = false)
     {
-        // convert both &#1234; and &quot; to UTF-8
-        return html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-    }
-
-    private function ytGetSimpleHTMLDOM($url, $cached = false)
-    {
-        $header = [
-            'Accept-Language: en-US'
-        ];
-        $opts = [];
-        $lowercase = true;
-        $forceTagsClosed = true;
-        $target_charset = DEFAULT_TARGET_CHARSET;
-        $stripRN = false;
-        $defaultBRText = DEFAULT_BR_TEXT;
-        $defaultSpanText = DEFAULT_SPAN_TEXT;
-        if ($cached) {
-            return getSimpleHTMLDOMCached(
-                $url,
-                86400,
-                $header,
-                $opts,
-                $lowercase,
-                $forceTagsClosed,
-                $target_charset,
-                $stripRN,
-                $defaultBRText,
-                $defaultSpanText
-            );
+        $header = ['Accept-Language: en-US'];
+        if ($cache) {
+            $ttl = 86400;
+            return getSimpleHTMLDOMCached($url, $ttl, $header);
         }
-        return getSimpleHTMLDOM(
-            $url,
-            $header,
-            $opts,
-            $lowercase,
-            $forceTagsClosed,
-            $target_charset,
-            $stripRN,
-            $defaultBRText,
-            $defaultSpanText
-        );
+        return getSimpleHTMLDOM($url, $header);
     }
 
-    private function getJSONData($html)
+    private function extractJsonFromHtml($html)
     {
         $scriptRegex = '/var ytInitialData = (.*?);<\/script>/';
         $result = preg_match($scriptRegex, $html, $matches);
@@ -483,10 +440,11 @@ class YoutubeBridge extends BridgeAbstract
             $this->logger->debug('Could not find ytInitialData');
             return null;
         }
-        return json_decode($matches[1]);
+        $data = json_decode($matches[1]);
+        return $data;
     }
 
-    private function parseJSONListing($jsonData)
+    private function fetchItemsFromFromJsonData($jsonData)
     {
         $duration_min = $this->getInput('duration_min') ?: -1;
         $duration_min = $duration_min * 60;
@@ -497,9 +455,6 @@ class YoutubeBridge extends BridgeAbstract
         if ($duration_max < $duration_min) {
             returnClientError('Max duration must be greater than min duration!');
         }
-
-        // $vid_list = '';
-
         foreach ($jsonData as $item) {
             $wrapper = null;
             if (isset($item->gridVideoRenderer)) {
@@ -513,10 +468,8 @@ class YoutubeBridge extends BridgeAbstract
             } else {
                 continue;
             }
-
-            $vid = $wrapper->videoId;
+            $videoId = $wrapper->videoId;
             $title = $wrapper->title->runs[0]->text;
-
             $author = '';
             $desc = '';
             $time = '';
@@ -535,7 +488,6 @@ class YoutubeBridge extends BridgeAbstract
                     }
                 }
             }
-
             if (is_string($durationText)) {
                 if (preg_match('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', $durationText)) {
                     $durationText = preg_replace('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
@@ -549,15 +501,37 @@ class YoutubeBridge extends BridgeAbstract
                 }
             }
 
-            // $vid_list .= $vid . ',';
-            $this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-            $this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+            //$durationSeconds = (int) $wrapper->lengthSeconds;
+            if ($duration < $duration_min || $duration > $duration_max) {
+                continue;
+            }
+            $this->fetchVideoDetails($videoId, $author, $desc, $time);
+            $this->addItem($videoId, $title, $author, $desc, $time);
         }
     }
 
-    private function skipFeeds()
+    private function addItem($videoId, $title, $author, $desc, $time, $thumbnail = '')
     {
-        return ($this->getInput('duration_min') || $this->getInput('duration_max'));
+        $item = [];
+        // This should probably be uid?
+        $item['id'] = $videoId;
+        $item['title'] = $title;
+        $item['author'] = $author;
+        $item['timestamp'] = $time;
+        $item['uri'] = self::URI . '/watch?v=' . $videoId;
+        if (!$thumbnail) {
+            // Fallback to default thumbnail if there aren't any provided.
+            $thumbnail = '0';
+        }
+        $thumbnailUri = str_replace('/www.', '/img.', self::URI) . '/vi/' . $videoId . '/' . $thumbnail . '.jpg';
+        $item['content'] = sprintf('<a href="%s"><img src="%s" /></a><br />%s', $item['uri'], $thumbnailUri, $desc);
+        $this->items[] = $item;
+    }
+
+    private function decodeTitle($title)
+    {
+        // convert both &#1234; and &quot; to UTF-8
+        return html_entity_decode($title, ENT_QUOTES, 'UTF-8');
     }
 
     public function getURI()
