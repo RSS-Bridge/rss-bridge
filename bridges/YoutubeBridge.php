@@ -104,6 +104,14 @@ class YoutubeBridge extends BridgeAbstract
         $username = $this->getInput('u');
         $channel = $this->getInput('c');
         $custom = $this->getInput('custom');
+        $playlist = $this->getInput('p');
+        $search = $this->getInput('s');
+
+        $durationMin = $this->getInput('duration_min');
+        $durationMax = $this->getInput('duration_max');
+
+        // Whether to discriminate videos by duration
+        $filterByDuration = $durationMin || $durationMax;
 
         if ($username) {
             // user and channel
@@ -118,15 +126,6 @@ class YoutubeBridge extends BridgeAbstract
             $request = $custom;
             $url_listing = self::URI . '/' . urlencode($request) . '/videos';
         }
-
-        $playlist = $this->getInput('p');
-        $search = $this->getInput('s');
-
-        $durationMin = $this->getInput('duration_min');
-        $durationMax = $this->getInput('duration_max');
-
-        // Whether to discriminate videos by duration
-        $filterByDuration = $durationMin || $durationMax;
 
         if ($url_feed || $url_listing) {
             // user, channel or custom
@@ -217,9 +216,9 @@ class YoutubeBridge extends BridgeAbstract
         }
     }
 
-    private function fetchVideoDetails($vid, &$author, &$desc, &$time)
+    private function fetchVideoDetails($videoId, &$author, &$description, &$timestamp)
     {
-        $url = self::URI . "/watch?v=$vid";
+        $url = self::URI . "/watch?v=$videoId";
         $html = $this->fetch($url, true);
 
         // Skip unavailable videos
@@ -234,7 +233,7 @@ class YoutubeBridge extends BridgeAbstract
 
         $elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
         if (!is_null($elDatePublished)) {
-            $time = strtotime($elDatePublished->getAttribute('content'));
+            $timestamp = strtotime($elDatePublished->getAttribute('content'));
         }
 
         $jsonData = $this->extractJsonFromHtml($html);
@@ -254,30 +253,28 @@ class YoutubeBridge extends BridgeAbstract
             }
         }
         if (!$videoSecondaryInfo) {
-            returnServerError('Could not find videoSecondaryInfoRenderer. Error at: ' . $vid);
+            returnServerError('Could not find videoSecondaryInfoRenderer. Error at: ' . $videoId);
         }
 
-        $desc = $videoSecondaryInfo->attributedDescription->content ?? '';
+        $description = $videoSecondaryInfo->attributedDescription->content ?? '';
 
         // Default whitespace chars used by trim + non-breaking spaces (https://en.wikipedia.org/wiki/Non-breaking_space)
         $whitespaceChars = " \t\n\r\0\x0B\u{A0}\u{2060}\u{202F}\u{2007}";
-        $descEnhancements = $this->ytBridgeGetVideoDescriptionEnhancements($videoSecondaryInfo, $desc, self::URI, $whitespaceChars);
+        $descEnhancements = $this->ytBridgeGetVideoDescriptionEnhancements($videoSecondaryInfo, $description, self::URI, $whitespaceChars);
         foreach ($descEnhancements as $descEnhancement) {
             if (isset($descEnhancement['url'])) {
-                $descBefore = mb_substr($desc, 0, $descEnhancement['pos']);
-                $descValue = mb_substr($desc, $descEnhancement['pos'], $descEnhancement['len']);
-                $descAfter = mb_substr($desc, $descEnhancement['pos'] + $descEnhancement['len'], null);
+                $descBefore = mb_substr($description, 0, $descEnhancement['pos']);
+                $descValue = mb_substr($description, $descEnhancement['pos'], $descEnhancement['len']);
+                $descAfter = mb_substr($description, $descEnhancement['pos'] + $descEnhancement['len'], null);
 
                 // Extended trim for the display value of internal links, e.g.:
                 // FAVICON • Video Name
                 // FAVICON / @ChannelName
                 $descValue = trim($descValue, $whitespaceChars . '•/');
 
-                $desc = sprintf('%s<a href="%s" target="_blank">%s</a>%s', $descBefore, $descEnhancement['url'], $descValue, $descAfter);
+                $description = sprintf('%s<a href="%s" target="_blank">%s</a>%s', $descBefore, $descEnhancement['url'], $descValue, $descAfter);
             }
         }
-
-        $desc = nl2br($desc);
     }
 
     private function ytBridgeGetVideoDescriptionEnhancements(
@@ -425,7 +422,7 @@ class YoutubeBridge extends BridgeAbstract
     private function fetch($url, bool $cache = false)
     {
         $header = ['Accept-Language: en-US'];
-        $ttl = 86400;
+        $ttl = 86400 * 3; // 3d
         $stripNewlines = false;
         if ($cache) {
             return getSimpleHTMLDOMCached($url, $ttl, $header, [], true, true, DEFAULT_TARGET_CHARSET, $stripNewlines);
@@ -447,15 +444,9 @@ class YoutubeBridge extends BridgeAbstract
 
     private function fetchItemsFromFromJsonData($jsonData)
     {
-        $duration_min = $this->getInput('duration_min') ?: -1;
-        $duration_min = $duration_min * 60;
+        $minimumDurationSeconds = ($this->getInput('duration_min') ?: -1) * 60;
+        $maximumDurationSeconds = ($this->getInput('duration_max') ?: INF) * 60;
 
-        $duration_max = $this->getInput('duration_max') ?: INF;
-        $duration_max = $duration_max * 60;
-
-        if ($duration_max < $duration_min) {
-            returnClientError('Max duration must be greater than min duration!');
-        }
         foreach ($jsonData as $item) {
             $wrapper = null;
             if (isset($item->gridVideoRenderer)) {
@@ -469,18 +460,33 @@ class YoutubeBridge extends BridgeAbstract
             } else {
                 continue;
             }
-            $videoId = $wrapper->videoId;
-            $title = $wrapper->title->runs[0]->text;
-            $author = '';
-            $desc = '';
-            $time = '';
 
-            // The duration comes in one of the formats:
-            // hh:mm:ss / mm:ss / m:ss
-            // 01:03:30 / 15:06 / 1:24
+            // 01:03:30 | 15:06 | 1:24
+            $lengthText = $wrapper->lengthText->simpleText ?? null;
+            // 6,875 views
+            $viewCount = $wrapper->viewCountText->simpleText ?? null;
+            // Dc645M8Het8
+            $videoId = $wrapper->videoId;
+            // Jumbo frames - transfer more data faster!
+            $title = $wrapper->title->runs[0]->text ?? $wrapper->title->accessibility->accessibilityData->label ?? null;
+            $author = null;
+            $description = $wrapper->descriptionSnippet->runs[0]->text ?? null;
+            // 5 days ago | 1 month ago
+            $publishedTimeText = $wrapper->publishedTimeText->simpleText ?? $wrapper->videoInfo->runs[2]->text ?? null;
+            $timestamp = null;
+            if ($publishedTimeText) {
+                try {
+                    $publicationDate = new \DateTimeImmutable($publishedTimeText);
+                    // Hard-code hour, minute and second
+                    $publicationDate = $publicationDate->setTime(0, 0, 0);
+                    $timestamp = $publicationDate->getTimestamp();
+                } catch (\Exception $e) {
+                }
+            }
+
             $durationText = 0;
-            if (isset($wrapper->lengthText)) {
-                $durationText = $wrapper->lengthText->simpleText;
+            if ($lengthText) {
+                $durationText = $lengthText;
             } else {
                 foreach ($wrapper->thumbnailOverlays as $overlay) {
                     if (isset($overlay->thumbnailOverlayTimeStatusRenderer)) {
@@ -497,35 +503,37 @@ class YoutubeBridge extends BridgeAbstract
                 }
                 sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
                 $duration = $hours * 3600 + $minutes * 60 + $seconds;
-                if ($duration < $duration_min || $duration > $duration_max) {
+                if ($duration < $minimumDurationSeconds || $duration > $maximumDurationSeconds) {
                     continue;
                 }
             }
-
-            //$durationSeconds = (int) $wrapper->lengthSeconds;
-            if ($duration < $duration_min || $duration > $duration_max) {
-                continue;
+            if (!$description || !$timestamp) {
+                $this->fetchVideoDetails($videoId, $author, $description, $timestamp);
             }
-            $this->fetchVideoDetails($videoId, $author, $desc, $time);
-            $this->addItem($videoId, $title, $author, $desc, $time);
+            $this->addItem($videoId, $title, $author, $description, $timestamp);
+            if (count($this->items) >= 99) {
+                break;
+            }
         }
     }
 
-    private function addItem($videoId, $title, $author, $desc, $time, $thumbnail = '')
+    private function addItem($videoId, $title, $author, $description, $timestamp, $thumbnail = '')
     {
+        $description = nl2br($description);
+
         $item = [];
         // This should probably be uid?
         $item['id'] = $videoId;
         $item['title'] = $title;
-        $item['author'] = $author;
-        $item['timestamp'] = $time;
+        $item['author'] = $author ?? '';
+        $item['timestamp'] = $timestamp;
         $item['uri'] = self::URI . '/watch?v=' . $videoId;
         if (!$thumbnail) {
             // Fallback to default thumbnail if there aren't any provided.
             $thumbnail = '0';
         }
         $thumbnailUri = str_replace('/www.', '/img.', self::URI) . '/vi/' . $videoId . '/' . $thumbnail . '.jpg';
-        $item['content'] = sprintf('<a href="%s"><img src="%s" /></a><br />%s', $item['uri'], $thumbnailUri, $desc);
+        $item['content'] = sprintf('<a href="%s"><img src="%s" /></a><br />%s', $item['uri'], $thumbnailUri, $description);
         $this->items[] = $item;
     }
 
