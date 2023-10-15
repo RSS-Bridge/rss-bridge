@@ -35,7 +35,7 @@ class TapasBridge extends FeedExpander
         if (preg_match('/^[\d]+$/', $this->getInput('title'))) {
             $this->id = $this->getInput('title');
         }
-        if ($this->getInput('force_title') or !$this->id) {
+        if ($this->getInput('force_title') || !$this->id) {
             $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
             $this->id = $html->find('meta[property$=":url"]', 0)->content;
             $this->id = str_ireplace(['tapastic://series/', '/info'], '', $this->id);
@@ -53,6 +53,7 @@ class TapasBridge extends FeedExpander
 //            }
 //        }
 
+        $item['content'] ??= '';
         if ($this->getInput('extend_content')) {
             $html = getSimpleHTMLDOM($item['uri']);
             $item['content'] = $item['content'] ?? '';
@@ -77,6 +78,6 @@ class TapasBridge extends FeedExpander
         if ($this->id) {
             return self::URI . 'rss/series/' . $this->id;
         }
-        return self::URI;
+        return self::URI . 'series/' . $this->getInput('title') . '/info/';
     }
 }
