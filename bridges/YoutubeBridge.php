@@ -104,6 +104,14 @@ class YoutubeBridge extends BridgeAbstract
         $username = $this->getInput('u');
         $channel = $this->getInput('c');
         $custom = $this->getInput('custom');
+        $playlist = $this->getInput('p');
+        $search = $this->getInput('s');
+
+        $durationMin = $this->getInput('duration_min');
+        $durationMax = $this->getInput('duration_max');
+
+        // Whether to discriminate videos by duration
+        $filterByDuration = $durationMin || $durationMax;
 
         if ($username) {
             // user and channel
@@ -118,15 +126,6 @@ class YoutubeBridge extends BridgeAbstract
             $request = $custom;
             $url_listing = self::URI . '/' . urlencode($request) . '/videos';
         }
-
-        $playlist = $this->getInput('p');
-        $search = $this->getInput('s');
-
-        $durationMin = $this->getInput('duration_min');
-        $durationMax = $this->getInput('duration_max');
-
-        // Whether to discriminate videos by duration
-        $filterByDuration = $durationMin || $durationMax;
 
         if ($url_feed || $url_listing) {
             // user, channel or custom
@@ -447,15 +446,9 @@ class YoutubeBridge extends BridgeAbstract
 
     private function fetchItemsFromFromJsonData($jsonData)
     {
-        $duration_min = $this->getInput('duration_min') ?: -1;
-        $duration_min = $duration_min * 60;
+        $minimumDurationSeconds = ($this->getInput('duration_min') ?: -1) * 60;
+        $maximumDurationSeconds = ($this->getInput('duration_max') ?: INF) * 60;
 
-        $duration_max = $this->getInput('duration_max') ?: INF;
-        $duration_max = $duration_max * 60;
-
-        if ($duration_max < $duration_min) {
-            returnClientError('Max duration must be greater than min duration!');
-        }
         foreach ($jsonData as $item) {
             $wrapper = null;
             if (isset($item->gridVideoRenderer)) {
@@ -469,18 +462,33 @@ class YoutubeBridge extends BridgeAbstract
             } else {
                 continue;
             }
-            $videoId = $wrapper->videoId;
-            $title = $wrapper->title->runs[0]->text;
-            $author = '';
-            $desc = '';
-            $time = '';
 
-            // The duration comes in one of the formats:
-            // hh:mm:ss / mm:ss / m:ss
-            // 01:03:30 / 15:06 / 1:24
+            // 01:03:30 | 15:06 | 1:24
+            $lengthText = $wrapper->lengthText->simpleText ?? null;
+            // 6,875 views
+            $viewCount = $wrapper->viewCountText->simpleText ?? null;
+            // Dc645M8Het8
+            $videoId = $wrapper->videoId;
+            // Jumbo frames - transfer more data faster!
+            $title = $wrapper->title->runs[0]->text ?? $wrapper->title->accessibility->accessibilityData->label ?? null;
+            $author = null;
+            $description = $wrapper->descriptionSnippet->runs[0]->text ?? null;
+            // 5 days ago | 1 month ago
+            $publishedTimeText = $wrapper->publishedTimeText->simpleText ?? $wrapper->videoInfo->runs[2]->text ?? null;
+            $timestamp = null;
+            if ($publishedTimeText) {
+                try {
+                    $publicationDate = new \DateTimeImmutable($publishedTimeText);
+                    // Hard-code hour, minute and second
+                    $publicationDate = $publicationDate->setTime(0, 0, 0);
+                    $timestamp = $publicationDate->getTimestamp();
+                } catch (\Exception $e) {
+                }
+            }
+
             $durationText = 0;
-            if (isset($wrapper->lengthText)) {
-                $durationText = $wrapper->lengthText->simpleText;
+            if ($lengthText) {
+                $durationText = $lengthText;
             } else {
                 foreach ($wrapper->thumbnailOverlays as $overlay) {
                     if (isset($overlay->thumbnailOverlayTimeStatusRenderer)) {
@@ -497,28 +505,28 @@ class YoutubeBridge extends BridgeAbstract
                 }
                 sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
                 $duration = $hours * 3600 + $minutes * 60 + $seconds;
-                if ($duration < $duration_min || $duration > $duration_max) {
+                if ($duration < $minimumDurationSeconds || $duration > $maximumDurationSeconds) {
                     continue;
                 }
             }
-
-            //$durationSeconds = (int) $wrapper->lengthSeconds;
-            if ($duration < $duration_min || $duration > $duration_max) {
-                continue;
+            if (!$description || !$timestamp) {
+                $this->fetchVideoDetails($videoId, $author, $description, $timestamp);
             }
-            $this->fetchVideoDetails($videoId, $author, $desc, $time);
-            $this->addItem($videoId, $title, $author, $desc, $time);
+            $this->addItem($videoId, $title, $author, $description, $timestamp);
+            if (count($this->items) >= 99) {
+                break;
+            }
         }
     }
 
-    private function addItem($videoId, $title, $author, $desc, $time, $thumbnail = '')
+    private function addItem($videoId, $title, $author, $desc, $timestamp, $thumbnail = '')
     {
         $item = [];
         // This should probably be uid?
         $item['id'] = $videoId;
         $item['title'] = $title;
-        $item['author'] = $author;
-        $item['timestamp'] = $time;
+        $item['author'] = $author ?? '';
+        $item['timestamp'] = $timestamp;
         $item['uri'] = self::URI . '/watch?v=' . $videoId;
         if (!$thumbnail) {
             // Fallback to default thumbnail if there aren't any provided.
