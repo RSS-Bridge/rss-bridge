@@ -216,9 +216,9 @@ class YoutubeBridge extends BridgeAbstract
         }
     }
 
-    private function fetchVideoDetails($vid, &$author, &$desc, &$time)
+    private function fetchVideoDetails($videoId, &$author, &$description, &$timestamp)
     {
-        $url = self::URI . "/watch?v=$vid";
+        $url = self::URI . "/watch?v=$videoId";
         $html = $this->fetch($url, true);
 
         // Skip unavailable videos
@@ -233,7 +233,7 @@ class YoutubeBridge extends BridgeAbstract
 
         $elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
         if (!is_null($elDatePublished)) {
-            $time = strtotime($elDatePublished->getAttribute('content'));
+            $timestamp = strtotime($elDatePublished->getAttribute('content'));
         }
 
         $jsonData = $this->extractJsonFromHtml($html);
@@ -253,30 +253,28 @@ class YoutubeBridge extends BridgeAbstract
             }
         }
         if (!$videoSecondaryInfo) {
-            returnServerError('Could not find videoSecondaryInfoRenderer. Error at: ' . $vid);
+            returnServerError('Could not find videoSecondaryInfoRenderer. Error at: ' . $videoId);
         }
 
-        $desc = $videoSecondaryInfo->attributedDescription->content ?? '';
+        $description = $videoSecondaryInfo->attributedDescription->content ?? '';
 
         // Default whitespace chars used by trim + non-breaking spaces (https://en.wikipedia.org/wiki/Non-breaking_space)
         $whitespaceChars = " \t\n\r\0\x0B\u{A0}\u{2060}\u{202F}\u{2007}";
-        $descEnhancements = $this->ytBridgeGetVideoDescriptionEnhancements($videoSecondaryInfo, $desc, self::URI, $whitespaceChars);
+        $descEnhancements = $this->ytBridgeGetVideoDescriptionEnhancements($videoSecondaryInfo, $description, self::URI, $whitespaceChars);
         foreach ($descEnhancements as $descEnhancement) {
             if (isset($descEnhancement['url'])) {
-                $descBefore = mb_substr($desc, 0, $descEnhancement['pos']);
-                $descValue = mb_substr($desc, $descEnhancement['pos'], $descEnhancement['len']);
-                $descAfter = mb_substr($desc, $descEnhancement['pos'] + $descEnhancement['len'], null);
+                $descBefore = mb_substr($description, 0, $descEnhancement['pos']);
+                $descValue = mb_substr($description, $descEnhancement['pos'], $descEnhancement['len']);
+                $descAfter = mb_substr($description, $descEnhancement['pos'] + $descEnhancement['len'], null);
 
                 // Extended trim for the display value of internal links, e.g.:
                 // FAVICON • Video Name
                 // FAVICON / @ChannelName
                 $descValue = trim($descValue, $whitespaceChars . '•/');
 
-                $desc = sprintf('%s<a href="%s" target="_blank">%s</a>%s', $descBefore, $descEnhancement['url'], $descValue, $descAfter);
+                $description = sprintf('%s<a href="%s" target="_blank">%s</a>%s', $descBefore, $descEnhancement['url'], $descValue, $descAfter);
             }
         }
-
-        $desc = nl2br($desc);
     }
 
     private function ytBridgeGetVideoDescriptionEnhancements(
@@ -424,7 +422,7 @@ class YoutubeBridge extends BridgeAbstract
     private function fetch($url, bool $cache = false)
     {
         $header = ['Accept-Language: en-US'];
-        $ttl = 86400;
+        $ttl = 86400 * 3; // 3d
         $stripNewlines = false;
         if ($cache) {
             return getSimpleHTMLDOMCached($url, $ttl, $header, [], true, true, DEFAULT_TARGET_CHARSET, $stripNewlines);
@@ -519,8 +517,10 @@ class YoutubeBridge extends BridgeAbstract
         }
     }
 
-    private function addItem($videoId, $title, $author, $desc, $timestamp, $thumbnail = '')
+    private function addItem($videoId, $title, $author, $description, $timestamp, $thumbnail = '')
     {
+        $description = nl2br($description);
+
         $item = [];
         // This should probably be uid?
         $item['id'] = $videoId;
@@ -533,7 +533,7 @@ class YoutubeBridge extends BridgeAbstract
             $thumbnail = '0';
         }
         $thumbnailUri = str_replace('/www.', '/img.', self::URI) . '/vi/' . $videoId . '/' . $thumbnail . '.jpg';
-        $item['content'] = sprintf('<a href="%s"><img src="%s" /></a><br />%s', $item['uri'], $thumbnailUri, $desc);
+        $item['content'] = sprintf('<a href="%s"><img src="%s" /></a><br />%s', $item['uri'], $thumbnailUri, $description);
         $this->items[] = $item;
     }
 
