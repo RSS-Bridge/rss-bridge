@@ -76,6 +76,7 @@ class NyaaTorrentsBridge extends BridgeAbstract
             $item = [
                 'title' => (string) $feedItem->title,
                 'uri' => (string) $feedItem->link,
+                'date_modified' => (string) $feedItem->pubDate,
             ];
 
 
