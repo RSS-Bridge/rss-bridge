@@ -49,6 +49,7 @@ class MrssFormat extends FormatAbstract
         $feed->setAttribute('version', '2.0');
         $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:atom', self::ATOM_NS);
         $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
+        $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
 
         $channel = $document->createElement('channel');
         $feed->appendChild($channel);
@@ -99,6 +100,7 @@ class MrssFormat extends FormatAbstract
         $linkSelf->setAttribute('href', $feedUrl);
 
         foreach ($this->getItems() as $item) {
+            $itemArray = $item->toArray();
             $itemTimestamp = $item->getTimestamp();
             $itemTitle = $item->getTitle();
             $itemUri = $item->getURI();
@@ -126,7 +128,16 @@ class MrssFormat extends FormatAbstract
                 $entryTitle->appendChild($document->createTextNode($itemTitle));
             }
 
-            if (!empty($itemUri)) {
+            if (isset($itemArray['itunes'])) {
+                foreach ($itemArray['itunes'] as $itunesKey => $itunesValue) {
+                    $itunesProperty = $document->createElementNS(self::ITUNES_NS, $itunesKey);
+                    $entry->appendChild($itunesProperty);
+                    $itunesProperty->appendChild($document->createTextNode($itunesValue));
+                }
+                $itunesEnclosure = $document->createElement('enclosure');
+                $entry->appendChild($itunesEnclosure);
+                $itunesEnclosure->setAttribute('url', $itemArray['enclosure']);
+            } if (!empty($itemUri)) {
                 $entryLink = $document->createElement('link');
                 $entry->appendChild($entryLink);
                 $entryLink->appendChild($document->createTextNode($itemUri));

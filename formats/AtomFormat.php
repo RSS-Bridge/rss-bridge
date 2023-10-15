@@ -30,6 +30,7 @@ class AtomFormat extends FormatAbstract
         $feed = $document->createElementNS(self::ATOM_NS, 'feed');
         $document->appendChild($feed);
         $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
+        $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
 
         $title = $document->createElement('title');
         $feed->appendChild($title);
@@ -81,6 +82,7 @@ class AtomFormat extends FormatAbstract
         $linkSelf->setAttribute('href', $feedUrl);
 
         foreach ($this->getItems() as $item) {
+            $itemArray = $item->toArray();
             $entryTimestamp = $item->getTimestamp();
             $entryTitle = $item->getTitle();
             $entryContent = $item->getContent();
@@ -138,7 +140,16 @@ class AtomFormat extends FormatAbstract
             $entry->appendChild($id);
             $id->appendChild($document->createTextNode($entryID));
 
-            if (!empty($entryUri)) {
+            if (isset($itemArray['itunes'])) {
+                foreach ($itemArray['itunes'] as $itunesKey => $itunesValue) {
+                    $itunesProperty = $document->createElementNS(self::ITUNES_NS, $itunesKey);
+                    $entry->appendChild($itunesProperty);
+                    $itunesProperty->appendChild($document->createTextNode($itunesValue));
+                }
+                $itunesEnclosure = $document->createElement('enclosure');
+                $entry->appendChild($itunesEnclosure);
+                $itunesEnclosure->setAttribute('url', $itemArray['enclosure']);
+            } elseif (!empty($entryUri)) {
                 $entryLinkAlternate = $document->createElement('link');
                 $entry->appendChild($entryLinkAlternate);
                 $entryLinkAlternate->setAttribute('rel', 'alternate');

@@ -140,6 +140,14 @@ final class FeedParser
         if (isset($namespaces['media'])) {
             $media = $feedItem->children($namespaces['media']);
         }
+        if (isset($namespaces['itunes'])) {
+            $itunes = $feedItem->children($namespaces['itunes']);
+            $item['itunes'] = [];
+            foreach ($itunes as $itunesKey => $itunesValue) {
+                $item['itunes'][$itunesKey] = ((string)$itunesValue);
+            }
+            $item['enclosure'] = (string) $feedItem->enclosure['url'];
+        }
 
         if (isset($feedItem->guid)) {
             // Pluck out a url from guid
