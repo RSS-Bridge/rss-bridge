@@ -2,6 +2,8 @@
 
 abstract class FormatAbstract
 {
+    public const ITUNES_NS = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
+
     const MIME_TYPE = 'text/plain';
 
     protected string $charset = 'UTF-8';

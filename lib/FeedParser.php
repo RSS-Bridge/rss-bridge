@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 /**
- * Very basic and naive feed parser that srapes out rss 0.91, 1.0, 2.0 and atom 1.0.
+ * Very basic and naive feed parser.
  *
- * Emit arrays meant to be used inside rss-bridge.
+ * Scrapes out rss 0.91, 1.0, 2.0 and atom 1.0.
  *
- * The feed item structure is identical to that of FeedItem
+ * Produce arrays meant to be used inside rss-bridge.
+ *
+ * The item structure is tweaked so that works with FeedItem
  */
 final class FeedParser
 {
@@ -85,9 +87,7 @@ final class FeedParser
 
     public function parseAtomItem(\SimpleXMLElement $feedItem): array
     {
-        // Some ATOM entries also contain RSS 2.0 fields
         $item = $this->parseRss2Item($feedItem);
-
         if (isset($feedItem->id)) {
             $item['uri'] = (string)$feedItem->id;
         }
@@ -131,8 +131,35 @@ final class FeedParser
 
     public function parseRss2Item(\SimpleXMLElement $feedItem): array
     {
-        // Primary data is compatible to 0.91 with some additional data
-        $item = $this->parseRss091Item($feedItem);
+        $item = [
+            'uri'           => '',
+            'title'         => '',
+            'content'       => '',
+            'timestamp'     => '',
+            'author'        => '',
+            //'uid'           => null,
+            //'categories'    => [],
+            //'enclosures'    => [],
+        ];
+
+        foreach ($feedItem as $k => $v) {
+            $hasChildren = count($v) !== 0;
+            if (!$hasChildren) {
+                $item[$k] = (string) $v;
+            }
+        }
+
+        if (isset($feedItem->link)) {
+            // todo: trim uri
+            $item['uri'] = (string)$feedItem->link;
+        }
+        if (isset($feedItem->title)) {
+            $item['title'] = html_entity_decode((string)$feedItem->title);
+        }
+        if (isset($feedItem->description)) {
+            $item['content'] = (string)$feedItem->description;
+        }
+
         $namespaces = $feedItem->getNamespaces(true);
         if (isset($namespaces['dc'])) {
             $dc = $feedItem->children($namespaces['dc']);
@@ -140,7 +167,24 @@ final class FeedParser
         if (isset($namespaces['media'])) {
             $media = $feedItem->children($namespaces['media']);
         }
-
+        foreach ($namespaces as $namespaceName => $namespaceUrl) {
+            if (in_array($namespaceName, ['', 'content', 'media'])) {
+                continue;
+            }
+            $module = $feedItem->children($namespaceUrl);
+            $item[$namespaceName] = [];
+            foreach ($module as $moduleKey => $moduleValue) {
+                $item[$namespaceName][$moduleKey] = (string) $moduleValue;
+            }
+        }
+        if (isset($namespaces['itunes'])) {
+            $enclosure = $feedItem->enclosure;
+            $item['enclosure'] = [
+                'url'       => (string) $enclosure['url'],
+                'length'    => (string) $enclosure['length'],
+                'type'      => (string) $enclosure['type'],
+            ];
+        }
         if (isset($feedItem->guid)) {
             // Pluck out a url from guid
             foreach ($feedItem->guid->attributes() as $attribute => $value) {
@@ -185,29 +229,12 @@ final class FeedParser
 
     public function parseRss1Item(\SimpleXMLElement $feedItem): array
     {
-        // 1.0 adds optional elements around the 0.91 standard
-        $item = $this->parseRss091Item($feedItem);
-        $namespaces = $feedItem->getNamespaces(true);
-        if (isset($namespaces['dc'])) {
-            $dc = $feedItem->children($namespaces['dc']);
-            if (isset($dc->date)) {
-                $item['timestamp'] = strtotime((string)$dc->date);
-            }
-            if (isset($dc->creator)) {
-                $item['author'] = (string)$dc->creator;
-            }
-        }
-        return $item;
-    }
-
-    public function parseRss091Item(\SimpleXMLElement $feedItem): array
-    {
         $item = [
-            'uri'           => null,
-            'title'         => null,
-            'content'       => null,
-            'timestamp'     => null,
-            'author'        => null,
+            'uri'           => '',
+            'title'         => '',
+            'content'       => '',
+            'timestamp'     => '',
+            'author'        => '',
             //'uid'           => null,
             //'categories'    => [],
             //'enclosures'    => [],
@@ -219,11 +246,18 @@ final class FeedParser
         if (isset($feedItem->title)) {
             $item['title'] = html_entity_decode((string)$feedItem->title);
         }
-        // rss 0.91 doesn't support timestamps
-        // rss 0.91 doesn't support authors
-        // rss 0.91 doesn't support enclosures
         if (isset($feedItem->description)) {
             $item['content'] = (string)$feedItem->description;
+        }
+        $namespaces = $feedItem->getNamespaces(true);
+        if (isset($namespaces['dc'])) {
+            $dc = $feedItem->children($namespaces['dc']);
+            if (isset($dc->date)) {
+                $item['timestamp'] = strtotime((string)$dc->date);
+            }
+            if (isset($dc->creator)) {
+                $item['author'] = (string)$dc->creator;
+            }
         }
         return $item;
     }

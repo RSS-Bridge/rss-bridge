@@ -62,52 +62,27 @@ class NyaaTorrentsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        // Manually parsing because we need to acccess the nyaa namespace in the xml
-        $xml = simplexml_load_string(getContents($this->getURI()));
-        $channel = $xml->channel[0];
-        $feed = [];
-        $feed['title'] = trim((string)$channel->title);
-        $feed['uri'] = trim((string)$channel->link);
-        if (!empty($channel->image)) {
-            $feed['icon'] = trim((string)$channel->image->url);
-        }
-        $items = $xml->channel[0]->item;
-        foreach ($items as $feedItem) {
-            $item = [
-                'title' => (string) $feedItem->title,
-                'uri' => (string) $feedItem->link,
-            ];
+        $feedParser = new FeedParser();
+        $feed = $feedParser->parseFeed(getContents($this->getURI()));
 
-
+        foreach ($feed['items'] as $item) {
             $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
-
-            $nyaaNamespace = (array)($feedItem->children('nyaa', true));
-            $item = array_merge($item, $nyaaNamespace);
-
-            // Convert URI from torrent file to web page
             $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
             $item['uri'] = str_replace('.torrent', '', $item['uri']);
-
-            $item_html = getSimpleHTMLDOMCached($item['uri']);
-            if ($item_html) {
-                // Retrieve full description from page contents
-                $item_desc = str_get_html(
-                    markdownToHtml(html_entity_decode($item_html->find('#torrent-description', 0)->innertext))
-                );
-
-                // Retrieve image for thumbnail or generic logo fallback
+            $dom = getSimpleHTMLDOMCached($item['uri']);
+            if ($dom) {
+                $description = $dom->find('#torrent-description', 0)->innertext ?? '';
+                $itemDom = str_get_html(markdownToHtml(html_entity_decode($description)));
                 $item_image = $this->getURI() . 'static/img/avatar/default.png';
-                foreach ($item_desc->find('img') as $img) {
+                foreach ($itemDom->find('img') as $img) {
                     if (strpos($img->src, 'prez') === false) {
                         $item_image = $img->src;
                         break;
                     }
                 }
-
                 $item['enclosures'] = [$item_image];
-                $item['content'] = $item_desc;
+                $item['content'] = (string) $itemDom;
             }
-
             $this->items[] = $item;
             if (count($this->items) >= 10) {
                 break;

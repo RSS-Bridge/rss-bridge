@@ -50,7 +50,9 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
         $discard_thumbnail = $this->getInput('discard_thumbnail');
         $limit = $this->getInput('limit');
 
-        $source_feed = (new FeedParser())->parseFeed(getContents($url));
+        $feedParser = new FeedParser();
+        $xml = getContents($url);
+        $source_feed = $feedParser->parseFeed($xml);
         $items = $source_feed['items'];
 
         // Map Homepage URL (Default: Root page)
