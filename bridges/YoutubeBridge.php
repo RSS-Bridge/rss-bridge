@@ -201,8 +201,7 @@ class YoutubeBridge extends BridgeAbstract
             $this->feeduri = $url_listing;
             $this->feedName = 'Search: ' . $search;
         } else {
-            returnClientError("You must either specify either:\n - YouTube
- username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
+            returnClientError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
         }
     }
 
