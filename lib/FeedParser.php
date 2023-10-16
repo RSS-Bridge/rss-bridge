@@ -132,11 +132,11 @@ final class FeedParser
     public function parseRss2Item(\SimpleXMLElement $feedItem): array
     {
         $item = [
-            'uri'           => null,
-            'title'         => null,
-            'content'       => null,
-            'timestamp'     => null,
-            'author'        => null,
+            'uri'           => '',
+            'title'         => '',
+            'content'       => '',
+            'timestamp'     => '',
+            'author'        => '',
             //'uid'           => null,
             //'categories'    => [],
             //'enclosures'    => [],
@@ -230,11 +230,11 @@ final class FeedParser
     public function parseRss1Item(\SimpleXMLElement $feedItem): array
     {
         $item = [
-            'uri'           => null,
-            'title'         => null,
-            'content'       => null,
-            'timestamp'     => null,
-            'author'        => null,
+            'uri'           => '',
+            'title'         => '',
+            'content'       => '',
+            'timestamp'     => '',
+            'author'        => '',
             //'uid'           => null,
             //'categories'    => [],
             //'enclosures'    => [],
