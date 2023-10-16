@@ -96,7 +96,6 @@ class YoutubeBridge extends BridgeAbstract
 
     private function collectDataInternal()
     {
-        $xml = '';
         $html = '';
         $url_feed = '';
         $url_listing = '';
@@ -115,16 +114,13 @@ class YoutubeBridge extends BridgeAbstract
 
         if ($username) {
             // user and channel
-            $request = $username;
-            $url_feed = self::URI . '/feeds/videos.xml?user=' . urlencode($request);
-            $url_listing = self::URI . '/user/' . urlencode($request) . '/videos';
+            $url_feed = self::URI . '/feeds/videos.xml?user=' . urlencode($username);
+            $url_listing = self::URI . '/user/' . urlencode($username) . '/videos';
         } elseif ($channel) {
-            $request = $channel;
-            $url_feed = self::URI . '/feeds/videos.xml?channel_id=' . urlencode($request);
-            $url_listing = self::URI . '/channel/' . urlencode($request) . '/videos';
+            $url_feed = self::URI . '/feeds/videos.xml?channel_id=' . urlencode($channel);
+            $url_listing = self::URI . '/channel/' . urlencode($channel) . '/videos';
         } elseif ($custom) {
-            $request = $custom;
-            $url_listing = self::URI . '/' . urlencode($request) . '/videos';
+            $url_listing = self::URI . '/' . urlencode($custom) . '/videos';
         }
 
         if ($url_feed || $url_listing) {
@@ -152,7 +148,7 @@ class YoutubeBridge extends BridgeAbstract
                     // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
                     $this->fetchItemsFromFromJsonData($jsonData);
                 } else {
-                    returnServerError('Unable to get data from YouTube. Username/Channel: ' . $request);
+                    returnServerError('Unable to get data from YouTube');
                 }
             } else {
                 // Fetch the xml feed
@@ -162,13 +158,8 @@ class YoutubeBridge extends BridgeAbstract
             $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
         } elseif ($playlist) {
             // playlist
-            // TODO: this mode makes a lot of excess video query requests.
-            // To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
-            // This cache will be used to find out, which videos to fetch
-            // to make feed of 15 items or more, if there a lot of videos published on that date.
-            $request = $playlist;
-            $url_feed = self::URI . '/feeds/videos.xml?playlist_id=' . urlencode($request);
-            $url_listing = self::URI . '/playlist?list=' . urlencode($request);
+            $url_feed = self::URI . '/feeds/videos.xml?playlist_id=' . urlencode($playlist);
+            $url_listing = self::URI . '/playlist?list=' . urlencode($playlist);
             $html = $this->fetch($url_listing);
             $jsonData = $this->extractJsonFromHtml($html);
             // TODO: this method returns only first 100 video items
@@ -194,8 +185,7 @@ class YoutubeBridge extends BridgeAbstract
             });
         } elseif ($search) {
             // search
-            $request = $search;
-            $url_listing = self::URI . '/results?search_query=' . urlencode($request) . '&sp=CAI%253D';
+            $url_listing = self::URI . '/results?search_query=' . urlencode($search) . '&sp=CAI%253D';
             $html = $this->fetch($url_listing);
             $jsonData = $this->extractJsonFromHtml($html);
             $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
@@ -209,10 +199,9 @@ class YoutubeBridge extends BridgeAbstract
             }
             $this->fetchItemsFromFromJsonData($jsonData);
             $this->feeduri = $url_listing;
-            $this->feedName = 'Search: ' . $request;
+            $this->feedName = 'Search: ' . $search;
         } else {
-            returnClientError("You must either specify either:\n - YouTube
- username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
+            returnClientError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
         }
     }
 
