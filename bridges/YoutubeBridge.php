@@ -152,8 +152,8 @@ class YoutubeBridge extends BridgeAbstract
                 }
             } else {
                 // Fetch the xml feed
-                $xml = $this->fetch($url_feed);
-                $this->extractItemsFromXmlFeed($xml);
+                $html = $this->fetch($url_feed);
+                $this->extractItemsFromXmlFeed($html);
             }
             $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
         } elseif ($playlist) {
