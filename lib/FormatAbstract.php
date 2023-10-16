@@ -2,7 +2,7 @@
 
 abstract class FormatAbstract
 {
-    protected const ITUNES_NS = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
+    public const ITUNES_NS = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
 
     const MIME_TYPE = 'text/plain';
 

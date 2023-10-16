@@ -16,6 +16,8 @@ class AtomFormat extends FormatAbstract
 
     public function stringify()
     {
+        $document = new \DomDocument('1.0', $this->getCharset());
+
         $feedUrl = get_current_url();
 
         $extraInfos = $this->getExtraInfos();
@@ -25,12 +27,10 @@ class AtomFormat extends FormatAbstract
             $uri = $extraInfos['uri'];
         }
 
-        $document = new \DomDocument('1.0', $this->getCharset());
         $document->formatOutput = true;
         $feed = $document->createElementNS(self::ATOM_NS, 'feed');
         $document->appendChild($feed);
         $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
-        $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
 
         $title = $document->createElement('title');
         $feed->appendChild($title);
@@ -141,6 +141,7 @@ class AtomFormat extends FormatAbstract
             $id->appendChild($document->createTextNode($entryID));
 
             if (isset($itemArray['itunes'])) {
+                $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
                 foreach ($itemArray['itunes'] as $itunesKey => $itunesValue) {
                     $itunesProperty = $document->createElementNS(self::ITUNES_NS, $itunesKey);
                     $entry->appendChild($itunesProperty);
@@ -148,7 +149,9 @@ class AtomFormat extends FormatAbstract
                 }
                 $itunesEnclosure = $document->createElement('enclosure');
                 $entry->appendChild($itunesEnclosure);
-                $itunesEnclosure->setAttribute('url', $itemArray['enclosure']);
+                $itunesEnclosure->setAttribute('url', $itemArray['enclosure']['url']);
+                $itunesEnclosure->setAttribute('length', $itemArray['enclosure']['length']);
+                $itunesEnclosure->setAttribute('type', $itemArray['enclosure']['type']);
             } elseif (!empty($entryUri)) {
                 $entryLinkAlternate = $document->createElement('link');
                 $entry->appendChild($entryLinkAlternate);
