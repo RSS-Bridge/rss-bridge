@@ -244,16 +244,26 @@ function convertLazyLoading($dom)
         $dom = str_get_html($dom);
     }
 
+    // Retrieve image URL from srcset attribute
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset
+    // Example: convert "header640.png 640w, header960.png 960w, header1024.png 1024w" to "header1024.png"
+    $srcset_to_src = function ($srcset) {
+        $sources = explode(',', $srcset);
+        $last_entry = trim(end($sources));
+        $url = explode(' ', $last_entry)[0];
+        return $url;
+    };
+
     // Process standalone images, embeds and picture sources
     foreach ($dom->find('img, iframe, source') as $img) {
         if (!empty($img->getAttribute('data-src'))) {
             $img->src = $img->getAttribute('data-src');
         } elseif (!empty($img->getAttribute('data-srcset'))) {
-            $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
+            $img->src = $srcset_to_src($img->getAttribute('data-srcset'));
         } elseif (!empty($img->getAttribute('data-lazy-src'))) {
             $img->src = $img->getAttribute('data-lazy-src');
         } elseif (!empty($img->getAttribute('srcset'))) {
-            $img->src = explode(' ', $img->getAttribute('srcset'))[0];
+            $img->src = $srcset_to_src($img->getAttribute('srcset'));
         } else {
             continue; // Proceed to next element without removing attributes
         }
