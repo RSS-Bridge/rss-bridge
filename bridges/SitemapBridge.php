@@ -131,7 +131,7 @@ class SitemapBridge extends CssSelectorBridge
         foreach ($sitemap->find('sitemap') as $nested_sitemap) {
             $url = $nested_sitemap->find('loc');
             if (!empty($url)) {
-                $url = $url[0]->plaintext;
+                $url = trim($url[0]->plaintext);
                 if (str_ends_with(strtolower($url), '.xml')) {
                     $nested_sitemap_xml = $this->getSitemapXml($url, true);
                     $nested_sitemap_links = $this->sitemapXmlToList($nested_sitemap_xml, $url_pattern, null, true);
@@ -148,8 +148,8 @@ class SitemapBridge extends CssSelectorBridge
             $url = $item->find('loc');
             $lastmod = $item->find('lastmod');
             if (!empty($url) && !empty($lastmod)) {
-                $url = $url[0]->plaintext;
-                $lastmod = $lastmod[0]->plaintext;
+                $url = trim($url[0]->plaintext);
+                $lastmod = trim($lastmod[0]->plaintext);
                 $timestamp = strtotime($lastmod);
                 if (empty($url_pattern) || preg_match('/' . $url_pattern . '/', $url) === 1) {
                     $links[$url] = $timestamp;
