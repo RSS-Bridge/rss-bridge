@@ -100,7 +100,7 @@ class MarktplaatsBridge extends BridgeAbstract
                 'required' => false,
                 'title' => 'Include the raw data behind the content',
             ],
-            '2' => [
+            'sc' => [
                 'name' => 'Sub category',
                 'type' => 'number',
                 'required' => false,
@@ -132,8 +132,8 @@ class MarktplaatsBridge extends BridgeAbstract
         if (!is_null($this->getInput('c'))) {
             $query .= '&l1CategoryId=' . $this->getInput('c');
         }
-        if (!is_null($this->getInput('2'))) {
-            $query .= '&l2CategoryId=' . $this->getInput('2');
+        if (!is_null($this->getInput('sc'))) {
+            $query .= '&l2CategoryId=' . $this->getInput('sc');
         }
         $url = 'https://www.marktplaats.nl/lrp/api/search?query=' . urlencode($this->getInput('q')) . $query;
         $jsonString = getSimpleHTMLDOM($url);
@@ -186,7 +186,10 @@ class MarktplaatsBridge extends BridgeAbstract
         return parent::getName();
     }
 
-    public static function getCategories()
+    /**
+     * Method can be used to scrape the subcategories from marktplaats
+     */
+    public static function scrapeSubCategories()
     {
         $ids = [
             '1',
