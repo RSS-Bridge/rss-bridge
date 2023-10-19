@@ -9,9 +9,6 @@ const PATH_LIB_CACHES = __DIR__ . '/../caches/';
 /** Path to the cache folder */
 const PATH_CACHE = __DIR__ . '/../cache/';
 
-/** URL to the RSS-Bridge repository */
-const REPOSITORY = 'https://github.com/RSS-Bridge/rss-bridge/';
-
 // Allow larger files for simple_html_dom
 // todo: extract to config (if possible)
 const MAX_FILE_SIZE = 10000000;

@@ -3,8 +3,6 @@
 
 	<title type="text">Sample feed with minimum data</title>
 	<id>https://example.com/feed</id>
-	<icon>https://github.com/favicon.ico</icon>
-	<logo>https://github.com/favicon.ico</logo>
 	<updated>2000-01-01T12:00:00+00:00</updated>
 	<author>
 		<name>RSS-Bridge</name>

@@ -280,7 +280,7 @@ class ItakuBridge extends BridgeAbstract
                 $opt['range'] = '';
                 $user_id = $this->getInput('user_id') ?? $this->getOwnerID($this->getInput('user'));
 
-                $data = $this->getFeed(
+                $data = $this->getFeedData(
                     $opt,
                     $user_id
                 );
@@ -289,7 +289,7 @@ class ItakuBridge extends BridgeAbstract
             if ($this->queriedContext === 'Home feed') {
                 $opt['order'] = $this->getInput('order');
                 $opt['range'] = $this->getInput('range');
-                $data = $this->getFeed($opt);
+                $data = $this->getFeedData($opt);
             }
 
             foreach ($data['results'] as $record) {
@@ -409,7 +409,7 @@ class ItakuBridge extends BridgeAbstract
         return $this->getData($url, false, true);
     }
 
-    private function getFeed(array $opt, $ownerID = null)
+    private function getFeedData(array $opt, $ownerID = null)
     {
         $url = self::URI . "/api/feed/?date_range={$opt['range']}&ordering={$opt['order']}&page=1&page_size=30&format=json";
 

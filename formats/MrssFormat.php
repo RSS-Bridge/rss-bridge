@@ -37,12 +37,9 @@ class MrssFormat extends FormatAbstract
         $document = new \DomDocument('1.0', $this->getCharset());
 
         $feedUrl = get_current_url();
-        $extraInfos = $this->getExtraInfos();
-        if (empty($extraInfos['uri'])) {
-            $uri = REPOSITORY;
-        } else {
-            $uri = $extraInfos['uri'];
-        }
+        $feedArray = $this->getFeed();
+
+        $uri = $feedArray['uri'];
 
         $document->formatOutput = true;
         $feed = $document->createElement('rss');
@@ -54,7 +51,7 @@ class MrssFormat extends FormatAbstract
         $channel = $document->createElement('channel');
         $feed->appendChild($channel);
 
-        $title = $extraInfos['name'];
+        $title = $feedArray['name'];
         $channelTitle = $document->createElement('title');
         $channel->appendChild($channelTitle);
         $channelTitle->appendChild($document->createTextNode($title));
@@ -65,15 +62,16 @@ class MrssFormat extends FormatAbstract
 
         $description = $document->createElement('description');
         $channel->appendChild($description);
-        $description->appendChild($document->createTextNode($extraInfos['name']));
+        $description->appendChild($document->createTextNode($title));
 
         $allowedIconExtensions = [
             '.gif',
             '.jpg',
             '.png',
+            '.ico',
         ];
-        $icon = $extraInfos['icon'];
-        if (!empty($icon) && in_array(substr($icon, -4), $allowedIconExtensions)) {
+        $icon = $feedArray['icon'];
+        if ($icon && in_array(substr($icon, -4), $allowedIconExtensions)) {
             $feedImage = $document->createElement('image');
             $channel->appendChild($feedImage);
             $iconUrl = $document->createElement('url');

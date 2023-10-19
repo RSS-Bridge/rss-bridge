@@ -3,7 +3,7 @@
 abstract class BridgeAbstract
 {
     const NAME = 'Unnamed bridge';
-    const URI = '';
+    const URI = null;
     const DONATION_URI = '';
     const DESCRIPTION = 'No description provided';
     const MAINTAINER = 'No maintainer';
@@ -40,9 +40,38 @@ abstract class BridgeAbstract
 
     abstract public function collectData();
 
-    public function getItems()
+    public function getFeed(): array
     {
-        return $this->items;
+        return [
+            'name'          => $this->getName(),
+            'uri'           => $this->getURI(),
+            'donationUri'   => $this->getDonationURI(),
+            'icon'          => $this->getIcon(),
+        ];
+    }
+
+    public function getName()
+    {
+        return static::NAME;
+    }
+
+    public function getURI()
+    {
+        return static::URI ?? 'https://github.com/RSS-Bridge/rss-bridge/';
+    }
+
+    public function getDonationURI(): string
+    {
+        return static::DONATION_URI;
+    }
+
+    public function getIcon()
+    {
+        if (static::URI) {
+            // This favicon may or may not exist
+            return rtrim(static::URI, '/') . '/favicon.ico';
+        }
+        return '';
     }
 
     public function getOption(string $name)
@@ -50,6 +79,9 @@ abstract class BridgeAbstract
         return $this->configuration[$name] ?? null;
     }
 
+    /**
+     * The description is currently not used in feed production
+     */
     public function getDescription()
     {
         return static::DESCRIPTION;
@@ -60,29 +92,14 @@ abstract class BridgeAbstract
         return static::MAINTAINER;
     }
 
-    public function getName()
-    {
-        return static::NAME;
-    }
-
-    public function getIcon()
-    {
-        return static::URI . '/favicon.ico';
-    }
-
     public function getParameters(): array
     {
         return static::PARAMETERS;
     }
 
-    public function getURI()
+    public function getItems()
     {
-        return static::URI;
-    }
-
-    public function getDonationURI(): string
-    {
-        return static::DONATION_URI;
+        return $this->items;
     }
 
     public function getCacheTimeout()

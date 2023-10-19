@@ -20,12 +20,9 @@ class AtomFormat extends FormatAbstract
 
         $feedUrl = get_current_url();
 
-        $extraInfos = $this->getExtraInfos();
-        if (empty($extraInfos['uri'])) {
-            $uri = REPOSITORY;
-        } else {
-            $uri = $extraInfos['uri'];
-        }
+        $feedArray = $this->getFeed();
+
+        $uri = $feedArray['uri'];
 
         $document->formatOutput = true;
         $feed = $document->createElementNS(self::ATOM_NS, 'feed');
@@ -35,25 +32,22 @@ class AtomFormat extends FormatAbstract
         $title = $document->createElement('title');
         $feed->appendChild($title);
         $title->setAttribute('type', 'text');
-        $title->appendChild($document->createTextNode($extraInfos['name']));
+        $title->appendChild($document->createTextNode($feedArray['name']));
 
         $id = $document->createElement('id');
         $feed->appendChild($id);
         $id->appendChild($document->createTextNode($feedUrl));
 
-        $uriparts = parse_url($uri);
-        if (empty($extraInfos['icon'])) {
-            $iconUrl = $uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico';
-        } else {
-            $iconUrl = $extraInfos['icon'];
-        }
-        $icon = $document->createElement('icon');
-        $feed->appendChild($icon);
-        $icon->appendChild($document->createTextNode($iconUrl));
+        $iconUrl = $feedArray['icon'];
+        if ($iconUrl) {
+            $icon = $document->createElement('icon');
+            $feed->appendChild($icon);
+            $icon->appendChild($document->createTextNode($iconUrl));
 
-        $logo = $document->createElement('logo');
-        $feed->appendChild($logo);
-        $logo->appendChild($document->createTextNode($iconUrl));
+            $logo = $document->createElement('logo');
+            $feed->appendChild($logo);
+            $logo->appendChild($document->createTextNode($iconUrl));
+        }
 
         $feedTimestamp = gmdate(DATE_ATOM, $this->lastModified);
         $updated = $document->createElement('updated');
@@ -69,11 +63,13 @@ class AtomFormat extends FormatAbstract
         $author->appendChild($authorName);
         $authorName->appendChild($document->createTextNode($feedAuthor));
 
-        $linkAlternate = $document->createElement('link');
-        $feed->appendChild($linkAlternate);
-        $linkAlternate->setAttribute('rel', 'alternate');
-        $linkAlternate->setAttribute('type', 'text/html');
-        $linkAlternate->setAttribute('href', $uri);
+        if ($uri) {
+            $linkAlternate = $document->createElement('link');
+            $feed->appendChild($linkAlternate);
+            $linkAlternate->setAttribute('rel', 'alternate');
+            $linkAlternate->setAttribute('type', 'text/html');
+            $linkAlternate->setAttribute('href', $uri);
+        }
 
         $linkSelf = $document->createElement('link');
         $feed->appendChild($linkSelf);
