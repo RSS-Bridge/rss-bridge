@@ -35,13 +35,8 @@ class MrssFormat extends FormatAbstract
     public function stringify()
     {
         $document = new \DomDocument('1.0', $this->getCharset());
-
-        $feedUrl = get_current_url();
-        $feedArray = $this->getFeed();
-
-        $uri = $feedArray['uri'];
-
         $document->formatOutput = true;
+
         $feed = $document->createElement('rss');
         $document->appendChild($feed);
         $feed->setAttribute('version', '2.0');
@@ -51,51 +46,73 @@ class MrssFormat extends FormatAbstract
         $channel = $document->createElement('channel');
         $feed->appendChild($channel);
 
+        $feedArray = $this->getFeed();
+        $uri = $feedArray['uri'];
         $title = $feedArray['name'];
-        $channelTitle = $document->createElement('title');
-        $channel->appendChild($channelTitle);
-        $channelTitle->appendChild($document->createTextNode($title));
 
-        $link = $document->createElement('link');
-        $channel->appendChild($link);
-        $link->appendChild($document->createTextNode($uri));
+        foreach ($feedArray as $feedKey => $feedValue) {
+            if (in_array($feedKey, ['atom', 'donationUri'])) {
+                continue;
+            }
+            if ($feedKey === 'name') {
+                $channelTitle = $document->createElement('title');
+                $channel->appendChild($channelTitle);
+                $channelTitle->appendChild($document->createTextNode($title));
 
-        $description = $document->createElement('description');
-        $channel->appendChild($description);
-        $description->appendChild($document->createTextNode($title));
+                $description = $document->createElement('description');
+                $channel->appendChild($description);
+                $description->appendChild($document->createTextNode($title));
+            } elseif ($feedKey === 'uri') {
+                $link = $document->createElement('link');
+                $channel->appendChild($link);
+                $link->appendChild($document->createTextNode($uri));
 
-        $allowedIconExtensions = [
-            '.gif',
-            '.jpg',
-            '.png',
-            '.ico',
-        ];
-        $icon = $feedArray['icon'];
-        if ($icon && in_array(substr($icon, -4), $allowedIconExtensions)) {
-            $feedImage = $document->createElement('image');
-            $channel->appendChild($feedImage);
-            $iconUrl = $document->createElement('url');
-            $iconUrl->appendChild($document->createTextNode($icon));
-            $feedImage->appendChild($iconUrl);
-            $iconTitle = $document->createElement('title');
-            $iconTitle->appendChild($document->createTextNode($title));
-            $feedImage->appendChild($iconTitle);
-            $iconLink = $document->createElement('link');
-            $iconLink->appendChild($document->createTextNode($uri));
-            $feedImage->appendChild($iconLink);
+                $linkAlternate = $document->createElementNS(self::ATOM_NS, 'link');
+                $channel->appendChild($linkAlternate);
+                $linkAlternate->setAttribute('rel', 'alternate');
+                $linkAlternate->setAttribute('type', 'text/html');
+                $linkAlternate->setAttribute('href', $uri);
+
+                $linkSelf = $document->createElementNS(self::ATOM_NS, 'link');
+                $channel->appendChild($linkSelf);
+                $linkSelf->setAttribute('rel', 'self');
+                $linkSelf->setAttribute('type', 'application/atom+xml');
+                $feedUrl = get_current_url();
+                $linkSelf->setAttribute('href', $feedUrl);
+            } elseif ($feedKey === 'icon') {
+                $allowedIconExtensions = [
+                    '.gif',
+                    '.jpg',
+                    '.png',
+                    '.ico',
+                ];
+                $icon = $feedValue;
+                if ($icon && in_array(substr($icon, -4), $allowedIconExtensions)) {
+                    $feedImage = $document->createElement('image');
+                    $channel->appendChild($feedImage);
+                    $iconUrl = $document->createElement('url');
+                    $iconUrl->appendChild($document->createTextNode($icon));
+                    $feedImage->appendChild($iconUrl);
+                    $iconTitle = $document->createElement('title');
+                    $iconTitle->appendChild($document->createTextNode($title));
+                    $feedImage->appendChild($iconTitle);
+                    $iconLink = $document->createElement('link');
+                    $iconLink->appendChild($document->createTextNode($uri));
+                    $feedImage->appendChild($iconLink);
+                }
+            } elseif ($feedKey === 'itunes') {
+                $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
+                foreach ($feedValue as $itunesKey => $itunesValue) {
+                    $itunesProperty = $document->createElementNS(self::ITUNES_NS, $itunesKey);
+                    $channel->appendChild($itunesProperty);
+                    $itunesProperty->appendChild($document->createTextNode($itunesValue));
+                }
+            } else {
+                $channelTitle = $document->createElement($feedKey);
+                $channel->appendChild($channelTitle);
+                $channelTitle->appendChild($document->createTextNode($feedValue));
+            }
         }
-
-        $linkAlternate = $document->createElementNS(self::ATOM_NS, 'link');
-        $channel->appendChild($linkAlternate);
-        $linkAlternate->setAttribute('rel', 'alternate');
-        $linkAlternate->setAttribute('type', 'text/html');
-        $linkAlternate->setAttribute('href', $uri);
-
-        $linkSelf = $document->createElementNS(self::ATOM_NS, 'link');
-        $channel->appendChild($linkSelf);
-        $linkSelf->setAttribute('rel', 'self');
-        $linkSelf->setAttribute('type', 'application/atom+xml');
-        $linkSelf->setAttribute('href', $feedUrl);
 
         foreach ($this->getItems() as $item) {
             $itemArray = $item->toArray();

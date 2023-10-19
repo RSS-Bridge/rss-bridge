@@ -3,7 +3,7 @@
 abstract class BridgeAbstract
 {
     const NAME = 'Unnamed bridge';
-    const URI = null;
+    const URI = '';
     const DONATION_URI = '';
     const DESCRIPTION = 'No description provided';
     const MAINTAINER = 'No maintainer';
