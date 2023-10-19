@@ -17,37 +17,60 @@ class AtomFormat extends FormatAbstract
     public function stringify()
     {
         $document = new \DomDocument('1.0', $this->getCharset());
+        $document->formatOutput = true;
 
         $feedUrl = get_current_url();
 
-        $feedArray = $this->getFeed();
-
-        $uri = $feedArray['uri'];
-
-        $document->formatOutput = true;
         $feed = $document->createElementNS(self::ATOM_NS, 'feed');
         $document->appendChild($feed);
         $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
 
-        $title = $document->createElement('title');
-        $feed->appendChild($title);
-        $title->setAttribute('type', 'text');
-        $title->appendChild($document->createTextNode($feedArray['name']));
+        $feedArray = $this->getFeed();
+        foreach ($feedArray as $feedKey => $feedValue) {
+            if (in_array($feedKey, ['donationUri'])) {
+                continue;
+            }
+            if ($feedKey === 'name') {
+                $title = $document->createElement('title');
+                $feed->appendChild($title);
+                $title->setAttribute('type', 'text');
+                $title->appendChild($document->createTextNode($feedValue));
+            } elseif ($feedKey === 'icon') {
+                if ($feedValue) {
+                    $icon = $document->createElement('icon');
+                    $feed->appendChild($icon);
+                    $icon->appendChild($document->createTextNode($feedValue));
+
+                    $logo = $document->createElement('logo');
+                    $feed->appendChild($logo);
+                    $logo->appendChild($document->createTextNode($feedValue));
+                }
+            } elseif ($feedKey === 'uri') {
+                if ($feedValue) {
+                    $linkAlternate = $document->createElement('link');
+                    $feed->appendChild($linkAlternate);
+                    $linkAlternate->setAttribute('rel', 'alternate');
+                    $linkAlternate->setAttribute('type', 'text/html');
+                    $linkAlternate->setAttribute('href', $feedValue);
+
+                    $linkSelf = $document->createElement('link');
+                    $feed->appendChild($linkSelf);
+                    $linkSelf->setAttribute('rel', 'self');
+                    $linkSelf->setAttribute('type', 'application/atom+xml');
+                    $linkSelf->setAttribute('href', $feedUrl);
+                }
+            } elseif ($feedKey === 'itunes') {
+                // todo: skip?
+            } else {
+                $element = $document->createElement($feedKey);
+                $feed->appendChild($element);
+                $element->appendChild($document->createTextNode($feedValue));
+            }
+        }
 
         $id = $document->createElement('id');
         $feed->appendChild($id);
         $id->appendChild($document->createTextNode($feedUrl));
-
-        $iconUrl = $feedArray['icon'];
-        if ($iconUrl) {
-            $icon = $document->createElement('icon');
-            $feed->appendChild($icon);
-            $icon->appendChild($document->createTextNode($iconUrl));
-
-            $logo = $document->createElement('logo');
-            $feed->appendChild($logo);
-            $logo->appendChild($document->createTextNode($iconUrl));
-        }
 
         $feedTimestamp = gmdate(DATE_ATOM, $this->lastModified);
         $updated = $document->createElement('updated');
@@ -63,19 +86,7 @@ class AtomFormat extends FormatAbstract
         $author->appendChild($authorName);
         $authorName->appendChild($document->createTextNode($feedAuthor));
 
-        if ($uri) {
-            $linkAlternate = $document->createElement('link');
-            $feed->appendChild($linkAlternate);
-            $linkAlternate->setAttribute('rel', 'alternate');
-            $linkAlternate->setAttribute('type', 'text/html');
-            $linkAlternate->setAttribute('href', $uri);
-        }
 
-        $linkSelf = $document->createElement('link');
-        $feed->appendChild($linkSelf);
-        $linkSelf->setAttribute('rel', 'self');
-        $linkSelf->setAttribute('type', 'application/atom+xml');
-        $linkSelf->setAttribute('href', $feedUrl);
 
         foreach ($this->getItems() as $item) {
             $itemArray = $item->toArray();

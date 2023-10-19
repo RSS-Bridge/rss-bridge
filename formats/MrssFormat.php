@@ -108,9 +108,9 @@ class MrssFormat extends FormatAbstract
                     $itunesProperty->appendChild($document->createTextNode($itunesValue));
                 }
             } else {
-                $channelTitle = $document->createElement($feedKey);
-                $channel->appendChild($channelTitle);
-                $channelTitle->appendChild($document->createTextNode($feedValue));
+                $element = $document->createElement($feedKey);
+                $channel->appendChild($element);
+                $element->appendChild($document->createTextNode($feedValue));
             }
         }
 
