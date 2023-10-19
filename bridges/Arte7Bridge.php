@@ -156,6 +156,10 @@ class Arte7Bridge extends BridgeAbstract
             . $element['mainImage']['url']
             . '" /></a>';
 
+            $item['itunes'] = [
+                'duration' => $durationSeconds,
+            ];
+
             $this->items[] = $item;
         }
     }
