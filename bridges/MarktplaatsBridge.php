@@ -18,22 +18,25 @@ class MarktplaatsBridge extends BridgeAbstract
                 'name' => 'Category',
                 'type' => 'list',
                 'values' => [
+                    'Select a category' => '',
                     'Antiek en Kunst' => '1',
                     'Audio, Tv en Foto' => '31',
+                    'Auto&#x27;s' => '91',
                     'Auto-onderdelen' => '2600',
                     'Auto diversen' => '48',
                     'Boeken' => '201',
                     'Caravans en Kamperen' => '289',
-                    'Cd\'s en Dvd\'s' => '1744',
+                    'Cd&#x27;s en Dvd&#x27;s' => '1744',
                     'Computers en Software' => '322',
                     'Contacten en Berichten' => '378',
                     'Diensten en Vakmensen' => '1098',
                     'Dieren en Toebehoren' => '395',
                     'Doe-het-zelf en Verbouw' => '239',
+                    'Fietsen en Brommers' => '445',
                     'Hobby en Vrije tijd' => '1099',
                     'Huis en Inrichting' => '504',
                     'Huizen en Kamers' => '1032',
-                    'Kinderen en Baby\'s' => '565',
+                    'Kinderen en Baby&#x27;s' => '565',
                     'Kleding | Dames' => '621',
                     'Kleding | Heren' => '1776',
                     'Motoren' => '678',
@@ -105,7 +108,8 @@ class MarktplaatsBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => false,
                 'exampleValue' => '12345',
-                'title' => 'Sub category has to be given by id as the list is too big to show here',
+                'title' => 'Sub category has to be given by id as the list is too big to show here. 
+                            Only use subcategories that belong to the main category. Both have to be correct',
             ],
         ]
     ];
@@ -129,7 +133,7 @@ class MarktplaatsBridge extends BridgeAbstract
                 $excludeGlobal = true;
             }
         }
-        if (!is_null($this->getInput('c'))) {
+        if (!empty($this->getInput('c'))) {
             $query .= '&l1CategoryId=' . $this->getInput('c');
         }
         if (!is_null($this->getInput('sc'))) {
@@ -152,15 +156,15 @@ class MarktplaatsBridge extends BridgeAbstract
                     $item['enclosures'] = $listing->imageUrls;
                     if (is_array($listing->imageUrls)) {
                         foreach ($listing->imageUrls as $imgurl) {
-                            $item['content'] .= "<br />\n<img src='https:" . $imgurl . "' />";
+                            $item['content'] .= "<br />\n<img alt='' src='https:" . $imgurl . "' />";
                         }
                     } else {
-                        $item['content'] .= "<br>\n<img src='https:" . $listing->imageUrls . "' />";
+                        $item['content'] .= "<br>\n<img alt='' src='https:" . $listing->imageUrls . "' />";
                     }
                 }
                 if (!is_null($this->getInput('r'))) {
                     if ($this->getInput('r')) {
-                        $item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing);
+                        $item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing) . "<br />$url";
                     }
                 }
                 $item['content'] .= "<br>\n<br>\nPrice: " . $listing->priceInfo->priceCents / 100;
@@ -191,61 +195,74 @@ class MarktplaatsBridge extends BridgeAbstract
      */
     public static function scrapeSubCategories()
     {
-        $ids = [
-            '1',
-            '31',
-            '2600',
-            '48',
-            '201',
-            '289',
-            '1744',
-            '322',
-            '378',
-            '1098',
-            '395',
-            '239',
-//            '445', # Does not work as expected (Fietsen en Brommers)
-            '1099',
-            '504',
-            '1032',
-            '565',
-            '621',
-            '1776',
-            '678',
-            '728',
-            '1784',
-            '1826',
-            '356',
-            '784',
-            '820',
-            '1984',
-            '1847',
-            '167',
-            '856',
-            '895',
-            '976',
-            '537',
-            '1085',
-            '428'
-        ];
         $main = [];
+        $main['Select a category'] = '';
+        $marktplaatsHTML = file_get_html('https://www.marktplaats.nl');
+        foreach ($marktplaatsHTML->find('select[id=categoryId] option') as $opt) {
+            if (!str_contains($opt->innertext, 'categorie')) {
+                $main[$opt->innertext] = $opt->value;
+                $ids[] = $opt->value;
+            }
+        }
+
         $result = [];
         foreach ($ids as $id) {
-            $jsonstring = getSimpleHTMLDOM('https://www.marktplaats.nl/lrp/api/search?l1CategoryId=' . $id);
-            $jsondata = json_decode($jsonstring);
-            $categories = $jsondata->searchCategoryOptions;
-            $maincategory = $jsondata->categoriesById->$id;
-            $main[$maincategory->fullName] = $maincategory->id;
-            $array = [];
-            foreach ($categories as $categorie) {
-                $array[$categorie->fullName] = $categorie->id;
+            $url = 'https://www.marktplaats.nl/lrp/api/search?l1CategoryId=' . $id;
+            $jsonstring = getContents($url);
+            $jsondata = json_decode((string)$jsonstring);
+            if (isset($jsondata->searchCategoryOptions)) {
+                $categories = $jsondata->searchCategoryOptions;
+                if (isset($jsondata->categoriesById->$id)) {
+                    $maincategory = $jsondata->categoriesById->$id;
+                    $array = [];
+                    foreach ($categories as $categorie) {
+                        $array[$categorie->fullName] = $categorie->id;
+                    }
+                    $result[$maincategory->fullName] = $array;
+                }
+            } else {
+                print($jsonstring);
             }
-            $result[$maincategory->fullName] = $array;
         }
         $combinedResult = [
             'main' => $main,
             'sub' => $result
         ];
         return $combinedResult;
+    }
+
+    /**
+     * Helper method to construct the array that could be used for categories
+     *
+     * @param $array
+     * @param $indent
+     * @return void
+     */
+    public static function printArrayAsCode($array, $indent = 0)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                echo str_repeat('    ', $indent) . "'$key' => [" . PHP_EOL;
+                self::printArrayAsCode($value, $indent + 1);
+                echo str_repeat('    ', $indent) . '],' . PHP_EOL;
+            } else {
+                $value = str_replace('\'', '\\\'', $value);
+                $key = str_replace('\'', '\\\'', $key);
+                echo str_repeat('    ', $indent) . "'$key' => '$value'," . PHP_EOL;
+            }
+        }
+    }
+
+    public static function printScrapeArray()
+    {
+        $array = (MarktplaatsBridge::scrapeSubCategories());
+
+        echo '$myArray = [' . PHP_EOL;
+        self::printArrayAsCode($array['main'], 1);
+        echo '];' . PHP_EOL;
+
+        echo '$myArray = [' . PHP_EOL;
+        self::printArrayAsCode($array['sub'], 1);
+        echo '];' . PHP_EOL;
     }
 }
