@@ -66,7 +66,7 @@ function getContents(
             try {
                 // Some servers send Unix timestamp instead of RFC7231 date. Prepend it with @ to allow parsing as DateTime
                 $cachedLastModified = new \DateTimeImmutable((is_numeric($cachedLastModified) ? '@' : '') . $cachedLastModified);
-                $config['if_not_modified_since'] = $cachedLastModified->format(DateTimeInterface::RFC7231);
+                $config['if_not_modified_since'] = $cachedLastModified->getTimestamp();
             } catch (Exception $dateTimeParseFailue) {
                 // Ignore invalid 'Last-Modified' HTTP header value
             }
