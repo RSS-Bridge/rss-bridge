@@ -446,7 +446,7 @@ class ItakuBridge extends BridgeAbstract
 
     private function getPost($id, array $metadata = null)
     {
-        if(sizeof($metadata['gallery_images']) < $metadata['num_images']){
+        if (sizeof($metadata['gallery_images']) < $metadata['num_images']) {
             $metadata = null; //force re-fetch of metadata
         }
         $uri = self::URI . '/posts/' . $id;
