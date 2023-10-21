@@ -201,7 +201,7 @@ class ItakuBridge extends BridgeAbstract
                 'rating_e' => $this->getInput('rating_e')
             ];
 
-            $tag_arr = explode(' ', $this->getInput('tags'));
+            $tag_arr = explode(' ', $this->getInput('tags') ?? '');
             foreach ($tag_arr as $str) {
                 switch ($str[0]) {
                     case '-':
