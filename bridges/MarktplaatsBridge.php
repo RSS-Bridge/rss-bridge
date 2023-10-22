@@ -193,7 +193,7 @@ class MarktplaatsBridge extends BridgeAbstract
     /**
      * Method can be used to scrape the subcategories from marktplaats
      */
-    public static function scrapeSubCategories()
+    private static function scrapeSubCategories()
     {
         $main = [];
         $main['Select a category'] = '';
@@ -238,7 +238,7 @@ class MarktplaatsBridge extends BridgeAbstract
      * @param $indent
      * @return void
      */
-    public static function printArrayAsCode($array, $indent = 0)
+    private static function printArrayAsCode($array, $indent = 0)
     {
         foreach ($array as $key => $value) {
             if (is_array($value)) {
@@ -253,7 +253,7 @@ class MarktplaatsBridge extends BridgeAbstract
         }
     }
 
-    public static function printScrapeArray()
+    private static function printScrapeArray()
     {
         $array = (MarktplaatsBridge::scrapeSubCategories());
 
