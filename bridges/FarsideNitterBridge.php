@@ -11,7 +11,8 @@ class FarsideNitterBridge extends FeedExpander
         [
             'username' => [
                 'name' => 'username',
-                'required' => true
+                'required' => true,
+                'exampleValue' => 'NASA'
             ],
             'noreply' => [
                 'name' => 'Without replies',
