@@ -52,7 +52,7 @@ class FarsideNitterBridge extends FeedExpander
         $this->getRSS();
     }
 
-    public function getRSS($attempt = 0)
+    private function getRSS($attempt = 0)
     {
         try {
             $this->collectExpandableDatas(self::URI . $this->getInput('username') . '/rss');
