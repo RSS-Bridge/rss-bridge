@@ -269,7 +269,15 @@ function convertLazyLoading($dom)
         } else {
             continue; // Proceed to next element without removing attributes
         }
-        // Remove attributes that may be processed by the client (data-* are not)
+
+        // Remove data attributes, no longer necessary
+        foreach ($img->getAllAttributes() as $attr => $val) {
+            if (str_starts_with($attr, 'data-')) {
+                $img->removeAttribute($attr);
+            }
+        }
+
+        // Remove other attributes that may be processed by the client
         foreach (['loading', 'decoding', 'srcset'] as $attr) {
             if ($img->hasAttribute($attr)) {
                 $img->removeAttribute($attr);
