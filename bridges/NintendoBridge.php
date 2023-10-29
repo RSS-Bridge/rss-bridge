@@ -3,7 +3,7 @@
 class NintendoBridge extends XPathAbstract
 {
     const NAME = 'Nintendo Software Updates';
-    const URI = 'https://www.nintendo.co.uk/Support/Welcome-to-Nintendo-Support-11593.html';
+    const URI = 'https://www.nintendo.co.uk';
     const DONATION_URI = '';
     const DESCRIPTION = self::NAME;
     const MAINTAINER = 'Niehztog';
@@ -57,7 +57,20 @@ class NintendoBridge extends XPathAbstract
 
     const CACHE_TIMEOUT = 3600;
 
-    //const FEED_SOURCE_URL = '';
+    const FEED_SOURCE_URL = [
+        'mk8d' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Mario-Kart-8-Deluxe-1482895.html',
+        's2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Splatoon-2-1482897.html',
+        'sm3as' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-All-Stars-1844226.html',
+        'sm3wbf' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-World-Bowser-s-Fury-1920668.html',
+        'smm2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Maker-2-1586745.html',
+        'smo' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Odyssey-1482901.html',
+        'ssbu' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Smash-Bros-Ultimate-1484130.html',
+        'sf' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/System-Updates/Nintendo-Switch-System-Updates-and-Change-History-1445507.html',
+        'tlozla' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
+        'tlozss' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
+        'tloztotk' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
+        'xc2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/Xenoblade-Chronicles-2-Update-History-1482911.html',
+    ];
     const XPATH_EXPRESSION_ITEM = '//div[@class="col-xs-12 content"]/div[starts-with(@id,"v") and @class="collapse"]';
     const XPATH_EXPRESSION_ITEM_FIRMWARE = '//div[@id="latest" and @class="collapse" and @rel="1"]';
     const XPATH_EXPRESSION_ITEM_TITLE = './/h2[1]/node()';
@@ -72,21 +85,6 @@ class NintendoBridge extends XPathAbstract
     //const XPATH_EXPRESSION_ITEM_CATEGORIES = '';
     const SETTING_FIX_ENCODING = false;
     const SETTING_USE_RAW_ITEM_CONTENT = true;
-
-    private const FEED_SOURCE_URLS = [
-        'mk8d' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Mario-Kart-8-Deluxe-1482895.html',
-        's2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Splatoon-2-1482897.html',
-        'sm3as' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-All-Stars-1844226.html',
-        'sm3wbf' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-World-Bowser-s-Fury-1920668.html',
-        'smm2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Maker-2-1586745.html',
-        'smo' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Odyssey-1482901.html',
-        'ssbu' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Smash-Bros-Ultimate-1484130.html',
-        'sf' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/System-Updates/Nintendo-Switch-System-Updates-and-Change-History-1445507.html',
-        'tlozla' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
-        'tlozss' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
-        'tloztotk' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
-        'xc2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/Xenoblade-Chronicles-2-Update-History-1482911.html',
-    ];
 
     private const GAME_COUNTRY_DATE_SUBSTRING_PART = [
         'mk8d' => [
@@ -342,7 +340,7 @@ class NintendoBridge extends XPathAbstract
     {
         $country = $this->getInput('country');
         $category = $this->getCurrentCategory();
-        return str_replace(self::PARAMETERS['']['country']['defaultValue'], $country, self::FEED_SOURCE_URLS[$category]);
+        return str_replace(self::PARAMETERS['']['country']['defaultValue'], $country, self::FEED_SOURCE_URL[$category]);
     }
 
     protected function getExpressionItem()
@@ -364,6 +362,13 @@ class NintendoBridge extends XPathAbstract
             [$this->lastId, static::GAME_COUNTRY_DATE_SUBSTRING_PART[$category][$language]],
             static::XPATH_EXPRESSION_ITEM_TIMESTAMP
         );
+    }
+
+    protected function getExpressionItemCategories()
+    {
+        $category = $this->getCurrentCategory();
+        $categoryName = array_search($category, self::PARAMETERS['']['category']['values']);
+        return 'string("' . $categoryName . '")';
     }
 
     public function collectData()
