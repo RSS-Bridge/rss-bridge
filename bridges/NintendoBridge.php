@@ -333,9 +333,9 @@ class NintendoBridge extends XPathAbstract
 
     protected function provideFeedTitle(\DOMXPath $xpath)
     {
-        $category = $this->getCurrentCategory();
+        $category = $this->getInput('category');
         $categoryName = array_search($category, self::PARAMETERS['']['category']['values']);
-        return $categoryName . ' Software-Updates';
+        return 'all' === $category ? self::NAME : $categoryName . ' Software-Updates';
     }
 
     protected function getSourceUrl()
@@ -428,6 +428,11 @@ class NintendoBridge extends XPathAbstract
             $date = new \DateTime('now');
         }
         return $date->getTimestamp();
+    }
+
+    protected function generateItemId(FeedItem $item)
+    {
+        return $this->getCurrentCategory() . '-' . $this->lastId;
     }
 
     private function getLanguageFromCountry($country)
