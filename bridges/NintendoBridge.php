@@ -3,7 +3,7 @@
 class NintendoBridge extends XPathAbstract
 {
     const NAME = 'Nintendo Software Updates';
-    const URI = 'https://www.nintendo.co.uk';
+    const URI = 'https://www.nintendo.co.uk/Support/Welcome-to-Nintendo-Support-11593.html';
     const DONATION_URI = '';
     const DESCRIPTION = self::NAME;
     const MAINTAINER = 'Niehztog';
@@ -327,6 +327,17 @@ class NintendoBridge extends XPathAbstract
             $this->currentCategory = $this->getInput('category');
         }
         return $this->currentCategory;
+    }
+
+    public function getIcon()
+    {
+        return 'https://www.nintendo.co.uk/favicon.ico';
+    }
+
+    public function getURI()
+    {
+        $category = $this->getInput('category');
+        return 'all' === $category ? self::URI : $this->getSourceUrl();
     }
 
     protected function provideFeedTitle(\DOMXPath $xpath)
