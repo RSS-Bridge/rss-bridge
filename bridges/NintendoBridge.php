@@ -331,7 +331,8 @@ class NintendoBridge extends XPathAbstract
     private function getCurrentCategory()
     {
         if (empty($this->currentCategory)) {
-            $this->currentCategory = $this->getInput('category');
+            $category = $this->getInput('category');
+            $this->currentCategory = empty($category) ? self::PARAMETERS['']['category']['defaultValue'] : $category;
         }
         return $this->currentCategory;
     }
