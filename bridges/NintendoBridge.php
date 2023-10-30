@@ -79,7 +79,7 @@ class NintendoBridge extends XPathAbstract
 
     //const XPATH_EXPRESSION_ITEM_AUTHOR = '';
     const XPATH_EXPRESSION_ITEM_TIMESTAMP_PART = 'substring-after(//a[@class="collapse_link collapsed" and @data-target="#{{id_here}}"]/text(), "{{label_here}}")';
-    const XPATH_EXPRESSION_ITEM_TIMESTAMP = 'substring('.self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART.', 1, string-length('.self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART.') - 1)';
+    const XPATH_EXPRESSION_ITEM_TIMESTAMP = 'substring(' . self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART . ', 1, string-length(' . self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART . ') - 1)';
 
     //const XPATH_EXPRESSION_ITEM_ENCLOSURES = '';
     //const XPATH_EXPRESSION_ITEM_CATEGORIES = '';
@@ -186,7 +186,7 @@ class NintendoBridge extends XPathAbstract
             'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
-        'xc2' =>[
+        'xc2' => [
             'de' => 'eröffentlicht am ',
             'es' => 'isponible desde el ',
             'fr' => 'atée du ',
@@ -309,12 +309,18 @@ class NintendoBridge extends XPathAbstract
     ];
 
     private const FOREIGN_MONTH_NAMES = [
-        'nl' => ['01' => 'januari', '02' => 'februari', '03' => 'maart', '04' => 'april', '05' => 'mei', '06' => 'juni', '07' => 'juli', '08' => 'augustus', '09' => 'september', '10' => 'oktober', '11' => 'november', '12' => 'december'],
-        'fr' => ['01' => 'janvier', '02' => 'février', '03' => 'mars', '04' => 'avril', '05' => 'mai', '06' => 'juin', '07' => 'juillet', '08' => 'août', '09' => 'septembre', '10' => 'octobre', '11' => 'novembre', '12' => 'décembre'],
-        'de' => ['01' => 'Januar', '02' => 'Februar', '03' => 'März', '04' => 'April', '05' => 'Mai', '06' => 'Juni', '07' => 'Juli', '08' => 'August', '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Dezember'],
-        'es' => ['01' => 'enero', '02' => 'febrero', '03' => 'marzo', '04' => 'abril', '05' => 'mayo', '06' => 'junio', '07' => 'julio', '08' => 'agosto', '09' => 'septiembre', '10' => 'octubre', '11' => 'noviembre', '12' => 'diciembre'],
-        'it' => ['01' => 'gennaio', '02' => 'febbraio', '03' => 'marzo', '04' => 'aprile', '05' => 'maggio', '06' => 'giugno', '07' => 'luglio', '08' => 'agosto', '09' => 'settembre', '10' => 'ottobre', '11' => 'novembre', '12' => 'dicembre'],
-        'pt' => ['01' => 'janeiro', '02' => 'fevereiro', '03' => 'março', '04' => 'abril', '05' => 'maio', '06' => 'junho', '07' => 'julho', '08' => 'agosto', '09' => 'setembro', '10' => 'outubro', '11' => 'novembro', '12' => 'dezembro'],
+        'nl' => ['01' => 'januari', '02' => 'februari', '03' => 'maart', '04' => 'april', '05' => 'mei', '06' => 'juni', '07' => 'juli', '08' => 'augustus',
+            '09' => 'september', '10' => 'oktober', '11' => 'november', '12' => 'december'],
+        'fr' => ['01' => 'janvier', '02' => 'février', '03' => 'mars', '04' => 'avril', '05' => 'mai', '06' => 'juin', '07' => 'juillet', '08' => 'août',
+            '09' => 'septembre', '10' => 'octobre', '11' => 'novembre', '12' => 'décembre'],
+        'de' => ['01' => 'Januar', '02' => 'Februar', '03' => 'März', '04' => 'April', '05' => 'Mai', '06' => 'Juni', '07' => 'Juli', '08' => 'August',
+            '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Dezember'],
+        'es' => ['01' => 'enero', '02' => 'febrero', '03' => 'marzo', '04' => 'abril', '05' => 'mayo', '06' => 'junio', '07' => 'julio', '08' => 'agosto',
+            '09' => 'septiembre', '10' => 'octubre', '11' => 'noviembre', '12' => 'diciembre'],
+        'it' => ['01' => 'gennaio', '02' => 'febbraio', '03' => 'marzo', '04' => 'aprile', '05' => 'maggio', '06' => 'giugno', '07' => 'luglio', '08' => 'agosto',
+            '09' => 'settembre', '10' => 'ottobre', '11' => 'novembre', '12' => 'dicembre'],
+        'pt' => ['01' => 'janeiro', '02' => 'fevereiro', '03' => 'março', '04' => 'abril', '05' => 'maio', '06' => 'junho', '07' => 'julho', '08' => 'agosto',
+            '09' => 'setembro', '10' => 'outubro', '11' => 'novembro', '12' => 'dezembro'],
     ];
     const LANGUAGE_REWRITE = ['co.uk' => 'en', 'co.za' => 'en', 'at' => 'de'];
 
@@ -323,7 +329,7 @@ class NintendoBridge extends XPathAbstract
 
     private function getCurrentCategory()
     {
-        if(empty($this->currentCategory)) {
+        if (empty($this->currentCategory)) {
             $this->currentCategory = $this->getInput('category');
         }
         return $this->currentCategory;
@@ -362,7 +368,7 @@ class NintendoBridge extends XPathAbstract
 
     protected function getExpressionItemTimestamp()
     {
-        if(empty($this->lastId)) {
+        if (empty($this->lastId)) {
             return null;
         }
         $country = $this->getInput('country');
@@ -385,10 +391,10 @@ class NintendoBridge extends XPathAbstract
     public function collectData()
     {
         $category = $this->getCurrentCategory();
-        if('all' === $category) {
+        if ('all' === $category) {
             $allItems = [];
-            foreach(self::PARAMETERS['']['category']['values'] as $catKey) {
-                if('all' === $catKey) {
+            foreach (self::PARAMETERS['']['category']['values'] as $catKey) {
+                if ('all' === $catKey) {
                     continue;
                 }
                 $this->currentCategory = $catKey;
@@ -398,18 +404,17 @@ class NintendoBridge extends XPathAbstract
             }
             $this->currentCategory = 'all';
             $this->items = $allItems;
-        }
-        else {
+        } else {
             parent::collectData();
         }
     }
 
     protected function formatItemTitle($value)
     {
-        if(false !== strpos($value, ' (')) {
+        if (false !== strpos($value, ' (')) {
             $value = substr($value, 0, strpos($value, ' ('));
         }
-        if('all' === $this->getInput('category')) {
+        if ('all' === $this->getInput('category')) {
             $category = $this->getCurrentCategory();
             $categoryName = array_search($category, self::PARAMETERS['']['category']['values']);
             return $categoryName . ' ' . $value;
@@ -420,27 +425,28 @@ class NintendoBridge extends XPathAbstract
     protected function formatItemContent($value)
     {
         $result = preg_match('~<div class="collapse" id="([a-z0-9]+)" rel="1">(.*)</div>~', $value, $matches);
-        if(1 === $result) {
+        if (1 === $result) {
             $this->lastId = $matches[1];
             return trim($matches[2]);
         }
         return $value;
     }
 
-    protected function formatItemTimestamp($value) {
+    protected function formatItemTimestamp($value)
+    {
         $country = $this->getInput('country');
         $category = $this->getCurrentCategory();
         $language = $this->getLanguageFromCountry($country);
 
         $aMonthNames = self::FOREIGN_MONTH_NAMES[$language] ?? null;
-        if(null !== $aMonthNames) {
+        if (null !== $aMonthNames) {
             $value = str_replace(array_values($aMonthNames), array_keys($aMonthNames), $value);
         }
         $value = str_replace( '­', '-', $value);
         $value = str_replace( '--', '-', $value);
 
         $date = \DateTime::createFromFormat(self::GAME_COUNTRY_DATE_FORMAT[$category][$language], $value);
-        if(false === $date) {
+        if (false === $date) {
             $date = new \DateTime('now');
         }
         return $date->getTimestamp();
@@ -455,5 +461,4 @@ class NintendoBridge extends XPathAbstract
     {
         return (strpos($country, '/') !== false) ? substr($country, strpos($country, '/') + 1) : (self::LANGUAGE_REWRITE[$country] ?? $country);
     }
-
 }
