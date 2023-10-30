@@ -319,11 +319,11 @@ class NintendoBridge extends XPathAbstract
     const LANGUAGE_REWRITE = ['co.uk' => 'en', 'co.za' => 'en', 'at' => 'de'];
 
     private string $lastId = '';
-    private string $currentCategory = '';
+    private ?string $currentCategory = '';
 
     private function getCurrentCategory()
     {
-        if('' === $this->currentCategory) {
+        if(empty($this->currentCategory)) {
             $this->currentCategory = $this->getInput('category');
         }
         return $this->currentCategory;
