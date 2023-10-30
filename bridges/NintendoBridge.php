@@ -79,7 +79,8 @@ class NintendoBridge extends XPathAbstract
 
     //const XPATH_EXPRESSION_ITEM_AUTHOR = '';
     const XPATH_EXPRESSION_ITEM_TIMESTAMP_PART = 'substring-after(//a[@class="collapse_link collapsed" and @data-target="#{{id_here}}"]/text(), "{{label_here}}")';
-    const XPATH_EXPRESSION_ITEM_TIMESTAMP = 'substring(' . self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART . ', 1, string-length(' . self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART . ') - 1)';
+    const XPATH_EXPRESSION_ITEM_TIMESTAMP = 'substring(' . self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART . ', 1, string-length('
+        . self::XPATH_EXPRESSION_ITEM_TIMESTAMP_PART . ') - 1)';
 
     //const XPATH_EXPRESSION_ITEM_ENCLOSURES = '';
     //const XPATH_EXPRESSION_ITEM_CATEGORIES = '';
@@ -442,8 +443,8 @@ class NintendoBridge extends XPathAbstract
         if (null !== $aMonthNames) {
             $value = str_replace(array_values($aMonthNames), array_keys($aMonthNames), $value);
         }
-        $value = str_replace( '­', '-', $value);
-        $value = str_replace( '--', '-', $value);
+        $value = str_replace('­', '-', $value);
+        $value = str_replace('--', '-', $value);
 
         $date = \DateTime::createFromFormat(self::GAME_COUNTRY_DATE_FORMAT[$category][$language], $value);
         if (false === $date) {
