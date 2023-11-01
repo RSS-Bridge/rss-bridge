@@ -23,11 +23,10 @@ final class FrontpageAction implements ActionInterface
 
         $body = '';
         foreach ($bridgeClassNames as $bridgeClassName) {
-            if ($bridgeFactory->isEnabled($bridgeClassName)) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats);
-                $activeBridges++;
-            } elseif ($showInactive) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats, false) . PHP_EOL;
+            $isEnabled = $bridgeFactory->isEnabled($bridgeClassName);
+            if ($isEnabled || $showInactive) {
+                $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats, $isEnabled) . PHP_EOL;
+                $activeBridges += (int)$isEnabled;
             }
         }
 

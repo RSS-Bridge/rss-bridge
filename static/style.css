@@ -182,6 +182,11 @@ section > h2 {
     font-weight: bold;
     text-align: center;
 }
+section > h2 img {
+    height: 1em;
+    margin-right: 10px;
+}
+
 section li {
     margin-left: 1em;
 }

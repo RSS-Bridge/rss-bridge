@@ -47,7 +47,7 @@ final class BridgeCard
                     data-short-name="$shortName"
                 >
 
-                <h2><a href="{$uri}">{$name}</a></h2>
+                <h2><img src="{$icon}" onerror="this.style.display='none'" /><a href="{$uri}">{$name}</a></h2>
                 <p class="description">{$description}</p>
                 <input type="checkbox" class="showmore-box" id="showmore-{$bridgeClassName}" />
                 <label class="showmore" for="showmore-{$bridgeClassName}">Show more</label>
