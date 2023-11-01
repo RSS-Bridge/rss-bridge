@@ -46,7 +46,7 @@ class IdealoBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($link);
 
         // Get Productname
-        $titleobj = $html->find('.oopStage-title',0);
+        $titleobj = $html->find('.oopStage-title', 0);
         $Productname = $titleobj->find('span', 0)->plaintext;
 
         // Create product specific Cache Keys with the link
@@ -55,46 +55,46 @@ class IdealoBridge extends BridgeAbstract
 
         $KeyUSED = $link;
         $KeyUSED .= 'USED';
-        
+
         // Load previous Price
         $OldPriceNew = $this->loadCacheValue($KeyNEW);
         $OldPriceUsed = $this->loadCacheValue($KeyUSED);
 
         // First button is new. Found at oopStage-conditionButton-wrapper-text class (.)
-        $FirstButton = $html->find('.oopStage-conditionButton-wrapper-text',0);
-        if($FirstButton){
+        $FirstButton = $html->find('.oopStage-conditionButton-wrapper-text', 0);
+        if ($FirstButton) {
             $PriceNew = $FirstButton->find('strong', 0)->plaintext;
         }
 
         // Second Button is used
-        $SecondButton = $html->find('.oopStage-conditionButton-wrapper-text',1);
-        if($SecondButton){
+        $SecondButton = $html->find('.oopStage-conditionButton-wrapper-text', 1);
+        if ($SecondButton) {
             $PriceUsed = $SecondButton->find('strong', 0)->plaintext;
         }
 
         // Only continue if a price has changed
-        if($PriceNew != $OldPriceNew || $PriceUsed != $OldPriceUsed){
-            
+        if ($PriceNew != $OldPriceNew || $PriceUsed != $OldPriceUsed) {
+
             // Get Product Image
             $image = $html->find('.datasheet-cover-image',0)->src;
 
             // Generate Content
-            if($PriceNew > 1){
-            $content = "<p><b>Price New:</b><br>$PriceNew</p>";
-            $content .= "<p><b>Price Newbefore:</b><br>$OldPriceNew</p>";
+            if ($PriceNew > 1) {
+                $content = "<p><b>Price New:</b><br>$PriceNew</p>";
+                $content .= "<p><b>Price Newbefore:</b><br>$OldPriceNew</p>";
             }
 
-            if($this->getInput('MaxPriceNew') != ''){
-                $content .= sprintf("<p><b>Max Price Used:</b><br>%s,00 €</p>",$this->getInput('MaxPriceNew'));
+            if ($this->getInput('MaxPriceNew') != '') {
+                $content .= sprintf('<p><b>Max Price Used:</b><br>%s,00 €</p>', $this->getInput('MaxPriceNew'));
             }
 
-            if($PriceUsed > 1){
-            $content .= "<p><b>Price Used:</b><br>$PriceUsed</p>";
-            $content .= "<p><b>Price Used before:</b><br>$OldPriceUsed</p>";
+            if ($PriceUsed > 1) {
+                $content .= "<p><b>Price Used:</b><br>$PriceUsed</p>";
+                $content .= "<p><b>Price Used before:</b><br>$OldPriceUsed</p>";
             }
 
-            if($this->getInput('MaxPriceUsed') != ''){
-                $content .= sprintf("<p><b>Max Price Used:</b><br>%s,00 €</p>",$this->getInput('MaxPriceUsed'));
+            if ($this->getInput('MaxPriceUsed') != '') {
+                $content .= sprintf('<p><b>Max Price Used:</b><br>%s,00 €</p>', $this->getInput('MaxPriceUsed'));
             }
 
             $content .= "<img src=$image>";
@@ -105,9 +105,9 @@ class IdealoBridge extends BridgeAbstract
             $Pricealarm = 'Pricealarm %s: %s %s %s';
 
             // Currently under Max new price
-            if($this->getInput('MaxPriceNew') != '') {
-                if($PriceNew < $this->getInput('MaxPriceNew')){
-                    $title = sprintf($Pricealarm, 'Used', $PriceNew, $Productname, $now);  
+            if ($this->getInput('MaxPriceNew') != '') {
+                if ($PriceNew < $this->getInput('MaxPriceNew')) {
+                    $title = sprintf($Pricealarm, 'Used', $PriceNew, $Productname, $now);
                     $item = [
                         'title'     => $title,
                         'uri'       => $link,
@@ -119,55 +119,55 @@ class IdealoBridge extends BridgeAbstract
             }
 
             // Currently under Max used price
-            if($this->getInput('MaxPriceUsed') != '') {
-                if($PriceUsed < $this->getInput('MaxPriceUsed')){
-                    $title = sprintf($Pricealarm, 'Used',$PriceUsed, $Productname, $now);   
+            if ($this->getInput('MaxPriceUsed') != '') {
+                if ($PriceUsed < $this->getInput('MaxPriceUsed')) {
+                    $title = sprintf($Pricealarm, 'Used', $PriceUsed, $Productname, $now);
                     $item = [
                         'title'     => $title,
                         'uri'       => $link,
                         'content'   => $content,
                         'uid'       => md5($title)
                     ];
-                    $this->items[] = $item;     
+                    $this->items[] = $item;
                 }
             }
 
             // General Priceupdate
-            if($this->getInput('MaxPriceUsed') == '' && $this->getInput('MaxPriceNew') == '') {
+            if ($this->getInput('MaxPriceUsed') == '' && $this->getInput('MaxPriceNew') == '') {
                 // check if a relevant pricechange happened
-                if(( !$this->getInput('ExcludeNew') && $PriceNew != $OldPriceNew )||
-                    (!$this->getInput('ExcludeUsed') && $PriceUsed != $OldPriceUsed )){
+                if ((!$this->getInput('ExcludeNew') && $PriceNew != $OldPriceNew ) ||
+                    (!$this->getInput('ExcludeUsed') && $PriceUsed != $OldPriceUsed )) {
                     $title .= 'Priceupdate! ';
 
-                    if(!$this->getInput('ExcludeNew')){
-                        if($PriceNew<$OldPriceNew){
+                    if (!$this->getInput('ExcludeNew')) {
+                        if ($PriceNew < $OldPriceNew) {
                             $title .= 'NEW:&#11015 '; // Arrow Down Emoji
                         }
-                        if($PriceNew>$OldPriceNew){
+                        if ($PriceNew > $OldPriceNew) {
                             $title .= 'NEW:&#11014 '; // Arrow Up Emoji
                         }
                     }
-    
-    
-                    if(!$this->getInput('ExcludeUsed')){
-                        if($PriceUsed<$OldPriceUsed){
+
+
+                    if (!$this->getInput('ExcludeUsed')) {
+                        if ($PriceUsed < $OldPriceUsed) {
                             $title .= 'USED:&#11015 '; // Arrow Down Emoji
                         }
-                        if($PriceUsed>$OldPriceUsed){
+                        if ($PriceUsed > $OldPriceUsed) {
                             $title .= 'USED:&#11014 '; // Arrow Up Emoji
                         }
                     }
                     $title .= $Productname;
                     $title .= ' ';
                     $title .= $now;
-    
+
                     $item = [
                         'title'     => $title,
                         'uri'       => $link,
                         'content'   => $content,
                         'uid'       => md5($title)
                     ];
-                    $this->items[] = $item;  
+                    $this->items[] = $item;
                 }
             }
         }
