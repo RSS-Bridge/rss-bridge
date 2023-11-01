@@ -74,9 +74,8 @@ class IdealoBridge extends BridgeAbstract
 
         // Only continue if a price has changed
         if ($PriceNew != $OldPriceNew || $PriceUsed != $OldPriceUsed) {
-
             // Get Product Image
-            $image = $html->find('.datasheet-cover-image',0)->src;
+            $image = $html->find('.datasheet-cover-image', 0)->src;
 
             // Generate Content
             if ($PriceNew > 1) {
@@ -135,8 +134,10 @@ class IdealoBridge extends BridgeAbstract
             // General Priceupdate
             if ($this->getInput('MaxPriceUsed') == '' && $this->getInput('MaxPriceNew') == '') {
                 // check if a relevant pricechange happened
-                if ((!$this->getInput('ExcludeNew') && $PriceNew != $OldPriceNew ) ||
-                    (!$this->getInput('ExcludeUsed') && $PriceUsed != $OldPriceUsed )) {
+                if (
+                    (!$this->getInput('ExcludeNew') && $PriceNew != $OldPriceNew ) ||
+                    (!$this->getInput('ExcludeUsed') && $PriceUsed != $OldPriceUsed )
+                ) {
                     $title .= 'Priceupdate! ';
 
                     if (!$this->getInput('ExcludeNew')) {
