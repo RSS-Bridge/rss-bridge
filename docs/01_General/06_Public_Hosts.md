@@ -20,6 +20,8 @@
 | ![](https://iplookup.flagfox.net/images/h16/NL.png) | https://feed.eugenemolotov.ru | ![](https://img.shields.io/website/https/feed.eugenemolotov.ru.svg) | [@em92](https://github.com/em92) | Hosted in Amsterdam, Netherlands |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss-bridge.mediani.de | ![](https://img.shields.io/website/https/rss-bridge.mediani.de.svg) | [@sokai](https://github.com/sokai) | Hosted with Netcup, Germany |
 | ![](https://iplookup.flagfox.net/images/h16/PL.png) | https://rss.foxhaven.cyou| ![](https://img.shields.io/badge/website-up-brightgreen) | [@Aysilu](https://foxhaven.cyou) | Hosted with Timeweb (Maintained in Poland) |
+| ![](https://iplookup.flagfox.net/images/h16/PL.png) | https://rss.m3wz.su| ![](https://img.shields.io/badge/website-up-brightgreen) | [@m3oweezed](https://m3wz.su/en/about) | Poland, Hosted with Timeweb Cloud
+
 
 ## Inactive instances
 
