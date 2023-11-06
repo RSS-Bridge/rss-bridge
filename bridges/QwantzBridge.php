@@ -6,13 +6,17 @@ class QwantzBridge extends FeedExpander
     const URI            = 'https://qwantz.com/';
     const DESCRIPTION    = 'Latest comic.';
 
-    protected function parseItem($feedItem)
+    public function collectData()
     {
-        $item = parent::parseItem($feedItem);
+        $this->collectExpandableDatas(self::URI . 'rssfeed.php');
+    }
+
+    protected function parseItem(array $item)
+    {
         $item['author'] = 'Ryan North';
 
         preg_match('/title="(.*?)"/', $item['content'], $matches);
-        $title = $matches[1];
+        $title = $matches[1] ?? '';
 
         $content = str_get_html(html_entity_decode($item['content']));
         $comicURL = $content->find('img')[0]->{'src'};
@@ -23,11 +27,6 @@ class QwantzBridge extends FeedExpander
         $item['content'] = "{$subject}<figure><img src=\"{$comicURL}\"><figcaption><p>{$title}</p></figcaption></figure>{$p}";
 
         return $item;
-    }
-
-    public function collectData()
-    {
-        $this->collectExpandableDatas(self::URI . 'rssfeed.php');
     }
 
     public function getIcon()

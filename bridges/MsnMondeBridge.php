@@ -22,17 +22,17 @@ class MsnMondeBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas(self::FEED_URL, self::LIMIT);
+        $this->collectExpandableDatas(self::FEED_URL, 10);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
         if (!preg_match('#fr-fr/actualite.*/ar-(?<id>[\w]*)\?#', $item['uri'], $matches)) {
-            return;
+            return null;
         }
 
-        $json = json_decode(getContents(self::JSON_URL . $matches['id']), true);
+        $jsonString = getContents(self::JSON_URL . $matches['id']);
+        $json = json_decode($jsonString, true);
         $item['content'] = $json['body'];
         if (!empty($json['authors'])) {
             $item['author'] = reset($json['authors'])['name'];

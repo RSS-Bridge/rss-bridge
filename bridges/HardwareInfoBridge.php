@@ -9,15 +9,13 @@ class HardwareInfoBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas('https://nl.hardware.info/updates/all.rss', 20);
+        $this->collectExpandableDatas('https://nl.hardware.info/updates/all.rss', 10);
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($feedItem);
-
-        //get full article
-        $articlePage = getSimpleHTMLDOMCached($feedItem->link);
+        $itemUrl = $item['uri'];
+        $articlePage = getSimpleHTMLDOMCached($itemUrl);
 
         $article = $articlePage->find('div.article__content', 0);
 

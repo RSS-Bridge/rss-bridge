@@ -10,17 +10,16 @@ class NYTBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas('https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', 40);
+        $url = 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml';
+        $this->collectExpandableDatas($url, 40);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
         $article = '';
 
-        // $articlePage gets the entire page's contents
         try {
-            $articlePage = getSimpleHTMLDOM($newsItem->link);
+            $articlePage = getSimpleHTMLDOM($item['uri']);
         } catch (HttpException $e) {
             // 403 Forbidden, This means we got anti-bot response
             if ($e->getCode() === 403) {

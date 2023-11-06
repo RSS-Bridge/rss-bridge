@@ -125,9 +125,8 @@ class HeiseBridge extends FeedExpander
         );
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($feedItem);
         $sessioncookie = $this->getInput('sessioncookie');
 
         // strip rss parameter

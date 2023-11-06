@@ -85,7 +85,7 @@ class FallGuysBridge extends BridgeAbstract
                         for ($i = 0; $i < count($mediaOptions); $i++) {
                             if (property_exists($mediaOptions[$i], 'youtubeVideo')) {
                                 $videoUrl = 'https://youtu.be/' . $mediaOptions[$i]->youtubeVideo->contentId;
-                                $image = $mainContentOptions[$i]->image->src;
+                                $image = $mainContentOptions[$i]->image->src ?? '';
 
                                 $content .= '<p>';
 

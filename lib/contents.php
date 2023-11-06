@@ -63,8 +63,13 @@ function getContents(
     if ($cachedResponse) {
         $cachedLastModified = $cachedResponse->getHeader('last-modified');
         if ($cachedLastModified) {
-            $cachedLastModified = new \DateTimeImmutable($cachedLastModified);
-            $config['if_not_modified_since'] = $cachedLastModified->getTimestamp();
+            try {
+                // Some servers send Unix timestamp instead of RFC7231 date. Prepend it with @ to allow parsing as DateTime
+                $cachedLastModified = new \DateTimeImmutable((is_numeric($cachedLastModified) ? '@' : '') . $cachedLastModified);
+                $config['if_not_modified_since'] = $cachedLastModified->getTimestamp();
+            } catch (Exception $dateTimeParseFailue) {
+                // Ignore invalid 'Last-Modified' HTTP header value
+            }
         }
     }
 
@@ -158,13 +163,12 @@ function getSimpleHTMLDOM(
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
 ) {
-    $content = getContents(
-        $url,
-        $header ?? [],
-        $opts ?? []
-    );
+    $html = getContents($url, $header ?? [], $opts ?? []);
+    if ($html === '') {
+        throw new \Exception('Unable to parse dom because the http response was the empty string');
+    }
     return str_get_html(
-        $content,
+        $html,
         $lowercase,
         $forceTagsClosed,
         $target_charset,

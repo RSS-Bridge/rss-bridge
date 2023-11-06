@@ -34,10 +34,8 @@ class CaschyBridge extends FeedExpander
         );
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($feedItem);
-
         if (strpos($item['uri'], 'https://stadt-bremerhaven.de/') !== 0) {
             return $item;
         }

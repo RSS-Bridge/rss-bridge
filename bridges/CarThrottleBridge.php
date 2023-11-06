@@ -25,20 +25,28 @@ class CarThrottleBridge extends BridgeAbstract
             $articlePage = getSimpleHTMLDOMCached($item['uri'])
                 or returnServerError('could not retrieve page');
 
-            $item['author'] = $articlePage->find('div.author div')[1]->innertext;
-
-            $dinges = $articlePage->find('div.main-body')[0];
-            //remove ads
-            foreach ($dinges->find('aside') as $ad) {
-                $ad->outertext = '';
-                $dinges->save();
+            $authorDiv = $articlePage->find('div.author div');
+            if ($authorDiv) {
+                $item['author'] = $authorDiv[1]->innertext;
             }
 
-            $item['content'] = $articlePage->find('div.summary')[0] .
-                $articlePage->find('figure.main-image')[0] .
-                $dinges;
+            $dinges = $articlePage->find('div.main-body')[0] ?? null;
+            //remove ads
+            if ($dinges) {
+                foreach ($dinges->find('aside') as $ad) {
+                    $ad->outertext = '';
+                    $dinges->save();
+                }
+            }
 
-            //add the item to the list
+            $var = $articlePage->find('div.summary')[0] ?? '';
+            $var1 = $articlePage->find('figure.main-image')[0] ?? '';
+            $dinges1 = $dinges ?? '';
+
+            $item['content'] = $var .
+                $var1 .
+                $dinges1;
+
             array_push($this->items, $item);
         }
     }

@@ -88,9 +88,8 @@ class NextInpactBridge extends FeedExpander
         $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
         $item['content'] = $this->extractContent($item, $item['uri']);
         if (is_null($item['content'])) {
             return null; //Filtered article

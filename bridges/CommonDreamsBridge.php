@@ -12,9 +12,8 @@ class CommonDreamsBridge extends FeedExpander
         $this->collectExpandableDatas('http://www.commondreams.org/rss.xml', 10);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
         $item['content'] = $this->extractContent($item['uri']);
         return $item;
     }

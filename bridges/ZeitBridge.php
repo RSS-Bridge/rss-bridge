@@ -50,19 +50,17 @@ class ZeitBridge extends FeedExpander
             'defaultValue' => 5
         ]
     ]];
-    const LIMIT = 5;
 
     public function collectData()
     {
-        $this->collectExpandableDatas(
-            $this->getInput('category'),
-            $this->getInput('limit') ?: static::LIMIT
-        );
+        $url = $this->getInput('category');
+        $limit = $this->getInput('limit') ?: 5;
+
+        $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
         $item['enclosures'] = [];
 
         $headers = [

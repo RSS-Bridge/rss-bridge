@@ -23,9 +23,11 @@ class GatesNotesBridge extends BridgeAbstract
         $cleanedContent = str_replace([
             '<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/">',
             '</string>',
+            '\r\n',
         ], '', $rawContent);
+        $cleanedContent = str_replace('\"', '"', $cleanedContent);
+        $cleanedContent = trim($cleanedContent, '"');
 
-        // The content is actually a json between quotes with \r\n inserted
         $json = Json::decode($cleanedContent, false);
 
         foreach ($json as $article) {
@@ -98,7 +100,7 @@ class GatesNotesBridge extends BridgeAbstract
         }
         $article_body = sanitize($article_body->innertext);
 
-        $content = $top_description . $hero_image . $article_body;
+        $content = $top_description . ($hero_image ?? '') . $article_body;
 
         return $content;
     }

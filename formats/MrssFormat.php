@@ -34,6 +34,8 @@ class MrssFormat extends FormatAbstract
 
     public function stringify()
     {
+        $document = new \DomDocument('1.0', $this->getCharset());
+
         $feedUrl = get_current_url();
         $extraInfos = $this->getExtraInfos();
         if (empty($extraInfos['uri'])) {
@@ -42,7 +44,6 @@ class MrssFormat extends FormatAbstract
             $uri = $extraInfos['uri'];
         }
 
-        $document = new \DomDocument('1.0', $this->getCharset());
         $document->formatOutput = true;
         $feed = $document->createElement('rss');
         $document->appendChild($feed);
@@ -99,22 +100,23 @@ class MrssFormat extends FormatAbstract
         $linkSelf->setAttribute('href', $feedUrl);
 
         foreach ($this->getItems() as $item) {
+            $itemArray = $item->toArray();
             $itemTimestamp = $item->getTimestamp();
             $itemTitle = $item->getTitle();
             $itemUri = $item->getURI();
             $itemContent = $item->getContent() ? break_annoying_html_tags($item->getContent()) : '';
-            $entryID = $item->getUid();
+            $itemUid = $item->getUid();
             $isPermaLink = 'false';
 
-            if (empty($entryID) && !empty($itemUri)) {
+            if (empty($itemUid) && !empty($itemUri)) {
                 // Fallback to provided URI
-                $entryID = $itemUri;
+                $itemUid = $itemUri;
                 $isPermaLink = 'true';
             }
 
-            if (empty($entryID)) {
+            if (empty($itemUid)) {
                 // Fallback to title and content
-                $entryID = hash('sha1', $itemTitle . $itemContent);
+                $itemUid = hash('sha1', $itemTitle . $itemContent);
             }
 
             $entry = $document->createElement('item');
@@ -126,7 +128,21 @@ class MrssFormat extends FormatAbstract
                 $entryTitle->appendChild($document->createTextNode($itemTitle));
             }
 
-            if (!empty($itemUri)) {
+            if (isset($itemArray['itunes'])) {
+                $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
+                foreach ($itemArray['itunes'] as $itunesKey => $itunesValue) {
+                    $itunesProperty = $document->createElementNS(self::ITUNES_NS, $itunesKey);
+                    $entry->appendChild($itunesProperty);
+                    $itunesProperty->appendChild($document->createTextNode($itunesValue));
+                }
+                if (isset($itemArray['enclosure'])) {
+                    $itunesEnclosure = $document->createElement('enclosure');
+                    $entry->appendChild($itunesEnclosure);
+                    $itunesEnclosure->setAttribute('url', $itemArray['enclosure']['url']);
+                    $itunesEnclosure->setAttribute('length', $itemArray['enclosure']['length']);
+                    $itunesEnclosure->setAttribute('type', $itemArray['enclosure']['type']);
+                }
+            } if (!empty($itemUri)) {
                 $entryLink = $document->createElement('link');
                 $entry->appendChild($entryLink);
                 $entryLink->appendChild($document->createTextNode($itemUri));
@@ -135,7 +151,7 @@ class MrssFormat extends FormatAbstract
             $entryGuid = $document->createElement('guid');
             $entryGuid->setAttribute('isPermaLink', $isPermaLink);
             $entry->appendChild($entryGuid);
-            $entryGuid->appendChild($document->createTextNode($entryID));
+            $entryGuid->appendChild($document->createTextNode($itemUid));
 
             if (!empty($itemTimestamp)) {
                 $entryPublished = $document->createElement('pubDate');

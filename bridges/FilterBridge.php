@@ -82,10 +82,8 @@ class FilterBridge extends FeedExpander
         $this->collectExpandableDatas($this->getURI());
     }
 
-    protected function parseItem($newItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newItem);
-
         // Generate title from first 50 characters of content?
         if ($this->getInput('title_from_content') && array_key_exists('content', $item)) {
             $content = str_get_html($item['content']);

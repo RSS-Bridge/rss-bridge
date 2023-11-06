@@ -8,10 +8,8 @@ class GizmodoBridge extends FeedExpander
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the newest posts from Gizmodo.';
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $html = getSimpleHTMLDOMCached($item['uri']);
 
         $html = defaultLinkTo($html, $this->getURI());

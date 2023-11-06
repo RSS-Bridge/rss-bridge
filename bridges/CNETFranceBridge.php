@@ -43,10 +43,8 @@ class CNETFranceBridge extends FeedExpander
         $this->collectExpandableDatas('https://www.cnetfrance.fr/feeds/rss/news/');
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($feedItem);
-
         foreach ($this->bannedTitle as $term) {
             if (preg_match('/' . $term . '/mi', $item['title']) === 1) {
                 return null;
@@ -54,8 +52,7 @@ class CNETFranceBridge extends FeedExpander
         }
 
         foreach ($this->bannedURL as $term) {
-            $preg_match = preg_match('#' . $term . '#mi', $item['uri']);
-            if ($preg_match === 1) {
+            if (preg_match('#' . $term . '#mi', $item['uri'])) {
                 return null;
             }
         }

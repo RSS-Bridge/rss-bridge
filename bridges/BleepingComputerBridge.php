@@ -7,10 +7,14 @@ class BleepingComputerBridge extends FeedExpander
     const URI = 'https://www.bleepingcomputer.com/';
     const DESCRIPTION = 'Returns the newest articles.';
 
-    protected function parseItem($item)
+    public function collectData()
     {
-        $item = parent::parseItem($item);
+        $feed = static::URI . 'feed/';
+        $this->collectExpandableDatas($feed);
+    }
 
+    protected function parseItem(array $item)
+    {
         $article_html = getSimpleHTMLDOMCached($item['uri']);
         if (!$article_html) {
             $item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';
@@ -22,11 +26,5 @@ class BleepingComputerBridge extends FeedExpander
         $item['content'] = trim($article_content);
 
         return $item;
-    }
-
-    public function collectData()
-    {
-        $feed = static::URI . 'feed/';
-        $this->collectExpandableDatas($feed);
     }
 }

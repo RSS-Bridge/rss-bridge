@@ -82,14 +82,14 @@ class MastodonBridge extends BridgeAbstract
         }
         $items = $content['orderedItems'] ?? $content['items'];
         foreach ($items as $status) {
-            $item = $this->parseItem($status);
+            $item = $this->parseStatus($status);
             if ($item) {
                 $this->items[] = $item;
             }
         }
     }
 
-    protected function parseItem($content)
+    protected function parseStatus($content)
     {
         $item = [];
         switch ($content['type']) {
@@ -193,7 +193,7 @@ class MastodonBridge extends BridgeAbstract
                 && preg_match('/^http(s|):\/\//', $attachment['url'], $match)
             ) {
                 $item['content'] = $item['content'] . '<br /><img ';
-                if ($attachment['name']) {
+                if (isset($attachment['name'])) {
                     $item['content'] .= sprintf('alt="%s" ', $attachment['name']);
                 }
                 $item['content'] .= sprintf('src="%s" />', $attachment['url']);

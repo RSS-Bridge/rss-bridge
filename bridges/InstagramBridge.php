@@ -121,6 +121,9 @@ class InstagramBridge extends BridgeAbstract
         $directLink = !is_null($this->getInput('direct_links')) && $this->getInput('direct_links');
 
         $data = $this->getInstagramJSON($this->getURI());
+        if (!$data) {
+            return;
+        }
 
         if (!is_null($this->getInput('u'))) {
             $userMedia = $data->data->user->edge_owner_to_timeline_media->edges;
@@ -286,9 +289,11 @@ class InstagramBridge extends BridgeAbstract
             $html = getContents($uri);
             $scriptRegex = '/window\._sharedData = (.*);<\/script>/';
 
-            preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
-
-            return json_decode($matches[1][0]);
+            $ret = preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE);
+            if ($ret) {
+                return json_decode($matches[1][0]);
+            }
+            return null;
         }
     }
 

@@ -10,26 +10,26 @@ class EngadgetBridge extends FeedExpander
 
     public function collectData()
     {
+        $url = 'https://www.engadget.com/rss.xml';
         $max = 10;
-        $this->collectExpandableDatas(static::URI . 'rss.xml', $max);
+        $this->collectExpandableDatas($url, $max);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
-        $url = (string) $newsItem->link;
-        if (!$url) {
+        $itemUrl = trim($item['uri']);
+        if (!$itemUrl) {
             return $item;
         }
         // todo: remove querystring tracking
-        $articlePage = getSimpleHTMLDOM($url);
+        $dom = getSimpleHTMLDOM($itemUrl);
         // figure contain's the main article image
-        $article = $articlePage->find('figure', 0);
+        $article = $dom->find('figure', 0);
         // .article-text has the actual article
-        foreach ($articlePage->find('.article-text') as $element) {
+        foreach ($dom->find('.article-text') as $element) {
             $article = $article . $element;
         }
-        $item['content'] = $article;
+        $item['content'] = $article ?? '';
         return $item;
     }
 }

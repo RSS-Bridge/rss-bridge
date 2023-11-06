@@ -2,6 +2,8 @@
 
 abstract class FormatAbstract
 {
+    public const ITUNES_NS = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
+
     const MIME_TYPE = 'text/plain';
 
     protected string $charset = 'UTF-8';
@@ -31,7 +33,10 @@ abstract class FormatAbstract
         $this->lastModified = $lastModified;
     }
 
-    public function setItems(array $items)
+    /**
+     * @param FeedItem[] $items
+     */
+    public function setItems(array $items): void
     {
         $this->items = $items;
     }

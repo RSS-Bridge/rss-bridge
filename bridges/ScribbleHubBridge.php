@@ -42,10 +42,8 @@ class ScribbleHubBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
-    protected function parseItem($newItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newItem);
-
         //For series, filter out other series from 'All' feed
         if (
             $this->queriedContext === 'Series'
@@ -57,7 +55,7 @@ class ScribbleHubBridge extends FeedExpander
         $item['comments'] = $item['uri'] . '#comments';
 
         try {
-            $item_html = getSimpleHTMLDOMCached($item['uri']);
+            $dom = getSimpleHTMLDOMCached($item['uri']);
         } catch (HttpException $e) {
             // 403 Forbidden, This means we got anti-bot response
             if ($e->getCode() === 403) {
@@ -66,22 +64,22 @@ class ScribbleHubBridge extends FeedExpander
             throw $e;
         }
 
-        $item_html = defaultLinkTo($item_html, self::URI);
+        $dom = defaultLinkTo($dom, self::URI);
 
         //Retrieve full description from page contents
-        $item['content'] = $item_html->find('#chp_raw', 0);
+        $item['content'] = $dom->find('#chp_raw', 0);
 
         //Retrieve image for thumbnail
-        $item_image = $item_html->find('.s_novel_img > img', 0)->src;
+        $item_image = $dom->find('.s_novel_img > img', 0)->src;
         $item['enclosures'] = [$item_image];
 
         //Restore lost categories
-        $item_story = html_entity_decode($item_html->find('.chp_byauthor > a', 0)->innertext);
-        $item_sid   = $item_html->find('#mysid', 0)->value;
+        $item_story = html_entity_decode($dom->find('.chp_byauthor > a', 0)->innertext);
+        $item_sid   = $dom->find('#mysid', 0)->value;
         $item['categories'] = [$item_story, $item_sid];
 
         //Generate UID
-        $item_pid = $item_html->find('#mypostid', 0)->value;
+        $item_pid = $dom->find('#mypostid', 0)->value;
         $item['uid'] = $item_sid . "/$item_pid";
 
         return $item;
