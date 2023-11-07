@@ -356,11 +356,11 @@ HEREDOC;
         if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0) != null) {
             if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1) != null) {
                 return '<div>' . $this->i8n('shipping') . ' : '
-                    . $deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1)->innertext
+                    . strip_tags($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1)->innertext)
                     . '</div>';
             } else {
                 return '<div>' . $this->i8n('shipping') . ' : '
-                    . $deal->find('span[class*=text--color-greyShade flex--inline]', 0)->innertext
+                    . strip_tags($deal->find('span[class*=text--color-greyShade flex--inline]', 0)->innertext)
                     . '</div>';
             }
         } else {
@@ -376,7 +376,7 @@ HEREDOC;
     {
         if (($origin = $deal->find('button[class*=text--color-greyShade]', 0)) != null) {
             $path = str_replace(' ', '/', trim(Json::decode($origin->{'data-cloak-link'})['path']));
-            $text = $origin->find('span[class*=cept-merchant-name]', 0);
+            $text = $origin->find('span[class*=link]', 0);
             return '<div>' . $this->i8n('origin') . ' : <a href="' . static::URI . $path . '">' . $text . '</a></div>';
         } else {
             return '';
