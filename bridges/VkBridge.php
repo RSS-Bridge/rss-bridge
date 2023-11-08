@@ -29,11 +29,12 @@ class VkBridge extends BridgeAbstract
         'https://vk.com/groupname/anythingelse' => ['u' => 'groupname'],
         'https://vk.com/groupname?w=somethingelse' => ['u' => 'groupname'],
         'https://vk.com/with_underscore' => ['u' => 'with_underscore'],
+        'https://vk.com/vk.cats' => ['u' => 'vk.cats'],
     ];
 
     protected $pageName;
     protected $tz = 0;
-    private $urlRegex = '/vk\.com\/([\w]+)/';
+    private $urlRegex = '/vk\.com\/([\w.]+)/';
 
     public function getURI()
     {
