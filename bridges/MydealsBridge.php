@@ -2,9 +2,9 @@
 
 class MydealsBridge extends PepperBridgeAbstract
 {
-    const NAME = 'Mydeals bridge';
+    const NAME = 'Mydealz bridge';
     const URI = 'https://www.mydealz.de/';
-    const DESCRIPTION = 'Zeigt die Deals von mydeals.de';
+    const DESCRIPTION = 'Zeigt die Deals von mydealz.de';
     const MAINTAINER = 'sysadminstory';
     const PARAMETERS = [
         'Suche nach Stichworten' => [
@@ -2023,7 +2023,7 @@ class MydealsBridge extends PepperBridgeAbstract
         'uri-deal' => 'deals/',
         'request-error' => 'Could not request mydeals',
         'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
-        'no-results' => 'Ups, wir konnten keine Deals zu',
+        'no-results' => 'Ups, wir konnten nichts',
         'relative-date-indicator' => [
             'vor',
             'seit'
