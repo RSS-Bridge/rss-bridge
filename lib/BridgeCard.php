@@ -20,7 +20,7 @@ final class BridgeCard
 
         $uri = $bridge->getURI();
         $name = $bridge->getName();
-        $icon = $bridge->getIcon();
+        $icon = $_SERVER['PHP_SELF'] . '?action=FeedIcon&bridgeClassName=' . $bridgeClassName;
         $description = $bridge->getDescription();
         $parameters = $bridge->getParameters();
         if (Configuration::getConfig('proxy', 'url') && Configuration::getConfig('proxy', 'by_bridge')) {

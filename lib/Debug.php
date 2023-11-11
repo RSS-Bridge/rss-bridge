@@ -8,9 +8,10 @@ class Debug
     public static function isEnabled(): bool
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'x.y.z.1';
+        $isIconRequest = isset($_REQUEST['action']) && 'FeedIcon' === $_REQUEST['action'];
         $enableDebugMode = Configuration::getConfig('system', 'enable_debug_mode');
         $debugModeWhitelist = Configuration::getConfig('system', 'debug_mode_whitelist') ?: [];
-        if ($enableDebugMode && ($debugModeWhitelist === [] || in_array($ip, $debugModeWhitelist))) {
+        if ($enableDebugMode && !$isIconRequest && ($debugModeWhitelist === [] || in_array($ip, $debugModeWhitelist))) {
             return true;
         }
         return false;
