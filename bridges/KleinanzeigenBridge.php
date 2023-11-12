@@ -110,13 +110,13 @@ class KleinanzeigenBridge extends BridgeAbstract
 
                 $html = getSimpleHTMLDOM($searchUrl);
 
-                $foundItem = false;
+                // end of list if returned page is not the expected one
+                if ($html->find('.pagination-current', 0)->plaintext != $i) {
+                    break;
+                }
+
                 foreach ($html->find('ul#srchrslt-adtable article.aditem') as $element) {
                     $this->addItem($element);
-                    $foundItem = true;
-                }
-                if (!$foundItem) {
-                    break;
                 }
             }
         }
