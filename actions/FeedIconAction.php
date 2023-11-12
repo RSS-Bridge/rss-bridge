@@ -28,8 +28,7 @@ class FeedIconAction implements ActionInterface
 
         if ($imageData && $mimeType) {
             $this->sendImageResponse($mimeType, $imageData);
-        }
-        elseif('' === $imageData && '' === $mimeType) {
+        } elseif ('' === $imageData && '' === $mimeType) {
             // empty values means that the image was broken and could not be loaded
             $this->sendNotFoundResponse();
         }
