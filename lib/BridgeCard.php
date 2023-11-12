@@ -20,7 +20,7 @@ final class BridgeCard
 
         $uri = $bridge->getURI();
         $name = $bridge->getName();
-        $icon = $_SERVER['PHP_SELF'] . '?action=FeedIcon&bridgeClassName=' . $bridgeClassName;
+        $icon = self::hasBrokenIcon($bridgeClassName) ? '' : $_SERVER['PHP_SELF'] . '?action=FeedIcon&bridgeClassName=' . $bridgeClassName;
         $description = $bridge->getDescription();
         $parameters = $bridge->getParameters();
         if (Configuration::getConfig('proxy', 'url') && Configuration::getConfig('proxy', 'by_bridge')) {
@@ -370,5 +370,15 @@ This bridge is not fetching its content through a secure connection</div>';
         . ($entry['defaultValue'] === 'checked' ? 'checked' : '')
         . ' />'
         . PHP_EOL;
+    }
+
+    private static function hasBrokenIcon(string $bridgeClassName): bool
+    {
+        $logger = RssBridge::getLogger();
+        $cacheFactory = new CacheFactory($logger);
+        $cache = $cacheFactory->create();
+        $cacheKey = md5($bridgeClassName . 'icon');
+        $cachedImage = (array)$cache->get($cacheKey);
+        return isset($cachedImage['imageData']) && '' === $cachedImage['imageData'] && isset($cachedImage['mimeType']) && '' === $cachedImage['mimeType'];
     }
 }
