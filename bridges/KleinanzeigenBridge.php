@@ -122,7 +122,7 @@ class KleinanzeigenBridge extends BridgeAbstract
         $item['uri'] = self::URI . $element->getAttribute('data-href');
 
         $item['title'] = $element->find('h2', 0)->plaintext;
-        $item['timestamp'] = $metadata['timestamp'];
+        $item['timestamp'] = $element->find('div.aditem-main--top--right', 0)->plaintext;
         $imgUrl = str_replace('rule=$_2.JPG', 'rule=$_57.JPG', 
             str_replace('rule=$_35.JPG', 'rule=$_57.JPG', 
                 $element->find('img', 0) ? $element->find('img', 0)->getAttribute('src') : ''
