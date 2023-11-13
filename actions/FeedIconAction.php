@@ -98,7 +98,8 @@ class FeedIconAction implements ActionInterface
     {
         $context = stream_context_create([
             'http' => [
-                'timeout' => 10,
+                'timeout' => 5,
+                'user_agent' => Configuration::getConfig('http', 'useragent'),
             ],
         ]);
 
