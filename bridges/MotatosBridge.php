@@ -11,7 +11,6 @@ class MotatosBridge extends BridgeAbstract
         'region' => [
             'name' => 'Region',
             'type' => 'list',
-            'required' => true,
             'title' => 'Choose country',
             'values' => [
                 'Austria' => 'at',
