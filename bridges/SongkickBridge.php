@@ -12,7 +12,7 @@ class SongkickBridge extends BridgeAbstract
             'name' => 'Artist ID',
             'type' => 'text',
             'required' => true,
-            'exampleValue' => '520117-arctic-monkeys',
+            'exampleValue' => '2506696-imagine-dragons',
         ]
     ] ];
 
@@ -28,7 +28,7 @@ class SongkickBridge extends BridgeAbstract
 
     public function getName()
     {
-        if (!empty($this->name)){
+        if (!empty($this->name)) {
             return $this->name . ' - ' . parent::getName();
         }
         return parent::getName();
