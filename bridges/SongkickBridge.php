@@ -18,7 +18,7 @@ class SongkickBridge extends BridgeAbstract
 
     const ARTIST_URI = 'https://www.songkick.com/artists/%s/';
     const CALENDAR_URI = self::ARTIST_URI . 'calendar';
-    
+
     private $name = '';
 
     public function getURI()
@@ -42,7 +42,7 @@ class SongkickBridge extends BridgeAbstract
     public function collectData()
     {
         $url = sprintf(self::CALENDAR_URI, $this->getInput('artistid'));
-        
+
         $dom = getSimpleHTMLDOM($url);
 
         $jsonscript = $dom->find('div.microformat > script', 0);
@@ -60,15 +60,16 @@ class SongkickBridge extends BridgeAbstract
 
         foreach ($dom->find('div[@id="calendar-summary"] > ol > li') as $article) {
             $detailsobj = json_decode($article->find('div.microformat > script', 0)->innertext)[0];
-            
+
             $a = $article->find('a', 0);
-            
+
             $details = $a->find('div.event-details', 0);
+            $title = $details->find('.secondary-detail', 0)->plaintext;
             $city = $details->find('.primary-detail', 0)->plaintext;
             $event = $detailsobj->location->name;
-            
+
             $content = 'City: ' . $city . '<br>Event: ' . $event . '<br>Date: ' . $article->title;
-            
+
             $categories = [];
             if ($details->hasClass('concert')) {
                 $categories[] = 'concert';
@@ -79,9 +80,9 @@ class SongkickBridge extends BridgeAbstract
             if (!is_null($details->find('.outdoor', 0))) {
                 $categories[] = 'outdoor';
             }
-            
+
             $this->items[] = [
-                'title' => $detailsobj->location->name,
+                'title' => $title,
                 'uri' => $a->href,
                 'content' => $content,
                 'categories' => $categories,
