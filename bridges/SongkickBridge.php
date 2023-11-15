@@ -67,7 +67,7 @@ class SongkickBridge extends BridgeAbstract
             $city = $details->find('.primary-detail', 0)->plaintext;
             $event = $detailsobj->location->name;
             
-            $content = 'City: ' . $city . '<br>' . 'Event: ' . $event . '<br>' . 'Date: ' . $article->title;
+            $content = 'City: ' . $city . '<br>Event: ' . $event . '<br>Date: ' . $article->title;
             
             $categories = [];
             if ($details->hasClass('concert')) {
