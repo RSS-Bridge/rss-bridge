@@ -28,10 +28,9 @@ class SongkickBridge extends BridgeAbstract
 
     public function getName()
     {
-        if (!is_null($this->$name)) {
-            return $this->$name . ' - ' . parent::getName();
+        if (!empty($this->name)){
+            return $this->name . ' - ' . parent::getName();
         }
-
         return parent::getName();
     }
 
@@ -46,10 +45,11 @@ class SongkickBridge extends BridgeAbstract
         
         $dom = getSimpleHTMLDOM($url);
 
-		$jsonscript = $dom->find('div.microformat > script', 0);
-		if (is_null($this->$name) && $jsonscript) {
-			$this->$name = json_decode($jsonscript->innertext)[0]->name;
-		}
+        $jsonscript = $dom->find('div.microformat > script', 0);
+
+        if (empty($this->name) && $jsonscript) {
+            $this->name = json_decode($jsonscript->innertext)[0]->name;
+        }
 
         $dom = $dom->find('div.container > div.row > div.primary', 0);
 
@@ -76,7 +76,7 @@ class SongkickBridge extends BridgeAbstract
             if ($details->hasClass('festival')) {
                 $categories[] = 'festival';
             }
-            if ($details->find('.outdoor', 0)->plaintext) {
+            if (!is_null($details->find('.outdoor', 0))) {
                 $categories[] = 'outdoor';
             }
             
