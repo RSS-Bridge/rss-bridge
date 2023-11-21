@@ -26,8 +26,9 @@ class ThreadsBridge extends BridgeAbstract
         ]
     ];
 
-    protected $feedName = self::NAME;    
-    public function getName(){
+    protected $feedName = self::NAME;
+    public function getName()
+    {
         return $this->feedName;
     }
 
@@ -46,7 +47,7 @@ class ThreadsBridge extends BridgeAbstract
     public function getURI()
     {
         return self::URI . '@' . $this->getInput('u');
-    }    
+    }
 
     // https://stackoverflow.com/a/3975706/421140
     // Found this in FlaschenpostBridge, modified to return an array and take an object.
@@ -69,28 +70,28 @@ class ThreadsBridge extends BridgeAbstract
     public function collectData()
     {
         $html = getSimpleHTMLDOMCached($this->getURI(), static::CACHE_TIMEOUT);
-        Debug::log(sprintf("Fetched: %s", $this->getURI()));
+        Debug::log(sprintf('Fetched: %s', $this->getURI()));
         $jsonBlobs = $html->find('script[type="application/json"]');
-        Debug::log(sprintf("%d JSON blobs found.", count($jsonBlobs)));
+        Debug::log(sprintf('%d JSON blobs found.', count($jsonBlobs)));
         $gatheredCodes = [];
         $limit = $this->getInput('limit');
-        foreach($jsonBlobs as $jsonBlob) {
+        foreach ($jsonBlobs as $jsonBlob) {
             // The structure of the JSON document is likely to change, but we're looking for a "code" inside a "post"
-            foreach($this->recursiveFind($this->recursiveFind(json_decode($jsonBlob->innertext), "post"),"code") as $candidateCode){
+            foreach ($this->recursiveFind($this->recursiveFind(json_decode($jsonBlob->innertext), 'post'), 'code') as $candidateCode) {
                 // code should be like CzZk4-USq1O or Cy3m1VnRiwP or Cywjyrdv9T6 or CzZk4-USq1O
-                if(grapheme_strlen($candidateCode) == 11 and !in_array($candidateCode, $gatheredCodes)){
+                if (grapheme_strlen($candidateCode) == 11 and !in_array($candidateCode, $gatheredCodes)) {
                     $gatheredCodes[] = $candidateCode;
-                    if(count($gatheredCodes) >= $limit){
+                    if (count($gatheredCodes) >= $limit) {
                         break 2;
                     }
                 }
             }
         }
-        Debug::log(sprintf("Candidate codes found in JSON in script tags: %s", print_r($gatheredCodes, true)));
+        Debug::log(sprintf('Candidate codes found in JSON in script tags: %s', print_r($gatheredCodes, true)));
 
         $this->feedName = html_entity_decode($html->find('meta[property=og:title]', 0)->content);
         // todo: meta[property=og:description] could populate the feed description
-                
+
         foreach ($gatheredCodes as $postCode) {
             $item = [];
             // post URL is like: https://www.threads.net/@zuck/post/Czrr520PZfh
@@ -98,7 +99,7 @@ class ThreadsBridge extends BridgeAbstract
             $articleHtml = getSimpleHTMLDOMCached($item['uri'], 15778800); // cache time: six months
 
             // Relying on meta tags ought to be more reliable.
-            if($articleHtml->find('meta[property=og:type]', 0)->content != 'article'){
+            if ($articleHtml->find('meta[property=og:type]', 0)->content != 'article') {
                 continue;
             }
             $item['title'] = $articleHtml->find('meta[property=og:description]', 0)->content;
