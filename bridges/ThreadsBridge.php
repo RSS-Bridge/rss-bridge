@@ -16,7 +16,13 @@ class ThreadsBridge extends BridgeAbstract
                 'exampleValue' => 'zuck',
                 'title' => 'Insert a user name'
             ],
-            'limit' => self::LIMIT
+            'limit' => [
+                'name' => 'Limit',
+                'type' => 'number',
+                'required' => false,
+                'title' => 'Specify number of posts to fetch',
+                'defaultValue' => 5
+            ]
         ]
     ];
 
@@ -67,7 +73,7 @@ class ThreadsBridge extends BridgeAbstract
         $jsonBlobs = $html->find('script[type="application/json"]');
         Debug::log(sprintf("%d JSON blobs found.", count($jsonBlobs)));
         $gatheredCodes = [];
-        $limit = $this->getInput('limit') ?? 3;
+        $limit = $this->getInput('limit');
         foreach($jsonBlobs as $jsonBlob) {
             // The structure of the JSON document is likely to change, but we're looking for a "code" inside a "post"
             foreach($this->recursiveFind($this->recursiveFind(json_decode($jsonBlob->innertext), "post"),"code") as $candidateCode){
