@@ -27,12 +27,15 @@ class KoFiBridge extends BridgeAbstract
                 if (isset($titleWrapper[0])) {
                     $item = [];
                     $item['title'] = $element->find('div.content-link-text div')[0]->plaintext;
-                    // $item['timestamp'] = strtotime($element->find('div.feeditem-time', 0)->plaintext);
-                    $item['uri'] = self::URI . $element->find('div.fi-post-item-large a')[0]->href;
+                    $uri = $element->find('div.content-link-text div')[2]->find('a')[0]->onclick;
+                    $uri = trim(str_replace('window.location =', '', $uri));
+                    $uri = trim(str_replace('&#39;', '', $uri));
+                    $uri = trim(str_replace(';', '', $uri));
+                    $item['uri'] = self::URI . $uri;
+
                     if (isset($element->find('div.fi-post-item-large div.content-link-post img')[0])) {
                         $item['enclosures'][] = $element->find('div.fi-post-item-large div.content-link-post img')[0]->src;
                     }
-                    // $item['content'] = $element->find('div.content-link-text div#content-link', 0)->plaintext;
 
                     $html = getSimpleHTMLDOM($item['uri']);
                     $feedItemTime = $html->find('div.feeditem-time', 0);
