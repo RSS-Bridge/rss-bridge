@@ -107,9 +107,9 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
             ];
 
         // Let's see if there are images in the content, and if yes, attach
-        // them as enclosures, but not images which are used for linking to an external site.
+        // them as enclosures, but not images which are used for linking to an external site and data URIs.
         foreach ($images as $image) {
-            if ($image->class != 'imgextlink') {
+            if ($image->class != 'imgextlink' && parse_url($image->src, PHP_URL_SCHEME) != 'data') {
                 $item['enclosures'][] = $image->src;
             }
         }
