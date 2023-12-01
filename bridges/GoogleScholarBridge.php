@@ -197,7 +197,7 @@ class GoogleScholarBridge extends BridgeAbstract
                     if (strpos($articleTitle, 'Check for updates') !== false) {
                         break;
                     }
-                    
+
                     $articleDateElement = $publication->find('div[class="gs_a"]', 0);
                     $articleDate = $articleDateElement ? $articleDateElement->plaintext : '';
 
