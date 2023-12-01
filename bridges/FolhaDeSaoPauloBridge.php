@@ -29,10 +29,8 @@ class FolhaDeSaoPauloBridge extends FeedExpander
         ]
     ];
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         if ($this->getInput('deep_crawl')) {
             $articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
             if ($articleHTMLContent) {

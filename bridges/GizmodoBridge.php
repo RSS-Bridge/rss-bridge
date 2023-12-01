@@ -8,10 +8,8 @@ class GizmodoBridge extends FeedExpander
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the newest posts from Gizmodo.';
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
         $html = getSimpleHTMLDOMCached($item['uri']);
 
         $html = defaultLinkTo($html, $this->getURI());
@@ -22,7 +20,7 @@ class GizmodoBridge extends FeedExpander
         // Get header image
         $image = $html->find('meta[property="og:image"]', 0)->content;
 
-        $item['content'] = $html->find('div.js_post-content', 0)->innertext;
+        $item['content'] = $html->find('div.js_post-content', 0)->innertext ?? '';
 
         // Get categories
         $categories = explode(',', $html->find('meta[name="keywords"]', 0)->content);

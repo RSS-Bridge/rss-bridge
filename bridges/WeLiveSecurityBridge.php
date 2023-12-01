@@ -12,23 +12,38 @@ class WeLiveSecurityBridge extends FeedExpander
         ],
     ];
 
-    protected function parseItem($item)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($item);
-
-        $article_html = getSimpleHTMLDOMCached($item['uri']);
-        if (!$article_html) {
-            $item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';
+        $html = getSimpleHTMLDOMCached($item['uri']);
+        if (!$html) {
+            $item['content'] .= '<br /><p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';
             return $item;
         }
 
-        $article_content = $article_html->find('div.formatted', 0)->innertext;
-        $article_content = stripWithDelimiters($article_content, '<script', '</script>');
-        $article_content = stripRecursiveHTMLSection($article_content, 'div', '<div class="comments');
-        $article_content = stripRecursiveHTMLSection($article_content, 'div', '<div class="similar-articles');
-        $article_content = stripRecursiveHTMLSection($article_content, 'span', '<span class="meta');
-        $item['content'] = trim($article_content);
+        $html = $html->find('.article-page', 0);
+        $content_html = $html->find('.article-body', 0);
 
+        // Remove social media footer
+        foreach ($content_html->find('blockquote') as $blockquote) {
+            if (str_starts_with(trim($blockquote->plaintext), 'Connect with us on')) {
+                $blockquote->outertext = '';
+            }
+        }
+
+        // Headline subtitle
+        $content = $content_html->innertext;
+        $subtitle = $html->find('.sub-title', 0);
+        if ($subtitle) {
+            $content = '<p><b>' . $subtitle->plaintext . '</b></p>' . $content;
+        }
+
+        // Author
+        $author = $html->find('.article-author', 0);
+        if ($author && !isset($item['author'])) {
+            $item['author'] = trim($author->plaintext);
+        }
+
+        $item['content'] = trim($content);
         return $item;
     }
 

@@ -53,16 +53,15 @@
                     <time datetime="<?= date('Y-m-d H:i:s', $item['timestamp']) ?>">
                         <?= date('Y-m-d H:i:s', $item['timestamp']) ?>
                     </time>
+                    <p></p>
                 <?php endif; ?>
 
                 <?php if ($item['author']): ?>
-                    <br/>
                     <p class="author">by: <?= e($item['author']) ?></p>
                 <?php endif; ?>
 
-                <div class="content">
-                    <?= sanitize_html($item['content']) ?>
-                </div>
+                <!-- Intentionally not escaping for html context -->
+                <?= break_annoying_html_tags($item['content']) ?>
 
                 <?php if ($item['enclosures']): ?>
                     <div class="attachments">

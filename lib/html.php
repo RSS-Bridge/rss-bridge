@@ -1,30 +1,42 @@
 <?php
 
 /**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
+ * Render template using base.html.php as base
  */
-
 function render(string $template, array $context = []): string
 {
     if ($template === 'base.html.php') {
         throw new \Exception('Do not render base.html.php into itself');
     }
-    $context['system_message'] = Configuration::getConfig('system', 'message');
+    $context['messages'] = $context['messages'] ?? [];
+    if (Configuration::getConfig('system', 'message')) {
+        $context['messages'][] = [
+            'body' => Configuration::getConfig('system', 'message'),
+            'level' => 'info',
+        ];
+    }
+    if (Debug::isEnabled()) {
+        $debugModeWhitelist = Configuration::getConfig('system', 'debug_mode_whitelist') ?: [];
+        if ($debugModeWhitelist === []) {
+            $context['messages'][] = [
+                'body' => 'Warning : Debug mode is active from any location, make sure only you can access RSS-Bridge.',
+                'level' => 'error'
+            ];
+        } else {
+            $context['messages'][] = [
+                'body' => 'Warning : Debug mode is active from your IP address, your requests will bypass the cache.',
+                'level' => 'warning'
+            ];
+        }
+    }
     $context['page'] = render_template($template, $context);
     return render_template('base.html.php', $context);
 }
 
 /**
- * Render template as absolute path or relative to templates folder.
- * Do not pass user input in $template
+ * Render php template with context
+ *
+ * DO NOT PASS USER INPUT IN $template or $context
  */
 function render_template(string $template, array $context = []): string
 {
@@ -113,7 +125,7 @@ function sanitize(
     return $htmlContent;
 }
 
-function sanitize_html(string $html): string
+function break_annoying_html_tags(string $html): string
 {
     $html = str_replace('<script', '<&zwnj;script', $html); // Disable scripts, but leave them visible.
     $html = str_replace('<iframe', '<&zwnj;iframe', $html);
@@ -232,20 +244,41 @@ function convertLazyLoading($dom)
         $dom = str_get_html($dom);
     }
 
+    // Retrieve image URL from srcset attribute
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset
+    // Example: convert "header640.png 640w, header960.png 960w, header1024.png 1024w" to "header1024.png"
+    $srcset_to_src = function ($srcset) {
+        $sources = explode(',', $srcset);
+        $last_entry = trim($sources[array_key_last($sources)]);
+        $url = explode(' ', $last_entry)[0];
+        return $url;
+    };
+
     // Process standalone images, embeds and picture sources
     foreach ($dom->find('img, iframe, source') as $img) {
         if (!empty($img->getAttribute('data-src'))) {
             $img->src = $img->getAttribute('data-src');
         } elseif (!empty($img->getAttribute('data-srcset'))) {
-            $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
+            $img->src = $srcset_to_src($img->getAttribute('data-srcset'));
         } elseif (!empty($img->getAttribute('data-lazy-src'))) {
             $img->src = $img->getAttribute('data-lazy-src');
+        } elseif (!empty($img->getAttribute('data-orig-file'))) {
+            $img->src = $img->getAttribute('data-orig-file');
         } elseif (!empty($img->getAttribute('srcset'))) {
-            $img->src = explode(' ', $img->getAttribute('srcset'))[0];
+            $img->src = $srcset_to_src($img->getAttribute('srcset'));
         } else {
             continue; // Proceed to next element without removing attributes
         }
-        foreach (['loading', 'decoding', 'srcset', 'data-src', 'data-srcset'] as $attr) {
+
+        // Remove data attributes, no longer necessary
+        foreach ($img->getAllAttributes() as $attr => $val) {
+            if (str_starts_with($attr, 'data-')) {
+                $img->removeAttribute($attr);
+            }
+        }
+
+        // Remove other attributes that may be processed by the client
+        foreach (['loading', 'decoding', 'srcset'] as $attr) {
             if ($img->hasAttribute($attr)) {
                 $img->removeAttribute($attr);
             }
@@ -262,7 +295,7 @@ function convertLazyLoading($dom)
                 $img->tag = 'img';
             }
             // Adding/removing node would change its position inside the parent element,
-            // So instead we rewrite the node in-place though the outertext attribute
+            // So instead we rewrite the node in-place through the outertext attribute
             $picture->outertext = $img->outertext;
         }
     }

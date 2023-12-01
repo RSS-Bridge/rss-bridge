@@ -455,11 +455,12 @@ class SkimfeedBridge extends BridgeAbstract
             return null;
         }
 
-        foreach (self::PARAMETERS as $channels) {
+        foreach (self::PARAMETERS as $context => $channels) {
             foreach ($channels as $box_name => $box) {
                 foreach ($box['values'] as $name => $channel_url) {
                     if (static::URI . $channel_url === $url) {
                         return [
+                            'context' => $context,
                             $box_name => $name,
                         ];
                     }

@@ -14,7 +14,7 @@ TEXT;
             'feed_name' => [
                 'name' => 'Feed name',
                 'type' => 'text',
-                'exampleValue' => 'rss-bridge/FeedMerger',
+                'exampleValue' => 'FeedMerge',
             ],
             'feed_1' => [
                 'name' => 'Feed url',
@@ -58,9 +58,29 @@ TEXT;
         $feeds = array_filter($feeds);
 
         foreach ($feeds as $feed) {
-            // Fetch all items from the feed
-            // todo: consider wrapping this in a try..catch to not let a single feed break the entire bridge?
-            $this->collectExpandableDatas($feed);
+            if (count($feeds) > 1) {
+                // Allow one or more feeds to fail
+                try {
+                    $this->collectExpandableDatas($feed);
+                } catch (HttpException $e) {
+                    $this->logger->warning(sprintf('Exception in FeedMergeBridge: %s', create_sane_exception_message($e)));
+                    $this->items[] = [
+                        'title' => 'RSS-Bridge: ' . $e->getMessage(),
+                        // Give current time so it sorts to the top
+                        'timestamp' => time(),
+                    ];
+                    continue;
+                } catch (\Exception $e) {
+                    if (str_starts_with($e->getMessage(), 'Unable to parse xml')) {
+                        // Allow this particular exception from FeedExpander
+                        $this->logger->warning(sprintf('Exception in FeedMergeBridge: %s', create_sane_exception_message($e)));
+                        continue;
+                    }
+                    throw $e;
+                }
+            } else {
+                $this->collectExpandableDatas($feed);
+            }
         }
 
         // Sort by timestamp descending
@@ -91,6 +111,6 @@ TEXT;
 
     public function getName()
     {
-        return $this->getInput('feed_name') ?: 'rss-bridge/FeedMerger';
+        return $this->getInput('feed_name') ?: 'FeedMerge';
     }
 }

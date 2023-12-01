@@ -71,7 +71,9 @@ class BundesbankBridge extends BridgeAbstract
                 $item['content'] .= '<strong>' . $study->find('.teasable__subtitle', 0)->plaintext . '</strong>';
             }
 
-            $item['content'] .= '<p>' . $study->find('.teasable__text', 0)->plaintext . '</p>';
+            $teasable = $study->find('.teasable__text', 0);
+            $teasableText = $teasable->plaintext ?? '';
+            $item['content'] .= '<p>' . $teasableText . '</p>';
 
             $item['timestamp'] = strtotime($study->find('.teasable__date', 0)->plaintext);
 

@@ -5,7 +5,7 @@ class ViceBridge extends FeedExpander
     const MAINTAINER = 'IceWreck';
     const NAME = 'Vice Bridge';
     const URI = 'https://www.vice.com/';
-    const CACHE_TIMEOUT = 3600; // This is a news site, so don't cache for more than 10 mins
+    const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'RSS feed for vice publications like Vice News, Munchies, Motherboard, etc.';
     const PARAMETERS = [ [
         'feed' => [
@@ -24,18 +24,20 @@ class ViceBridge extends FeedExpander
     public function collectData()
     {
         $feed = $this->getInput('feed');
+        if ($feed === 'rss') {
+            // They changed url in Sep 2023
+            $feed = 'en/rss';
+        }
         $feedURL = 'https://www.vice.com/' . $feed;
         $this->collectExpandableDatas($feedURL, 10);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
-        // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = getSimpleHTMLDOM($item['uri']);
         // text and embedded content
         $article = $articlePage->find('.article__body', 0);
-        $item['content'] = $article;
+        $item['content'] = $article ?? '';
 
         return $item;
     }

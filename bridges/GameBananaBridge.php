@@ -38,7 +38,7 @@ class GameBananaBridge extends BridgeAbstract
         $json_list = json_decode($api_response, true); // Get first page mod list
 
         $url = 'https://api.gamebanana.com/Core/Item/Data?itemtype[]=Game&fields[]=name&itemid[]=' . $this->getInput('gid');
-        $fields = 'name,Owner().name,text,Preview().sSubFeedImageUrl(),Files().aFiles(),date,Url().sProfileUrl(),udate';
+        $fields = 'name,Owner().name,text,screenshots,Files().aFiles(),date,Url().sProfileUrl(),udate';
         foreach ($json_list as $element) { // Build api request to minimize API calls
             $mid = $element[1];
             $url .= '&itemtype[]=Mod&fields[]=' . $fields . '&itemid[]=' . $mid;
@@ -55,15 +55,25 @@ class GameBananaBridge extends BridgeAbstract
             $item['comments'] = $item['uri'] . '#PostsListModule';
             $item['title'] = $element[0];
             $item['author'] = $element[1];
-            $item['content'] = '<img src="' . $element[3] . '"/><br>' . $element[2];
+
             $item['timestamp'] = $element[5];
             if ($this->getInput('updates')) {
                 $item['timestamp'] = $element[7];
             }
+
             $item['enclosures'] = [];
             foreach ($element[4] as $file) { // Place mod downloads in enclosures
                 array_push($item['enclosures'], 'https://files.gamebanana.com/mods/' . $file['_sFile']);
             }
+
+            // Get screenshots from element[3]
+            $img_list = json_decode($element[3], true);
+            $item['content'] = '';
+            foreach ($img_list as $img_element) {
+                $item['content'] .= '<img src="https://images.gamebanana.com/img/ss/mods/' . $img_element['_sFile'] . '"/>';
+            }
+            $item['content'] .= '<br>' . $element[2];
+
             $item['uid'] = $item['uri'] . $item['title'] . $item['timestamp'];
             $this->items[] = $item;
         }

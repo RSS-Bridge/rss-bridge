@@ -36,6 +36,11 @@ class FinanzflussBridge extends BridgeAbstract
                 $img->srcset = $baseurl . $src;
             }
 
+            //remove unwanted stuff
+            foreach ($content->find('div.newsletter-signup') as $element) {
+                $element->remove();
+            }
+
             //get author
             $author = $domarticle->find('div.author-name', 0);
 

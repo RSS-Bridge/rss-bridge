@@ -1,131 +1,114 @@
 <?php
 
+declare(strict_types=1);
+
 class FileCache implements CacheInterface
 {
+    private Logger $logger;
     private array $config;
-    protected $scope;
-    protected $key;
 
-    public function __construct(array $config = [])
-    {
-        $this->config = $config;
-
-        if (!is_dir($this->config['path'])) {
-            throw new \Exception('The cache path does not exists. You probably want: mkdir cache && chown www-data:www-data cache');
+    public function __construct(
+        Logger $logger,
+        array $config = []
+    ) {
+        $this->logger = $logger;
+        $default = [
+            'path'          => null,
+            'enable_purge'  => true,
+        ];
+        $this->config = array_merge($default, $config);
+        if (!$this->config['path']) {
+            throw new \Exception('The FileCache needs a path value');
         }
-        if (!is_writable($this->config['path'])) {
-            throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
+        // Normalize with a single trailing slash
+        $this->config['path'] = rtrim($this->config['path'], '/') . '/';
+    }
+
+    public function get(string $key, $default = null)
+    {
+        $cacheFile = $this->createCacheFile($key);
+        if (!file_exists($cacheFile)) {
+            return $default;
+        }
+        $data = file_get_contents($cacheFile);
+        $item = unserialize($data);
+        if ($item === false) {
+            $this->logger->warning(sprintf('Failed to unserialize: %s', $cacheFile));
+            $this->delete($key);
+            return $default;
+        }
+        $expiration = $item['expiration'] ?? time();
+        if ($expiration === 0 || $expiration > time()) {
+            return $item['value'];
+        }
+        $this->delete($key);
+        return $default;
+    }
+
+    public function set($key, $value, int $ttl = null): void
+    {
+        $item = [
+            'key'           => $key,
+            'value'         => $value,
+            'expiration'    => $ttl === null ? 0 : time() + $ttl,
+        ];
+        $cacheFile = $this->createCacheFile($key);
+        $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
+        if ($bytes === false) {
+            // Consider just logging the error here
+            throw new \Exception(sprintf('Failed to write to: %s', $cacheFile));
         }
     }
 
-    public function loadData()
+    public function delete(string $key): void
     {
-        if (file_exists($this->getCacheFile())) {
-            return unserialize(file_get_contents($this->getCacheFile()));
-        }
-        return null;
+        unlink($this->createCacheFile($key));
     }
 
-    public function saveData($data)
+    public function clear(): void
     {
-        $writeStream = file_put_contents($this->getCacheFile(), serialize($data));
-        if ($writeStream === false) {
-            throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
-        }
-        return $this;
-    }
-
-    public function getTime()
-    {
-        $cacheFile = $this->getCacheFile();
-        clearstatcache(false, $cacheFile);
-        if (file_exists($cacheFile)) {
-            $time = filemtime($cacheFile);
-            if ($time !== false) {
-                return $time;
+        foreach (scandir($this->config['path']) as $filename) {
+            $cacheFile = $this->config['path'] . $filename;
+            $excluded = ['.' => true, '..' => true, '.gitkeep' => true];
+            if (isset($excluded[$filename]) || !is_file($cacheFile)) {
+                continue;
             }
-            return null;
+            unlink($cacheFile);
         }
-
-        return null;
     }
 
-    public function purgeCache($seconds)
+    public function prune(): void
     {
         if (! $this->config['enable_purge']) {
             return;
         }
-
-        $cachePath = $this->getScope();
-        if (!file_exists($cachePath)) {
-            return;
-        }
-        $cacheIterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($cachePath),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($cacheIterator as $cacheFile) {
-            if (in_array($cacheFile->getBasename(), ['.', '..', '.gitkeep'])) {
+        foreach (scandir($this->config['path']) as $filename) {
+            $cacheFile = $this->config['path'] . $filename;
+            $excluded = ['.' => true, '..' => true, '.gitkeep' => true];
+            if (isset($excluded[$filename]) || !is_file($cacheFile)) {
                 continue;
-            } elseif ($cacheFile->isFile()) {
-                if (filemtime($cacheFile->getPathname()) < time() - $seconds) {
-                    // todo: sometimes this file doesn't exists
-                    unlink($cacheFile->getPathname());
-                }
             }
-        }
-    }
-
-    public function setScope($scope)
-    {
-        if (!is_string($scope)) {
-            throw new \Exception('The given scope is invalid!');
-        }
-
-        $this->scope = $this->config['path'] . trim($scope, " \t\n\r\0\x0B\\\/") . '/';
-
-        return $this;
-    }
-
-    public function setKey($key)
-    {
-        $key = json_encode($key);
-
-        if (!is_string($key)) {
-            throw new \Exception('The given key is invalid!');
-        }
-
-        $this->key = $key;
-        return $this;
-    }
-
-    private function getScope()
-    {
-        if (is_null($this->scope)) {
-            throw new \Exception('Call "setScope" first!');
-        }
-
-        if (!is_dir($this->scope)) {
-            if (mkdir($this->scope, 0755, true) !== true) {
-                throw new \Exception('mkdir: Unable to create file cache folder');
+            $data = file_get_contents($cacheFile);
+            $item = unserialize($data);
+            if ($item === false) {
+                unlink($cacheFile);
+                continue;
             }
+            $expiration = $item['expiration'] ?? time();
+            if ($expiration === 0 || $expiration > time()) {
+                continue;
+            }
+            unlink($cacheFile);
         }
-
-        return $this->scope;
     }
 
-    private function getCacheFile()
+    private function createCacheFile(string $key): string
     {
-        return $this->getScope() . $this->getCacheName();
+        return $this->config['path'] . hash('md5', $key) . '.cache';
     }
 
-    private function getCacheName()
+    public function getConfig()
     {
-        if (is_null($this->key)) {
-            throw new \Exception('Call "setKey" first!');
-        }
-
-        return hash('md5', $this->key) . '.cache';
+        return $this->config;
     }
 }

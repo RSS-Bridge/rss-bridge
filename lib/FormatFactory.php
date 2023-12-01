@@ -1,17 +1,5 @@
 <?php
 
-/**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
- */
-
 class FormatFactory
 {
     private $folder;
@@ -33,7 +21,7 @@ class FormatFactory
      * @throws \InvalidArgumentException
      * @param string $name The name of the format e.g. "Atom", "Mrss" or "Json"
      */
-    public function create(string $name): FormatInterface
+    public function create(string $name): FormatAbstract
     {
         if (! preg_match('/^[a-zA-Z0-9-]*$/', $name)) {
             throw new \InvalidArgumentException('Format name invalid!');

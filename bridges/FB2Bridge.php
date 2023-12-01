@@ -304,7 +304,11 @@ EOD
         $regex = '/"pageID":"([0-9]*)"/';
         preg_match($regex, $pageContent, $matches);
 
-        return ['userId' => $matches[1], 'username' => $username];
+        $arr = [
+            'userId' => $matches[1] ?? null,
+            'username' => $username,
+        ];
+        return $arr;
     }
 
     public function getName()

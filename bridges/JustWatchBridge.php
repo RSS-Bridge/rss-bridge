@@ -169,16 +169,22 @@ class JustWatchBridge extends BridgeAbstract
             foreach ($titles as $title) {
                 $item = [];
                 $item['uri'] = $title->find('a', 0)->href;
-                $item['title'] = $provider->find('picture > img', 0)->alt . ' - ' . $title->find('.title-poster__image > img', 0)->alt;
-                $image = $title->find('.title-poster__image > img', 0)->attr['src'];
-                if (str_starts_with($image, 'data')) {
-                    $image = $title->find('.title-poster__image > img', 0)->attr['data-src'];
+
+                $posterImage = $title->find('.title-poster__image > img', 0);
+                $itemTitle = sprintf(
+                    '%s - %s',
+                    $provider->find('picture > img', 0)->alt ?? '',
+                    $posterImage->alt ?? ''
+                );
+                $item['title'] = $itemTitle;
+
+                $imageUrl = $posterImage->attr['src'] ?? '';
+                if (str_starts_with($imageUrl, 'data')) {
+                    $imageUrl = $posterImage->attr['data-src'];
                 }
 
-                $content  = '<b>Provider:</b> '
-                    . $provider->find('picture > img', 0)->alt . '<br>';
-                $content .= '<b>Media:</b> '
-                    . $title->find('.title-poster__image > img', 0)->alt . '<br>';
+                $content  = '<b>Provider:</b> ' . $provider->find('picture > img', 0)->alt . '<br>';
+                $content .= '<b>Media:</b> ' . ($posterImage->alt ?? '') . '<br>';
 
                 if (isset($title->find('.title-poster__badge', 0)->plaintext)) {
                     $content .= '<b>Type:</b> Series<br>';
@@ -190,7 +196,7 @@ class JustWatchBridge extends BridgeAbstract
                 $content .= '<b>Poster:</b><br><a href="'
                     . $title->find('a', 0)->href
                     . '"><img src="'
-                    . $image
+                    . $imageUrl
                     . '"></a>';
 
                 $item['content'] = $content;

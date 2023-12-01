@@ -50,13 +50,14 @@ class WiredBridge extends FeedExpander
         $this->collectExpandableDatas($feed_url, $limit);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
+        $originalContent = $item['content'];
+
         $article = getSimpleHTMLDOMCached($item['uri']);
         $item['content'] = $this->extractArticleContent($article);
 
-        $headline = strval($newsItem->description);
+        $headline = $originalContent;
         if (!empty($headline)) {
             $item['content'] = '<p><b>' . $headline . '</b></p>' . $item['content'];
         }

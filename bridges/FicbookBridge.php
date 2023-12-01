@@ -184,6 +184,7 @@ class FicbookBridge extends BridgeAbstract
         ];
 
         $fixed_date = str_replace($ru_month, $en_month, $date);
+        $fixed_date = str_replace(' г.', '', $fixed_date);
 
         if ($fixed_date === $date) {
             Debug::log('Unable to fix date: ' . $date);

@@ -15,6 +15,7 @@ class TheGuardianBridge extends FeedExpander
                 'World News' => 'world/rss',
                 'US News' => '/us-news/rss',
                 'UK News' => '/uk-news/rss',
+                'Australia News' => '/australia-news/rss',
                 'Europe News' => '/world/europe-news/rss',
                 'Asia News' => '/world/asia/rss',
                 'Tech' => '/uk/technology/rss',
@@ -51,18 +52,13 @@ class TheGuardianBridge extends FeedExpander
     public function collectData()
     {
         $feed = $this->getInput('feed');
-        $feedURL = 'https://feeds.theguardian.com/theguardian/' . $feed;
-        $this->collectExpandableDatas($feedURL, 10);
+        $url = 'https://feeds.theguardian.com/theguardian/' . $feed;
+        $this->collectExpandableDatas($url, 10);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
-
-        // --- Recovering the article ---
-
-        // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = getSimpleHTMLDOM($item['uri']);
         // figure contain's the main article image
         $article = $articlePage->find('figure', 0);
         // content__article-body has the actual article

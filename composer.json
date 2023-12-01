@@ -28,8 +28,8 @@
         "ext-openssl": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
-        "ext-json": "*",
-        "ext-intl": "*"
+        "ext-dom": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
@@ -39,7 +39,7 @@
         "ext-memcached": "Allows to use memcached as cache type",
         "ext-sqlite3": "Allows to use an SQLite database for caching",
         "ext-zip": "Required for FDroidRepoBridge",
-        "ext-dom": "Allows to use some bridges based on XPath expressions"
+        "ext-intl": "Required for OLXBridge"
     },
     "autoload-dev": {
         "psr-4": {

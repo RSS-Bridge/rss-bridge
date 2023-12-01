@@ -37,7 +37,8 @@ class AskfmBridge extends BridgeAbstract
 
             $item['timestamp'] = strtotime($element->find('time', 0)->datetime);
 
-            $answer = trim($element->find('div.streamItem_content', 0)->innertext);
+            $var = $element->find('div.streamItem_content', 0);
+            $answer = trim($var->innertext ?? '');
 
             // This probably should be cleaned up, especially for YouTube embeds
             if ($visual = $element->find('div.streamItem_visual', 0)) {

@@ -319,7 +319,7 @@ EOD;
                             $content .= $module['note'];
                             break;
                         case 'listicle':
-                            $content .= '<h2>' . $module['title'] . '</h2>';
+                            $content .= '<h2>' . ($module['title'] ?? '(no title)') . '</h2>';
                             if (isset($module['image'])) {
                                 $content .= $this->handleImages($module['image'], $module['image']['cmsType']);
                             }

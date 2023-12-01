@@ -41,5 +41,5 @@ fi
 # nginx will daemonize
 nginx
 
-# php-fpm will not
-php-fpm
+# php-fpm should not daemonize
+php-fpm8.2 --nodaemonize

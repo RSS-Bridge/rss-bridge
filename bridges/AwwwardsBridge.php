@@ -14,29 +14,10 @@ class AwwwardsBridge extends BridgeAbstract
 
     private $sites = [];
 
-    public function getIcon()
-    {
-        return 'https://www.awwwards.com/favicon.ico';
-    }
-
-    private function fetchSites()
-    {
-        Debug::log('Fetching all sites');
-        $sites = getSimpleHTMLDOM(self::SITESURI);
-
-        Debug::log('Parsing all JSON data');
-        foreach ($sites->find('.grid-sites li') as $site) {
-            $decode = html_entity_decode($site->attr['data-collectable-model-value'], ENT_QUOTES, 'utf-8');
-            $decode = json_decode($decode, true);
-            $this->sites[] = $decode;
-        }
-    }
-
     public function collectData()
     {
         $this->fetchSites();
 
-        Debug::log('Building RSS feed');
         foreach ($this->sites as $site) {
             $item = [];
             $item['title'] = $site['title'];
@@ -54,6 +35,25 @@ class AwwwardsBridge extends BridgeAbstract
             if (count($this->items) >= 10) {
                 break;
             }
+        }
+    }
+
+    public function getIcon()
+    {
+        return 'https://www.awwwards.com/favicon.ico';
+    }
+
+    private function fetchSites()
+    {
+        $sites = getSimpleHTMLDOM(self::SITESURI);
+        foreach ($sites->find('.grid-sites li') as $li) {
+            $encodedJson = $li->attr['data-collectable-model-value'] ?? null;
+            if (!$encodedJson) {
+                continue;
+            }
+            $json = html_entity_decode($encodedJson, ENT_QUOTES, 'utf-8');
+            $site = Json::decode($json);
+            $this->sites[] = $site;
         }
     }
 }

@@ -56,9 +56,8 @@ class DarkReadingBridge extends FeedExpander
         $this->collectExpandableDatas($feed_url, $limit);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
         $article = getSimpleHTMLDOMCached($item['uri']);
         $item['content'] = $this->extractArticleContent($article);
         $item['enclosures'] = []; //remove author profile picture

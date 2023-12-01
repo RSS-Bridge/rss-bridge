@@ -113,7 +113,12 @@ class ARDAudiothekBridge extends BridgeAbstract
                 $item['timestamp'] = $audio->publicationStartDateAndTime;
                 $item['uid'] = $audio->id;
                 $item['author'] = $audio->programSet->publicationService->title;
-                $item['categories'] = [ $audio->programSet->editorialCategories->title ];
+
+                $category = $audio->programSet->editorialCategories->title ?? null;
+                if ($category) {
+                    $item['categories'] = [$category];
+                }
+
                 $this->items[] = $item;
             }
         }

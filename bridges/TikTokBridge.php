@@ -26,18 +26,6 @@ class TikTokBridge extends BridgeAbstract
 
     private $feedName = '';
 
-    public function detectParameters($url)
-    {
-        if (preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
-            return [
-                'context' => 'By user',
-                'username' => $matches[1]
-            ];
-        }
-
-        return null;
-    }
-
     public function collectData()
     {
         $html = getSimpleHTMLDOM($this->getURI());
@@ -45,20 +33,44 @@ class TikTokBridge extends BridgeAbstract
         $title = $html->find('h1', 0)->plaintext ?? self::NAME;
         $this->feedName = htmlspecialchars_decode($title);
 
-        foreach ($html->find('div.tiktok-x6y88p-DivItemContainerV2') as $div) {
+        $var = $html->find('script[id=SIGI_STATE]', 0);
+        if (!$var) {
+            throw new \Exception('Unable to find tiktok user data for ' . $this->processUsername());
+        }
+        $SIGI_STATE_RAW = $var->innertext;
+        $SIGI_STATE = Json::decode($SIGI_STATE_RAW, false);
+
+        if (!isset($SIGI_STATE->ItemModule)) {
+            return;
+        }
+
+        foreach ($SIGI_STATE->ItemModule as $key => $value) {
             $item = [];
 
-            $link = $div->find('a', 0)->href;
-            $image = $div->find('img', 0)->src;
-            $views = $div->find('strong.video-count', 0)->plaintext;
+            $link = 'https://www.tiktok.com/@' . $value->author . '/video/' . $value->id;
+            $image = $value->video->dynamicCover;
+            if (empty($image)) {
+                $image = $value->video->cover;
+            }
+            $views = $value->stats->playCount;
+            $hastags = [];
+            foreach ($value->textExtra as $tag) {
+                $hastags[] = $tag->hashtagName;
+            }
+            $hastags_str = '';
+            foreach ($hastags as $tag) {
+                $hastags_str .= '<a href="https://www.tiktok.com/tag/' . $tag . '">#' . $tag . '</a> ';
+            }
 
             $item['uri'] = $link;
-            $item['title'] = $div->find('a', 1)->plaintext;
+            $item['title'] = $value->desc;
+            $item['timestamp'] = $value->createTime;
+            $item['author'] = '@' . $value->author;
             $item['enclosures'][] = $image;
-
+            $item['categories'] = $hastags;
             $item['content'] = <<<EOD
 <a href="{$link}"><img src="{$image}"/></a>
-<p>{$views} views<p>
+<p>{$views} views<p><br/>Hashtags: {$hastags_str}
 EOD;
 
             $this->items[] = $item;
@@ -87,10 +99,25 @@ EOD;
 
     private function processUsername()
     {
-        if (substr($this->getInput('username'), 0, 1) !== '@') {
-            return '@' . $this->getInput('username');
+        $username = trim($this->getInput('username'));
+        if (preg_match('#^https?://www\.tiktok\.com/@(.*)$#', $username, $m)) {
+            return '@' . $m[1];
+        }
+        if (substr($username, 0, 1) !== '@') {
+            return '@' . $username;
+        }
+        return $username;
+    }
+
+    public function detectParameters($url)
+    {
+        if (preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
+            return [
+                'context' => 'By user',
+                'username' => $matches[1]
+            ];
         }
 
-        return $this->getInput('username');
+        return null;
     }
 }

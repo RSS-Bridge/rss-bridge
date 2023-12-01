@@ -1,8 +1,8 @@
 <?php
 
-class NyaaTorrentsBridge extends FeedExpander
+class NyaaTorrentsBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'ORelio';
+    const MAINTAINER = 'ORelio & Jisagi';
     const NAME = 'NyaaTorrents';
     const URI = 'https://nyaa.si/';
     const DESCRIPTION = 'Returns the newest torrents, with optional search criteria.';
@@ -60,53 +60,49 @@ class NyaaTorrentsBridge extends FeedExpander
         ]
     ];
 
+    public function collectData()
+    {
+        $feedParser = new FeedParser();
+        $feed = $feedParser->parseFeed(getContents($this->getURI()));
+
+        foreach ($feed['items'] as $item) {
+            $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
+            $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
+            $item['uri'] = str_replace('.torrent', '', $item['uri']);
+            $dom = getSimpleHTMLDOMCached($item['uri']);
+            if ($dom) {
+                $description = $dom->find('#torrent-description', 0)->innertext ?? '';
+                $itemDom = str_get_html(markdownToHtml(html_entity_decode($description)));
+                $item_image = $this->getURI() . 'static/img/avatar/default.png';
+                foreach ($itemDom->find('img') as $img) {
+                    if (strpos($img->src, 'prez') === false) {
+                        $item_image = $img->src;
+                        break;
+                    }
+                }
+                $item['enclosures'] = [$item_image];
+                $item['content'] = (string) $itemDom;
+            }
+            $this->items[] = $item;
+            if (count($this->items) >= 10) {
+                break;
+            }
+        }
+    }
+
     public function getIcon()
     {
         return self::URI . 'static/favicon.png';
     }
 
-    public function collectData()
+    public function getURI()
     {
-        $this->collectExpandableDatas(
-            self::URI . '?page=rss&s=id&o=desc&'
-            . http_build_query([
-                'f' => $this->getInput('f'),
-                'c' => $this->getInput('c'),
-                'q' => $this->getInput('q'),
-                'u' => $this->getInput('u')
-            ]),
-            20
-        );
-    }
-
-    protected function parseItem($newItem)
-    {
-        $item = parent::parseItem($newItem);
-
-        //Convert URI from torrent file to web page
-        $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
-        $item['uri'] = str_replace('.torrent', '', $item['uri']);
-
-        if ($item_html = getSimpleHTMLDOMCached($item['uri'])) {
-            //Retrieve full description from page contents
-            $item_desc = str_get_html(
-                markdownToHtml(html_entity_decode($item_html->find('#torrent-description', 0)->innertext))
-            );
-
-            //Retrieve image for thumbnail or generic logo fallback
-            $item_image = $this->getURI() . 'static/img/avatar/default.png';
-            foreach ($item_desc->find('img') as $img) {
-                if (strpos($img->src, 'prez') === false) {
-                    $item_image = $img->src;
-                    break;
-                }
-            }
-
-            //Add expanded fields to the current item
-            $item['enclosures'] = [$item_image];
-            $item['content'] = $item_desc;
-        }
-
-        return $item;
+        $params = [
+            'f' => $this->getInput('f'),
+            'c' => $this->getInput('c'),
+            'q' => $this->getInput('q'),
+            'u' => $this->getInput('u'),
+        ];
+        return self::URI . '?page=rss&s=id&o=desc&' . http_build_query($params);
     }
 }

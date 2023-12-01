@@ -13,12 +13,10 @@ class ListverseBridge extends FeedExpander
         $this->collectExpandableDatas('https://listverse.com/feed/', 15);
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
-        // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
-        $article = $articlePage->find('#articlecontentonly', 0);
+        $dom = getSimpleHTMLDOM($item['uri']);
+        $article = $dom->find('#articlecontentonly', 0);
         $item['content'] = $article;
         return $item;
     }

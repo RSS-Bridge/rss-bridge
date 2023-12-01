@@ -25,10 +25,11 @@ class ScientificAmericanBridge extends FeedExpander
     ];
 
     const FEED = 'http://rss.sciam.com/ScientificAmerican-Global';
-    const ISSUES = 'https://www.scientificamerican.com/store/archive/?magazineFilterID=all';
+    const ISSUES = 'https://www.scientificamerican.com/archive/issues/2020s/';
 
     public function collectData()
     {
+        $this->collectIssues();
         $items = [
             ...$this->collectFeed(),
             ...$this->collectIssues()
@@ -49,7 +50,7 @@ class ScientificAmericanBridge extends FeedExpander
 
         if ($this->getInput('addContents') == 1) {
             usort($this->items, function ($item1, $item2) {
-                return $item1['timestamp'] < $item2['timestamp'];
+                return $item1['timestamp'] - $item2['timestamp'];
             });
         }
     }
@@ -65,8 +66,8 @@ class ScientificAmericanBridge extends FeedExpander
     private function collectIssues()
     {
         $html = getSimpleHTMLDOMCached(self::ISSUES);
-        $issues_root = $html->find('div.store-listing-group', 0);
-        $issues = $issues_root->find('div.store-listing-group__item');
+        $content = $html->getElementById('content')->children(3);
+        $issues = $content->children();
         $issues_count = min(
             (int)$this->getInput('parseIssues'),
             count($issues)
@@ -74,7 +75,7 @@ class ScientificAmericanBridge extends FeedExpander
 
         $items = [];
         for ($i = 0; $i < $issues_count; $i++) {
-            $a = $issues[$i]->find('a.store-listing__cta', 0);
+            $a = $issues[$i]->find('a', 0);
             $link = 'https://scientificamerican.com' . $a->getAttribute('href');
             array_push($items, ...$this->parseIssue($link));
         }
@@ -86,49 +87,40 @@ class ScientificAmericanBridge extends FeedExpander
         $items = [];
         $html = getSimpleHTMLDOMCached($issue_link);
 
-        $features = $html->find('section[data-issue-column="Features"]', 0);
+        $features = $html->find('[class^=Detail_issue__article__previews__featured]', 0);
         if ($features != null) {
-            $articles = $features->find('article');
+            $articles = $features->find('div', 0)->children();
             foreach ($articles as $article) {
-                $items[] = $this->parseIssueItem($article);
+                $h4 = $article->find('h4', 0);
+                $a = $h4->find('a', 0);
+                $link = 'https://scientificamerican.com' . $a->getAttribute('href');
+                $title = $a->plaintext;
+                $items[] = [
+                    'uri' => $link,
+                    'title' => $title,
+                    'uid' => $link,
+                    'content' => ''
+                ];
             }
         }
 
-        $departments = $html->find('section[data-issue-column="Departments"]', 0);
+        $departments = $html->find('[class^=Detail_issue__article__previews__departments]', 0);
         if ($departments != null) {
-            $lis = $departments->find('ul', 0)->find('li');
-            foreach ($lis as $li) {
-                $items[] = $this->parseIssueItem($li);
+            $headers = $departments->find('[class*=Listing_article__listing__title]');
+            foreach ($headers as $header) {
+                $a = $header->find('a', 0);
+                $link = 'https://scientificamerican.com' . $a->getAttribute('href');
+                $title = $a->plaintext;
+                $items[] = [
+                    'uri' => $link,
+                    'title' => $title,
+                    'uid' => $link,
+                    'content' => ''
+                ];
             }
         }
 
         return $items;
-    }
-
-    private function parseIssueItem($article)
-    {
-        $title = $article->getAttribute('data-article-title');
-        $a = $article->find('a', 0);
-        $link = null;
-        if ($a != null) {
-            $link = $a->href;
-        } else {
-            [$kind, $v] = explode('-', $article->getAttribute('id'), 2);
-            $link = 'https://scientificamerican.com/' . $kind . '/' . $v;
-        }
-        $content = '';
-
-        $desc = $article->find('p.listing-wide__inner__desc', 0);
-        if ($desc != null) {
-            $content = $desc->plaintext;
-        }
-
-        return [
-            'uri' => $link,
-            'title' => $title,
-            'uid' => $link,
-            'content' => $content
-        ];
     }
 
     private function updateItem($item)

@@ -1,44 +1,53 @@
 <?php
 
-class CarThrottleBridge extends FeedExpander
+class CarThrottleBridge extends BridgeAbstract
 {
-    const NAME = 'Car Throttle ';
-    const URI = 'https://www.carthrottle.com';
+    const NAME = 'Car Throttle';
+    const URI = 'https://www.carthrottle.com/';
     const DESCRIPTION = 'Get the latest car-related news from Car Throttle.';
     const MAINTAINER = 't0stiman';
 
     public function collectData()
     {
-        $this->collectExpandableDatas('https://www.carthrottle.com/rss', 10);
-    }
+        $news = getSimpleHTMLDOMCached(self::URI . 'news')
+            or returnServerError('could not retrieve page');
 
-    protected function parseItem($feedItem)
-    {
-        $item = parent::parseItem($feedItem);
+        $this->items[] = [];
 
-        //fetch page
-        $articlePage = getSimpleHTMLDOMCached($feedItem->link)
-            or returnServerError('Could not retrieve ' . $feedItem->link);
+        //for each post
+        foreach ($news->find('div.cmg-card') as $post) {
+            $item = [];
 
-        $subtitle = $articlePage->find('p.standfirst', 0);
-        $article = $articlePage->find('div.content_field', 0);
+            $titleElement = $post->find('div.title a.cmg-link')[0];
+            $item['uri'] = self::URI . $titleElement->getAttribute('href');
+            $item['title'] = $titleElement->innertext;
 
-        $item['content'] = str_get_html($subtitle . $article);
+            $articlePage = getSimpleHTMLDOMCached($item['uri'])
+                or returnServerError('could not retrieve page');
 
-        //convert <iframe>s to <a>s. meant for embedded videos.
-        foreach ($item['content']->find('iframe') as $found) {
-            $iframeUrl = $found->getAttribute('src');
-
-            if ($iframeUrl) {
-                $found->outertext = '<a href="' . $iframeUrl . '">' . $iframeUrl . '</a>';
+            $authorDiv = $articlePage->find('div.author div');
+            if ($authorDiv) {
+                $item['author'] = $authorDiv[1]->innertext;
             }
-        }
 
-        //remove scripts from the text
-        foreach ($item['content']->find('script') as $remove) {
-            $remove->outertext = '';
-        }
+            $dinges = $articlePage->find('div.main-body')[0] ?? null;
+            //remove ads
+            if ($dinges) {
+                foreach ($dinges->find('aside') as $ad) {
+                    $ad->outertext = '';
+                    $dinges->save();
+                }
+            }
 
-        return $item;
+            $var = $articlePage->find('div.summary')[0] ?? '';
+            $var1 = $articlePage->find('figure.main-image')[0] ?? '';
+            $dinges1 = $dinges ?? '';
+
+            $item['content'] = $var .
+                $var1 .
+                $dinges1;
+
+            array_push($this->items, $item);
+        }
     }
 }

@@ -14,6 +14,7 @@ final class ConfigurationTest extends TestCase
         Configuration::loadConfiguration();
         $this->assertSame(null, Configuration::getConfig('foobar', ''));
         $this->assertSame(null, Configuration::getConfig('foo', 'bar'));
+        $this->assertSame('baz', Configuration::getConfig('foo', 'bar', 'baz'));
         $this->assertSame(null, Configuration::getConfig('cache', ''));
         $this->assertSame('UTC', Configuration::getConfig('system', 'timezone'));
     }
@@ -26,13 +27,18 @@ final class ConfigurationTest extends TestCase
 
     public function testValueFromEnv()
     {
-        putenv('RSSBRIDGE_system_timezone=Europe/Berlin');
-        putenv('RSSBRIDGE_TwitterV2Bridge_twitterv2apitoken=aaa');
-        putenv('RSSBRIDGE_SQLiteCache_file=bbb');
-        Configuration::loadConfiguration([], getenv());
+        $env = [
+            'RSSBRIDGE_system_timezone' => 'Europe/Berlin',
+            'RSSBRIDGE_SYSTEM_MESSAGE' => 'hello',
+            'RSSBRIDGE_system_enabled_bridges' => 'TwitterBridge,GettrBridge',
+            'RSSBRIDGE_system_enable_debug_mode' => 'true',
+            'RSSBRIDGE_fileCache_path' => '/tmp/kek',
+        ];
+        Configuration::loadConfiguration([], $env);
         $this->assertSame('Europe/Berlin', Configuration::getConfig('system', 'timezone'));
-        $this->assertSame('aaa', Configuration::getConfig('TwitterV2Bridge', 'twitterv2apitoken'));
-        $this->assertSame('bbb', Configuration::getConfig('SQLiteCache', 'file'));
-        $this->assertSame('bbb', Configuration::getConfig('sqlitecache', 'file'));
+        $this->assertSame('hello', Configuration::getConfig('system', 'message'));
+        $this->assertSame(true, Configuration::getConfig('system', 'enable_debug_mode'));
+        $this->assertSame('/tmp/kek', Configuration::getConfig('FileCache', 'path'));
+        $this->assertSame(['TwitterBridge', 'GettrBridge'], Configuration::getConfig('system', 'enabled_bridges'));
     }
 }

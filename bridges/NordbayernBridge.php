@@ -44,6 +44,12 @@ class NordbayernBridge extends BridgeAbstract
             'type' => 'checkbox',
             'exampleValue' => 'unchecked',
             'title' => 'Hide all paywall articles on NN'
+        ],
+        'hideDPA' => [
+        'name' => 'Hide dpa articles',
+        'type' => 'checkbox',
+        'exampleValue' => 'unchecked',
+        'title' => 'Hide external articles from dpa'
         ]
     ]];
 
@@ -103,7 +109,7 @@ class NordbayernBridge extends BridgeAbstract
         return $teaser;
     }
 
-    private function handleArticle($link)
+    private function getArticle($link)
     {
         $item = [];
         $article = getSimpleHTMLDOM($link);
@@ -142,15 +148,9 @@ class NordbayernBridge extends BridgeAbstract
             $item['content'] .= self::getUseFullContent($content);
         }
 
-        // exclude police reports if desired
-        if (
-            $this->getInput('policeReports') ||
-            !str_contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')
-        ) {
-            $this->items[] = $item;
-        }
 
         $article->clear();
+        return $item;
     }
 
     private function handleNewsblock($listSite)
@@ -161,11 +161,31 @@ class NordbayernBridge extends BridgeAbstract
             $url = urljoin(self::URI, $url);
             // exclude nn+ articles if desired
             if (
-                !$this->getInput('hideNNPlus') ||
-                !str_contains($url, 'www.nn.de')
+                $this->getInput('hideNNPlus') &&
+                str_contains($url, 'www.nn.de')
             ) {
-                self::handleArticle($url);
+                continue;
             }
+
+            $item = self::getArticle($url);
+
+            // exclude police reports if desired
+            if (
+                !$this->getInput('policeReports') &&
+                str_contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')
+            ) {
+                continue;
+            }
+
+            // exclude dpa articles
+            if (
+                $this->getInput('hideDPA') &&
+                str_contains($item['author'], 'dpa')
+            ) {
+                continue;
+            }
+
+            $this->items[] = $item;
         }
     }
 

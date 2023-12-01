@@ -14,10 +14,10 @@ class AtomFormat extends FormatAbstract
     protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
     protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
-    const LIMIT_TITLE = 140;
-
     public function stringify()
     {
+        $document = new \DomDocument('1.0', $this->getCharset());
+
         $feedUrl = get_current_url();
 
         $extraInfos = $this->getExtraInfos();
@@ -27,7 +27,6 @@ class AtomFormat extends FormatAbstract
             $uri = $extraInfos['uri'];
         }
 
-        $document = new \DomDocument('1.0', $this->getCharset());
         $document->formatOutput = true;
         $feed = $document->createElementNS(self::ATOM_NS, 'feed');
         $document->appendChild($feed);
@@ -83,6 +82,7 @@ class AtomFormat extends FormatAbstract
         $linkSelf->setAttribute('href', $feedUrl);
 
         foreach ($this->getItems() as $item) {
+            $itemArray = $item->toArray();
             $entryTimestamp = $item->getTimestamp();
             $entryTitle = $item->getTitle();
             $entryContent = $item->getContent();
@@ -109,8 +109,8 @@ class AtomFormat extends FormatAbstract
 
             if (empty($entryTitle)) {
                 $entryTitle = str_replace("\n", ' ', strip_tags($entryContent));
-                if (strlen($entryTitle) > self::LIMIT_TITLE) {
-                    $wrapPos = strpos(wordwrap($entryTitle, self::LIMIT_TITLE), "\n");
+                if (strlen($entryTitle) > 140) {
+                    $wrapPos = strpos(wordwrap($entryTitle, 140), "\n");
                     $entryTitle = substr($entryTitle, 0, $wrapPos) . '...';
                 }
             }
@@ -140,7 +140,21 @@ class AtomFormat extends FormatAbstract
             $entry->appendChild($id);
             $id->appendChild($document->createTextNode($entryID));
 
-            if (!empty($entryUri)) {
+            if (isset($itemArray['itunes'])) {
+                $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
+                foreach ($itemArray['itunes'] as $itunesKey => $itunesValue) {
+                    $itunesProperty = $document->createElementNS(self::ITUNES_NS, $itunesKey);
+                    $entry->appendChild($itunesProperty);
+                    $itunesProperty->appendChild($document->createTextNode($itunesValue));
+                }
+                if (isset($itemArray['enclosure'])) {
+                    $itunesEnclosure = $document->createElement('enclosure');
+                    $entry->appendChild($itunesEnclosure);
+                    $itunesEnclosure->setAttribute('url', $itemArray['enclosure']['url']);
+                    $itunesEnclosure->setAttribute('length', $itemArray['enclosure']['length']);
+                    $itunesEnclosure->setAttribute('type', $itemArray['enclosure']['type']);
+                }
+            } elseif (!empty($entryUri)) {
                 $entryLinkAlternate = $document->createElement('link');
                 $entry->appendChild($entryLinkAlternate);
                 $entryLinkAlternate->setAttribute('rel', 'alternate');
@@ -158,7 +172,7 @@ class AtomFormat extends FormatAbstract
 
             $content = $document->createElement('content');
             $content->setAttribute('type', 'html');
-            $content->appendChild($document->createTextNode(sanitize_html($entryContent)));
+            $content->appendChild($document->createTextNode(break_annoying_html_tags($entryContent)));
             $entry->appendChild($content);
 
             foreach ($item->getEnclosures() as $enclosure) {
@@ -182,11 +196,11 @@ class AtomFormat extends FormatAbstract
             }
         }
 
-        $toReturn = $document->saveXML();
+        $xml = $document->saveXML();
 
         // Remove invalid characters
         ini_set('mbstring.substitute_character', 'none');
-        $toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
-        return $toReturn;
+        $xml = mb_convert_encoding($xml, $this->getCharset(), 'UTF-8');
+        return $xml;
     }
 }

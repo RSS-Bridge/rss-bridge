@@ -6,6 +6,27 @@
 
 [system]
 
+; Only these bridges are available for feed production
+; How to enable all bridges: enabled_bridges[] = *
+enabled_bridges[] = CssSelectorBridge
+enabled_bridges[] = FeedMerge
+enabled_bridges[] = FeedReducerBridge
+enabled_bridges[] = Filter
+enabled_bridges[] = GettrBridge
+enabled_bridges[] = MastodonBridge
+enabled_bridges[] = Reddit
+enabled_bridges[] = RumbleBridge
+enabled_bridges[] = SoundcloudBridge
+enabled_bridges[] = Telegram
+enabled_bridges[] = ThePirateBay
+enabled_bridges[] = TikTokBridge
+enabled_bridges[] = Twitch
+enabled_bridges[] = Twitter
+enabled_bridges[] = Vk
+enabled_bridges[] = XPathBridge
+enabled_bridges[] = Youtube
+enabled_bridges[] = YouTubeCommunityTabBridge
+
 ; Defines the timezone used by RSS-Bridge
 ; Find a list of supported timezones at
 ; https://www.php.net/manual/en/timezones.php
@@ -14,6 +35,16 @@ timezone = "UTC"
 
 ; Display a system message to users.
 message = ""
+
+; Whether to enable debug mode.
+enable_debug_mode = false
+
+; Enable debug mode only for these permitted ip addresses
+; debug_mode_whitelist[] = 127.0.0.1
+; debug_mode_whitelist[] = 192.168.1.10
+
+; Whether to enable maintenance mode. If enabled, feed requests receive 503 Service Unavailable
+enable_maintenance_mode = false
 
 [http]
 timeout = 60
@@ -24,7 +55,7 @@ max_filesize = 20
 
 [cache]
 
-; Cache type: file, sqlite, memcached, null
+; Cache type: file, sqlite, memcached, array, null
 type = "file"
 
 ; Allow users to specify custom timeout for specific requests.
@@ -103,7 +134,12 @@ path = ""
 enable_purge = true
 
 [SQLiteCache]
+; Filepath of the sqlite db file
 file = "cache.sqlite"
+; Whether to actually delete data when purging
+enable_purge = true
+; Busy wait in ms before timing out
+timeout = 5000
 
 [MemcachedCache]
 host = "localhost"

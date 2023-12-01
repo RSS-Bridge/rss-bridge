@@ -55,8 +55,11 @@ class TelegramBridge extends BridgeAbstract
             $item['title'] = $this->itemTitle;
             $item['timestamp'] = $messageDiv->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
             $item['enclosures'] = $this->enclosures;
-            $author = trim($messageDiv->find('a.tgme_widget_message_owner_name', 0)->plaintext);
-            $item['author'] = html_entity_decode($author, ENT_QUOTES);
+
+            $messageOwner = $messageDiv->find('a.tgme_widget_message_owner_name', 0);
+            if ($messageOwner) {
+                $item['author'] = html_entity_decode(trim($messageOwner->plaintext), ENT_QUOTES);
+            }
 
             $this->items[] = $item;
         }
@@ -169,11 +172,19 @@ EOD;
             $stickerDiv->find('picture', 0)->style = '';
 
             return $stickerDiv;
-        } elseif (preg_match(self::BACKGROUND_IMAGE_REGEX, $stickerDiv->find('i', 0)->style, $sticker)) {
-            return <<<EOD
+        }
+
+        $var = $stickerDiv->find('i', 0);
+        if ($var) {
+            $style = $var->style;
+            if (preg_match(self::BACKGROUND_IMAGE_REGEX, $style, $sticker)) {
+                return <<<EOD
 				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
 EOD;
+            }
         }
+
+        return '';
     }
 
     private function processPoll($messageDiv)

@@ -4,27 +4,24 @@ declare(strict_types=1);
 
 class NullCache implements CacheInterface
 {
-    public function setScope($scope)
+    public function get(string $key, $default = null)
+    {
+        return $default;
+    }
+
+    public function set(string $key, $value, int $ttl = null): void
     {
     }
 
-    public function setKey($key)
+    public function delete(string $key): void
     {
     }
 
-    public function loadData()
+    public function clear(): void
     {
     }
 
-    public function saveData($data)
-    {
-    }
-
-    public function getTime()
-    {
-    }
-
-    public function purgeCache($seconds)
+    public function prune(): void
     {
     }
 }

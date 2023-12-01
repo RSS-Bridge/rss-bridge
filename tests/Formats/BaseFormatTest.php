@@ -39,7 +39,7 @@ abstract class BaseFormatTest extends TestCase
 
             $items = [];
             foreach ($data['items'] as $item) {
-                $items[] = new \FeedItem($item);
+                $items[] = \FeedItem::fromArray($item);
             }
 
             return (object)[

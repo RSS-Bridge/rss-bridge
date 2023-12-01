@@ -125,14 +125,13 @@ class AmazonPriceTrackerBridge extends BridgeAbstract
      */
     private function getImage($html)
     {
+        $image = 'https://placekitten.com/200/300';
         $imageSrc = $html->find('#main-image-container img', 0);
-
         if ($imageSrc) {
             $hiresImage = $imageSrc->getAttribute('data-old-hires');
             $dynamicImageAttribute = $imageSrc->getAttribute('data-a-dynamic-image');
             $image = $hiresImage ?: $this->parseDynamicImage($dynamicImageAttribute);
         }
-        $image = $image ?: 'https://placekitten.com/200/300';
 
         return <<<EOT
 <img width="300" style="max-width:300;max-height:300" src="$image" alt="{$this->title}" />

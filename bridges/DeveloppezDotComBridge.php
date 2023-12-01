@@ -164,19 +164,6 @@ class DeveloppezDotComBridge extends FeedExpander
     ];
 
     /**
-     * Return the RSS url for selected domain
-     */
-    private function getRssUrl()
-    {
-        $domain = $this->getInput('domain');
-        if (!empty($domain)) {
-            return 'https://' . $domain . self::DOMAIN . self::RSS_URL;
-        }
-
-        return self::URI . self::RSS_URL;
-    }
-
-    /**
      * Grabs the RSS item from Developpez.com
      */
     public function collectData()
@@ -189,14 +176,11 @@ class DeveloppezDotComBridge extends FeedExpander
      * Parse the content of every RSS item. And will try to get the full article
      * pointed by the item URL intead of the default abstract.
      */
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
         if (count($this->items) >= $this->getInput('limit')) {
             return null;
         }
-
-        // This function parse each entry in the RSS with the default parse
-        $item = parent::parseItem($newsItem);
 
         // There is a bug in Developpez RSS, coma are writtent as '~?' in the
         // title, so I have to fix it manually
@@ -227,6 +211,19 @@ class DeveloppezDotComBridge extends FeedExpander
         }
 
         return $item;
+    }
+
+    /**
+     * Return the RSS url for selected domain
+     */
+    private function getRssUrl()
+    {
+        $domain = $this->getInput('domain');
+        if (!empty($domain)) {
+            return 'https://' . $domain . self::DOMAIN . self::RSS_URL;
+        }
+
+        return self::URI . self::RSS_URL;
     }
 
     /**
@@ -334,6 +331,9 @@ class DeveloppezDotComBridge extends FeedExpander
      */
     private function isHtmlTagNotTxt($txt)
     {
+        if ($txt === '') {
+            return false;
+        }
         $html = str_get_html($txt);
         return $html && $html->root && count($html->root->children) > 0;
     }

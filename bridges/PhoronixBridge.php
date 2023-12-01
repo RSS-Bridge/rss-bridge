@@ -29,22 +29,23 @@ but some RSS readers don\'t support this. "img" tag are supported by most browse
         $this->collectExpandableDatas('https://www.phoronix.com/rss.php', $this->getInput('n'));
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($newsItem);
-        // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $itemUrl = $item['uri'];
+
+        $articlePage = getSimpleHTMLDOM($itemUrl);
         $articlePage = defaultLinkTo($articlePage, $this->getURI());
         // Extract final link. From Facebook's like plugin.
-        parse_str(parse_url($articlePage->find('iframe[src^=//www.facebook.com/plugins]', 0), PHP_URL_QUERY), $facebookQuery);
+        $parsedUrlQuery = parse_url($articlePage->find('iframe[src^=//www.facebook.com/plugins]', 0), PHP_URL_QUERY);
+        parse_str($parsedUrlQuery, $facebookQuery);
         if (array_key_exists('href', $facebookQuery)) {
-            $newsItem->link = $facebookQuery['href'];
+            $itemUrl = $facebookQuery['href'];
         }
         $item['content'] = $this->extractContent($articlePage);
 
         $pages = $articlePage->find('.pagination a[!title]');
         foreach ($pages as $page) {
-            $pageURI = urljoin($newsItem->link, html_entity_decode($page->href));
+            $pageURI = urljoin($itemUrl, html_entity_decode($page->href));
             $page = getSimpleHTMLDOM($pageURI);
             $item['content'] .= $this->extractContent($page);
         }

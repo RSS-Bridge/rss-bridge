@@ -5,7 +5,7 @@ class GithubIssueBridge extends BridgeAbstract
     const MAINTAINER = 'Pierre Mazière';
     const NAME = 'Github Issue';
     const URI = 'https://github.com/';
-    const CACHE_TIMEOUT = 0; // 10min
+    const CACHE_TIMEOUT = 600; // 10m
     const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
     const PARAMETERS = [
@@ -137,7 +137,8 @@ class GithubIssueBridge extends BridgeAbstract
     {
         $uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
 
-        $author = $comment->find('.author', 0)->plaintext;
+        $authorDom = $comment->find('.author', 0);
+        $author = $authorDom->plaintext ?? null;
 
         $header = $comment->find('.timeline-comment-header > h3', 0);
         $title .= ' / ' . ($header ? $header->plaintext : 'Activity');
@@ -276,6 +277,7 @@ class GithubIssueBridge extends BridgeAbstract
             case 2: // Project issues
                 [$user, $project] = $path_segments;
                 $show_comments = 'off';
+                $context = 'Project Issues';
                 break;
             case 3: // Project issues with issue comments
                 if ($path_segments[2] !== static::URL_PATH) {
@@ -283,15 +285,18 @@ class GithubIssueBridge extends BridgeAbstract
                 }
                 [$user, $project] = $path_segments;
                 $show_comments = 'on';
+                $context = 'Project Issues';
                 break;
             case 4: // Issue comments
                 [$user, $project, /* issues */, $issue] = $path_segments;
+                $context = 'Issue comments';
                 break;
             default:
                 return null;
         }
 
         return [
+            'context' => $context,
             'u' => $user,
             'p' => $project,
             'c' => $show_comments ?? null,

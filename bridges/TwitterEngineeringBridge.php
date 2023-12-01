@@ -8,18 +8,22 @@ class TwitterEngineeringBridge extends FeedExpander
     const DESCRIPTION = 'Returns the newest articles.';
     const CACHE_TIMEOUT = 21600; // 6h
 
-    protected function parseItem($item)
+    public function collectData()
     {
-        $item = parent::parseItem($item);
+        $url = 'https://blog.twitter.com/engineering/en_us/blog.rss';
+        $this->collectExpandableDatas($url);
+    }
 
-        $article_html = getSimpleHTMLDOMCached($item['uri']);
-        if (!$article_html) {
+    protected function parseItem(array $item)
+    {
+        $dom = getSimpleHTMLDOMCached($item['uri']);
+        if (!$dom) {
             $item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';
             return $item;
         }
-        $article_html = defaultLinkTo($article_html, $this->getURI());
+        $dom = defaultLinkTo($dom, $this->getURI());
 
-        $article_body = $article_html->find('div.column.column-6', 0);
+        $article_body = $dom->find('div.column.column-6', 0);
 
         // Remove elements that are not part of article content
         $unwanted_selector = 'div.bl02-blog-post-text-masthead, div.tweet-error-text, div.bl13-tweet-template';
@@ -33,8 +37,8 @@ class TwitterEngineeringBridge extends FeedExpander
         }
 
         $item['content'] = $article_body;
-        $item['timestamp'] = strtotime($article_html->find('span.b02-blog-post-no-masthead__date', 0)->innertext);
-        $item['categories'] = self::getCategoriesFromTags($article_html);
+        $item['timestamp'] = strtotime($dom->find('span.b02-blog-post-no-masthead__date', 0)->innertext);
+        $item['categories'] = self::getCategoriesFromTags($dom);
 
         return $item;
     }
@@ -51,12 +55,6 @@ class TwitterEngineeringBridge extends FeedExpander
         }
 
         return $categories;
-    }
-
-    public function collectData()
-    {
-        $feed = static::URI . 'en_us/blog.rss';
-        $this->collectExpandableDatas($feed);
     }
 
     public function getName()

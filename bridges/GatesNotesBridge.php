@@ -20,11 +20,15 @@ class GatesNotesBridge extends BridgeAbstract
         $apiUrl = self::URI . $api_endpoint . http_build_query($params);
 
         $rawContent = getContents($apiUrl);
-        $cleanedContent = str_replace('\r\n', '', substr($rawContent, 1, -1));
+        $cleanedContent = str_replace([
+            '<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/">',
+            '</string>',
+            '\r\n',
+        ], '', $rawContent);
         $cleanedContent = str_replace('\"', '"', $cleanedContent);
+        $cleanedContent = trim($cleanedContent, '"');
 
-        // The content is actually a json between quotes with \r\n inserted
-        $json = json_decode($cleanedContent);
+        $json = Json::decode($cleanedContent, false);
 
         foreach ($json as $article) {
             $item = [];
@@ -57,8 +61,10 @@ class GatesNotesBridge extends BridgeAbstract
         $article_html = defaultLinkTo($article_html, $this->getURI());
 
         $top_description = '<p>' . $article_html->find('div.article_top_description', 0)->innertext . '</p>';
-        $hero_image = '<img src=' . $article_html->find('img.article_top_DMT_Image', 0)->getAttribute('data-src') . '>';
-
+        $heroImage = $article_html->find('img.article_top_DMT_Image', 0);
+        if ($heroImage) {
+            $hero_image = '<img src=' . $heroImage->getAttribute('data-src') . '>';
+        }
         $article_body = $article_html->find('div.TGN_Article_ReadTimeSection', 0);
 
         // Remove the menu bar on some articles (PDF download etc.)
@@ -94,7 +100,7 @@ class GatesNotesBridge extends BridgeAbstract
         }
         $article_body = sanitize($article_body->innertext);
 
-        $content = $top_description . $hero_image . $article_body;
+        $content = $top_description . ($hero_image ?? '') . $article_body;
 
         return $content;
     }

@@ -192,7 +192,7 @@ class GoogleScholarBridge extends BridgeAbstract
                     $articleTitleElement = $publication->find('h3[class="gs_rt"]', 0);
                     $articleUrl = $articleTitleElement->find('a', 0)->href;
                     $articleTitle = $articleTitleElement->plaintext;
-                    
+
                     // Break the loop if 'Check for Updates' is found in the article title
                     if (strpos($articleTitle, 'Check for updates') !== false) {
                         break;

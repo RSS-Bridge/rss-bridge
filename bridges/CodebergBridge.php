@@ -181,7 +181,12 @@ class CodebergBridge extends BridgeAbstract
             $item['title'] = $message->find('span.message-wrapper', 0)->plaintext;
             $item['uri'] = $tr->find('td.sha', 0)->find('a', 0)->href;
             $item['author'] = $tr->find('td.author', 0)->plaintext;
-            $item['timestamp'] = $tr->find('td', 3)->find('span', 0)->title;
+
+            $var = $tr->find('td', 3);
+            $var1 = $var->find('span', 0);
+            if ($var1) {
+                $item['timestamp'] = $var1->title;
+            }
 
             if ($message->find('pre.commit-body', 0)) {
                 $message->find('pre.commit-body', 0)->style = '';
@@ -209,7 +214,12 @@ class CodebergBridge extends BridgeAbstract
 
             $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
             $item['uri'] = $li->find('a.title', 0)->href;
-            $item['timestamp'] = $li->find('span.time-since', 0)->title;
+
+            $time = $li->find('relative-time.time-since', 0);
+            if ($time) {
+                $item['timestamp'] = $time->datetime;
+            }
+
             $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch issue page
@@ -250,7 +260,11 @@ class CodebergBridge extends BridgeAbstract
             }
 
             $item['author'] = $div->find('a.author', 0)->innertext;
-            $item['timestamp'] = $div->find('span.time-since', 0)->title;
+
+            $timeSince = $div->find('span.time-since', 0);
+            if ($timeSince) {
+                $item['timestamp'] = $timeSince->title;
+            }
 
             $this->items[] = $item;
         }
@@ -270,14 +284,23 @@ class CodebergBridge extends BridgeAbstract
 
             $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
             $item['uri'] = $li->find('a.title', 0)->href;
-            $item['timestamp'] = $li->find('span.time-since', 0)->title;
+
+            $time = $li->find('relative-time.time-since', 0);
+            if ($time) {
+                $item['timestamp'] = $time->datetime;
+            }
+
             $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch pull request page
             $pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600);
             $pullRequestPage = defaultLinkTo($pullRequestPage, self::URI);
 
-            $item['content'] = $pullRequestPage->find('ui.timeline', 0)->find('div.render-content.markup', 0);
+            $var = $pullRequestPage->find('ui.timeline', 0);
+            if ($var) {
+                $var1 = $var->find('div.render-content.markup', 0);
+                $item['content'] = $var1;
+            }
 
             foreach ($li->find('a.ui.label') as $label) {
                 $item['categories'][] = $label->plaintext;
@@ -380,6 +403,9 @@ EOD;
      */
     private function stripSvg($html)
     {
+        if ($html === null) {
+            return null;
+        }
         if ($html->find('svg', 0)) {
             $html->find('svg', 0)->outertext = '';
         }

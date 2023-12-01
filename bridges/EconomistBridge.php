@@ -93,21 +93,21 @@ class EconomistBridge extends FeedExpander
             $limit = 30;
         }
 
-        $this->collectExpandableDatas('https://www.economist.com/' . $category . '/rss.xml', $limit);
+        $url = 'https://www.economist.com/' . $category . '/rss.xml';
+        $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem(array $item)
     {
-        $item = parent::parseItem($feedItem);
-        $html = getSimpleHTMLDOM($item['uri']);
+        $dom = getSimpleHTMLDOM($item['uri']);
 
-        $article = $html->find('#new-article-template', 0);
+        $article = $dom->find('#new-article-template', 0);
         if ($article == null) {
-            $article = $html->find('main', 0);
+            $article = $dom->find('main', 0);
         }
         if ($article) {
             $elem = $article->find('div', 0);
-            list($content, $audio_url) = $this->processContent($html, $elem);
+            list($content, $audio_url) = $this->processContent($dom, $elem);
             $item['content'] = $content;
             if ($audio_url != null) {
                 $item['enclosures'] = [$audio_url];
@@ -159,7 +159,7 @@ class EconomistBridge extends FeedExpander
             $svelte->parent->removeChild($svelte);
         }
         foreach ($elem->find('img') as $strange_img) {
-            if (!str_contains($strange_img->src, 'https://economist.com')) {
+            if (!str_contains($strange_img->src, 'economist.com')) {
                 $strange_img->src = 'https://economist.com' . $strange_img->src;
             }
         }

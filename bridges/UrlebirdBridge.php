@@ -6,7 +6,7 @@ class UrlebirdBridge extends BridgeAbstract
     const NAME = 'urlebird.com';
     const URI = 'https://urlebird.com/';
     const DESCRIPTION = 'Bridge for urlebird.com';
-    const CACHE_TIMEOUT = 10;
+    const CACHE_TIMEOUT = 60 * 5;
     const PARAMETERS = [
         [
             'query' => [
@@ -21,48 +21,68 @@ class UrlebirdBridge extends BridgeAbstract
 
     private $title;
 
-    private function fixURI($uri)
-    {
-        $path = parse_url($uri, PHP_URL_PATH);
-        $encoded_path = array_map('urlencode', explode('/', $path));
-        return str_replace($path, implode('/', $encoded_path), $uri);
-    }
-
     public function collectData()
     {
         switch ($this->getInput('query')[0]) {
-            default:
-                returnServerError('Please, enter valid username or hashtag!');
-                break;
             case '@':
                 $url = 'https://urlebird.com/user/' . substr($this->getInput('query'), 1) . '/';
                 break;
             case '#':
                 $url = 'https://urlebird.com/hash/' . substr($this->getInput('query'), 1) . '/';
                 break;
+            default:
+                returnServerError('Please, enter valid username or hashtag!');
+                break;
         }
 
         $html = getSimpleHTMLDOM($url);
+        $limit = 10;
+
         $this->title = $html->find('title', 0)->innertext;
         $articles = $html->find('div.thumb');
+        $articles = array_slice($articles, 0, $limit);
         foreach ($articles as $article) {
             $item = [];
-            $item['uri'] = $this->fixURI($article->find('a', 2)->href);
-            $article_content = getSimpleHTMLDOM($item['uri']);
-            $item['author'] = $article->find('img', 0)->alt . ' (' .
-                $article_content->find('a.user-video', 1)->innertext . ')';
-            $item['title'] = $article_content->find('title', 0)->innertext;
-            $item['enclosures'][] = $article_content->find('video', 0)->poster;
-            $video = $article_content->find('video', 0);
+            $itemUrl = $article->find('a', 2)->href;
+            $item['uri'] = $this->encodePathSegments($itemUrl);
+
+            $dom = getSimpleHTMLDOM($item['uri']);
+            $videoDiv = $dom->find('div.video', 0);
+
+            // timestamp
+            $timestampH6 = $videoDiv->find('h6', 0);
+            $datetimeString = str_replace('Posted ', '', $timestampH6->plaintext);
+            $item['timestamp'] = $datetimeString;
+
+            $innertext = $dom->find('a.user-video', 1)->innertext;
+            $alt = $article->find('img', 0)->alt;
+            $item['author'] = $alt . ' (' . $innertext . ')';
+
+            $item['title'] = $dom->find('title', 0)->innertext;
+            $item['enclosures'][] = $dom->find('video', 0)->poster;
+
+            $video = $dom->find('video', 0);
             $video->autoplay = null;
+
             $item['content'] = $video->outertext . '<br>' .
-                $article_content->find('div.music', 0) . '<br>' .
-                $article_content->find('div.info2', 0)->innertext .
-                '<br><br><a href="' . $article_content->find('video', 0)->src .
+                $dom->find('div.music', 0) . '<br>' .
+                $dom->find('div.info2', 0)->innertext .
+                '<br><br><a href="' . $dom->find('video', 0)->src .
                 '">Direct video link</a><br><br><a href="' . $item['uri'] .
                 '">Post link</a><br><br>';
+
             $this->items[] = $item;
         }
+    }
+
+    private function encodePathSegments($url)
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        $pathSegments = explode('/', $path);
+        $encodedPathSegments = array_map('urlencode', $pathSegments);
+        $encodedPath = implode('/', $encodedPathSegments);
+        $result = str_replace($path, $encodedPath, $url);
+        return $result;
     }
 
     public function getName()

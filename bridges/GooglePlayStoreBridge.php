@@ -21,30 +21,22 @@ class GooglePlayStoreBridge extends BridgeAbstract
         ]
     ]];
 
-    const INFORMATION_MAP = [
-        'Updated' => 'timestamp',
-        'Current Version' => 'title',
-        'Offered By' => 'author'
-    ];
-
     public function collectData()
     {
-        $appuri = static::URI . '/details?id=' . $this->getInput('id');
-        $html = getSimpleHTMLDOM($appuri);
+        $id = $this->getInput('id');
+        $url = 'https://play.google.com/store/apps/details?id=' . $id;
+        $html = getSimpleHTMLDOM($url);
+
+        $updatedAtElement = $html->find('div.TKjAsc div', 2);
+        // Updated onSep 27, 2023
+        $updatedAt = $updatedAtElement->plaintext;
+        $description = $html->find('div.bARER', 0);
 
         $item = [];
-        $item['uri'] = $appuri;
-        $item['content'] = $html->find('div[itemprop=description]', 1)->innertext;
-
-        // Find other fields from Additional Information section
-        foreach ($html->find('.hAyfc') as $info) {
-            $index = self::INFORMATION_MAP[$info->first_child()->plaintext] ?? null;
-            if (is_null($index)) {
-                continue;
-            }
-            $item[$index] = $info->children(1)->plaintext;
-        }
-
+        $item['uri'] = $url;
+        $item['title'] = $id . ' ' . $updatedAt;
+        $item['content'] = $description->innertext ?? '';
+        $item['uid'] = 'GooglePlayStoreBridge/' . $updatedAt;
         $this->items[] = $item;
     }
 

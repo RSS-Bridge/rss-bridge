@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Appears to be protected by cloudflare now
+ */
 class EsquerdaNetBridge extends FeedExpander
 {
     const MAINTAINER = 'somini';
@@ -23,32 +26,14 @@ class EsquerdaNetBridge extends FeedExpander
         ]
     ];
 
-    public function getURI()
-    {
-        $type = $this->getInput('feed');
-        return self::URI . '/rss/' . $type;
-    }
-
-    public function getIcon()
-    {
-        return 'https://www.esquerda.net/sites/default/files/favicon_0.ico';
-    }
-
     public function collectData()
     {
         parent::collectExpandableDatas($this->getURI());
     }
 
-    protected function parseItem($newsItem)
+    protected function parseItem(array $item)
     {
-        # Fix Publish date
-        $badDate = $newsItem->pubDate;
-        preg_match('|(?P<day>\d\d)/(?P<month>\d\d)/(?P<year>\d\d\d\d) - (?P<hour>\d\d):(?P<minute>\d\d)|', $badDate, $d);
-        $newsItem->pubDate = sprintf('%s-%s-%sT%s:%s', $d['year'], $d['month'], $d['day'], $d['hour'], $d['minute']);
-        $item = parent::parseItem($newsItem);
-        # Include all the content
-        $uri = $item['uri'];
-        $html = getSimpleHTMLDOMCached($uri);
+        $html = getSimpleHTMLDOMCached($item['uri']);
         $content = $html->find('div#content div.content', 0);
         ## Fix author
         $authorHTML = $html->find('.field-name-field-op-author a', 0);
@@ -71,5 +56,16 @@ class EsquerdaNetBridge extends FeedExpander
         }
         $item['content'] = $content;
         return $item;
+    }
+
+    public function getURI()
+    {
+        $type = $this->getInput('feed');
+        return self::URI . '/rss/' . $type;
+    }
+
+    public function getIcon()
+    {
+        return 'https://www.esquerda.net/sites/default/files/favicon_0.ico';
     }
 }

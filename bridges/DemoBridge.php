@@ -4,8 +4,9 @@ class DemoBridge extends BridgeAbstract
 {
     const MAINTAINER = 'teromene';
     const NAME = 'DemoBridge';
-    const URI = 'http://github.com/rss-bridge/rss-bridge';
+    const URI = 'https://github.com/rss-bridge/rss-bridge';
     const DESCRIPTION = 'Bridge used for demos';
+    const CACHE_TIMEOUT = 15;
 
     const PARAMETERS = [
         'testCheckbox' => [

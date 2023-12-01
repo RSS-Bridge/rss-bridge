@@ -144,18 +144,6 @@ class ReutersBridge extends BridgeAbstract
     ];
 
     /**
-     * Performs an HTTP request to the Reuters API and returns decoded JSON
-     * in the form of an associative array
-     * @param string $feed_uri Full API URL to fetch data
-     * @return array
-     */
-    private function getJson($uri)
-    {
-        $returned_data = getContents($uri);
-        return json_decode($returned_data, true);
-    }
-
-    /**
      * Takes in data from Reuters Wire API and
      * creates structured data in the form of a list
      * of story information.
@@ -295,8 +283,19 @@ class ReutersBridge extends BridgeAbstract
     {
         // This will make another request to API to get full detail of article and author's name.
         $url = $this->getAPIURL($feed_uri, 'article', $is_article_uid);
-        $rawData = $this->getJson($url);
 
+        try {
+            $json = getContents($url);
+            $rawData = Json::decode($json);
+        } catch (\JsonException $e) {
+            return [
+                'content' => '',
+                'author' => '',
+                'category' => '',
+                'images' => '',
+                'published_at' => ''
+            ];
+        }
         $article_content = '';
         $authorlist = '';
         $category = [];
@@ -342,15 +341,12 @@ class ReutersBridge extends BridgeAbstract
     {
         $img_placeholder = '';
 
-        foreach ($images as $image) { // Add more image to article.
+        foreach ($images as $image) {
+            // Add more image to article.
             $image_url = $image['url'];
-            $image_caption = $image['caption'];
+            $image_caption = $image['caption'] ?? $image['alt_text'] ?? $image['subtitle'] ?? '';
             $image_alt_text = '';
-            if (isset($image['alt_text'])) {
-                $image_alt_text = $image['alt_text'];
-            } else {
-                $image_alt_text = $image_caption;
-            }
+            $image_alt_text = $image['alt_text'] ?? $image_caption;
             $img = "<img src=\"$image_url\" alt=\"$image_alt_text\">";
             $img_caption = "<figcaption style=\"text-align: center;\"><i>$image_caption</i></figcaption>";
             $figure = "<figure>$img \t $img_caption</figure>";
@@ -470,6 +466,10 @@ EOD;
                     }
                     $rows = $content['rows'];
                     foreach ($rows as $row) {
+                        if (!is_array($row)) {
+                            // some rows are null
+                            continue;
+                        }
                         $tr = '<tr>';
                         foreach ($row as $data) {
                             $tr .= '<td>' . $data . '</td>';
@@ -497,7 +497,8 @@ EOD;
     {
         $endpoint = $this->getSectionEndpoint();
         $url = $this->getAPIURL($endpoint, 'section');
-        $data = $this->getJson($url);
+        $json = getContents($url);
+        $data = Json::decode($json);
 
         $stories = [];
         $section_name = '';
@@ -557,7 +558,11 @@ EOD;
                     $image_placeholder = $this->handleImage([$story['thumbnail']]);
                 }
                 $content = $story['description'] . $image_placeholder;
-                $category = [$story['primary_section']['name']];
+                if (isset($story['primary_section']['name'])) {
+                    $category = [$story['primary_section']['name']];
+                } else {
+                    $category = [];
+                }
             } else {
                 $content_detail = $this->getArticle($article_uri);
                 $description = $content_detail['content'];

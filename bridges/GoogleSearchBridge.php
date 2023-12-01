@@ -5,7 +5,7 @@ class GoogleSearchBridge extends BridgeAbstract
     const MAINTAINER = 'sebsauvage';
     const NAME = 'Google search';
     const URI = 'https://www.google.com/';
-    const CACHE_TIMEOUT = 1800; // 30min
+    const CACHE_TIMEOUT = 60 * 30; // 30m
     const DESCRIPTION = 'Returns max 100 results from the past year.';
 
     const PARAMETERS = [[

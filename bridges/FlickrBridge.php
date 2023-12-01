@@ -145,7 +145,6 @@ class FlickrBridge extends BridgeAbstract
             . '</p>';
 
             $item['enclosures'] = $this->extractEnclosures($model);
-
             $this->items[] = $item;
         }
     }
@@ -255,17 +254,22 @@ class FlickrBridge extends BridgeAbstract
     {
         $areas = [];
         $limit = 320 * 240;
-
-        foreach ($model['sizes']['data'] as $size) {
-            $size = $size['data'];
-            $image_area = $size['width'] * $size['height'];
-
-            if ($image_area >= $limit) {
-                $areas[$image_area] = $size['url'];
+        $sizes = $model['sizes']['data'];
+        foreach ($sizes as $sizeData) {
+            $sizeData = $sizeData['data'];
+            $area = $sizeData['width'] * $sizeData['height'];
+            if ($area >= $limit) {
+                $areas[$area] = $sizeData['url'];
             }
         }
-
-        return $this->fixURL(min($areas));
+        if ($areas) {
+            $minKey = min(array_keys($areas));
+            $url = $areas[$minKey];
+        } else {
+            $array_key_first = array_key_first($sizes);
+            $url = $sizes[$array_key_first]['data']['url'];
+        }
+        return $this->fixURL($url);
     }
 
     private function fixURL($url)

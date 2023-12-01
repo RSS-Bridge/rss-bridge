@@ -2,21 +2,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', rssbridge_toggle_bridge);
     document.addEventListener('DOMContentLoaded', rssbridge_list_search);
+    document.addEventListener('DOMContentLoaded', rssbridge_feed_finder);
 </script>
-
-<?php if (Debug::isEnabled()): ?>
-    <?php if (!Debug::isSecure()): ?>
-        <section class="critical-warning">
-            Warning : Debug mode is active from any location,
-            make sure only you can access RSS-Bridge.
-        </section>
-    <?php else: ?>
-        <section class="warning">
-            Warning : Debug mode is active from your IP address,
-            your requests will bypass the cache.
-        </section>
-    <?php endif; ?>
-<?php endif; ?>
 
 <section class="searchbar">
     <h3>Search</h3>
@@ -29,13 +16,29 @@
         onkeyup="rssbridge_list_search()"
         value=""
     >
+    <button
+        type="button"
+	    id="findfeed"
+        name="findfeed"
+    />Find Feed from URL</button>
+    <section id="findfeedresults">
+    </section>
+
 </section>
 
 <?= raw($bridges) ?>
 
 <section class="footer">
-    <a href="https://github.com/rss-bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br>
-    <p class="version"><?= e(Configuration::getVersion()) ?></p>
+    <a href="https://github.com/RSS-Bridge/rss-bridge">
+        https://github.com/RSS-Bridge/rss-bridge
+    </a>
+
+    <br>
+    <br>
+
+    <p class="version">
+        <?= e(Configuration::getVersion()) ?>
+    </p>
 
     <?= $active_bridges ?>/<?= $total_bridges ?> active bridges.<br>
 

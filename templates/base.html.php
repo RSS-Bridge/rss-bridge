@@ -17,11 +17,11 @@
             </a>
         </header>
 
-        <?php if ($system_message): ?>
-            <div class="alert">
-                <?= raw($system_message) ?>
+        <?php foreach ($messages as $message): ?>
+            <div class="alert-<?= raw($message['level'] ?? 'info') ?>">
+                <?= raw($message['body']) ?>
             </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
 
         <?= raw($page) ?>
     </div>
