@@ -56,7 +56,7 @@ class FindfeedAction implements ActionInterface
             $bridgeParams['bridge'] = $bridgeClassName;
             $bridgeParams['format'] = $format;
             $content = [
-                'url' => get_home_page_url() . '?action=display&' . http_build_query($bridgeParams),
+                'url' => './?action=display&' . http_build_query($bridgeParams),
                 'bridgeParams' => $bridgeParams,
                 'bridgeData' => $bridgeData,
                 'bridgeMeta' => [
