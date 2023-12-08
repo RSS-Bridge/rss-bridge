@@ -2068,7 +2068,9 @@ class MydealsBridge extends PepperBridgeAbstract
         'relative-date-alt-prefixes' => [
             'aktualisiert vor ',
             'kommentiert vor ',
-            'heiß seit '
+            'eingestellt vor ',
+            'heiß seit ',
+            'vor '
         ],
         'relative-date-ignore-suffix' => [
             '/von.*$/'

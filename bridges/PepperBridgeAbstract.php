@@ -94,7 +94,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         );
 
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('h3[class=size--all-l]', 0);
+        $noresult = $html->find('h3[class*=text--b]', 0);
         if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
             $this->items = [];
         } else {
@@ -542,6 +542,10 @@ HEREDOC;
     {
         $date = new DateTime();
 
+        // The minimal amount of time substracted is a minute : the seconds in the resulting date would be related to the execution time of the script.
+        // This make no sense, so we set the seconds manually to "00".
+        $date->setTime($date->format('H'), $date->format('i'), 0);
+
         // In case of update date, replace it by the regular relative date first word
         $str = str_replace($this->i8n('relative-date-alt-prefixes'), $this->i8n('local-time-relative')[0], $str);
 
@@ -559,6 +563,8 @@ HEREDOC;
             ''
         ];
         $date->modify(str_replace($search, $replace, $str));
+
+
         return $date->getTimestamp();
     }
 
