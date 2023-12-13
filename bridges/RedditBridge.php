@@ -85,6 +85,11 @@ class RedditBridge extends BridgeAbstract
             if ($e->getCode() === 429) {
                 $this->cache->set($cacheKey, true, 60 * 16);
             }
+            if ($e->getCode() === 403) {
+                // 403 Forbidden
+                // This can possibly mean that reddit has permanently blocked this server's ip address
+                $this->cache->set($cacheKey, true, 60 * 61);
+            }
             throw $e;
         }
     }
