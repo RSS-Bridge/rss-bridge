@@ -79,9 +79,9 @@ class CodebergBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
-
-        $html = defaultLinkTo($html, $this->getURI());
+        $url = $this->getURI();
+        $html = getSimpleHTMLDOM($url);
+        $html = defaultLinkTo($html, $url);
 
         switch ($this->queriedContext) {
             case 'Commits':
@@ -205,22 +205,22 @@ class CodebergBridge extends BridgeAbstract
      */
     private function extractIssues($html)
     {
-        $div = $html->find('div.issue.list', 0);
+        $div = $html->find('div#issue-list', 0);
 
-        foreach ($div->find('li.item') as $li) {
+        foreach ($div->find('div.flex-item') as $li) {
             $item = [];
 
             $number = trim($li->find('a.index,ml-0.mr-2', 0)->plaintext);
 
-            $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
-            $item['uri'] = $li->find('a.title', 0)->href;
+            $item['title'] = $li->find('a.issue-title', 0)->plaintext . ' (' . $number . ')';
+            $item['uri'] = $li->find('a.issue-title', 0)->href;
 
             $time = $li->find('relative-time.time-since', 0);
             if ($time) {
                 $item['timestamp'] = $time->datetime;
             }
 
-            $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
+            //$item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch issue page
             $issuePage = getSimpleHTMLDOMCached($item['uri'], 3600);
