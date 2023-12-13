@@ -2,7 +2,7 @@
 
 class HttpException extends \Exception
 {
-    // todo: should include the failing http request (if present)
+    // todo: should include the failing http response (if present)
 }
 
 final class CloudFlareException extends HttpException
