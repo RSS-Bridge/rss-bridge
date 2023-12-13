@@ -523,7 +523,7 @@ class VkBridge extends BridgeAbstract
             }
 
             if (!preg_match('#^https?://vk.com/#', $uri)) {
-                returnServerError('Unexpected redirect location');
+                returnServerError('Unexpected redirect location: ' . $uri);
             }
 
             $redirects++;

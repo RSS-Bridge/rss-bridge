@@ -15,15 +15,7 @@ final class Configuration
     {
     }
 
-    /**
-     * Verifies the current installation of RSS-Bridge and PHP.
-     *
-     * Returns an error message and aborts execution if the installation does
-     * not satisfy the requirements of RSS-Bridge.
-     *
-     * @return void
-     */
-    public static function verifyInstallation()
+    public static function checkInstallation(): array
     {
         $errors = [];
 
@@ -57,10 +49,7 @@ final class Configuration
         if (!extension_loaded('json')) {
             $errors[] = 'json extension not loaded';
         }
-
-        if ($errors) {
-            throw new \Exception(sprintf('Configuration error: %s', implode(', ', $errors)));
-        }
+        return $errors;
     }
 
     public static function loadConfiguration(array $customConfig = [], array $env = [])
