@@ -205,17 +205,17 @@ class CodebergBridge extends BridgeAbstract
      */
     private function extractIssues($html)
     {
-        $div = $html->find('div#issue-list', 0);
+        $issueList = $html->find('div#issue-list', 0);
 
-        foreach ($div->find('div.flex-item') as $li) {
+        foreach ($issueList->find('div.flex-item') as $div) {
             $item = [];
 
-            $number = trim($li->find('a.index,ml-0.mr-2', 0)->plaintext);
+            $number = trim($div->find('a.index,ml-0.mr-2', 0)->plaintext);
 
-            $item['title'] = $li->find('a.issue-title', 0)->plaintext . ' (' . $number . ')';
-            $item['uri'] = $li->find('a.issue-title', 0)->href;
+            $item['title'] = $div->find('a.issue-title', 0)->plaintext . ' (' . $number . ')';
+            $item['uri'] = $div->find('a.issue-title', 0)->href;
 
-            $time = $li->find('relative-time.time-since', 0);
+            $time = $div->find('relative-time.time-since', 0);
             if ($time) {
                 $item['timestamp'] = $time->datetime;
             }
@@ -228,7 +228,7 @@ class CodebergBridge extends BridgeAbstract
 
             $item['content'] = $issuePage->find('div.timeline-item.comment.first', 0)->find('div.render-content.markup', 0);
 
-            foreach ($li->find('a.ui.label') as $label) {
+            foreach ($div->find('a.ui.label') as $label) {
                 $item['categories'][] = $label->plaintext;
             }
 
