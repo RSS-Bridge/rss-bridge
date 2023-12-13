@@ -117,8 +117,7 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $this->getSource($deal)
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
-                    . $deal->find('div[class*=' . $selectorHot . ']', 0)
-                        ->find('span', 0)->outertext
+                    . $this->getTemperature($deal)
                     . '</td></table>';
 
                 // Check if a clock icon is displayed on the deal
@@ -366,6 +365,16 @@ HEREDOC;
         } else {
             return '';
         }
+    }
+
+    /**
+     * Get the temperature from a Deal if it exists
+     * @return string String of the deal temperature
+     */
+    private function getTemperature($deal)
+    {
+        $data = Json::decode($deal->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
+        return $data['props']['thread']['temperature'] . '°';
     }
 
     /**
