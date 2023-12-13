@@ -49,8 +49,8 @@ class FileCache implements CacheInterface
     {
         $item = [
             'key'           => $key,
-            'value'         => $value,
             'expiration'    => $ttl === null ? 0 : time() + $ttl,
+            'value'         => $value,
         ];
         $cacheFile = $this->createCacheFile($key);
         $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
