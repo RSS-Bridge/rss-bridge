@@ -99,9 +99,9 @@ class GoogleScholarBridge extends BridgeAbstract
 
     public function collectData()
     {
-        switch ($this->queriedContext) {
+        switch ($this->queriedContext) 
+        {
             case 'user':
-
                 $html = getSimpleHTMLDOM($this->getUserURI()) or returnServerError('Could not fetch Google Scholar data.');
 
                 $publications = $html->find('tr[class="gsc_a_tr"]');
@@ -159,14 +159,12 @@ class GoogleScholarBridge extends BridgeAbstract
                 }
                 break;
             case 'query':
-
                 $html = getSimpleHTMLDOM($this->getQueryURI()) or returnServerError('Could not fetch Google Scholar data.');
 
                 $publications = $html->find('div[class="gs_r gs_or gs_scl"]');
                 $minCitations = (int)$this->getInput('minCitations');
 
                 foreach ($publications as $publication) {
-
                     $searchLink = $publication->find('div[class="gs_ggs gs_fl"]')
                     $searchBody = $publication->find('div[class="gs_ri"]')
 
@@ -193,8 +191,8 @@ class GoogleScholarBridge extends BridgeAbstract
                     ];
 
                     $citeRowDiv = $publication->find('div[class="gs_fl gs_flb"]', 0);
-                    if ($citeRowDiv) {
 
+                    if ($citeRowDiv) {
                         $citedBy = 0;
                         foreach ($citeRowDiv->find('a') as $anchorTag) {
                             if (strpos($anchorTag->plaintext, 'Cited') !== false) {
