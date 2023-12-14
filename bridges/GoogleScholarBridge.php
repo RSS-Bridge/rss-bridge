@@ -2,7 +2,7 @@
 
 class GoogleScholarBridge extends BridgeAbstract
 {
-    const NAME = 'Google Scholar';
+    const NAME = 'Google Scholar v2';
     const URI = 'https://scholar.google.com/';
     const DESCRIPTION = 'Search for publications or follow authors on Google Scholar.';
     const MAINTAINER = 'nicholasmccarthy';
@@ -50,14 +50,14 @@ class GoogleScholarBridge extends BridgeAbstract
                 'name' => 'Since Year',
                 'required' => false,
                 'type' => 'number',
-                'default' => '0',
+                'default' => '',
                 'title' => 'Parameter defines the year from which you want the results to be included.'
             ],
             'untilYear' => [
                 'name' => 'Until Year',
                 'required' => false,
                 'type' => 'number',
-                'default' => '0',
+                'default' => '',
                 'title' => 'Parameter defines the year until which you want the results to be included.'
             ],
             'sortBy' => [
@@ -97,26 +97,25 @@ class GoogleScholarBridge extends BridgeAbstract
         ],
     ];
 
-
-    public function getIcon()
-    {
-        return 'https://scholar.google.com/favicon.ico';
-    }
-
     public function collectData()
     {
         switch ($this->queriedContext) {
-            case 'user':
-                $userId = $this->getInput('userId');
-                $uri = self::URI . '/citations?hl=en&view_op=list_works&sortby=pubdate&user=' . $userId;
-                $html = getSimpleHTMLDOM($uri) or returnServerError('Could not fetch Google Scholar data.');
 
+            case 'user':
+                
+                $html = getSimpleHTMLDOM($this->getUserURI()) or returnServerError('Could not fetch Google Scholar data.');
+             
                 $publications = $html->find('tr[class="gsc_a_tr"]');
 
                 foreach ($publications as $publication) {
                     $articleUrl = self::URI . htmlspecialchars_decode($publication->find('a[class="gsc_a_at"]', 0)->href);
                     $articleTitle = $publication->find('a[class="gsc_a_at"]', 0)->plaintext;
 
+                    // Break the loop if 'Check for Updates' is found in the article title
+                    if (strpos($articleTitle, 'Check for updates') !== false) {
+                        break;
+                    }
+                    
                     # fetch the article itself to extract rest of content
                     $contentArticle = getSimpleHTMLDOMCached($articleUrl);
                     $articleEntries = $contentArticle->find('div[class="gs_scl"]');
@@ -161,45 +160,25 @@ class GoogleScholarBridge extends BridgeAbstract
                 }
                 break;
             case 'query':
-                $query = urlencode($this->getInput('q'));
-                $cites = $this->getInput('cites');
-                $language = $this->getInput('language');
-                $sinceYear = $this->getInput('sinceYear');
-                $untilYear = $this->getInput('untilYear');
-                $minCitations = (int)$this->getInput('minCitations');
-                $includeCitations = $this->getInput('includeCitations');
-                $includePatents = $this->getInput('includePatents');
-                $reviewArticles = $this->getInput('reviewArticles');
-                $sortBy = $this->getInput('sortBy');
-                $numResults = $this->getInput('numResults');
 
-                # Build URI
-                $uri = self::URI . 'scholar?q=' . $query;
-                $uri .= $sinceYear != 0 ? '&as_ylo=' . $sinceYear : '';
-                $uri .= $untilYear != 0 ? '&as_yhi=' . $untilYear : '';
-                $uri .= $language != '' ? '&hl=' . $language : '';
-                $uri .= $includePatents ? '&as_vis=7' : '&as_vis=0';
-                $uri .= $includeCitations ? '&as_vis=0' : ($includePatents ? '&as_vis=1' : '');
-                $uri .= $reviewArticles ? '&as_rr=1' : '';
-                $uri .= $sortBy ? '&scisbd=1' : '';
-                $uri .= $numResults ? '&num=' . $numResults : '';
-
-                $html = getSimpleHTMLDOM($uri) or returnServerError('Could not fetch Google Scholar data.');
-
+            
+                $html = getSimpleHTMLDOM($this->getQueryURI()) or returnServerError('Could not fetch Google Scholar data.');
+             
                 $publications = $html->find('div[class="gs_r gs_or gs_scl"]');
-
+                $minCitations = (int)$this->getInput('minCitations');
+                
                 foreach ($publications as $publication) {
+                    
+                    $searchLink = $publication->find('div[class="gs_ggs gs_fl"]')
+                    $searchBody = $publication->find('div[class="gs_ri"]')
+                    
                     $articleTitleElement = $publication->find('h3[class="gs_rt"]', 0);
                     $articleUrl = $articleTitleElement->find('a', 0)->href;
                     $articleTitle = $articleTitleElement->plaintext;
 
-                    // Break the loop if 'Check for Updates' is found in the article title
-                    if (strpos($articleTitle, 'Check for updates') !== false) {
-                        break;
-                    }
-
                     $articleDateElement = $publication->find('div[class="gs_a"]', 0);
                     $articleDate = $articleDateElement ? $articleDateElement->plaintext : '';
+                    $timeStamp = strtotime($articleDate) ?? '';
 
                     $articleAbstractElement = $publication->find('div[class="gs_rs"]', 0);
                     $articleAbstract = $articleAbstractElement ? $articleAbstractElement->plaintext : '';
@@ -207,41 +186,75 @@ class GoogleScholarBridge extends BridgeAbstract
                     $articleAuthorElement = $publication->find('div[class="gs_a"]', 0);
                     $articleAuthor = $articleAuthorElement ? $articleAuthorElement->plaintext : '';
 
-                    $bottomRowElement = $publication->find('div[class="gs_fl"]', 0);
-
                     $item = [
                         'title' => $articleTitle,
                         'uri' => $articleUrl,
-                        'timestamp' => strtotime($articleDate),
+                        'timestamp' => $timeStamp,
                         'author' => $articleAuthor,
                         'content' => $articleAbstract
                     ];
 
-                    switch ($this->queriedContext) {
-                        case 'user':
-                            $this->items[] = $item;
-                            break;
-                        case 'query':
-                            $citedBy = 0;
-                            if ($bottomRowElement) {
-                                $anchorTags = $bottomRowElement->find('a');
-                                foreach ($anchorTags as $anchorTag) {
-                                    if (strpos($anchorTag->plaintext, 'Cited') !== false) {
-                                        $parts = explode('Cited by ', $anchorTag->plaintext);
-                                        if (isset($parts[1])) {
-                                            $citedBy = (int)$parts[1];
-                                        }
-                                        break;
-                                    }
+                    $citeRowDiv = $publication->find('div[class="gs_fl gs_flb"]', 0);
+                    if ($citeRowDiv) {
+                        
+                        $citedBy = 0;
+                        foreach ($citeRowDiv->find('a') as $anchorTag) {
+                            if (strpos($anchorTag->plaintext, 'Cited') !== false) {
+                                $parts = explode('Cited by ', $anchorTag->plaintext);
+                                if (isset($parts[1])) {
+                                    $citedBy = (int)$parts[1];
                                 }
+                                break;
                             }
-                            if ($citedBy >= $minCitations) {
-                                $this->items[] = $item;
-                            }
-                            break;
+                        }
+                        if ($citedBy >= $minCitations) {
+                            $this->items[] = $item;
+                        }
                     }
-                }
+                    else {
+                        $this->items[] = $item;
+                    }
                 break;
+            }
         }
     }
+
+    public function getIcon()
+    {
+        return 'https://scholar.google.com/favicon.ico';
+    }
+
+    public function getUserURI()
+    {
+        $queryParameters = [
+            'hl'      => 'en',
+            'view_op' => 'list_works', 
+            'sortby'  => 'pubdate',
+            'user'    => $this->getInput('userId'),            
+        ];
+        return sprintf('https://scholar.google.com/citations?%s', http_build_query($queryParameters));
+    }
+
+    public function getQueryURI()
+    {
+        
+        $queryParameters = [
+            'q'      => $this->getInput('q'),
+            'as_ylo' => $this->getInput('sinceYear'),
+            'as_yhi' => $this->getInput('untilYear'),
+            'hl'     => $this->getInput('language'),
+            'as_sdt' => $this->getInput('includePatents') ? '7' : '0',  // default=0, excludes citations 
+            'as_vis' => $this->getInput('includeCitations') ? '0' : '1',  // default=0, includes citations 
+            'as_rr'  => $this->getInput('reviewArticles') ? : '1': '0',   // default = 0, do not show only review articles
+            'scisbd'  => $this->getInput('sortBy') ? '1' : '',
+            'num'    => $this->getInput('numResults'),      
+        ];
+
+        $queryParameters = array_filter($queryParameters, function($value) {
+            return $value !== null && $value !== '';
+        });
+
+        return sprintf('https://scholar.google.com/scholar?%s', http_build_query($queryParameters));
+    }
+
 }
