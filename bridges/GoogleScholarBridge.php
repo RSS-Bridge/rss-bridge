@@ -99,7 +99,7 @@ class GoogleScholarBridge extends BridgeAbstract
 
     public function collectData()
     {
-        switch ($this->queriedContext) 
+        switch ($this->queriedContext)
         {
             case 'user':
                 $html = getSimpleHTMLDOM($this->getUserURI()) or returnServerError('Could not fetch Google Scholar data.');
@@ -211,7 +211,7 @@ class GoogleScholarBridge extends BridgeAbstract
                         $this->items[] = $item;
                     }
                 break;
-            }
+            } 
         }
     }
 
@@ -238,11 +238,11 @@ class GoogleScholarBridge extends BridgeAbstract
             'as_ylo' => $this->getInput('sinceYear'),
             'as_yhi' => $this->getInput('untilYear'),
             'hl'     => $this->getInput('language'),
-            'as_sdt' => $this->getInput('includePatents') ? '7' : '0',  // default=0, excludes citations 
-            'as_vis' => $this->getInput('includeCitations') ? '0' : '1',  // default=0, includes citations 
-            'as_rr'  => $this->getInput('reviewArticles') ? : '1': '0',   // default = 0, do not show only review articles
+            'as_sdt' => $this->getInput('includePatents') ? '7' : '0',
+            'as_vis' => $this->getInput('includeCitations') ? '0' : '1',
+            'as_rr'  => $this->getInput('reviewArticles') ? : '1': '0',
             'scisbd'  => $this->getInput('sortBy') ? '1' : '',
-            'num'    => $this->getInput('numResults'),      
+            'num'    => $this->getInput('numResults')
         ];
 
         $queryParameters = array_filter($queryParameters, function($value) {
