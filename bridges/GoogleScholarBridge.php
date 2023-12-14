@@ -165,9 +165,6 @@ class GoogleScholarBridge extends BridgeAbstract
                 $minCitations = (int)$this->getInput('minCitations');
 
                 foreach ($publications as $publication) {
-                    $searchLink = $publication->find('div[class="gs_ggs gs_fl"]')
-                    $searchBody = $publication->find('div[class="gs_ri"]')
-
                     $articleTitleElement = $publication->find('h3[class="gs_rt"]', 0);
                     $articleUrl = $articleTitleElement->find('a', 0)->href;
                     $articleTitle = $articleTitleElement->plaintext;
