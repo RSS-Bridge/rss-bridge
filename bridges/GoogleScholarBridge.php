@@ -99,11 +99,10 @@ class GoogleScholarBridge extends BridgeAbstract
 
     public function collectData()
     {
-        switch ($this->queriedContext)
-        {
+        $context = $this->queriedContext;
+        switch ($context) {
             case 'user':
                 $html = getSimpleHTMLDOM($this->getUserURI()) or returnServerError('Could not fetch Google Scholar data.');
-
                 $publications = $html->find('tr[class="gsc_a_tr"]');
 
                 foreach ($publications as $publication) {
