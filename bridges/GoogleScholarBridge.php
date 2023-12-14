@@ -100,11 +100,10 @@ class GoogleScholarBridge extends BridgeAbstract
     public function collectData()
     {
         switch ($this->queriedContext) {
-
             case 'user':
-                
+
                 $html = getSimpleHTMLDOM($this->getUserURI()) or returnServerError('Could not fetch Google Scholar data.');
-             
+
                 $publications = $html->find('tr[class="gsc_a_tr"]');
 
                 foreach ($publications as $publication) {
@@ -115,7 +114,7 @@ class GoogleScholarBridge extends BridgeAbstract
                     if (strpos($articleTitle, 'Check for updates') !== false) {
                         break;
                     }
-                    
+
                     # fetch the article itself to extract rest of content
                     $contentArticle = getSimpleHTMLDOMCached($articleUrl);
                     $articleEntries = $contentArticle->find('div[class="gs_scl"]');
@@ -161,17 +160,16 @@ class GoogleScholarBridge extends BridgeAbstract
                 break;
             case 'query':
 
-            
                 $html = getSimpleHTMLDOM($this->getQueryURI()) or returnServerError('Could not fetch Google Scholar data.');
-             
+
                 $publications = $html->find('div[class="gs_r gs_or gs_scl"]');
                 $minCitations = (int)$this->getInput('minCitations');
-                
+
                 foreach ($publications as $publication) {
-                    
+
                     $searchLink = $publication->find('div[class="gs_ggs gs_fl"]')
                     $searchBody = $publication->find('div[class="gs_ri"]')
-                    
+
                     $articleTitleElement = $publication->find('h3[class="gs_rt"]', 0);
                     $articleUrl = $articleTitleElement->find('a', 0)->href;
                     $articleTitle = $articleTitleElement->plaintext;
@@ -196,7 +194,7 @@ class GoogleScholarBridge extends BridgeAbstract
 
                     $citeRowDiv = $publication->find('div[class="gs_fl gs_flb"]', 0);
                     if ($citeRowDiv) {
-                        
+
                         $citedBy = 0;
                         foreach ($citeRowDiv->find('a') as $anchorTag) {
                             if (strpos($anchorTag->plaintext, 'Cited') !== false) {
@@ -237,7 +235,6 @@ class GoogleScholarBridge extends BridgeAbstract
 
     public function getQueryURI()
     {
-        
         $queryParameters = [
             'q'      => $this->getInput('q'),
             'as_ylo' => $this->getInput('sinceYear'),
@@ -256,5 +253,4 @@ class GoogleScholarBridge extends BridgeAbstract
 
         return sprintf('https://scholar.google.com/scholar?%s', http_build_query($queryParameters));
     }
-
 }
