@@ -1,6 +1,7 @@
 <?PHP
-class DagensNyheterDirektBridge extends BridgeAbstract {
 
+class DagensNyheterDirektBridge extends BridgeAbstract
+{
     const NAME			= 'Dagens Nyheter Direkt';
     const URI			= 'https://www.dn.se/direkt/';
     const BASEURL		= 'https://www.dn.se';
@@ -12,14 +13,16 @@ class DagensNyheterDirektBridge extends BridgeAbstract {
         return 'https://cdn.dn-static.se/images/favicon__c2dd3284b46ffdf4d520536e526065fa8.svg';
     }
 
-    public function collectData(){
+    public function collectData()
+    {
 
         $NEWSURL = self::BASEURL . '/ajax/direkt/';
 
         $html = getSimpleHTMLDOM($NEWSURL)
             or returnServerError('Could not request: ' . $NEWSURL);
 
-        foreach($html->find('article') as $element) {
+        foreach ($html->find('article') as $element)
+        {
 
             $link = $element->find('button', 0)->getAttribute('data-link');
             $datetime = $element->getAttribute('data-publication-time');
@@ -36,11 +39,13 @@ class DagensNyheterDirektBridge extends BridgeAbstract {
             $article_html = '';
 
             $figure = $element->find('figure', 0);
+
             if ($figure) {
                 $article_html = $figure->find('img', 0) . '<p><i>' . $figure->find('figcaption', 0) . '</i></p>';
             }
 
-            foreach($article_content->find('p') as $p) {
+            foreach ($article_content->find('p') as $p)
+            {
                 $article_html = $article_html . $p;
             }
 
@@ -52,7 +57,8 @@ class DagensNyheterDirektBridge extends BridgeAbstract {
             $item['content'] = trim($article_html);
             $this->items[] = $item;
 
-            if (count($this->items) > self::LIMIT) {
+            if (count($this->items) > self::LIMIT)
+            {
                 break;
             }
         }
