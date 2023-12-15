@@ -50,11 +50,11 @@ class DagensNyheterDirektBridge extends BridgeAbstract
             }
 
             $this->items[] = [
-                'uri' => $url;
-                'title' => $title;
-                'author' => trim($author);
-                'timestamp' => $datetime;
-                'content' => trim($article_html);
+                'uri' => $url,
+                'title' => $title,
+                'author' => trim($author),
+                'timestamp' => $datetime,
+                'content' => trim($article_html),
             ];
 
             if (count($this->items) > self::LIMIT)
