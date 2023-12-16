@@ -24,13 +24,13 @@ class CarThrottleBridge extends BridgeAbstract
             $titleElement = $post->find('div.title a')[0];
             $post_uri = self::URI . $titleElement->getAttribute('href');
 
-            if(!isset($post_uri) || $post_uri == ""){
+            if (!isset($post_uri) || $post_uri == '') {
                 continue;
             }
 
             $item['uri'] = $post_uri;
             $item['title'] = $titleElement->innertext;
-            $item['author'] = "1";
+            $item['author'] = '1';
 
             $articlePage = getSimpleHTMLDOMCached($item['uri'])
                 or returnServerError('could not retrieve page');
