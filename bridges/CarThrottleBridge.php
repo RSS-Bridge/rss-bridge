@@ -30,7 +30,6 @@ class CarThrottleBridge extends BridgeAbstract
 
             $item['uri'] = $post_uri;
             $item['title'] = $titleElement->innertext;
-            $item['author'] = '1';
 
             $articlePage = getSimpleHTMLDOMCached($item['uri'])
                 or returnServerError('could not retrieve page');
