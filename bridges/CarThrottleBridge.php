@@ -12,15 +12,25 @@ class CarThrottleBridge extends BridgeAbstract
         $news = getSimpleHTMLDOMCached(self::URI . 'news')
             or returnServerError('could not retrieve page');
 
+        // $reviews = getSimpleHTMLDOMCached(self::URI . 'reviews')
+        //     or returnServerError('could not retrieve page');
+
         $this->items[] = [];
 
         //for each post
         foreach ($news->find('div.cmg-card') as $post) {
             $item = [];
 
-            $titleElement = $post->find('div.title a.cmg-link')[0];
-            $item['uri'] = self::URI . $titleElement->getAttribute('href');
+            $titleElement = $post->find('div.title a')[0];
+            $post_uri = self::URI . $titleElement->getAttribute('href');
+
+            if (!isset($post_uri) || $post_uri == '') {
+                continue;
+            }
+
+            $item['uri'] = $post_uri;
             $item['title'] = $titleElement->innertext;
+            $item['author'] = '1';
 
             $articlePage = getSimpleHTMLDOMCached($item['uri'])
                 or returnServerError('could not retrieve page');
