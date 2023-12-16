@@ -71,6 +71,7 @@ function getContents(
                 // Ignore invalid 'Last-Modified' HTTP header value
             }
         }
+        // todo: to be nice nice citizen we should also check for Etag
     }
 
     $response = $httpClient->request($url, $config);

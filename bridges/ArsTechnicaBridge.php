@@ -37,7 +37,14 @@ class ArsTechnicaBridge extends FeedExpander
     {
         $item_html = getSimpleHTMLDOMCached($item['uri'] . '&amp');
         $item_html = defaultLinkTo($item_html, self::URI);
-        $item['content'] = $item_html->find('.amp-wp-article-content', 0);
+
+        $item_content = $item_html->find('.article-content.post-page', 0);
+        if (!$item_content) {
+            // The dom selector probably broke. Let's just return the item as-is
+            return $item;
+        }
+
+        $item['content'] = $item_content;
 
         // remove various ars advertising
         $item['content']->find('#social-left', 0)->remove();

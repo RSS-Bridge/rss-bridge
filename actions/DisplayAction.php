@@ -19,6 +19,7 @@ class DisplayAction implements ActionInterface
                 'message'   => 'RSS-Bridge is down for maintenance.',
             ]), 503);
         }
+
         $cacheKey = 'http_' . json_encode($request);
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
@@ -80,16 +81,19 @@ class DisplayAction implements ActionInterface
             $this->cache->set($cacheKey, $response, $ttl);
         }
 
-        if (in_array($response->getCode(), [429, 503])) {
-            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10)); // average 20m
+        if (in_array($response->getCode(), [403, 429, 503])) {
+            // Cache these responses for about ~20 mins on average
+            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10));
         }
 
         if ($response->getCode() === 500) {
             $this->cache->set($cacheKey, $response, 60 * 15);
         }
+
         if (rand(1, 100) === 2) {
             $this->cache->prune();
         }
+
         return $response;
     }
 
@@ -187,6 +191,7 @@ class DisplayAction implements ActionInterface
 
     private function logBridgeError($bridgeName, $code)
     {
+        // todo: it's not really necessary to json encode $report
         $cacheKey = 'error_reporting_' . $bridgeName . '_' . $code;
         $report = $this->cache->get($cacheKey);
         if ($report) {

@@ -94,7 +94,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         );
 
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('h3[class=size--all-l]', 0);
+        $noresult = $html->find('h3[class*=text--b]', 0);
         if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
             $this->items = [];
         } else {
@@ -117,8 +117,7 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $this->getSource($deal)
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
-                    . $deal->find('div[class*=' . $selectorHot . ']', 0)
-                        ->find('span', 0)->outertext
+                    . $this->getTemperature($deal)
                     . '</td></table>';
 
                 // Check if a clock icon is displayed on the deal
@@ -369,6 +368,16 @@ HEREDOC;
     }
 
     /**
+     * Get the temperature from a Deal if it exists
+     * @return string String of the deal temperature
+     */
+    private function getTemperature($deal)
+    {
+        $data = Json::decode($deal->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
+        return $data['props']['thread']['temperature'] . '°';
+    }
+
+    /**
      * Get the source of a Deal if it exists
      * @return string String of the deal source
      */
@@ -542,6 +551,10 @@ HEREDOC;
     {
         $date = new DateTime();
 
+        // The minimal amount of time substracted is a minute : the seconds in the resulting date would be related to the execution time of the script.
+        // This make no sense, so we set the seconds manually to "00".
+        $date->setTime($date->format('H'), $date->format('i'), 0);
+
         // In case of update date, replace it by the regular relative date first word
         $str = str_replace($this->i8n('relative-date-alt-prefixes'), $this->i8n('local-time-relative')[0], $str);
 
@@ -559,6 +572,8 @@ HEREDOC;
             ''
         ];
         $date->modify(str_replace($search, $replace, $str));
+
+
         return $date->getTimestamp();
     }
 

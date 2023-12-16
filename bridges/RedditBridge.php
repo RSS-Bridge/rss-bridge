@@ -75,15 +75,26 @@ class RedditBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $cacheKey = 'reddit_rate_limit';
-        if ($this->cache->get($cacheKey)) {
+        $forbiddenKey = 'reddit_forbidden';
+        if ($this->cache->get($forbiddenKey)) {
+            throw new HttpException('403 Forbidden', 403);
+        }
+
+        $rateLimitKey = 'reddit_rate_limit';
+        if ($this->cache->get($rateLimitKey)) {
             throw new HttpException('429 Too Many Requests', 429);
         }
+
         try {
             $this->collectDataInternal();
         } catch (HttpException $e) {
+            if ($e->getCode() === 403) {
+                // 403 Forbidden
+                // This can possibly mean that reddit has permanently blocked this server's ip address
+                $this->cache->set($forbiddenKey, true, 60 * 61);
+            }
             if ($e->getCode() === 429) {
-                $this->cache->set($cacheKey, true, 60 * 16);
+                $this->cache->set($rateLimitKey, true, 60 * 16);
             }
             throw $e;
         }

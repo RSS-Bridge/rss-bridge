@@ -315,6 +315,13 @@ class VkBridge extends BridgeAbstract
                 $copy_quote->outertext = "<br>Reposted ($copy_quote_author): <br>$copy_quote_content";
             }
 
+            foreach ($post->find('.PrimaryAttachment .PhotoPrimaryAttachment') as $pa) {
+                $img = $pa->find('.PhotoPrimaryAttachment__imageElement', 0);
+                if (is_object($img)) {
+                    $pa->outertext = $img->outertext;
+                }
+            }
+
             foreach ($post->find('.SecondaryAttachment') as $sa) {
                 $sa_href = $sa->getAttribute('href');
                 if (!$sa_href) {
@@ -516,7 +523,7 @@ class VkBridge extends BridgeAbstract
             }
 
             if (!preg_match('#^https?://vk.com/#', $uri)) {
-                returnServerError('Unexpected redirect location');
+                returnServerError('Unexpected redirect location: ' . $uri);
             }
 
             $redirects++;

@@ -6,7 +6,11 @@ if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
 
 require_once __DIR__ . '/lib/bootstrap.php';
 
-Configuration::verifyInstallation();
+$errors = Configuration::checkInstallation();
+if ($errors) {
+    die('<pre>' . implode("\n", $errors) . '</pre>');
+}
+
 $customConfig = [];
 if (file_exists(__DIR__ . '/config.ini.php')) {
     $customConfig = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
