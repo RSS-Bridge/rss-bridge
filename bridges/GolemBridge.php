@@ -132,7 +132,7 @@ class GolemBridge extends FeedExpander
             $img->src = $img->getAttribute('data-src-full');
         }
 
-        foreach ($content->find('p, h1, h3, img[src*="."]') as $element) {
+        foreach ($content->find('p, h1, h2, h3, img[src*="."]') as $element) {
             $item .= $element;
         }
 
