@@ -12,8 +12,12 @@ if ($errors) {
 }
 
 $customConfig = [];
-if (file_exists(__DIR__ . '/config.ini.php')) {
-    $customConfig = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
+$customConfigPath = __DIR__ . '/config.ini.php';
+if (getenv('RSSBRIDGE_CONFIG') !== false) {
+    $customConfigPath = getenv('RSSBRIDGE_CONFIG');
+}
+if (file_exists($customConfigPath)) {
+    $customConfig = parse_ini_file($customConfigPath, true, INI_SCANNER_TYPED);
 }
 Configuration::loadConfiguration($customConfig, getenv());
 
