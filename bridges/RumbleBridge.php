@@ -39,7 +39,7 @@ class RumbleBridge extends BridgeAbstract
         }
 
         $dom = getSimpleHTMLDOM($url);
-        foreach ($dom->find('li.video-listing-entry') as $video) {
+        foreach ($dom->find('ol.thumbnail__grid div.thumbnail__grid--item') as $video) {
             $datetime = $video->find('time', 0)->getAttribute('datetime');
 
             $this->items[] = [
