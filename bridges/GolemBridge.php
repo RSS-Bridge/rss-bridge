@@ -113,6 +113,15 @@ class GolemBridge extends FeedExpander
         ) {
             $bad->remove();
         }
+
+       //delete data-src from all images, which otherwise breaks the feed for some readers
+       foreach (
+            $article->find('img') as $img
+        ) {
+            $img->removeAttribute('data-src');
+            $img->removeAttribute('data-src-full');
+        }
+
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 
