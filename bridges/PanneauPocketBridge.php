@@ -6,127 +6,22 @@ class PanneauPocketBridge extends BridgeAbstract
     const URI = 'https://app.panneaupocket.com';
     const DESCRIPTION = 'Fetches the latest infos from Panneau Pocket';
     const MAINTAINER = 'floviolleau';
-    const PARAMETERS = [
-        [
-            'cities' => [
-                'name' => 'Choisir une ville',
-                'type' => 'list',
-                'values' => self::CITIES,
-            ],
-            'cityName' => [
-                'name' => 'Ville',
-            ],
-            'cityId' => [
-                'name' => 'Identifiant',
-            ]
-        ]
-    ];
     const CACHE_TIMEOUT = 7200; // 2h
 
-    private const CITIES = [
-        'Andouillé-Neuville-35250' => '1455789521',
-        'Aubigné-35250' => '1814317005',
-        'Availles-sur-Seiche-35130' => '1892893207',
-        'Baulon-35580' => '605833540',
-        'Beaucé-35133' => '560906842',
-        'Boisgervilly-35360' => '1993806123',
-        'Bonnemain-35270' => '1099773691',
-        'Bonnemain - Ecole Privée Saint-Joseph-35270' => '538925534',
-        'Bonnemain - Ecole Publique Henri Matisse-35270' => '1820283844',
-        'Bourg-des-Comptes-35890' => '957084809',
-        'Breteil-35160' => '1206807553',
-        'Chanteloup-35150' => '65528978',
-        'Chavagne-35310' => '1825825704',
-        'Cintré-35310' => '857744989',
-        'Clayes-35590' => '1176604734',
-        'Comblessac-35330' => '799252614',
-        'Compagnie de Gendarmerie de Montfort-sur-Meu-35160' => '1310467096',
-        'Compagnie de Gendarmerie de Redon-35600' => '772555117',
-        'Compagnie de Gendarmerie de Saint-Malo-35400' => '212942271',
-        'Compagnie de Gendarmerie de Vitré-35500' => '2117121991',
-        'Dingé-35440' => '1146475327',
-        'Feins-35440' => '762081007',
-        'Gahard-35490' => '858141102',
-        'Gendarmerie BTA de Bain-de-Bretagne-35470' => '2125697119',
-        'Gendarmerie BTA de Mordelles-35310' => '1915843207',
-        'Gendarmerie BTA de Saint-Aubin-du-Cormier-35140' => '1325843950',
-        'Gendarmerie BTA de Vitré-35500' => '898672661',
-        'Gendarmerie BTA Maen-Roch-35460' => '1096873908',
-        'Gendarmerie COB Cancale-35260' => '1992410402',
-        'Gendarmerie COB de Chateaugiron-35410' => '1867528169',
-        'Gendarmerie COB de Combourg-35270' => '1045617593',
-        'Gendarmerie COB de Fougères-35300' => '177248581',
-        'Gendarmerie COB de Guichen-35580' => '557627842',
-        'Gendarmerie COB de Hédé-Bazouges-35630' => '519881302',
-        'Gendarmerie COB de Janzé-35150' => '533620097',
-        'Gendarmerie COB de La Guerche-de-Bretagne-35130' => '1282120307',
-        'Gendarmerie COB de Montauban de Bretagne-35360' => '137692263',
-        'Gendarmerie COB de Redon-35600' => '1027850906',
-        'Gendarmerie de Betton-35830' => '307605625',
-        'Gosné-35140' => '1261503624',
-        'Grand-Fougeray-35390' => '1687416796',
-        'Guignen-35580' => '75195882',
-        'L\'Hermitage-35590' => '1954292633',
-        'La Boussac-35120' => '162444335',
-        'La Chapelle-Bouëxic-35330' => '869117325',
-        'La Couyère-35320' => '2075958825',
-        'La Dominelais-35390' => '2065081911',
-        'La Fresnais-35111' => '2010636370',
-        'La Gouesnière-35350' => '1925923421',
-        'La Noé-Blanche-35470' => '224305391',
-        'La Nouaye-35137' => '1000733211',
-        'Lalleu-35320' => '1460101917',
-        'Landavran-35450' => '133549915',
-        'Langouet-35630' => '1523560503',
-        'Le Ferré-35420' => '1432943983',
-        'Le Verger-35160' => '1266074746',
-        'Les Brulais-35330' => '1854147921',
-        'Les Portes du Coglais-35460' => '413267621',
-        'Livré-sur-Changeon-35450' => '1850101087',
-        'Louvigné-de-Bais-35680' => '1676392257',
-        'Louvigné-de-Bais - Ecole Charles Perrault-35680' => '1180505145',
-        'Louvigné-de-Bais - Ecole Saint-Patern-35680' => '919443746',
-        'Maen Roch-35460' => '1112477040',
-        'Maison de Quartier Francisco Ferrer-35200' => '944171353',
-        'Marcillé-Raoul-35560' => '991970696',
-        'Maxent-35380' => '209041860',
-        'Meillac-35270' => '1841968856',
-        'Mernel-35330' => '1311137811',
-        'Monterfil-35160' => '873169651',
-        'Montreuil-sur-Ille-35440' => '550764994',
-        'Mouazé-35250' => '1931390548',
-        'Moutiers-35130' => '443526227',
-        'Parigné-35133' => '2013041755',
-        'Pleugueneuc-35720' => '748287926',
-        'Princé-35210' => '1765498088',
-        'Rives-du-Couesnon-35140' => '1609662849',
-        'Saint-Aubin-des-Landes-35500' => '1483721395',
-        'Saint-Germain-du-Pinel-35370' => '1357547548',
-        'Saint-Gonlay-35750' => '711639882',
-        'Saint-Péran-35380' => '1484951371',
-        'Saint-Séglin-35330' => '292665012',
-        'Saint-Thual-35190' => '427165321',
-        'Saint-Thurial-35310' => '940529156',
-        'Sens-de-Bretagne-35490' => '1055647650',
-        'Thourie-35134' => '1250885948',
-        'Torcé-35370' => '1927215543',
-        'Treffendel-35380' => '738532467',
-        'Val d\'Anast-35330' => '225564233',
-        'Vallons de Haute Bretagne Communauté-35580' => '1319050928',
-        'Vergéal-35680' => '389815752',
-        'Vieux-Vy-sur-Couesnon-35490' => '2016313694'
-    ];
+    private static ?array $CITIES = null;
+
+    public function __construct($cache, $logger)
+    {
+        parent::__construct($cache, $logger);
+
+        // Assign the dynamic value to the constant in the constructor
+        self::$CITIES = self::getCities();
+    }
 
     public function collectData()
     {
-        $cityId = $this->getInput('cityId');
-        if ($cityId != null) {
-            $cityName = $this->getInput('cityName');
-            $city = strtolower($cityId . '-' . $cityName);
-        } else {
-            $matchedCity = array_search($this->getInput('cities'), self::CITIES);
-            $city = strtolower($this->getInput('cities') . '-' . $matchedCity);
-        }
+        $matchedCity = array_search($this->getInput('city'), self::$CITIES);
+        $city = strtolower($this->getInput('city') . '-' . $matchedCity);
         $url = sprintf('https://app.panneaupocket.com/ville/%s', urlencode($city));
 
         $html = getSimpleHTMLDOM($url);
@@ -148,36 +43,157 @@ class PanneauPocketBridge extends BridgeAbstract
         }
     }
 
-    public function detectParameters($url)
+    /**
+     * /!\ Warning
+     * Display all cities in a select on the front-end can be time-consuming to render
+     *
+     * @return array
+     * @throws CloudFlareException
+     * @throws HttpException
+     * @throws JsonException
+     */
+    private static function getCities(): array
     {
-        $params = [];
-        $regex = '/\/ville\/(\d+)-([a-z0-9-]+)/';
-        if (preg_match($regex, $url, $matches)) {
-            $params['cityId'] = $matches[1];
-            $params['cityName'] = $matches[2];
-            return $params;
+        $cities = json_decode(getContents(self::URI . '/public-api/city'), true, 512, JSON_THROW_ON_ERROR);
+
+        $formattedCities = null;
+        $maxTextSize = 50;
+        foreach ($cities as $city) {
+            $value = $city['name'] . ' - ' . $city['postCode'];
+
+            // reduce length for very long cities' name else style page is broken
+            // because of a too long value in select option.
+            if (strlen($city['name']) > $maxTextSize) {
+                // remove 11 char:
+                //  '...' + ' - ' + postcode (5)
+                $lastPos = ($maxTextSize - 11) - strlen($value);
+                $value = substr($value, 0, strrpos($value, ' ', $lastPos)) . '... - ' . $city['postCode'];
+            }
+            $formattedCities[$value] = $city['id'];
         }
-        return null;
+
+        return $formattedCities;
     }
 
     /**
-     * Produce self::CITIES array
+     * override base method
+     * @return array[]
      */
-    private static function getCities($zipcodeStartWith)
+    public function getParameters(): array
     {
-        $cities = json_decode(getContents(self::URI . '/public-api/city'), true);
+        return [
+            [
+                'city' => [
+                    'name' => 'Choisir une ville',
+                    'type' => 'list',
+                    'values' => self::$CITIES,
+                ]
+            ]
+        ];
+    }
 
-        $formattedCities = null;
-        $citiesString = '[<br>';
-        foreach ($cities as $city) {
-            if (str_starts_with($city['postCode'], $zipcodeStartWith)) {
-                $formattedCities[$city['name'] . ' - ' . $city['postCode']] = $city['id'];
-                $citiesString .= '    "' . $city['name'] . '-' . $city['postCode'] . '" => "' . $city['id'] . '",';
-                $citiesString .= '<br>';
+    /**
+     * Override base method because they use static::PARAMETERS instead of getParameters
+     * in function setInputWithContext
+     *
+     * else $this->getInput do not return any value
+     *
+     * @param array $input
+     * @return void
+     * @throws Exception
+     */
+    public function setInput(array $input)
+    {
+        parent::setInput($input);
+        $this->setInputWithContext($input, $this->queriedContext);
+    }
+
+    /**
+     * Override base method because they use static::PARAMETERS instead of getParameters
+     *
+     * else $this->getInput do not return any value
+     *
+     * @param array $input
+     * @param $queriedContext
+     * @return void
+     */
+    public function setInputWithContext(array $input, $queriedContext)
+    {
+        // Import and assign all inputs to their context
+        foreach ($input as $name => $value) {
+            foreach ($this->getParameters() as $context => $set) {
+                if (array_key_exists($name, $this->getParameters()[$context])) {
+                    $this->inputs[$context][$name]['value'] = $value;
+                }
             }
         }
-        $citiesString .= ']';
-        echo '<pre>' . $citiesString . '</pre>';
-        die();
+
+        // Apply default values to missing data
+        $contexts = [$queriedContext];
+        if (array_key_exists('global', $this->getParameters())) {
+            $contexts[] = 'global';
+        }
+
+        foreach ($contexts as $context) {
+            if (!isset($this->getParameters()[$context])) {
+                // unknown context provided by client, throw exception here? or continue?
+            }
+
+            foreach ($this->getParameters()[$context] as $name => $properties) {
+                if (isset($this->inputs[$context][$name]['value'])) {
+                    continue;
+                }
+
+                $type = $properties['type'] ?? 'text';
+
+                switch ($type) {
+                    case 'checkbox':
+                        $this->inputs[$context][$name]['value'] = $input[$context][$name]['value'] ?? false;
+                        break;
+                    case 'list':
+                        if (!isset($properties['defaultValue'])) {
+                            $firstItem = reset($properties['values']);
+                            if (is_array($firstItem)) {
+                                $firstItem = reset($firstItem);
+                            }
+                            $this->inputs[$context][$name]['value'] = $firstItem;
+                        } else {
+                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                        }
+                        break;
+                    default:
+                        if (isset($properties['defaultValue'])) {
+                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                        }
+                        break;
+                }
+            }
+        }
+
+        // Copy global parameter values to the guessed context
+        if (array_key_exists('global', $this->getParameters())) {
+            foreach ($this->getParameters()['global'] as $name => $properties) {
+                if (isset($input[$name])) {
+                    $value = $input[$name];
+                } else {
+                    if ($properties['type'] ?? null === 'checkbox') {
+                        $value = false;
+                    } elseif (isset($properties['defaultValue'])) {
+                        $value = $properties['defaultValue'];
+                    } else {
+                        continue;
+                    }
+                }
+                $this->inputs[$queriedContext][$name]['value'] = $value;
+            }
+        }
+
+        // Only keep guessed context parameters values
+        if (isset($this->inputs[$queriedContext])) {
+            $this->inputs = [$queriedContext => $this->inputs[$queriedContext]];
+        } else {
+            $this->inputs = [];
+        }
     }
 }
+
