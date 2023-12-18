@@ -196,4 +196,3 @@ class PanneauPocketBridge extends BridgeAbstract
         }
     }
 }
-
