@@ -2,7 +2,7 @@
 
 class HttpException extends \Exception
 {
-    public ?Response $response = null;
+    public ?Response $response;
 
     public function __construct(string $message = '', int $statusCode = 0, ?Response $response = null)
     {
