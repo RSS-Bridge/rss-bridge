@@ -70,7 +70,7 @@ class EdfPricesBridge extends BridgeAbstract
         }
 
         // powers
-        $ulPowerContract = $ul?->nextSibling()?->nextSibling();
+        $ulPowerContract = $ulDom?->nextSibling()?->nextSibling();
         $elementsPowerContractDom = $ulPowerContract?->find('li');
         if ($elementsPowerContractDom && count($elementsPowerContractDom) === 4) {
             foreach ($elementsPowerContractDom as $elementPowerContractDom) {
