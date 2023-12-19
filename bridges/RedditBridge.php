@@ -1,10 +1,15 @@
 <?php
 
+/**
+ * This bridge does NOT use reddit's official rss feeds.
+ *
+ * This bridge uses reddit's json api: https://old.reddit.com/search.json?q=
+ */
 class RedditBridge extends BridgeAbstract
 {
     const MAINTAINER = 'dawidsowa';
     const NAME = 'Reddit Bridge';
-    const URI = 'https://www.reddit.com';
+    const URI = 'https://old.reddit.com';
     const DESCRIPTION = 'Return hot submissions from Reddit';
 
     const PARAMETERS = [
