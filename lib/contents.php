@@ -101,19 +101,8 @@ function getContents(
             $response = $response->withBody($cachedResponse->getBody());
             break;
         default:
-            $exceptionMessage = sprintf(
-                '%s resulted in %s %s %s',
-                $url,
-                $response->getCode(),
-                $response->getStatusLine(),
-                // If debug, include a part of the response body in the exception message
-                Debug::isEnabled() ? mb_substr($response->getBody(), 0, 500) : '',
-            );
-
-            if (CloudFlareException::isCloudFlareResponse($response)) {
-                throw new CloudFlareException($exceptionMessage, $response->getCode());
-            }
-            throw new HttpException(trim($exceptionMessage), $response->getCode());
+            $e = HttpException::fromResponse($response, $url);
+            throw $e;
     }
     if ($returnFull === true) {
         // todo: return the actual response object
