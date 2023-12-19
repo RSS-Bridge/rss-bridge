@@ -31,6 +31,7 @@ class GatesNotesBridge extends BridgeAbstract
         if (is_string($json)) {
             throw new \Exception('wtf? ' . $json);
         }
+
         foreach ($json as $article) {
             $item = [];
 
