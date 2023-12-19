@@ -7,7 +7,7 @@ class HttpException extends \Exception
     public function __construct(string $message = '', int $statusCode = 0, ?Response $response = null)
     {
         parent::__construct($message, $statusCode);
-        $this->response = $response;
+        $this->response = $response ?? new Response('', 0);
     }
 
     public static function fromResponse(Response $response, string $url): HttpException
