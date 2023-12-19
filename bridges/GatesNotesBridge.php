@@ -28,7 +28,9 @@ class GatesNotesBridge extends BridgeAbstract
         // $cleanedContent = trim($cleanedContent, '"');
 
         $json = Json::decode($cleanedContent, false);
-
+        if (is_string($json)) {
+            throw new \Exception('wtf? ' . $json);
+        }
         foreach ($json as $article) {
             $item = [];
 
