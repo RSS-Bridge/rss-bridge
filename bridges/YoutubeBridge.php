@@ -164,7 +164,11 @@ class YoutubeBridge extends BridgeAbstract
             $jsonData = $this->extractJsonFromHtml($html);
             // TODO: this method returns only first 100 video items
             // if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
-            $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0];
+            $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0] ?? null;
+            if (!$jsonData) {
+                // playlist probably doesnt exists
+                throw new \Exception('Unable to find playlist: ' . $url_listing);
+            }
             $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
             $jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
             $item_count = count($jsonData);
