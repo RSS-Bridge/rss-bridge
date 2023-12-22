@@ -125,6 +125,10 @@ class ARDAudiothekBridge extends BridgeAbstract
                     $item['categories'] = [$category];
                 }
 
+                $item['itunes'] = [
+                    'duration' => $audio->duration,
+                ];
+
                 $this->items[] = $item;
             }
         }
