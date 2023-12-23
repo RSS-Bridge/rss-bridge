@@ -55,7 +55,7 @@ class ArsTechnicaBridge extends FeedExpander
         foreach ($item['content']->find('.ars-component-buy-box') as $ad) {
             $ad->remove();
         }
-        foreach ($item['content']->find('i-amphtml-sizer') as $ad) {
+        foreach ($item['content']->find('.ad_wrapper') as $ad) {
             $ad->remove();
         }
         foreach ($item['content']->find('.sidebar') as $ad) {
