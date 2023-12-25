@@ -14,7 +14,7 @@ class FreeTelechargerBridge extends BridgeAbstract
                             'required' => true,
                             'title' => 'URL d\'une série sans le https://www.free-telecharger.art/',
                             'pattern' => 'series.*\.html',
-                            'exampleValue' => 'series-vf-hd/145458-the-last-of-us-saison-1-web-dl-720p.html'
+                            'exampleValue' => 'series-vf-hd/151432-wolf-saison-1-complete-web-dl-720p.html'
                     ],
             ]
     ];
@@ -76,7 +76,7 @@ class FreeTelechargerBridge extends BridgeAbstract
 
     public function detectParameters($url)
     {
-        // Example: https://www.free-telecharger.art/series-vf-hd/145458-the-last-of-us-saison-1-web-dl-720p.html
+        // Example: https://www.free-telecharger.art/series-vf-hd/151432-wolf-saison-1-complete-web-dl-720p.html
 
         $params = [];
         $regex = '/^https:\/\/www.*\.free-telecharger\.art\/(series.*\.html)/';
