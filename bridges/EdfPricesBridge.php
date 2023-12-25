@@ -27,7 +27,7 @@ class EdfPricesBridge extends BridgeAbstract
     private function tempo(simple_html_dom $html, string $contractUri): void
     {
         // current color and next
-        $daysDom = $html->find('#calendrier', 0)?->nextSibling()?->find('.card--ejp');
+        $daysDom = $html->find('#calendrier', 0)->nextSibling()->find('.card--ejp');
         if ($daysDom && count($daysDom) === 2) {
             foreach ($daysDom as $dayDom) {
                 $day = trim($dayDom->find('.card__title', 0)->innertext) . '/' . (new \DateTime('now'))->format(('Y'));
@@ -45,8 +45,8 @@ class EdfPricesBridge extends BridgeAbstract
         }
 
         // colors
-        $ulDom = $html->find('#tarif-de-l-offre-edf-tempo-current-date-html-year', 0)?->nextSibling()?->nextSibling()?->nextSibling();
-        $elementsDom = $ulDom?->find('li');
+        $ulDom = $html->find('#tarif-de-l-offre-edf-tempo-current-date-html-year', 0)->nextSibling()->nextSibling()->nextSibling();
+        $elementsDom = $ulDom->find('li');
         if ($elementsDom && count($elementsDom) === 3) {
             foreach ($elementsDom as $elementDom) {
                 $item = [];
@@ -70,8 +70,8 @@ class EdfPricesBridge extends BridgeAbstract
         }
 
         // powers
-        $ulPowerContract = $ulDom?->nextSibling()?->nextSibling();
-        $elementsPowerContractDom = $ulPowerContract?->find('li');
+        $ulPowerContract = $ulDom->nextSibling()->nextSibling();
+        $elementsPowerContractDom = $ulPowerContract->find('li');
         if ($elementsPowerContractDom && count($elementsPowerContractDom) === 4) {
             foreach ($elementsPowerContractDom as $elementPowerContractDom) {
                 $item = [];
