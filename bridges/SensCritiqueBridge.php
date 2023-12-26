@@ -57,7 +57,7 @@ class SensCritiqueBridge extends BridgeAbstract
                 }
                 $html = getSimpleHTMLDOM($uri);
                 // This selector name looks like it's automatically generated
-                $list = $html->find('div.Universes__WrapperProducts-sc-1qa2w66-0.eVdcAv', 0);
+                $list = $html->find('div[data-testid="row"]', 0);
 
                 $this->extractDataFromList($list);
             }
@@ -69,6 +69,7 @@ class SensCritiqueBridge extends BridgeAbstract
         if ($list === null) {
             returnClientError('Cannot extract data from list');
         }
+
         foreach ($list->find('div[data-testid="product-list-item"]') as $movie) {
             $item = [];
             $item['title'] = $movie->find('h2 a', 0)->plaintext;
