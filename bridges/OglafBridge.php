@@ -24,10 +24,8 @@ class OglafBridge extends FeedExpander
         $this->collectExpandableDatas($url, $limit);
     }
 
-    protected function parseItem($feedItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($feedItem);
-
         $html = getSimpleHTMLDOMCached($item['uri']);
         $comicImage = $html->find('img[id="strip"]', 0);
         $item['content'] = $comicImage;
