@@ -28,8 +28,8 @@ class WorldbankBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $apiUrl = 'https://search.worldbank.org/api/v2/news?format=json'
-            . '&rows=' . min(100, $this->getInput('limit'))
+        $apiUrl = 'https://search.worldbank.org/api/v2/news?format=json&rows='
+            . min(100, $this->getInput('limit'))
             . '&lang_exact=' . $this->getInput('lang');
 
         $jsonData = json_decode(getContents($apiUrl));
