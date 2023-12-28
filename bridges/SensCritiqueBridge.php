@@ -71,10 +71,17 @@ class SensCritiqueBridge extends BridgeAbstract
         }
 
         foreach ($list->find('div[data-testid="product-list-item"]') as $movie) {
+            $synopsis = $movie->find('p[data-testid="synopsis"]', 0);
+
             $item = [];
             $item['title'] = $movie->find('h2 a', 0)->plaintext;
-            // todo: fix image
-            $item['content'] = $movie->innertext;
+            $item['content'] = sprintf(
+                '<img src="%s"/><p>%s</p><p>%s</p>%s',
+                $movie->find('span[data-testid="poster-img-wrapper"]', 0)->{'data-srcname'},
+                $movie->find('p[data-testid="other-infos"]', 0)->innertext,
+                $movie->find('p[data-testid="creators"]', 0)->innertext,
+                $synopsis ? sprintf('<p>%s</p>', $synopsis->innertext) : ''
+            );
             $item['id'] = $this->getURI() . ltrim($movie->find('a', 0)->href, '/');
             $item['uri'] = $this->getURI() . ltrim($movie->find('a', 0)->href, '/');
             $this->items[] = $item;
