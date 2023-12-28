@@ -8,7 +8,8 @@ require_once __DIR__ . '/lib/bootstrap.php';
 
 $errors = Configuration::checkInstallation();
 if ($errors) {
-    die('<pre>' . implode("\n", $errors) . '</pre>');
+    print '<pre>' . implode("\n", $errors) . '</pre>';
+    exit(1);
 }
 
 $customConfig = [];
