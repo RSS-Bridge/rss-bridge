@@ -54,6 +54,7 @@ class FileCache implements CacheInterface
         ];
         $cacheFile = $this->createCacheFile($key);
         $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
+        // todo: Consider tightening the permissions of the created file. It usually allow others to read, depending on umask
         if ($bytes === false) {
             // Consider just logging the error here
             throw new \Exception(sprintf('Failed to write to: %s', $cacheFile));
