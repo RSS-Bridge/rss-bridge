@@ -1,27 +1,9 @@
 <?php
 
-if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
-    exit('RSS-Bridge requires minimum PHP version 7.4.0!');
-}
-
 require_once __DIR__ . '/lib/bootstrap.php';
-
-$errors = Configuration::checkInstallation();
-if ($errors) {
-    print '<pre>' . implode("\n", $errors) . '</pre>';
-    exit(1);
-}
-
-$customConfig = [];
-if (file_exists(__DIR__ . '/config.ini.php')) {
-    $customConfig = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
-}
-Configuration::loadConfiguration($customConfig, getenv());
 
 // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
 date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
-
-$rssBridge = new RssBridge();
 
 set_exception_handler(function (\Throwable $e) {
     http_response_code(500);
@@ -62,5 +44,7 @@ register_shutdown_function(function () {
         }
     }
 });
+
+$rssBridge = new RssBridge();
 
 $rssBridge->main($argv ?? []);

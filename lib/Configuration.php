@@ -59,7 +59,7 @@ final class Configuration
         }
         $config = parse_ini_file(__DIR__ . '/../config.default.ini.php', true, INI_SCANNER_TYPED);
         if (!$config) {
-            throw new \Exception('Error parsing config');
+            throw new \Exception('Error parsing ini config');
         }
         foreach ($config as $header => $section) {
             foreach ($section as $key => $value) {
