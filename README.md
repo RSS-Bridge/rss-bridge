@@ -273,6 +273,10 @@ As root:
 
     sudo bin/cache-clear
 
+### How to remove all expired cache items
+
+    bin/cache-clear
+
 ### How to fix "PHP Fatal error:  Uncaught Exception: The FileCache path is not writable"
 
 ```shell
@@ -289,13 +293,13 @@ chmod 777 -R /var/www/rss-bridge/cache
 rm -rf /var/www/rss-bridge/cache/ && mkdir /var/www/rss-bridge/cache/
 ```
 
-### How to fix "attempt to write a readonly database" (sqlite)
+### How to fix "attempt to write a readonly database"
 
 The sqlite files (db, wal and shm) are not writeable.
 
     chown -v rss-bridge:rss-bridge cache/*
 
-### How to fix "Unable to prepare statement: 1, no such table: storage" (sqlite)
+### How to fix "Unable to prepare statement: 1, no such table: storage"
 
     rm cache/*
 
