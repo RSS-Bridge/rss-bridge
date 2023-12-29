@@ -6,10 +6,9 @@ require_once __DIR__ . '/lib/bootstrap.php';
 date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
 set_exception_handler(function (\Throwable $e) {
-    http_response_code(500);
-    print render(__DIR__ . '/templates/exception.html.php', ['e' => $e]);
     RssBridge::getLogger()->error('Uncaught Exception', ['e' => $e]);
-    exit(1);
+    http_response_code(500);
+    exit(render(__DIR__ . '/templates/exception.html.php', ['e' => $e]));
 });
 
 set_error_handler(function ($code, $message, $file, $line) {

@@ -56,8 +56,7 @@ spl_autoload_register(function ($className) {
 
 $errors = Configuration::checkInstallation();
 if ($errors) {
-    print '<pre>' . implode("\n", $errors) . '</pre>';
-    exit(1);
+    exit('<pre>' . implode("\n", $errors) . '</pre>');
 }
 
 $customConfig = [];
