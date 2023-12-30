@@ -173,7 +173,7 @@ class RedditBridge extends BridgeAbstract
                 $item['author'] = $data->author;
                 $item['uid'] = $data->id;
                 $item['timestamp'] = $data->created_utc;
-                $item['uri'] = $this->encodePermalink($data->permalink);
+                $item['uri'] = $this->urlEncodePathParts($data->permalink);
 
                 $item['categories'] = [];
 
@@ -193,13 +193,11 @@ class RedditBridge extends BridgeAbstract
                 if ($post->kind == 't1') {
                     // Comment
 
-                    $item['content']
-                        = htmlspecialchars_decode($data->body_html);
+                    $item['content'] = htmlspecialchars_decode($data->body_html);
                 } elseif ($data->is_self) {
                     // Text post
 
-                    $item['content']
-                        = htmlspecialchars_decode($data->selftext_html);
+                    $item['content'] = htmlspecialchars_decode($data->selftext_html);
                 } elseif (isset($data->post_hint) && $data->post_hint == 'link') {
                     // Link with preview
 
@@ -215,18 +213,11 @@ class RedditBridge extends BridgeAbstract
                         $embed = '';
                     }
 
-                    $item['content'] = $this->template(
-                        $data->url,
-                        $data->thumbnail,
-                        $data->domain
-                    ) . $embed;
-                } elseif (isset($data->post_hint) ? $data->post_hint == 'image' : false) {
+                    $item['content'] = $this->createFigureLink($data->url, $data->thumbnail, $data->domain) . $embed;
+                } elseif (isset($data->post_hint) && $data->post_hint == 'image') {
                     // Single image
 
-                    $item['content'] = $this->link(
-                        $this->encodePermalink($data->permalink),
-                        '<img src="' . $data->url . '" />'
-                    );
+                    $item['content'] = $this->createLink($this->urlEncodePathParts($data->permalink), '<img src="' . $data->url . '" />');
                 } elseif ($data->is_gallery ?? false) {
                     // Multiple images
 
@@ -246,32 +237,18 @@ class RedditBridge extends BridgeAbstract
                     end($data->preview->images[0]->resolutions);
                     $index = key($data->preview->images[0]->resolutions);
 
-                    $item['content'] = $this->template(
-                        $data->url,
-                        $data->preview->images[0]->resolutions[$index]->url,
-                        'Video'
-                    );
-                } elseif (isset($data->media) ? $data->media->type == 'youtube.com' : false) {
+                    $item['content'] = $this->createFigureLink($data->url, $data->preview->images[0]->resolutions[$index]->url, 'Video');
+                } elseif (isset($data->media) && $data->media->type == 'youtube.com') {
                     // Youtube link
-
-                    $item['content'] = $this->template(
-                        $data->url,
-                        $data->media->oembed->thumbnail_url,
-                        'YouTube'
-                    );
+                    $item['content'] = $this->createFigureLink($data->url, $data->media->oembed->thumbnail_url, 'YouTube');
+                    //$item['content'] = htmlspecialchars_decode($data->media->oembed->html);
                 } elseif (explode('.', $data->domain)[0] == 'self') {
                     // Crossposted text post
                     // TODO (optionally?) Fetch content of the original post.
-
-                    $item['content'] = $this->link(
-                        $this->encodePermalink($data->permalink),
-                        'Crossposted from r/'
-                        . explode('.', $data->domain)[1]
-                    );
+                    $item['content'] = $this->createLink($this->urlEncodePathParts($data->permalink), 'Crossposted from r/' . explode('.', $data->domain)[1]);
                 } else {
                     // Link WITHOUT preview
-
-                    $item['content'] = $this->link($data->url, $data->domain);
+                    $item['content'] = $this->createLink($data->url, $data->domain);
                 }
 
                 $this->items[] = $item;
@@ -279,7 +256,7 @@ class RedditBridge extends BridgeAbstract
         }
         // Sort the order to put the latest posts first, even for mixed subreddits
         usort($this->items, function ($a, $b) {
-            return $a['timestamp'] < $b['timestamp'];
+            return $b['timestamp'] <=> $a['timestamp'];
         });
     }
 
@@ -299,24 +276,19 @@ class RedditBridge extends BridgeAbstract
         }
     }
 
-    private function encodePermalink($link)
+    private function urlEncodePathParts($link)
     {
-        return self::URI . implode(
-            '/',
-            array_map('urlencode', explode('/', $link))
-        );
+        return self::URI . implode('/', array_map('urlencode', explode('/', $link)));
     }
 
-    private function template($href, $src, $caption)
+    private function createFigureLink($href, $src, $caption)
     {
-        return '<a href="' . $href . '"><figure><figcaption>'
-            . $caption . '</figcaption><img src="'
-            . $src . '"/></figure></a>';
+        return sprintf('<a href="%s"><figure><figcaption>%s</figcaption><img src="%s"/></figure></a>', $href, $caption, $src);
     }
 
-    private function link($href, $text)
+    private function createLink($href, $text)
     {
-        return '<a href="' . $href . '">' . $text . '</a>';
+        return sprintf('<a href="%s">%s</a>', $href, $text);
     }
 
     public function detectParameters($url)
