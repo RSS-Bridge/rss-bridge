@@ -256,7 +256,7 @@ class RedditBridge extends BridgeAbstract
         }
         // Sort the order to put the latest posts first, even for mixed subreddits
         usort($this->items, function ($a, $b) {
-            return $a['timestamp'] < $b['timestamp'];
+            return $b['timestamp'] <=> $a['timestamp'];
         });
     }
 
