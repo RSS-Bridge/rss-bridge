@@ -42,6 +42,6 @@ class FeedItemTest extends TestCase
 
         $item->setTimestamp('1st jan last year');
         // This will fail at 2024-01-01 hehe
-        $this->assertSame(1640995200, $item->getTimestamp());
+        $this->assertSame(1672531200, $item->getTimestamp());
     }
 }
