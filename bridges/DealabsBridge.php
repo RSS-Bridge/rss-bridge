@@ -1910,6 +1910,7 @@ class DealabsBridge extends PepperBridgeAbstract
         'context-talk' => 'Surveillance Discussion',
         'uri-group' => 'groupe/',
         'uri-deal' => 'bons-plans/',
+        'uri-merchant' => 'search/bons-plans?merchant-id=',
         'request-error' => 'Impossible de joindre Dealabs',
         'thread-error' => 'Impossible de déterminer l\'ID de la discussion. Vérifiez l\'URL que vous avez entré',
         'no-results' => 'Il n&#039;y a rien à afficher pour le moment :(',

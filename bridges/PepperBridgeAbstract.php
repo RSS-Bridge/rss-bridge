@@ -104,6 +104,9 @@ class PepperBridgeAbstract extends BridgeAbstract
                 $item['title'] = $this->getTitle($deal);
                 $item['author'] = $deal->find('span.thread-username', 0)->plaintext;
 
+                // Get the JSON Data stored as vue
+                $jsonDealData = $this->getDealJsonData($deal);
+
                 $item['content'] = '<table><tr><td><a href="'
                     . $item['uri']
                     . '"><img src="'
@@ -114,10 +117,10 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $this->getDiscount($deal)
                     . $this->getShipsFrom($deal)
                     . $this->getShippingCost($deal)
-                    . $this->getSource($deal)
+                    . $this->getSource($jsonDealData)
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
-                    . $this->getTemperature($deal)
+                    . $this->getTemperature($jsonDealData)
                     . '</td></table>';
 
                 // Check if a clock icon is displayed on the deal
@@ -371,21 +374,31 @@ HEREDOC;
      * Get the temperature from a Deal if it exists
      * @return string String of the deal temperature
      */
-    private function getTemperature($deal)
+    private function getTemperature($data)
+    {
+        return $data['props']['thread']['temperature'] . '°';
+    }
+
+
+    /**
+     * Get the Deal data from the "data-vue2" JSON attribute
+     * @return array Array containg the deal properties contained in the "data-vue2" attribute
+     */
+    private function getDealJsonData($deal)
     {
         $data = Json::decode($deal->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
-        return $data['props']['thread']['temperature'] . '°';
+        return $data;
     }
 
     /**
      * Get the source of a Deal if it exists
      * @return string String of the deal source
      */
-    private function getSource($deal)
+    private function getSource($jsonData)
     {
-        if (($origin = $deal->find('button[class*=text--color-greyShade]', 0)) != null) {
-            $path = str_replace(' ', '/', trim(Json::decode($origin->{'data-cloak-link'})['path']));
-            $text = $origin->find('span[class*=link]', 0);
+        if ($jsonData['props']['thread']['merchant'] != null) {
+            $path = $this->i8n('uri-merchant') . $jsonData['props']['thread']['merchant']['merchantId'];
+            $text = $jsonData['props']['thread']['merchant']['merchantName'];
             return '<div>' . $this->i8n('origin') . ' : <a href="' . static::URI . $path . '">' . $text . '</a></div>';
         } else {
             return '';
