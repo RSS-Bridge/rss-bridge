@@ -3274,6 +3274,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract
         'context-talk' => 'Discussion Monitoring',
         'uri-group' => 'tag/',
         'uri-deal' => 'deals/',
+        'uri-merchant' => 'search/deals?merchant-id=',
         'request-error' => 'Could not request HotUKDeals',
         'thread-error' => 'Unable to determine the thread ID. Check the URL you entered',
         'no-results' => 'Ooops, looks like we could',
