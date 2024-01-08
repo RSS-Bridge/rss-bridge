@@ -43,7 +43,6 @@ class TelegramBridge extends BridgeAbstract
 
     public function collectData()
     {
-
         $postLimit = $this->getInput('posts');
         $iniURI = $this->getURI();
         $earliestPostNum = -1;
@@ -409,7 +408,7 @@ EOD;
         $segments = explode('/', $path);
         $last_segment = end($segments);
         if (!is_numeric($last_segment)) {
-            throw new \Exception("Unable to get post number form post URI");
+            throw new \Exception('Unable to get post number form post URI');
         }
         return (int)$last_segment;
     }
