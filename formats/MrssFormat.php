@@ -159,7 +159,7 @@ class MrssFormat extends FormatAbstract
                     $itunesEnclosure->setAttribute('type', $itemArray['enclosure']['type']);
                 }
             }
-            
+
             if (!empty($itemUri)) {
                 $entryLink = $document->createElement('link');
                 $entry->appendChild($entryLink);
