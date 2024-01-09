@@ -275,7 +275,7 @@ As root:
 
 ### How to remove all expired cache items
 
-    bin/cache-clear
+    bin/cache-prune
 
 ### How to fix "PHP Fatal error:  Uncaught Exception: The FileCache path is not writable"
 
