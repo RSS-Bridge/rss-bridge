@@ -6,7 +6,7 @@
 	},
 	"meta": {
 		"name": "Sample feed with minimum data",
-		"uri": "",
+		"uri": "https://github.com/RSS-Bridge/rss-bridge/",
 		"icon": ""
 	},
 	"items": [

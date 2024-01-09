@@ -100,7 +100,7 @@ class DisplayAction implements ActionInterface
     private function createResponse(array $request, BridgeAbstract $bridge, FormatAbstract $format)
     {
         $items = [];
-        $infos = [];
+        $feed = [];
 
         try {
             $bridge->loadConfiguration();
@@ -116,12 +116,7 @@ class DisplayAction implements ActionInterface
                 }
                 $items = $feedItems;
             }
-            $infos = [
-                'name'          => $bridge->getName(),
-                'uri'           => $bridge->getURI(),
-                'donationUri'   => $bridge->getDonationURI(),
-                'icon'          => $bridge->getIcon()
-            ];
+            $feed = $bridge->getFeed();
         } catch (\Exception $e) {
             if ($e instanceof HttpException) {
                 // Reproduce (and log) these responses regardless of error output and report limit
@@ -155,7 +150,7 @@ class DisplayAction implements ActionInterface
         }
 
         $format->setItems($items);
-        $format->setExtraInfos($infos);
+        $format->setFeed($feed);
         $now = time();
         $format->setLastModified($now);
         $headers = [
