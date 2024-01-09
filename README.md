@@ -251,7 +251,7 @@ Browse http://localhost:3000/
 [![Deploy to Cloudron](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/com.rssbridgeapp.cloudronapp.html)
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=rssbridge)
 
-The Heroku quick deploy currently does not work. It might possibly work if you fork this repo and
+The Heroku quick deploy currently does not work. It might work if you fork this repo and
 modify the `repository` in `scalingo.json`. See https://github.com/RSS-Bridge/rss-bridge/issues/2688
 
 Learn more in
@@ -259,11 +259,29 @@ Learn more in
 
 ## How-to
 
+### How to remove all cache items
+
+As current user:
+
+    bin/cache-clear
+
+As user rss-bridge:
+
+    sudo -u rss-bridge bin/cache-clear
+
+As root:
+
+    sudo bin/cache-clear
+
+### How to remove all expired cache items
+
+    bin/cache-clear
+
 ### How to fix "PHP Fatal error:  Uncaught Exception: The FileCache path is not writable"
 
 ```shell
-# Give rssbridge ownership
-chown rssbridge:rssbridge -R /var/www/rss-bridge/cache
+# Give rss-bridge ownership
+chown rss-bridge:rss-bridge -R /var/www/rss-bridge/cache
 
 # Or, give www-data ownership
 chown www-data:www-data -R /var/www/rss-bridge/cache
@@ -274,6 +292,16 @@ chmod 777 -R /var/www/rss-bridge/cache
 # Or last ditch effort (CAREFUL)
 rm -rf /var/www/rss-bridge/cache/ && mkdir /var/www/rss-bridge/cache/
 ```
+
+### How to fix "attempt to write a readonly database"
+
+The sqlite files (db, wal and shm) are not writeable.
+
+    chown -v rss-bridge:rss-bridge cache/*
+
+### How to fix "Unable to prepare statement: 1, no such table: storage"
+
+    rm cache/*
 
 ### How to create a new bridge from scratch
 
@@ -388,6 +416,8 @@ These commands require that you have installed the dev dependencies in `composer
 
     ./vendor/bin/phpunit
     ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
+
+https://github.com/squizlabs/PHP_CodeSniffer/wiki
 
 ### How to spawn a minimal development environment
 

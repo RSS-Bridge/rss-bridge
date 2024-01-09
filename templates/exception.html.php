@@ -23,6 +23,14 @@
             </p>
         <?php endif; ?>
 
+        <?php if ($e->getCode() === 403): ?>
+            <h2>403 Forbidden</h2>
+            <p>
+                The HTTP 403 Forbidden response status code indicates that the
+                server understands the request but refuses to authorize it.
+            </p>
+        <?php endif; ?>
+
         <?php if ($e->getCode() === 404): ?>
             <h2>404 Page Not Found</h2>
             <p>
