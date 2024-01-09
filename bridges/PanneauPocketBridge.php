@@ -12,6 +12,12 @@ class PanneauPocketBridge extends BridgeAbstract
                 'name' => 'Choisir une ville',
                 'type' => 'list',
                 'values' => self::CITIES,
+            ],
+            'cityName' => [
+                'name' => 'Ville',
+            ],
+            'cityId' => [
+                'name' => 'Identifiant',
             ]
         ]
     ];
@@ -113,8 +119,14 @@ class PanneauPocketBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $matchedCity = array_search($this->getInput('cities'), self::CITIES);
-        $city = strtolower($this->getInput('cities') . '-' . $matchedCity);
+        $cityId = $this->getInput('cityId');
+        if ($cityId != null) {
+            $cityName = $this->getInput('cityName');
+            $city = strtolower($cityId . '-' . $cityName);
+        } else {
+            $matchedCity = array_search($this->getInput('cities'), self::CITIES);
+            $city = strtolower($this->getInput('cities') . '-' . $matchedCity);
+        }
         $url = sprintf('https://app.panneaupocket.com/ville/%s', urlencode($city));
 
         $html = getSimpleHTMLDOM($url);
@@ -134,6 +146,18 @@ class PanneauPocketBridge extends BridgeAbstract
 
             $this->items[] = $item;
         }
+    }
+
+    public function detectParameters($url)
+    {
+        $params = [];
+        $regex = '/\/ville\/(\d+)-([a-z0-9-]+)/';
+        if (preg_match($regex, $url, $matches)) {
+            $params['cityId'] = $matches[1];
+            $params['cityName'] = $matches[2];
+            return $params;
+        }
+        return null;
     }
 
     /**

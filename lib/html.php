@@ -244,20 +244,41 @@ function convertLazyLoading($dom)
         $dom = str_get_html($dom);
     }
 
+    // Retrieve image URL from srcset attribute
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset
+    // Example: convert "header640.png 640w, header960.png 960w, header1024.png 1024w" to "header1024.png"
+    $srcset_to_src = function ($srcset) {
+        $sources = explode(',', $srcset);
+        $last_entry = trim($sources[array_key_last($sources)]);
+        $url = explode(' ', $last_entry)[0];
+        return $url;
+    };
+
     // Process standalone images, embeds and picture sources
     foreach ($dom->find('img, iframe, source') as $img) {
         if (!empty($img->getAttribute('data-src'))) {
             $img->src = $img->getAttribute('data-src');
         } elseif (!empty($img->getAttribute('data-srcset'))) {
-            $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
+            $img->src = $srcset_to_src($img->getAttribute('data-srcset'));
         } elseif (!empty($img->getAttribute('data-lazy-src'))) {
             $img->src = $img->getAttribute('data-lazy-src');
+        } elseif (!empty($img->getAttribute('data-orig-file'))) {
+            $img->src = $img->getAttribute('data-orig-file');
         } elseif (!empty($img->getAttribute('srcset'))) {
-            $img->src = explode(' ', $img->getAttribute('srcset'))[0];
+            $img->src = $srcset_to_src($img->getAttribute('srcset'));
         } else {
             continue; // Proceed to next element without removing attributes
         }
-        foreach (['loading', 'decoding', 'srcset', 'data-src', 'data-srcset'] as $attr) {
+
+        // Remove data attributes, no longer necessary
+        foreach ($img->getAllAttributes() as $attr => $val) {
+            if (str_starts_with($attr, 'data-')) {
+                $img->removeAttribute($attr);
+            }
+        }
+
+        // Remove other attributes that may be processed by the client
+        foreach (['loading', 'decoding', 'srcset'] as $attr) {
             if ($img->hasAttribute($attr)) {
                 $img->removeAttribute($attr);
             }
@@ -274,7 +295,7 @@ function convertLazyLoading($dom)
                 $img->tag = 'img';
             }
             // Adding/removing node would change its position inside the parent element,
-            // So instead we rewrite the node in-place though the outertext attribute
+            // So instead we rewrite the node in-place through the outertext attribute
             $picture->outertext = $img->outertext;
         }
     }

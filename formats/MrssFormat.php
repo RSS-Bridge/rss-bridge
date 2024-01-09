@@ -150,12 +150,17 @@ class MrssFormat extends FormatAbstract
                     $entry->appendChild($itunesProperty);
                     $itunesProperty->appendChild($document->createTextNode($itunesValue));
                 }
-                $itunesEnclosure = $document->createElement('enclosure');
-                $entry->appendChild($itunesEnclosure);
-                $itunesEnclosure->setAttribute('url', $itemArray['enclosure']['url']);
-                $itunesEnclosure->setAttribute('length', $itemArray['enclosure']['length']);
-                $itunesEnclosure->setAttribute('type', $itemArray['enclosure']['type']);
-            } elseif (!empty($itemUri)) {
+
+                if (isset($itemArray['enclosure'])) {
+                    $itunesEnclosure = $document->createElement('enclosure');
+                    $entry->appendChild($itunesEnclosure);
+                    $itunesEnclosure->setAttribute('url', $itemArray['enclosure']['url']);
+                    $itunesEnclosure->setAttribute('length', $itemArray['enclosure']['length']);
+                    $itunesEnclosure->setAttribute('type', $itemArray['enclosure']['type']);
+                }
+            }
+            
+            if (!empty($itemUri)) {
                 $entryLink = $document->createElement('link');
                 $entry->appendChild($entryLink);
                 $entryLink->appendChild($document->createTextNode($itemUri));

@@ -31,6 +31,7 @@ final class FrontpageAction implements ActionInterface
             }
         }
 
+        // todo: cache this renderered template
         return render(__DIR__ . '/../templates/frontpage.html.php', [
             'messages' => $messages,
             'admin_email' => Configuration::getConfig('admin', 'email'),

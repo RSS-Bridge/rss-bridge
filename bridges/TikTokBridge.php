@@ -8,12 +8,12 @@ class TikTokBridge extends BridgeAbstract
     const MAINTAINER = 'VerifiedJoseph';
     const PARAMETERS = [
         'By user' => [
-        'username' => [
-            'name' => 'Username',
-            'type' => 'text',
-            'required' => true,
-            'exampleValue' => '@tiktok',
-        ]
+            'username' => [
+                'name' => 'Username',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => '@tiktok',
+            ]
         ]];
 
     const TEST_DETECT_PARAMETERS = [
@@ -24,53 +24,33 @@ class TikTokBridge extends BridgeAbstract
 
     const CACHE_TIMEOUT = 900; // 15 minutes
 
-    private $feedName = '';
-
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = getSimpleHTMLDOMCached('https://www.tiktok.com/embed/' . $this->processUsername());
 
-        $title = $html->find('h1', 0)->plaintext ?? self::NAME;
-        $this->feedName = htmlspecialchars_decode($title);
+        $author = $html->find('span[data-e2e=creator-profile-userInfo-TUXText]', 0)->plaintext ?? self::NAME;
 
-        $var = $html->find('script[id=SIGI_STATE]', 0);
-        if (!$var) {
-            throw new \Exception('Unable to find tiktok user data for ' . $this->processUsername());
-        }
-        $SIGI_STATE_RAW = $var->innertext;
-        $SIGI_STATE = Json::decode($SIGI_STATE_RAW, false);
+        $videos = $html->find('div[data-e2e=common-videoList-VideoContainer]');
 
-        if (!isset($SIGI_STATE->ItemModule)) {
-            return;
-        }
-
-        foreach ($SIGI_STATE->ItemModule as $key => $value) {
+        foreach ($videos as $video) {
             $item = [];
 
-            $link = 'https://www.tiktok.com/@' . $value->author . '/video/' . $value->id;
-            $image = $value->video->dynamicCover;
-            if (empty($image)) {
-                $image = $value->video->cover;
-            }
-            $views = $value->stats->playCount;
-            $hastags = [];
-            foreach ($value->textExtra as $tag) {
-                $hastags[] = $tag->hashtagName;
-            }
-            $hastags_str = '';
-            foreach ($hastags as $tag) {
-                $hastags_str .= '<a href="https://www.tiktok.com/tag/' . $tag . '">#' . $tag . '</a> ';
-            }
+            // Handle link "untracking"
+            $linkParts = parse_url($video->find('a', 0)->href);
+            $link = $linkParts['scheme'] . '://' . $linkParts['host'] . '/' . $linkParts['path'];
+
+            $image = $video->find('video', 0)->poster;
+            $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
+
+            $enclosures = [$image];
 
             $item['uri'] = $link;
-            $item['title'] = $value->desc;
-            $item['timestamp'] = $value->createTime;
-            $item['author'] = '@' . $value->author;
-            $item['enclosures'][] = $image;
-            $item['categories'] = $hastags;
+            $item['title'] = 'Video';
+            $item['author'] = '@' . $author;
+            $item['enclosures'] = $enclosures;
             $item['content'] = <<<EOD
 <a href="{$link}"><img src="{$image}"/></a>
-<p>{$views} views<p><br/>Hashtags: {$hastags_str}
+<p>{$views} views<p><br/>
 EOD;
 
             $this->items[] = $item;
@@ -91,7 +71,7 @@ EOD;
     {
         switch ($this->queriedContext) {
             case 'By user':
-                return $this->feedName . ' (' . $this->processUsername() . ') - TikTok';
+                return  $this->processUsername() . ' - TikTok';
             default:
                 return parent::getName();
         }

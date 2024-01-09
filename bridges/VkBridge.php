@@ -29,11 +29,12 @@ class VkBridge extends BridgeAbstract
         'https://vk.com/groupname/anythingelse' => ['u' => 'groupname'],
         'https://vk.com/groupname?w=somethingelse' => ['u' => 'groupname'],
         'https://vk.com/with_underscore' => ['u' => 'with_underscore'],
+        'https://vk.com/vk.cats' => ['u' => 'vk.cats'],
     ];
 
     protected $pageName;
     protected $tz = 0;
-    private $urlRegex = '/vk\.com\/([\w]+)/';
+    private $urlRegex = '/vk\.com\/([\w.]+)/';
 
     public function getURI()
     {
@@ -314,6 +315,13 @@ class VkBridge extends BridgeAbstract
                 $copy_quote->outertext = "<br>Reposted ($copy_quote_author): <br>$copy_quote_content";
             }
 
+            foreach ($post->find('.PrimaryAttachment .PhotoPrimaryAttachment') as $pa) {
+                $img = $pa->find('.PhotoPrimaryAttachment__imageElement', 0);
+                if (is_object($img)) {
+                    $pa->outertext = $img->outertext;
+                }
+            }
+
             foreach ($post->find('.SecondaryAttachment') as $sa) {
                 $sa_href = $sa->getAttribute('href');
                 if (!$sa_href) {
@@ -515,7 +523,7 @@ class VkBridge extends BridgeAbstract
             }
 
             if (!preg_match('#^https?://vk.com/#', $uri)) {
-                returnServerError('Unexpected redirect location');
+                returnServerError('Unexpected redirect location: ' . $uri);
             }
 
             $redirects++;

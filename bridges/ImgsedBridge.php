@@ -206,14 +206,12 @@ HTML,
     {
         // Parse date, and transform the date into a timetamp, even in a case of a relative date
         $date = date_create();
-        $dateString = str_replace(' ago', '', $content);
-        // Special case : 'a day' is not a valid interval in PHP, so replace it with it's PHP equivalenbt : '1 day'
-        if ($dateString == 'a day') {
-            $dateString = '1 day';
-        }
-        if ($dateString === 'an hour') {
-            $dateString = '1 hour';
-        }
+
+        // Content trimmed to be sure that the "article" is at the beginning of the string and remove "ago" to make it a valid PHP date interval
+        $dateString = trim(str_replace(' ago', '', $content));
+
+        // Replace the article "an" or "a" by the number "1" to be a valid PHP date interval
+        $dateString = preg_replace('/^((an|a) )/m', '1 ', $dateString);
 
         $relativeDate = date_interval_create_from_date_string($dateString);
         if ($relativeDate) {

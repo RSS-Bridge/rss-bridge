@@ -23,12 +23,14 @@ class GatesNotesBridge extends BridgeAbstract
         $cleanedContent = str_replace([
             '<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/">',
             '</string>',
-            '\r\n',
         ], '', $rawContent);
-        $cleanedContent = str_replace('\"', '"', $cleanedContent);
-        $cleanedContent = trim($cleanedContent, '"');
+        // $cleanedContent = str_replace('\"', '"', $cleanedContent);
+        // $cleanedContent = trim($cleanedContent, '"');
 
         $json = Json::decode($cleanedContent, false);
+        if (is_string($json)) {
+            throw new \Exception('wtf? ' . $json);
+        }
 
         foreach ($json as $article) {
             $item = [];

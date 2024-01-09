@@ -336,9 +336,11 @@ class CssSelectorBridge extends BridgeAbstract
             ],
             'timestamp' => [
                 'article:published_time',
+                'og:article:published_time',
                 'releaseDate',
                 'releasedate',
                 'article:modified_time',
+                'og:article:modified_time',
                 'lastModified',
                 'lastmodified'
             ],
@@ -351,8 +353,9 @@ class CssSelectorBridge extends BridgeAbstract
                 'thumbnailimg'
             ],
             'author' => [
-                'author',
                 'article:author',
+                'og:article:author',
+                'author',
                 'article:author:username',
                 'profile:first_name',
                 'profile:last_name',

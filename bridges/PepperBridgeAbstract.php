@@ -94,7 +94,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         );
 
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('h3[class=size--all-l]', 0);
+        $noresult = $html->find('h3[class*=text--b]', 0);
         if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
             $this->items = [];
         } else {
@@ -103,6 +103,9 @@ class PepperBridgeAbstract extends BridgeAbstract
                 $item['uri'] = $this->getDealURI($deal);
                 $item['title'] = $this->getTitle($deal);
                 $item['author'] = $deal->find('span.thread-username', 0)->plaintext;
+
+                // Get the JSON Data stored as vue
+                $jsonDealData = $this->getDealJsonData($deal);
 
                 $item['content'] = '<table><tr><td><a href="'
                     . $item['uri']
@@ -114,11 +117,10 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $this->getDiscount($deal)
                     . $this->getShipsFrom($deal)
                     . $this->getShippingCost($deal)
-                    . $this->getSource($deal)
+                    . $this->getSource($jsonDealData)
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
-                    . $deal->find('div[class*=' . $selectorHot . ']', 0)
-                        ->find('span', 0)->outertext
+                    . $this->getTemperature($jsonDealData)
                     . '</td></table>';
 
                 // Check if a clock icon is displayed on the deal
@@ -356,11 +358,11 @@ HEREDOC;
         if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0) != null) {
             if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1) != null) {
                 return '<div>' . $this->i8n('shipping') . ' : '
-                    . $deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1)->innertext
+                    . strip_tags($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1)->innertext)
                     . '</div>';
             } else {
                 return '<div>' . $this->i8n('shipping') . ' : '
-                    . $deal->find('span[class*=text--color-greyShade flex--inline]', 0)->innertext
+                    . strip_tags($deal->find('span[class*=text--color-greyShade flex--inline]', 0)->innertext)
                     . '</div>';
             }
         } else {
@@ -369,14 +371,34 @@ HEREDOC;
     }
 
     /**
+     * Get the temperature from a Deal if it exists
+     * @return string String of the deal temperature
+     */
+    private function getTemperature($data)
+    {
+        return $data['props']['thread']['temperature'] . '°';
+    }
+
+
+    /**
+     * Get the Deal data from the "data-vue2" JSON attribute
+     * @return array Array containg the deal properties contained in the "data-vue2" attribute
+     */
+    private function getDealJsonData($deal)
+    {
+        $data = Json::decode($deal->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
+        return $data;
+    }
+
+    /**
      * Get the source of a Deal if it exists
      * @return string String of the deal source
      */
-    private function getSource($deal)
+    private function getSource($jsonData)
     {
-        if (($origin = $deal->find('button[class*=text--color-greyShade]', 0)) != null) {
-            $path = str_replace(' ', '/', trim(Json::decode($origin->{'data-cloak-link'})['path']));
-            $text = $origin->find('span[class*=cept-merchant-name]', 0);
+        if ($jsonData['props']['thread']['merchant'] != null) {
+            $path = $this->i8n('uri-merchant') . $jsonData['props']['thread']['merchant']['merchantId'];
+            $text = $jsonData['props']['thread']['merchant']['merchantName'];
             return '<div>' . $this->i8n('origin') . ' : <a href="' . static::URI . $path . '">' . $text . '</a></div>';
         } else {
             return '';
@@ -542,6 +564,10 @@ HEREDOC;
     {
         $date = new DateTime();
 
+        // The minimal amount of time substracted is a minute : the seconds in the resulting date would be related to the execution time of the script.
+        // This make no sense, so we set the seconds manually to "00".
+        $date->setTime($date->format('H'), $date->format('i'), 0);
+
         // In case of update date, replace it by the regular relative date first word
         $str = str_replace($this->i8n('relative-date-alt-prefixes'), $this->i8n('local-time-relative')[0], $str);
 
@@ -559,6 +585,8 @@ HEREDOC;
             ''
         ];
         $date->modify(str_replace($search, $replace, $str));
+
+
         return $date->getTimestamp();
     }
 

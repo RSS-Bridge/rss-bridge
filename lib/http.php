@@ -2,6 +2,29 @@
 
 class HttpException extends \Exception
 {
+    public ?Response $response;
+
+    public function __construct(string $message = '', int $statusCode = 0, ?Response $response = null)
+    {
+        parent::__construct($message, $statusCode);
+        $this->response = $response ?? new Response('', 0);
+    }
+
+    public static function fromResponse(Response $response, string $url): HttpException
+    {
+        $message = sprintf(
+            '%s resulted in %s %s %s',
+            $url,
+            $response->getCode(),
+            $response->getStatusLine(),
+            // If debug, include a part of the response body in the exception message
+            Debug::isEnabled() ? mb_substr($response->getBody(), 0, 500) : '',
+        );
+        if (CloudFlareException::isCloudFlareResponse($response)) {
+            return new CloudFlareException($message, $response->getCode(), $response);
+        }
+        return new HttpException(trim($message), $response->getCode(), $response);
+    }
 }
 
 final class CloudFlareException extends HttpException

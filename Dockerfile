@@ -38,7 +38,7 @@ ENV CURL_IMPERSONATE ff91esr
 
 COPY ./config/nginx.conf /etc/nginx/sites-available/default
 COPY ./config/php-fpm.conf /etc/php/8.2/fpm/pool.d/rss-bridge.conf
-COPY ./config/php.ini /etc/php/8.2/fpm/conf.d/90-rss-bridge.conf
+COPY ./config/php.ini /etc/php/8.2/fpm/conf.d/90-rss-bridge.ini
 
 COPY --chown=www-data:www-data ./ /app/
 
