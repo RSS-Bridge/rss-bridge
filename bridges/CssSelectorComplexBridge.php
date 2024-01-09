@@ -245,7 +245,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
     protected function getTitle($page, $title_cleanup)
     {
         if (is_string($page)) {
-            $page = getSimpleHTMLDOMCached($page, $this->getHeaders());
+            $page = getSimpleHTMLDOMCached($page);
         }
         $title = html_entity_decode($page->find('title', 0)->plaintext);
         if (!empty($title)) {
@@ -302,7 +302,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
     protected function htmlFindEntryElements($page, $entry_selector, $url_selector, $url_pattern = '', $limit = 0)
     {
         if (is_string($page)) {
-            $page = getSimpleHTMLDOM($page, $this->getHeaders());
+            $page = getSimpleHTMLDOM($page);
         }
 
         $entryElements = $page->find($entry_selector);
@@ -355,7 +355,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
      */
     protected function fetchArticleElementFromPage($entry_url, $content_selector)
     {
-        $entry_html = getSimpleHTMLDOMCached($entry_url, $this->getHeaders());
+        $entry_html = getSimpleHTMLDOMCached($entry_url);
         $article_content = $entry_html->find($content_selector, 0);
 
         if (is_null($article_content)) {
