@@ -170,7 +170,6 @@ class AnnasArchiveBridge extends BridgeAbstract
             'content' => $this->getInput('content'),
         ]);
         $url = parent::getURI() . 'search?sort=newest&' . http_build_query($params);
-        print($url);
         return $url;
     }
 }
