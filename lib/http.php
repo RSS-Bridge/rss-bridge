@@ -63,7 +63,7 @@ final class CurlHttpClient implements HttpClient
             'proxy' => null,
             'curl_options' => [],
             'if_not_modified_since' => null,
-            'retries' => 3,
+            'retries' => 2,
             'max_filesize' => null,
             'max_redirections' => 5,
         ];
@@ -136,26 +136,28 @@ final class CurlHttpClient implements HttpClient
             return $len;
         });
 
-        $attempts = 0;
+        // This retry logic is a bit hard to understand, but it works
+        $tries = 0;
         while (true) {
-            $attempts++;
+            $tries++;
             $body = curl_exec($ch);
             if ($body !== false) {
                 // The network call was successful, so break out of the loop
                 break;
             }
-            if ($attempts > $config['retries']) {
-                // Finally give up
-                $curl_error = curl_error($ch);
-                $curl_errno = curl_errno($ch);
-                throw new HttpException(sprintf(
-                    'cURL error %s: %s (%s) for %s',
-                    $curl_error,
-                    $curl_errno,
-                    'https://curl.haxx.se/libcurl/c/libcurl-errors.html',
-                    $url
-                ));
+            if ($tries <= $config['retries']) {
+                continue;
             }
+            // Max retries reached, give up
+            $curl_error = curl_error($ch);
+            $curl_errno = curl_errno($ch);
+            throw new HttpException(sprintf(
+                'cURL error %s: %s (%s) for %s',
+                $curl_error,
+                $curl_errno,
+                'https://curl.haxx.se/libcurl/c/libcurl-errors.html',
+                $url
+            ));
         }
 
         $statusCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);

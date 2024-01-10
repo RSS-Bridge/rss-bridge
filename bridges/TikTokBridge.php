@@ -35,21 +35,23 @@ class TikTokBridge extends BridgeAbstract
         foreach ($videos as $video) {
             $item = [];
 
-            // Handle link "untracking"
-            $linkParts = parse_url($video->find('a', 0)->href);
-            $link = $linkParts['scheme'] . '://' . $linkParts['host'] . '/' . $linkParts['path'];
+            // Omit query string (remove tracking parameters)
+            $a = $video->find('a', 0);
+            $href = $a->href;
+            $parsedUrl = parse_url($href);
+            $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
             $image = $video->find('video', 0)->poster;
             $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
 
             $enclosures = [$image];
 
-            $item['uri'] = $link;
+            $item['uri'] = $url;
             $item['title'] = 'Video';
             $item['author'] = '@' . $author;
             $item['enclosures'] = $enclosures;
             $item['content'] = <<<EOD
-<a href="{$link}"><img src="{$image}"/></a>
+<a href="{$url}"><img src="{$image}"/></a>
 <p>{$views} views<p><br/>
 EOD;
 
