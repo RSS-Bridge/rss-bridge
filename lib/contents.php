@@ -38,6 +38,7 @@ function getContents(
     $config = [
         'useragent' => Configuration::getConfig('http', 'useragent'),
         'timeout' => Configuration::getConfig('http', 'timeout'),
+        'retries' => Configuration::getConfig('http', 'retries'),
         'headers' => array_merge($defaultHttpHeaders, $httpHeadersNormalized),
         'curl_options' => $curlOptions,
     ];
@@ -71,7 +72,7 @@ function getContents(
                 // Ignore invalid 'Last-Modified' HTTP header value
             }
         }
-        // todo: to be nice nice citizen we should also check for Etag
+        // todo: We should also check for Etag
     }
 
     $response = $httpClient->request($url, $config);
