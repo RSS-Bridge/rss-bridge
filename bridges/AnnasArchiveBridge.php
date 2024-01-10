@@ -10,6 +10,7 @@ class AnnasArchiveBridge extends BridgeAbstract
         [
             'q' => [
                 'name' => 'Query',
+                'exampleValue' => 'apothecary diaries',
                 'required' => true,
             ],
             'ext' => [
