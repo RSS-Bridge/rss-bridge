@@ -12,16 +12,16 @@ class ScribbleHubBridge extends FeedExpander
             'uid' => [
                 'name' => 'uid',
                 'required' => true,
-                // Example: Alyson Greaves's stories
-                'exampleValue' => '76208',
+                // Example: miriamrobern's stories
+                'exampleValue' => '149271',
             ],
         ],
         'Series' => [
             'sid' => [
                 'name' => 'sid',
                 'required' => true,
-                // Example: latest chapters from The Sisters of Dorley by Alyson Greaves
-                'exampleValue' => '421879',
+                // Example: latest chapters from Uskweirs
+                'exampleValue' => '965299',
             ],
         ]
     ];
@@ -50,6 +50,10 @@ class ScribbleHubBridge extends FeedExpander
             && preg_match('/read\/' . $this->getInput('sid') . '-/', $item['uri']) !== 1
         ) {
             return [];
+        }
+
+        if ($this->queriedContext === 'Author') {
+            $this->author = $item['author'];
         }
 
         $item['comments'] = $item['uri'] . '#comments';
@@ -90,16 +94,7 @@ class ScribbleHubBridge extends FeedExpander
         $name = parent::getName() . " $this->queriedContext";
         switch ($this->queriedContext) {
             case 'Author':
-                try {
-                    $page = getSimpleHTMLDOMCached(self::URI . 'profile/' . $this->getInput('uid'));
-                } catch (HttpException $e) {
-                    // 403 Forbidden, This means we got anti-bot response
-                    if ($e->getCode() === 403) {
-                        return $name;
-                    }
-                    throw $e;
-                }
-                $title = html_entity_decode($page->find('.p_m_username.fp_authorname', 0)->plaintext);
+                $title = $this->author;
                 break;
             case 'Series':
                 try {
