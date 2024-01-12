@@ -41,7 +41,7 @@ abstract class FeedExpander extends BridgeAbstract
     }
 
     /**
-     * This method is overidden by bridges
+     * This method is overridden by bridges
      *
      * @return array
      */

@@ -518,7 +518,10 @@ abstract class XPathAbstract extends BridgeAbstract
         if (strlen($value) === 0) {
             return '';
         }
-        if (strpos($value, 'http://') === 0 || strpos($value, 'https://') === 0) {
+        if (
+            strpos($value, 'http://') === 0
+            || strpos($value, 'https://') === 0
+        ) {
             return $value;
         }
 

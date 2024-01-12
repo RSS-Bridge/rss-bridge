@@ -7,9 +7,9 @@ declare(strict_types=1);
  *
  * Scrapes out rss 0.91, 1.0, 2.0 and atom 1.0.
  *
- * Produce arrays meant to be used inside rss-bridge.
+ * Produces array meant to be used inside rss-bridge.
  *
- * The item structure is tweaked so that works with FeedItem
+ * The item structure is tweaked so that it works with FeedItem
  */
 final class FeedParser
 {

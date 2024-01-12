@@ -16,7 +16,7 @@ final class BridgeCard
 
         $bridge = $bridgeFactory->create($bridgeClassName);
 
-        $isHttps = strpos($bridge->getURI(), 'https') === 0;
+        $isHttps = str_starts_with($bridge->getURI(), 'https');
 
         $uri = $bridge->getURI();
         $name = $bridge->getName();
@@ -113,8 +113,7 @@ EOD;
         }
 
         if (!$isHttps) {
-            $form .= '<div class="secure-warning">Warning :
-This bridge is not fetching its content through a secure connection</div>';
+            $form .= '<div class="secure-warning">Warning: This bridge is not fetching its content through a secure connection</div>';
         }
 
         return $form;
