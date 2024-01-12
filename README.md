@@ -163,7 +163,7 @@ PHP ini config:
 ```ini
 ; /etc/php/8.2/fpm/conf.d/30-rss-bridge.ini
 
-max_execution_time = 20
+max_execution_time = 15
 memory_limit = 64M
 ```
 

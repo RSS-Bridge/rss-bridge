@@ -258,6 +258,10 @@ final class Response
     }
 
     /**
+     * HTTP response may have multiple headers with the same name.
+     *
+     * This method by default, returns only the last header.
+     *
      * @return string[]|string|null
      */
     public function getHeader(string $name, bool $all = false)

@@ -48,7 +48,7 @@ enable_maintenance_mode = false
 
 [http]
 ; Operation timeout in seconds
-timeout = 30
+timeout = 15
 
 ; Operation retry count in case of curl error
 retries = 2

@@ -24,6 +24,32 @@ function getContents(
         $headerValue = trim(implode(':', array_slice($parts, 1)));
         $httpHeadersNormalized[$headerName] = $headerValue;
     }
+
+    $requestBodyHash = null;
+    if (isset($curlOptions[CURLOPT_POSTFIELDS])) {
+        $requestBodyHash = md5(Json::encode($curlOptions[CURLOPT_POSTFIELDS], false));
+    }
+    $cacheKey = implode('_', ['server',  $url, $requestBodyHash]);
+
+    /** @var Response $cachedResponse */
+    $cachedResponse = $cache->get($cacheKey);
+    if ($cachedResponse) {
+        $lastModified = $cachedResponse->getHeader('last-modified');
+        if ($lastModified) {
+            try {
+                // Some servers send Unix timestamp instead of RFC7231 date. Prepend it with @ to allow parsing as DateTime
+                $lastModified = new \DateTimeImmutable((is_numeric($lastModified) ? '@' : '') . $lastModified);
+                $config['if_not_modified_since'] = $lastModified->getTimestamp();
+            } catch (Exception $e) {
+                // Failed to parse last-modified
+            }
+        }
+        $etag = $cachedResponse->getHeader('etag');
+        if ($etag) {
+            $httpHeadersNormalized['if-none-match'] = $etag;
+        }
+    }
+
     // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
     $defaultHttpHeaders = [
         'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -35,6 +61,7 @@ function getContents(
         'Sec-Fetch-User' => '?1',
         'TE' => 'trailers',
     ];
+
     $config = [
         'useragent' => Configuration::getConfig('http', 'useragent'),
         'timeout' => Configuration::getConfig('http', 'timeout'),
@@ -51,28 +78,6 @@ function getContents(
 
     if (Configuration::getConfig('proxy', 'url') && !defined('NOPROXY')) {
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
-    }
-
-    $requestBodyHash = null;
-    if (isset($curlOptions[CURLOPT_POSTFIELDS])) {
-        $requestBodyHash = md5(Json::encode($curlOptions[CURLOPT_POSTFIELDS], false));
-    }
-    $cacheKey = implode('_', ['server',  $url, $requestBodyHash]);
-
-    /** @var Response $cachedResponse */
-    $cachedResponse = $cache->get($cacheKey);
-    if ($cachedResponse) {
-        $cachedLastModified = $cachedResponse->getHeader('last-modified');
-        if ($cachedLastModified) {
-            try {
-                // Some servers send Unix timestamp instead of RFC7231 date. Prepend it with @ to allow parsing as DateTime
-                $cachedLastModified = new \DateTimeImmutable((is_numeric($cachedLastModified) ? '@' : '') . $cachedLastModified);
-                $config['if_not_modified_since'] = $cachedLastModified->getTimestamp();
-            } catch (Exception $dateTimeParseFailue) {
-                // Ignore invalid 'Last-Modified' HTTP header value
-            }
-        }
-        // todo: We should also check for Etag
     }
 
     $response = $httpClient->request($url, $config);
