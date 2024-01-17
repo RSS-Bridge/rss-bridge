@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Remove all items from the cache
+ */
+
+require __DIR__ . '/../lib/bootstrap.php';
+
+$rssBridge = new RssBridge();
+
+$cache = RssBridge::getCache();
+
+$cache->clear();
