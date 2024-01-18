@@ -42,8 +42,13 @@ class IdealoBridge extends BridgeAbstract
 
     public function collectData()
     {
+        // Needs header with user-agent to function properly.
+        $header = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0'
+        ];
+
         $link = $this->getInput('Link');
-        $html = getSimpleHTMLDOM($link);
+        $html = getSimpleHTMLDOM($link,$header);
 
         // Get Productname
         $titleobj = $html->find('.oopStage-title', 0);
