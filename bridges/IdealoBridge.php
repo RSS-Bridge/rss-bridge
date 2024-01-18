@@ -48,7 +48,7 @@ class IdealoBridge extends BridgeAbstract
         ];
 
         $link = $this->getInput('Link');
-        $html = getSimpleHTMLDOM($link,$header);
+        $html = getSimpleHTMLDOM($link, $header);
 
         // Get Productname
         $titleobj = $html->find('.oopStage-title', 0);
