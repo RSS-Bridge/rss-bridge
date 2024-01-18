@@ -85,7 +85,7 @@ class IdealoBridge extends BridgeAbstract
             // Generate Content
             if ($PriceNew > 1) {
                 $content = "<p><b>Price New:</b><br>$PriceNew</p>";
-                $content .= "<p><b>Price Newbefore:</b><br>$OldPriceNew</p>";
+                $content .= "<p><b>Price New before:</b><br>$OldPriceNew</p>";
             }
 
             if ($this->getInput('MaxPriceNew') != '') {
