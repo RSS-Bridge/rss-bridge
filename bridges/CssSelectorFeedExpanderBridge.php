@@ -37,6 +37,11 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
                 'title' => 'Some sites set their logo as thumbnail for every article. Use this option to discard it.',
                 'type' => 'checkbox',
             ],
+            'thumbnail_as_header' => [
+                'name' => '[Optional] Insert thumbnail as article header',
+                'title' => 'Insert article main image on top of article contents.',
+                'type' => 'checkbox',
+            ],
             'limit' => self::LIMIT
         ]
     ];
@@ -48,6 +53,7 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
         $content_cleanup = $this->getInput('content_cleanup');
         $dont_expand_metadata = $this->getInput('dont_expand_metadata');
         $discard_thumbnail = $this->getInput('discard_thumbnail');
+        $thumbnail_as_header = $this->getInput('thumbnail_as_header');
         $limit = $this->getInput('limit');
 
         $feedParser = new FeedParser();
@@ -98,6 +104,13 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
 
             if ($discard_thumbnail && isset($item_expanded['enclosures'])) {
                 unset($item_expanded['enclosures']);
+            }
+
+            if ($thumbnail_as_header && isset($item_expanded['enclosures'][0])) {
+                $item_expanded['content'] = '<p><img src="'
+                    . $item_expanded['enclosures'][0]
+                    . '" /></p>'
+                    . $item_expanded['content'];
             }
 
             $this->items[] = $item_expanded;
