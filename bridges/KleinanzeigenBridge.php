@@ -36,15 +36,13 @@ class KleinanzeigenBridge extends BridgeAbstract
                 'name' => 'minimum price',
                 'required' => false,
                 'type' => 'number',
-                'title' => 'in euros',
-                'defaultValue' => '',
+                'title' => 'in euros'
             ],
             'maxprice' => [
                 'name' => 'maximum price',
                 'required' => false,
                 'type' => 'number',
-                'title' => 'in euros',
-                'defaultValue' => '',
+                'title' => 'in euros'
             ],
             'pages' => [
                 'name' => 'pages',
