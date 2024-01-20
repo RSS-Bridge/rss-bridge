@@ -1,11 +1,10 @@
 <?php
 
-class NextInpactBridge extends FeedExpander
+class NextInkBridge extends FeedExpander
 {
-    const MAINTAINER = 'qwertygc and ORelio';
-    const NAME = 'NextInpact Bridge';
-    const URI = 'https://www.nextinpact.com/';
-    const URI_HARDWARE = 'https://www.inpact-hardware.com/';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'Next.Ink Bridge';
+    const URI = 'https://www.next.ink/';
     const DESCRIPTION = 'Returns the newest articles.';
 
     const PARAMETERS = [ [
@@ -13,31 +12,31 @@ class NextInpactBridge extends FeedExpander
             'name' => 'Feed',
             'type' => 'list',
             'values' => [
-                'Nos actualités' => [
+                'Publications' => [
                     'Toutes nos publications' => 'news',
-                    'Toutes nos publications sauf #LeBrief' => 'nobrief',
-                    'Toutes nos publications sauf INpact Hardware' => 'noih',
-                    'Seulement les publications INpact Hardware' => 'hardware:news',
-                    'Seulement les publications Next INpact' => 'nobrief-noih',
-                    'Seulement les publications #LeBrief' => 'lebrief',
+                    'Droit' => 'news:3',
+                    'Économie' => 'news:4',
+                    'Flock' => 'news:13',
+                    'Hardware' => 'news:9',
+                    'IA et algorithmes' => 'news:6',
+                    'Internet' => 'news:7',
+                    'Logiciel' => 'news:8',
+                    'Next' => 'news:14',
+                    'Réseaux sociaux' => 'news:5',
+                    'Sciences et escpace' => 'news:10',
+                    'Sécurité' => 'news:12',
+                    'Société numérique' => 'news:11',
                 ],
-                'Flux spécifiques' => [
-                    'Le blog' => 'blog',
-                    'Les bons plans' => 'bonsplans',
-                    'Publications INpact Hardware en accès libre' => 'hardware:acces-libre',
-                    'Publications Next INpact en accès libre' => 'acces-libre',
+                'Flux Gratuit' => [
+                    'Publications en accès libre' => 'free',
                 ],
-                'Flux thématiques' => [
-                    'Tech' => 'category:1',
-                    'Logiciel' => 'category:2',
-                    'Internet' => 'category:3',
-                    'Mobilité' => 'category:4',
-                    'Droit' => 'category:5',
-                    'Économie' => 'category:6',
-                    'Culture numérique' => 'category:7',
-                    'Next INpact' => 'category:8',
-                ]
-            ]
+            ],
+            'title' => <<<EOT
+                To obtain individual #LeBrief articles in your feed reader, generate two feeds:
+                1. "Publications" with "Hide brief": Everything except #LeBrief
+                2. "Flux Gratuit" with "Only Brief": Individual #LeBrief articles
+                There may be a lot of #LeBrief entries at once, increase limit of "Flux Gratuit" to 20.
+                EOT,
         ],
         'filter_premium' => [
             'name' => 'Premium',
@@ -46,7 +45,8 @@ class NextInpactBridge extends FeedExpander
                 'No filter' => '0',
                 'Hide Premium' => '1',
                 'Only Premium' => '2'
-            ]
+            ],
+            'title' => 'Note: "Flux Gratuit" already excludes Premium articles.',
         ],
         'filter_brief' => [
             'name' => 'Brief',
@@ -55,61 +55,79 @@ class NextInpactBridge extends FeedExpander
                 'No filter' => '0',
                 'Hide Brief' => '1',
                 'Only Brief' => '2'
-            ]
+            ],
+            'title' => 'Note: "Publications" has only one #LeBrief entry each day.',
         ],
         'limit' => self::LIMIT,
     ]];
 
     public function collectData()
     {
-        $feed = $this->getInput('feed');
-        $base_uri = self::URI;
-        $args = '';
-
-        if (empty($feed)) {
-            // Default to All articles
-            $feed = 'news';
-        }
-
-        if (strpos($feed, 'hardware:') === 0) {
-            // Feed hosted on Hardware domain
-            $base_uri = self::URI_HARDWARE;
-            $feed = str_replace('hardware:', '', $feed);
-        }
-
-        if (strpos($feed, 'category:') === 0) {
-            // Feed with specific category parameter
-            $args = '?CategoryIds=' . str_replace('category:', '', $feed);
-            $feed = 'params';
-        }
-
-        $url = sprintf('%srss/%s.xml%s', $base_uri, $feed, $args);
         $limit = $this->getInput('limit') ?? 10;
-        $this->collectExpandableDatas($url, $limit);
+
+        $feed = explode(':', $this->getInput('feed'));
+        $category = '';
+        if (count($feed) > 1) {
+            $category = $feed[1];
+        }
+        $feed = $feed[0];
+
+        if ($feed === 'news') {
+            // Scrap HTML listing to build list of articles
+            $url = self::URI;
+            if ($category !== '') {
+                $url = $url . '?category=' . $category;
+            }
+            $this->collectArticlesFromHtmlListing($url, $limit);
+        } else if ($feed === 'free') {
+            // Expand Free RSS feed
+            $url = self::URI . 'feed/free';
+            $this->collectExpandableDatas($url, $limit);
+        }
+    }
+
+    protected function collectArticlesFromHtmlListing($url, $limit)
+    {
+        $html = getSimpleHTMLDOM($url);
+        $html = convertLazyLoading($html);
+        foreach ($html->find('.block-article') as $article) {
+            $author = $article->find('.author', 0);
+            $subtitle = $article->find('h3', 0);
+            $item = [
+                'uri' => trim($article->find('a', 0)->href),
+                'title' => trim($article->find('h2', 0)->plaintext),
+                'author' => is_object($author) ? trim($author->plaintext) : '',
+                'enclosures' => [ $article->find('img', 0)->src ],
+                'content' => is_object($subtitle) ? trim($subtitle->plaintext) : '',
+            ];
+            $item = $this->parseItem($item);
+            if ($item !== null) {
+                $this->items[] = $item;
+                if (--$limit == 0) {
+                    break;
+                }
+            }
+        }
     }
 
     protected function parseItem(array $item)
     {
-        $item['content'] = $this->extractContent($item, $item['uri']);
-        if (is_null($item['content'])) {
-            return null; //Filtered article
-        }
-        return $item;
-    }
+        $html = getSimpleHTMLDOMCached($item['uri']);
+        $html = convertLazyLoading($html);
 
-    private function extractContent($item, $url)
-    {
-        $html = getSimpleHTMLDOMCached($url);
         if (!is_object($html)) {
-            return 'Failed to request NextInpact: ' . $url;
+            $item['content'] = $item['content']
+                . '<p><em>Failed to request Next.ink: ' . $item['uri'] . '</em></p>';
+            return $item;
         }
 
         // Filter premium and brief articles?
-        $brief_selector = 'div.brief-container';
+        $paywall_selector = 'div#paywall';
+        $brief_selector = 'div.brief-article';
         foreach (
             [
-            'filter_premium' => 'p.red-msg',
-            'filter_brief' => $brief_selector
+            'filter_premium' => $paywall_selector,
+            'filter_brief' => $brief_selector,
             ] as $param_name => $selector
         ) {
             $param_val = intval($this->getInput($param_name));
@@ -122,71 +140,49 @@ class NextInpactBridge extends FeedExpander
             }
         }
 
-        $article_content = $html->find('div.article-content', 0);
-        if (!is_object($article_content)) {
-            $article_content = $html->find('div.content', 0);
-        }
+        $article_content = $html->find('div.article-contenu, ' . $brief_selector, 0);
         if (is_object($article_content)) {
-            // Subtitle
-            $subtitle = $html->find('small.subtitle', 0);
-            if (!is_object($subtitle) && !is_object($html->find($brief_selector, 0))) {
-                $subtitle = $html->find('small', 0);
-            }
-            if (!is_object($subtitle)) {
-                $content_wrapper = $html->find('div.content-wrapper', 0);
-                if (is_object($content_wrapper)) {
-                    $subtitle = $content_wrapper->find('h2.title', 0);
+            // Clean article content
+            foreach (
+                [
+                    'h1',
+                    'div.author',
+                    'p.brief-categories',
+                    'div.thumbnail-mobile',
+                    'div#share-bottom',
+                    'div.author-info',
+                    'div.other-article',
+                    'script',
+                ] as $item_to_remove
+            ) {
+                foreach ($article_content->find($item_to_remove) as $dom_node) {
+                    $dom_node->outertext = '';
                 }
             }
-            if (is_object($subtitle) && (!isset($item['title']) || $subtitle->plaintext != $item['title'])) {
-                $subtitle = '<p><em>' . trim($subtitle->plaintext) . '</em></p>';
-            } else {
-                $subtitle = '';
-            }
-
             // Image
-            $postimg = $html->find('div.article-image, div.image-container', 0);
-            if (is_object($postimg)) {
+            $postimg = $article_content->find('div.thumbnail', 0);
+            if (empty($item['enclosures']) && is_object($postimg)) {
                 $postimg = $postimg->find('img', 0);
                 if (!empty($postimg->src)) {
-                    $postimg = $postimg->src;
-                } else {
-                    $postimg = $postimg->srcset; //"url 355w, url 1003w, url 748w"
-                    $postimg = explode(', ', $postimg); //split by ', ' to get each url separately
-                    $postimg = end($postimg); //Get last item: "url 748w" which is of largest size
-                    $postimg = explode(' ', $postimg); //split by ' ' to separate url from res
-                    $postimg = array_reverse($postimg); //reverse array content to have url last
-                    $postimg = end($postimg); //Get last item of array: "url"
+                    $item['enclosures'] = [ $postimg->src ];
                 }
-                $postimg = '<p><img src="' . $postimg . '" alt="-" /></p>';
-            } else {
-                $postimg = '';
             }
-
+            // Timestamp
+            $published_time = $html->find('meta[property=article:published_time]', 0);
+            if (!isset($item['timestamp']) && is_object($published_time)) {
+                $item['timestamp'] = strtotime($published_time->content);
+            }
             // Paywall
-            $paywall = $html->find('div.paywall-restriction', 0);
-            if (is_object($paywall) && is_object($paywall->find('p.red-msg', 0))) {
-                $paywall = '<p><em>' . $paywall->find('span.head-mention', 0)->innertext . '</em></p>';
-            } else {
-                $paywall = '';
+            $paywall = $article_content->find($paywall_selector, 0);
+            if (is_object($paywall) && is_object($paywall->find('h3', 0))) {
+                $paywall->outertext = '<p><em>' . $paywall->find('h3', 0)->innertext . '</em></p>';
             }
-
             // Content
-            $article_content = $article_content->outertext;
-            $article_content = str_replace('>Signaler une erreur</span>', '></span>', $article_content);
-
-            // Result
-            $text = $subtitle
-                . $postimg
-                . $article_content
-                . $paywall;
+            $item['content'] = $article_content->outertext;
         } else {
-            $text = '<p><em>Failed to retrieve full article content</em></p>';
-            if (isset($item['content'])) {
-                $text = $item['content'] . $text;
-            }
+            $item['content'] = $item['content'] . '<p><em>Failed to retrieve full article content</em></p>';
         }
 
-        return $text;
+        return $item;
     }
 }
