@@ -1,5 +1,7 @@
 <?php
-class BMDSystemhausBlogBridge extends BridgeAbstract {
+
+class BMDSystemhausBlogBridge extends BridgeAbstract
+{
     const MAINTAINER = 'cn-tools';
     const NAME = 'BMD SYSTEMHAUS GesmbH';
     const CACHE_TIMEOUT = 21600; //6h
@@ -24,7 +26,8 @@ class BMDSystemhausBlogBridge extends BridgeAbstract {
     ];
 
     //-----------------------------------------------------
-    public function collectData(){
+    public function collectData()
+    {
 /*
         $item['uri']        // URI to reach the subject ("https://...")
         $item['title']      // Title of the item
@@ -38,7 +41,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract {
 
         $html = getSimpleHTMLDOM($this->getURI());
 
-        foreach($html->find('div#bmdNewsList div#bmdNewsList-Item') as $element) {
+        foreach ($html->find('div#bmdNewsList div#bmdNewsList-Item') as $element) {
             $itemScope = $element->find('div[itemscope=itemscope]', 0);
 
             $item = [];
@@ -64,16 +67,16 @@ class BMDSystemhausBlogBridge extends BridgeAbstract {
             $tmpOne = explode('/', $txt);
 
             // split by 2 spaces
-            foreach($tmpOne as $tmpElem) {
+            foreach ($tmpOne as $tmpElem) {
                 $tmpElem = trim($tmpElem);
-                $tmpData = preg_split("/  /", $tmpElem);
+                $tmpData = preg_split('/  /', $tmpElem);
                 $tmpTwo = array_merge($tmpTwo, $tmpData);
             }
 
             // split by tabulator
             foreach ($tmpTwo as $tmpElem) {
                 $tmpElem = trim($tmpElem);
-                $tmpData = preg_split("/\t+/", $tmpElem);
+                $tmpData = preg_split('/\t+/', $tmpElem);
                 $categories = array_merge($categories, $tmpData);
             }
 
@@ -81,7 +84,9 @@ class BMDSystemhausBlogBridge extends BridgeAbstract {
             $categories = array_map('trim', $categories);
 
             // remove empty entries
-            $categories = array_filter($categories, function($value) { return !is_null($value) && $value !== ''; });
+            $categories = array_filter($categories, function ($value) {
+                return !is_null($value) && $value !== '';
+            });
 
             // set categories
             if (count($categories) > 0) {
@@ -95,13 +100,20 @@ class BMDSystemhausBlogBridge extends BridgeAbstract {
     }
 
     //-----------------------------------------------------
-    public function detectParameters($url) {
+    public function detectParameters($url)
+    {
         $parsed_url = parse_url($url);
-        if ($parsed_url['host'] != 'www.bmd.com') return null;
+        if ($parsed_url['host'] != 'www.bmd.com')
+        {
+            return null;
+        }
 
         $path = explode('/', $parsed_url['path']);
 
-        if ($this->getURIbyCountry($path[1]) == '') return null;
+        if ($this->getURIbyCountry($path[1]) == '')
+        {
+            return null;
+        }
 
         $params = [];
         $params['country'] = $path[1];
@@ -109,20 +121,23 @@ class BMDSystemhausBlogBridge extends BridgeAbstract {
     }
 
     //-----------------------------------------------------
-    public function getURI() {
+    public function getURI()
+    {
         $lURI = $this->getURIbyCountry($this->getInput('country'));
         return $lURI != '' ? $lURI : parent::getURI();
     }
 
     //-----------------------------------------------------
-    public function getIcon() {
+    public function getIcon()
+    {
         return 'https://www.bmd.com/favicon.ico';
     }
 
     //-----------------------------------------------------
-    private function getMetaItemPropContent($elem, $key){
+    private function getMetaItemPropContent($elem, $key)
+    {
         if (($key != '') and (!is_null($elem))) {
-            $metaElem = $elem->find('meta[itemprop='.$key.']', 0);
+            $metaElem = $elem->find('meta[itemprop=' . $key . ']', 0);
             if (!is_null($metaElem)) {
                 return $metaElem->getAttribute('content');
             }
@@ -132,8 +147,9 @@ class BMDSystemhausBlogBridge extends BridgeAbstract {
     }
 
     //-----------------------------------------------------
-    private function getURIbyCountry($country){
-        switch($country) {
+    private function getURIbyCountry($country)
+    {
+        switch ($country) {
             case 'at':
                 return 'https://www.bmd.com/at/ueber-bmd/blog-ohne-filter.html';
             case 'de':
