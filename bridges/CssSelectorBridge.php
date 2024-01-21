@@ -56,6 +56,11 @@ class CssSelectorBridge extends BridgeAbstract
                 'title' => 'Some sites set their logo as thumbnail for every article. Use this option to discard it.',
                 'type' => 'checkbox',
             ],
+            'thumbnail_as_header' => [
+                'name' => '[Optional] Insert thumbnail as article header',
+                'title' => 'Insert article main image on top of article contents.',
+                'type' => 'checkbox',
+            ],
             'limit' => self::LIMIT
         ]
     ];
@@ -89,6 +94,7 @@ class CssSelectorBridge extends BridgeAbstract
         $content_cleanup = $this->getInput('content_cleanup');
         $title_cleanup = $this->getInput('title_cleanup');
         $discard_thumbnail = $this->getInput('discard_thumbnail');
+        $thumbnail_as_header = $this->getInput('thumbnail_as_header');
         $limit = $this->getInput('limit') ?? 10;
 
         $html = defaultLinkTo(getSimpleHTMLDOM($this->homepageUrl), $this->homepageUrl);
@@ -108,6 +114,9 @@ class CssSelectorBridge extends BridgeAbstract
                 );
                 if ($discard_thumbnail && isset($item['enclosures'])) {
                     unset($item['enclosures']);
+                }
+                if ($thumbnail_as_header && isset($item['enclosures'][0])) {
+                    $item['content'] = '<p><img src="' . $item['enclosures'][0] . '" /></p>' . $item['content'];
                 }
                 $this->items[] = $item;
             }
@@ -311,6 +320,7 @@ class CssSelectorBridge extends BridgeAbstract
         // Facebook Open Graph (og:KEY) - https://developers.facebook.com/docs/sharing/webmasters
         // Twitter (twitter:KEY) - https://developer.twitter.com/en/docs/twitter-for-websites/cards/guides/getting-started
         // Standard meta tags - https://www.w3schools.com/tags/tag_meta.asp
+        // Standard time tag - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time
 
         // Each Entry field mapping defines a list of possible <meta> tags names that contains the expected value
         static $meta_mappings = [
@@ -323,16 +333,16 @@ class CssSelectorBridge extends BridgeAbstract
             'uri' => [
                 'og:url',
                 'twitter:url',
-                'canonical'
+                'canonical',
             ],
             'title' => [
                 'og:title',
-                'twitter:title'
+                'twitter:title',
             ],
             'content' => [
                 'og:description',
                 'twitter:description',
-                'description'
+                'description',
             ],
             'timestamp' => [
                 'article:published_time',
@@ -342,7 +352,8 @@ class CssSelectorBridge extends BridgeAbstract
                 'article:modified_time',
                 'og:article:modified_time',
                 'lastModified',
-                'lastmodified'
+                'lastmodified',
+                'time',
             ],
             'enclosures' => [
                 'og:image:secure_url',
@@ -350,7 +361,7 @@ class CssSelectorBridge extends BridgeAbstract
                 'og:image',
                 'twitter:image',
                 'thumbnailImg',
-                'thumbnailimg'
+                'thumbnailimg',
             ],
             'author' => [
                 'article:author',
@@ -375,6 +386,8 @@ class CssSelectorBridge extends BridgeAbstract
                 $element = null;
                 if ($field === 'canonical') {
                     $element = $entry_html->find('link[rel=canonical]');
+                } else if ($field === 'time') {
+                    $element = $entry_html->find('time[datetime]');
                 } else {
                     $element = $entry_html->find("meta[property=$field], meta[name=$field]");
                 }
@@ -384,6 +397,8 @@ class CssSelectorBridge extends BridgeAbstract
                     $field_value = '';
                     if ($field === 'canonical') {
                         $field_value = $element->href;
+                    } else if ($field === 'time') {
+                        $field_value = $element->datetime;
                     } else {
                         $field_value = $element->content;
                     }
