@@ -103,15 +103,13 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     public function detectParameters($url)
     {
         $parsed_url = parse_url($url);
-        if ($parsed_url['host'] != 'www.bmd.com')
-        {
+        if ($parsed_url['host'] != 'www.bmd.com') {
             return null;
         }
 
         $path = explode('/', $parsed_url['path']);
 
-        if ($this->getURIbyCountry($path[1]) == '')
-        {
+        if ($this->getURIbyCountry($path[1]) == '') {
             return null;
         }
 
