@@ -26,6 +26,7 @@ $files = [
     __DIR__ . '/../lib/http.php',
     __DIR__ . '/../lib/logger.php',
     __DIR__ . '/../lib/url.php',
+    __DIR__ . '/../lib/seotags.php',
     // Vendor
     __DIR__ . '/../vendor/parsedown/Parsedown.php',
     __DIR__ . '/../vendor/php-urljoin/src/urljoin.php',
