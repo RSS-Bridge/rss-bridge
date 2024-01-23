@@ -56,7 +56,13 @@ EOF;
 
     public function getName()
     {
-        $paths = explode('/', parse_url($this->getInput('url'), PHP_URL_PATH));
+        $url = $this->getInput('url');
+        if (!$url) {
+            return parent::getName();
+        }
+
+        $parsedUrl = Url::fromString($url);
+        $paths = explode('/', $parsedUrl->getPath());
 
         $query = array_reduce($paths, function ($q, $p) {
             if (preg_match('/^q-(.+)$/i', $p, $matches)) {
