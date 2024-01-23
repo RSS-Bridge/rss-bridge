@@ -275,22 +275,26 @@ class CodebergBridge extends BridgeAbstract
      */
     private function extractPulls($html)
     {
-        $div = $html->find('div.issue.list', 0);
+        $div = $html->find('div#issue-list', 0);
 
-        foreach ($div->find('li.item') as $li) {
+        $var2 = $div->find('div.flex-item');
+        foreach ($var2 as $li) {
             $item = [];
 
             $number = trim($li->find('a.index,ml-0.mr-2', 0)->plaintext);
 
-            $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
-            $item['uri'] = $li->find('a.title', 0)->href;
+            $a = $li->find('a.issue-title', 0);
+            $item['title'] = $a->plaintext . ' (' . $number . ')';
+            $item['uri'] = $a->href;
 
             $time = $li->find('relative-time.time-since', 0);
             if ($time) {
                 $item['timestamp'] = $time->datetime;
             }
 
-            $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
+            // Extracting the author is a bit awkward after they changed their html
+            //$desc = $li->find('div.desc', 0);
+            //$item['author'] = $desc->find('a', 1)->plaintext;
 
             // Fetch pull request page
             $pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600);
