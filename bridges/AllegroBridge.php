@@ -35,7 +35,12 @@ class AllegroBridge extends BridgeAbstract
 
     public function getName()
     {
-        parse_str(parse_url($this->getInput('url'), PHP_URL_QUERY), $fields);
+        $url = $this->getInput('url');
+        if (!$url) {
+            return parent::getName();
+        }
+        $parsedUrl = parse_url($url, PHP_URL_QUERY);
+        parse_str($parsedUrl, $fields);
 
         if ($query = array_key_exists('string', $fields) ? urldecode($fields['string']) : false) {
             return $query;

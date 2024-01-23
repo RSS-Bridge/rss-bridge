@@ -31,7 +31,11 @@ class EBayBridge extends BridgeAbstract
 
     public function getName()
     {
-        $urlQueries = explode('&', parse_url($this->getInput('url'), PHP_URL_QUERY));
+        $url = $this->getInput('url');
+        if (!$url) {
+            return parent::getName();
+        }
+        $urlQueries = explode('&', parse_url($url, PHP_URL_QUERY));
 
         $searchQuery = array_reduce($urlQueries, function ($q, $p) {
             if (preg_match('/^_nkw=(.+)$/i', $p, $matches)) {
