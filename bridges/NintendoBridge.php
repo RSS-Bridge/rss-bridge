@@ -365,7 +365,11 @@ class NintendoBridge extends XPathAbstract
     public function getURI()
     {
         $category = $this->getInput('category');
-        return 'all' === $category ? self::URI : $this->getSourceUrl();
+        if ('all' === $category) {
+            return self::URI;
+        } else {
+            return $this->getSourceUrl();
+        }
     }
 
     protected function provideFeedTitle(\DOMXPath $xpath)
@@ -377,7 +381,7 @@ class NintendoBridge extends XPathAbstract
 
     protected function getSourceUrl()
     {
-        $country = $this->getInput('country');
+        $country = $this->getInput('country') ?? '';
         $category = $this->getCurrentCategory();
         return str_replace(self::PARAMETERS['']['country']['defaultValue'], $country, self::FEED_SOURCE_URL[$category]);
     }
