@@ -206,27 +206,6 @@ EOD;
     }
 
     /**
-     * Get input field attributes
-     *
-     * @param array $entry The current entry
-     * @return string The input field attributes
-     */
-    private static function getInputAttributes($entry)
-    {
-        $retVal = '';
-
-        if (isset($entry['required']) && $entry['required'] === true) {
-            $retVal .= ' required';
-        }
-
-        if (isset($entry['pattern'])) {
-            $retVal .= ' pattern="' . $entry['pattern'] . '"';
-        }
-
-        return $retVal;
-    }
-
-    /**
      * Get text input
      *
      * @param array $entry The current entry
@@ -234,7 +213,7 @@ EOD;
      * @param string $name The field name
      * @return string The text input field
      */
-    private static function getTextInput($entry, $id, $name)
+    public static function getTextInput($entry, $id, $name)
     {
         return '<input '
         . self::getInputAttributes($entry)
@@ -258,7 +237,7 @@ EOD;
      * @param string $name The field name
      * @return string The number input field
      */
-    private static function getNumberInput($entry, $id, $name)
+    public static function getNumberInput($entry, $id, $name)
     {
         return '<input '
         . self::getInputAttributes($entry)
@@ -352,7 +331,7 @@ EOD;
      * @param string $name The field name
      * @return string The checkbox input field
      */
-    private static function getCheckboxInput($entry, $id, $name)
+    public static function getCheckboxInput($entry, $id, $name)
     {
         if (isset($entry['required']) && $entry['required'] === true) {
             Debug::log('The "required" attribute is not supported for checkboxes.');
@@ -369,5 +348,20 @@ EOD;
         . ($entry['defaultValue'] === 'checked' ? 'checked' : '')
         . ' />'
         . PHP_EOL;
+    }
+
+    public static function getInputAttributes($entry)
+    {
+        $retVal = '';
+
+        if (isset($entry['required']) && $entry['required'] === true) {
+            $retVal .= ' required';
+        }
+
+        if (isset($entry['pattern'])) {
+            $retVal .= ' pattern="' . $entry['pattern'] . '"';
+        }
+
+        return $retVal;
     }
 }
