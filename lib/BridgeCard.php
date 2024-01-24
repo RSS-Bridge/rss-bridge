@@ -23,6 +23,7 @@ final class BridgeCard
         $icon = $bridge->getIcon();
         $description = $bridge->getDescription();
         $parameters = $bridge->getParameters();
+
         if (Configuration::getConfig('proxy', 'url') && Configuration::getConfig('proxy', 'by_bridge')) {
             $parameters['global']['_noproxy'] = [
                 'name' => 'Disable proxy (' . (Configuration::getConfig('proxy', 'name') ?: Configuration::getConfig('proxy', 'url')) . ')',
@@ -94,32 +95,6 @@ CARD;
     }
 
     /**
-     * Get the form header for a bridge card
-     *
-     * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
-     * @param bool $isHttps If disabled, adds a warning to the form
-     * @return string The form header
-     */
-    private static function getFormHeader($bridgeClassName, $isHttps = false, $parameterName = '')
-    {
-        $form = <<<EOD
-            <form method="GET" action="?">
-                <input type="hidden" name="action" value="display" />
-                <input type="hidden" name="bridge" value="{$bridgeClassName}" />
-EOD;
-
-        if (!empty($parameterName)) {
-            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $parameterName);
-        }
-
-        if (!$isHttps) {
-            $form .= '<div class="secure-warning">Warning: This bridge is not fetching its content through a secure connection</div>';
-        }
-
-        return $form;
-    }
-
-    /**
      * Get the form body for a bridge
      *
      * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
@@ -152,19 +127,10 @@ EOD;
                     $inputEntry['defaultValue'] = '';
                 }
 
-                $idArg = 'arg-'
-                    . urlencode($bridgeClassName)
-                    . '-'
-                    . urlencode($parameterName)
-                    . '-'
-                    . urlencode($id);
+                $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($parameterName) . '-' . urlencode($id);
 
-                $form .= '<label for="'
-                    . $idArg
-                    . '">'
-                    . filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
-                    . '</label>'
-                    . PHP_EOL;
+                $inputName = filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $form .= '<label for="' . $idArg . '">' . $inputName . '</label>' . PHP_EOL;
 
                 if (!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
                     $form .= self::getTextInput($inputEntry, $idArg, $id);
@@ -206,75 +172,59 @@ EOD;
     }
 
     /**
-     * Get text input
+     * Get the form header for a bridge card
      *
-     * @param array $entry The current entry
-     * @param string $id The field ID
-     * @param string $name The field name
-     * @return string The text input field
+     * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
+     * @param bool $isHttps If disabled, adds a warning to the form
+     * @return string The form header
      */
-    public static function getTextInput($entry, $id, $name)
+    private static function getFormHeader($bridgeClassName, $isHttps = false, $parameterName = '')
     {
-        return '<input '
-        . self::getInputAttributes($entry)
-        . ' id="'
-        . $id
-        . '" type="text" value="'
-        . filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
-        . '" placeholder="'
-        . filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
-        . '" name="'
-        . $name
-        . '" />'
-        . PHP_EOL;
+        $form = <<<EOD
+            <form method="GET" action="?">
+                <input type="hidden" name="action" value="display" />
+                <input type="hidden" name="bridge" value="{$bridgeClassName}" />
+EOD;
+
+        if (!empty($parameterName)) {
+            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $parameterName);
+        }
+
+        if (!$isHttps) {
+            $form .= '<div class="secure-warning">Warning: This bridge is not fetching its content through a secure connection</div>';
+        }
+
+        return $form;
     }
 
-    /**
-     * Get number input
-     *
-     * @param array $entry The current entry
-     * @param string $id The field ID
-     * @param string $name The field name
-     * @return string The number input field
-     */
-    public static function getNumberInput($entry, $id, $name)
+    public static function getTextInput(array $entry, string $id, string $name): string
     {
-        return '<input '
-        . self::getInputAttributes($entry)
-        . ' id="'
-        . $id
-        . '" type="number" value="'
-        . filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT)
-        . '" placeholder="'
-        . filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT)
-        . '" name="'
-        . $name
-        . '" />'
-        . PHP_EOL;
+        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $attributes = self::getInputAttributes($entry);
+
+        return sprintf('<input %s id="%s" type="text" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
     }
 
-    /**
-     * Get list input
-     *
-     * @param array $entry The current entry
-     * @param string $id The field ID
-     * @param string $name The field name
-     * @return string The list input field
-     */
-    private static function getListInput($entry, $id, $name)
+    public static function getNumberInput(array $entry, string $id, string $name): string
     {
-        if (isset($entry['required']) && $entry['required'] === true) {
+        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT);
+        $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT);
+        $attributes = self::getInputAttributes($entry);
+
+        return sprintf('<input %s id="%s" type="number" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
+    }
+
+    public static function getListInput(array $entry, string $id, string $name): string
+    {
+        $required = $entry['required'] ?? null;
+        if ($required) {
             Debug::log('The "required" attribute is not supported for lists.');
             unset($entry['required']);
         }
 
-        $list = '<select '
-        . self::getInputAttributes($entry)
-        . ' id="'
-        . $id
-        . '" name="'
-        . $name
-        . '" >';
+        $attributes = self::getInputAttributes($entry);
+        $list = sprintf('<select %s id="%s" name="%s" >', $attributes, $id, $name);
 
         foreach ($entry['values'] as $name => $value) {
             if (is_array($value)) {
@@ -284,17 +234,9 @@ EOD;
                         $entry['defaultValue'] === $subname
                         || $entry['defaultValue'] === $subvalue
                     ) {
-                        $list .= '<option value="'
-                            . $subvalue
-                            . '" selected>'
-                            . $subname
-                            . '</option>';
+                        $list .= '<option value="' . $subvalue . '" selected>' . $subname . '</option>';
                     } else {
-                        $list .= '<option value="'
-                            . $subvalue
-                            . '">'
-                            . $subname
-                            . '</option>';
+                        $list .= '<option value="' . $subvalue . '">' . $subname . '</option>';
                     }
                 }
                 $list .= '</optgroup>';
@@ -303,17 +245,9 @@ EOD;
                     $entry['defaultValue'] === $name
                     || $entry['defaultValue'] === $value
                 ) {
-                    $list .= '<option value="'
-                        . $value
-                        . '" selected>'
-                        . $name
-                        . '</option>';
+                    $list .= '<option value="' . $value . '" selected>' . $name . '</option>';
                 } else {
-                    $list .= '<option value="'
-                        . $value
-                        . '">'
-                        . $name
-                        . '</option>';
+                    $list .= '<option value="' . $value . '">' . $name . '</option>';
                 }
             }
         }
@@ -323,45 +257,35 @@ EOD;
         return $list;
     }
 
-    /**
-     * Get checkbox input
-     *
-     * @param array $entry The current entry
-     * @param string $id The field ID
-     * @param string $name The field name
-     * @return string The checkbox input field
-     */
-    public static function getCheckboxInput($entry, $id, $name)
+
+    public static function getCheckboxInput(array $entry, string $id, string $name): string
     {
-        if (isset($entry['required']) && $entry['required'] === true) {
+        $required = $entry['required'] ?? null;
+        if ($required) {
             Debug::log('The "required" attribute is not supported for checkboxes.');
             unset($entry['required']);
         }
 
-        return '<input '
-        . self::getInputAttributes($entry)
-        . ' id="'
-        . $id
-        . '" type="checkbox" name="'
-        . $name
-        . '" '
-        . ($entry['defaultValue'] === 'checked' ? 'checked' : '')
-        . ' />'
-        . PHP_EOL;
+        $checked = $entry['defaultValue'] === 'checked' ? 'checked' : '';
+        $attributes = self::getInputAttributes($entry);
+
+        return sprintf('<input %s id="%s" type="checkbox" name="%s" %s />' . "\n", $attributes, $id, $name, $checked);
     }
 
-    public static function getInputAttributes($entry)
+    public static function getInputAttributes(array $entry): string
     {
-        $retVal = '';
+        $result = '';
 
-        if (isset($entry['required']) && $entry['required'] === true) {
-            $retVal .= ' required';
+        $required = $entry['required'] ?? null;
+        if ($required) {
+            $result .= ' required';
         }
 
-        if (isset($entry['pattern'])) {
-            $retVal .= ' pattern="' . $entry['pattern'] . '"';
+        $pattern = $entry['pattern'] ?? null;
+        if ($pattern) {
+            $result .= ' pattern="' . $pattern . '"';
         }
 
-        return $retVal;
+        return $result;
     }
 }

@@ -31,5 +31,27 @@ class BridgeCardTest extends TestCase
             'exampleValue' => 'yo2',
         ];
         $this->assertSame('<input  id="id" type="text" value="yo1" placeholder="yo2" name="name" />' . "\n", BridgeCard::getTextInput($entry, 'id', 'name'));
+
+        $entry = [
+            'values' => [],
+        ];
+        $this->assertSame('<select  id="id" name="name" ></select>', BridgeCard::getListInput($entry, 'id', 'name'));
+
+        $entry = [
+            'defaultValue' => 2,
+            'values' => [
+                'foo' => 'bar',
+            ],
+        ];
+        $this->assertSame('<select  id="id" name="name" ><option value="bar">foo</option></select>', BridgeCard::getListInput($entry, 'id', 'name'));
+
+        // optgroup
+        $entry = [
+            'defaultValue' => 2,
+            'values' => ['kek' => [
+                'f' => 'b',
+            ]],
+        ];
+        $this->assertSame('<select  id="id" name="name" ><optgroup label="kek"><option value="b">f</option></optgroup></select>', BridgeCard::getListInput($entry, 'id', 'name'));
     }
 }
