@@ -1,18 +1,22 @@
 <?php
 
+if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
+    http_response_code(500);
+    print 'RSS-Bridge requires minimum PHP version 7.4';
+    exit;
+}
+
 require_once __DIR__ . '/lib/bootstrap.php';
 
-// Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
-date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
-
 set_exception_handler(function (\Throwable $e) {
+    $response = new Response(render(__DIR__ . '/templates/exception.html.php', ['e' => $e]), 500);
+    $response->send();
     RssBridge::getLogger()->error('Uncaught Exception', ['e' => $e]);
-    http_response_code(500);
-    exit(render(__DIR__ . '/templates/exception.html.php', ['e' => $e]));
 });
 
 set_error_handler(function ($code, $message, $file, $line) {
     if ((error_reporting() & $code) === 0) {
+        // Deprecation messages and other masked errors are typically ignored here
         return false;
     }
     // In the future, uncomment this:
@@ -39,11 +43,37 @@ register_shutdown_function(function () {
         );
         RssBridge::getLogger()->error($message);
         if (Debug::isEnabled()) {
+            // This output can interfere with json output etc
+            // This output is written at the bottom
             print sprintf("<pre>%s</pre>\n", e($message));
         }
     }
 });
 
-$rssBridge = new RssBridge();
+$errors = Configuration::checkInstallation();
+if ($errors) {
+    http_response_code(500);
+    print '<pre>' . implode("\n", $errors) . '</pre>';
+    exit;
+}
 
-$rssBridge->main($argv ?? []);
+$customConfig = [];
+if (file_exists(__DIR__ . '/config.ini.php')) {
+    $customConfig = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
+}
+Configuration::loadConfiguration($customConfig, getenv());
+
+// Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
+
+date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
+
+try {
+    $rssBridge = new RssBridge();
+    $response = $rssBridge->main($argv ?? []);
+    $response->send();
+} catch (\Throwable $e) {
+    // Probably an exception inside an action
+    RssBridge::getLogger()->error('Exception in RssBridge::main()', ['e' => $e]);
+    http_response_code(500);
+    print render(__DIR__ . '/templates/exception.html.php', ['e' => $e]);
+}
