@@ -33,14 +33,14 @@ class EDDHPiRepsBridge extends BridgeAbstract
 
     private function extractTexts($nodes)
     {
-        $texts = array();
+        $texts = [];
         $i = 0;
         foreach ($nodes as $node) {
             $text = trim($node->outertext());
             if ($node->tag == 'br') {
                 $texts[$i++] = "\n";
             } elseif (($node->tag == 'text') && ($text != '')) {
-                $text = iconv("Windows-1252", "UTF-8", $text);
+                $text = iconv('Windows-1252', 'UTF-8', $text);
                 $text = str_replace('&nbsp;', '', $text);
                 $texts[$i++] = $text;
             }
@@ -73,7 +73,7 @@ class EDDHPiRepsBridge extends BridgeAbstract
 
     protected function formatItemTimestamp($value)
     {
-        $value = str_replace("Eintrag vom", "", $value);
+        $value = str_replace('Eintrag vom', '', $value);
         $value = trim($value);
         return strtotime($value);
     }

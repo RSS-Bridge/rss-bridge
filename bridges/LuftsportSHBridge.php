@@ -23,5 +23,4 @@ class LuftsportSHBridge extends XPathAbstract
         $dti = DateTimeImmutable::createFromFormat(DateTimeInterface::ATOM, $value);
         return $dti->getTimestamp();
     }
-
 }

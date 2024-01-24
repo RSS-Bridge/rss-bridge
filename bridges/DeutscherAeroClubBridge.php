@@ -20,10 +20,9 @@ class DeutscherAeroClubBridge extends XPathAbstract
 
     protected function formatItemTimestamp($value)
     {
-        $dti = DateTimeImmutable::createFromFormat("Y-m-d", $value);
+        $dti = DateTimeImmutable::createFromFormat('Y-m-d', $value);
         $dti = $dti->setTime(0, 0, 0);
         return $dti->getTimestamp();
     }
-
 }
 

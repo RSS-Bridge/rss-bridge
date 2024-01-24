@@ -20,13 +20,13 @@ class LuftfahrtBundesAmtBridge extends XPathAbstract
 
     protected function provideFeedIcon(\DOMXPath $xpath)
     {
-        return parent::provideFeedIcon($xpath) . "?__blob=normal&v=3";
+        return parent::provideFeedIcon($xpath) . '?__blob=normal&v=3';
     }
 
     protected function formatItemTimestamp($value)
     {
         $value = trim($value);
-        $dti = DateTimeImmutable::createFromFormat("d.m.Y", $value);
+        $dti = DateTimeImmutable::createFromFormat('d.m.Y', $value);
         $dti = $dti->setTime(0, 0, 0);
         return $dti->getTimestamp();
     }
@@ -34,7 +34,7 @@ class LuftfahrtBundesAmtBridge extends XPathAbstract
     // remove jsession part
     protected function formatItemUri($value)
     {
-        $parts = explode(";", $value);
+        $parts = explode(';', $value);
         return $parts[0];
     }
 }

@@ -20,8 +20,8 @@ class BundesverbandFuerFreieKammernBridge extends XPathAbstract
 
     protected function formatItemTimestamp($value)
     {
-        $value = trim($value, "()");
-        $dti = DateTimeImmutable::createFromFormat("d.m.Y", $value);
+        $value = trim($value, '()');
+        $dti = DateTimeImmutable::createFromFormat('d.m.Y', $value);
         $dti = $dti->setTime(0, 0, 0);
         return $dti->getTimestamp();
     }
