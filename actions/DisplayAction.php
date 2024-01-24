@@ -13,13 +13,6 @@ class DisplayAction implements ActionInterface
 
     public function execute(array $request)
     {
-        if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
-            return new Response(render(__DIR__ . '/../templates/error.html.php', [
-                'title'     => '503 Service Unavailable',
-                'message'   => 'RSS-Bridge is down for maintenance.',
-            ]), 503);
-        }
-
         $cacheKey = 'http_' . json_encode($request);
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
@@ -118,6 +111,7 @@ class DisplayAction implements ActionInterface
             }
             $feed = $bridge->getFeed();
         } catch (\Exception $e) {
+            // Probably an exception inside a bridge
             if ($e instanceof HttpException) {
                 // Reproduce (and log) these responses regardless of error output and report limit
                 if ($e->getCode() === 429) {

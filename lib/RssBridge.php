@@ -23,48 +23,71 @@ final class RssBridge
         }
     }
 
-    public function main(array $argv = []): void
+    public function main(array $argv = []): Response
     {
         if ($argv) {
             parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
             $request = $cliArgs;
         } else {
-            if (Configuration::getConfig('authentication', 'enable')) {
-                $authenticationMiddleware = new AuthenticationMiddleware();
-                $authenticationMiddleware();
-            }
             $request = array_merge($_GET, $_POST);
         }
 
-        try {
-            foreach ($request as $key => $value) {
-                if (!is_string($value)) {
-                    throw new \Exception("Query parameter \"$key\" is not a string.");
-                }
-            }
-
-            $actionName = $request['action'] ?? 'Frontpage';
-            $actionName = strtolower($actionName) . 'Action';
-            $actionName = implode(array_map('ucfirst', explode('-', $actionName)));
-
-            $filePath = __DIR__ . '/../actions/' . $actionName . '.php';
-            if (!file_exists($filePath)) {
-                throw new \Exception('Invalid action', 400);
-            }
-            $className = '\\' . $actionName;
-            $action = new $className();
-
-            $response = $action->execute($request);
-            if (is_string($response)) {
-                print $response;
-            } elseif ($response instanceof Response) {
-                $response->send();
-            }
-        } catch (\Throwable $e) {
-            self::$logger->error('Exception in RssBridge::main()', ['e' => $e]);
-            http_response_code(500);
-            print render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]);
+        if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
+            return new Response(render(__DIR__ . '/../templates/error.html.php', [
+                'title'     => '503 Service Unavailable',
+                'message'   => 'RSS-Bridge is down for maintenance.',
+            ]), 503);
         }
+
+        if (Configuration::getConfig('authentication', 'enable')) {
+            if (Configuration::getConfig('authentication', 'password') === '') {
+                return new Response('The authentication password cannot be the empty string', 500);
+            }
+            $user = $_SERVER['PHP_AUTH_USER'] ?? null;
+            $password = $_SERVER['PHP_AUTH_PW'] ?? null;
+            if ($user === null || $password === null) {
+                $html = render(__DIR__ . '/../templates/error.html.php', [
+                    'message' => 'Please authenticate in order to access this instance!',
+                ]);
+                return new Response($html, 401, ['WWW-Authenticate' => 'Basic realm="RSS-Bridge"']);
+            }
+            if (
+                (Configuration::getConfig('authentication', 'username') !== $user)
+                || (! hash_equals(Configuration::getConfig('authentication', 'password'), $password))
+            ) {
+                $html = render(__DIR__ . '/../templates/error.html.php', [
+                    'message' => 'Please authenticate in order to access this instance!',
+                ]);
+                return new Response($html, 401, ['WWW-Authenticate' => 'Basic realm="RSS-Bridge"']);
+            }
+            // At this point the username and password was correct
+        }
+
+        foreach ($request as $key => $value) {
+            if (!is_string($value)) {
+                return new Response(render(__DIR__ . '/../templates/error.html.php', [
+                    'message' => "Query parameter \"$key\" is not a string.",
+                ]), 400);
+            }
+        }
+
+        $actionName = $request['action'] ?? 'Frontpage';
+        $actionName = strtolower($actionName) . 'Action';
+        $actionName = implode(array_map('ucfirst', explode('-', $actionName)));
+        $filePath = __DIR__ . '/../actions/' . $actionName . '.php';
+        if (!file_exists($filePath)) {
+            return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Invalid action']), 400);
+        }
+
+        $className = '\\' . $actionName;
+        $action = new $className();
+
+        $response = $action->execute($request);
+
+        if (is_string($response)) {
+            $response = new Response($response);
+        }
+        return $response;
     }
 
     public static function getCache(): CacheInterface

@@ -1,9 +1,5 @@
 <?php
 
-if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
-    exit('RSS-Bridge requires minimum PHP version 7.4.0!');
-}
-
 // Path to the formats library
 const PATH_LIB_FORMATS = __DIR__ . '/../formats/';
 
@@ -51,14 +47,3 @@ spl_autoload_register(function ($className) {
         }
     }
 });
-
-$errors = Configuration::checkInstallation();
-if ($errors) {
-    exit('<pre>' . implode("\n", $errors) . '</pre>');
-}
-
-$customConfig = [];
-if (file_exists(__DIR__ . '/../config.ini.php')) {
-    $customConfig = parse_ini_file(__DIR__ . '/../config.ini.php', true, INI_SCANNER_TYPED);
-}
-Configuration::loadConfiguration($customConfig, getenv());
