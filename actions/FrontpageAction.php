@@ -4,8 +4,6 @@ final class FrontpageAction implements ActionInterface
 {
     public function execute(Request $request)
     {
-        $showInactive = (bool) $request->get('show_inactive');
-
         $messages = [];
         $activeBridges = 0;
 
@@ -22,10 +20,8 @@ final class FrontpageAction implements ActionInterface
         $body = '';
         foreach ($bridgeClassNames as $bridgeClassName) {
             if ($bridgeFactory->isEnabled($bridgeClassName)) {
-                $body .= BridgeCard::render($bridgeClassName);
+                $body .= BridgeCard::render($bridgeClassName, $request);
                 $activeBridges++;
-            } elseif ($showInactive) {
-                $body .= BridgeCard::render($bridgeClassName, false) . "\n";
             }
         }
 
@@ -37,7 +33,6 @@ final class FrontpageAction implements ActionInterface
             'bridges' => $body,
             'active_bridges' => $activeBridges,
             'total_bridges' => count($bridgeClassNames),
-            'show_inactive' => $showInactive,
         ]);
     }
 }

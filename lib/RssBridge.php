@@ -47,6 +47,7 @@ final class RssBridge
             ]), 503);
         }
 
+        // HTTP Basic auth check
         if (Configuration::getConfig('authentication', 'enable')) {
             if (Configuration::getConfig('authentication', 'password') === '') {
                 return new Response('The authentication password cannot be the empty string', 500);
@@ -69,6 +70,23 @@ final class RssBridge
                 return new Response($html, 401, ['WWW-Authenticate' => 'Basic realm="RSS-Bridge"']);
             }
             // At this point the username and password was correct
+        }
+
+        // Add token as attribute to request
+        $request = $request->withAttribute('token', $request->get('token'));
+
+        // Token authentication check
+        if (Configuration::getConfig('authentication', 'token')) {
+            if (! $request->attribute('token')) {
+                return new Response(render(__DIR__ . '/../templates/token.html.php', [
+                    'message' => '',
+                ]), 401);
+            }
+            if (! hash_equals(Configuration::getConfig('authentication', 'token'), $request->attribute('token'))) {
+                return new Response(render(__DIR__ . '/../templates/token.html.php', [
+                    'message' => 'Invalid token',
+                ]), 401);
+            }
         }
 
         $action = $request->get('action', 'Frontpage');

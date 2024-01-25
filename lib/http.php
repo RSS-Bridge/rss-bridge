@@ -170,6 +170,7 @@ final class Request
 {
     private array $get;
     private array $server;
+    private array $attributes;
 
     private function __construct()
     {
@@ -180,6 +181,7 @@ final class Request
         $self = new self();
         $self->get = $_GET;
         $self->server = $_SERVER;
+        $self->attributes = [];
         return $self;
     }
 
@@ -198,6 +200,18 @@ final class Request
     public function server(string $key, string $default = null): ?string
     {
         return $this->server[$key] ?? $default;
+    }
+
+    public function withAttribute(string $name, $value = true): self
+    {
+        $clone = clone $this;
+        $clone->attributes[$name] = $value;
+        return $clone;
+    }
+
+    public function attribute(string $key, $default = null)
+    {
+        return $this->attributes[$key] ?? $default;
     }
 
     public function toArray(): array

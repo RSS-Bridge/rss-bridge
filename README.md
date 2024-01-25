@@ -10,6 +10,13 @@ Officially hosted instance: https://rss-bridge.org/bridge01/
 
 IRC channel #rssbridge at https://libera.chat/
 
+[Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
+
+Alternatively find another
+[public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
+
+Requires minimum PHP 7.4.
+
 
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
@@ -43,15 +50,6 @@ IRC channel #rssbridge at https://libera.chat/
 * `XPathBridge`: [Scrape out a feed using XPath expressions](https://rss-bridge.org/bridge01/#bridge-XPathBridge)
 * `YoutubeBridge`: [Fetches videos by username/channel/playlist/search](https://rss-bridge.org/bridge01/#bridge-YoutubeBridge)
 * `YouTubeCommunityTabBridge`: [Fetches posts from a channel's community tab](https://rss-bridge.org/bridge01/#bridge-YouTubeCommunityTabBridge)
-
-[Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
-
-Check out RSS-Bridge right now on https://rss-bridge.org/bridge01/
-
-Alternatively find another
-[public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
-
-Requires minimum PHP 7.4.
 
 ## Tutorial
 
@@ -259,6 +257,14 @@ Learn more in
 
 ## How-to
 
+### How to password-protect the instance (token)
+
+Modify `config.ini.php`:
+
+    [authentication]
+
+    token = "hunter2"
+
 ### How to remove all cache items
 
 As current user:
@@ -332,8 +338,6 @@ Learn more in [bridge api](https://rss-bridge.github.io/rss-bridge/Bridge_API/in
 
 ### How to enable all bridges
 
-Modify `config.ini.php`:
-
     enabled_bridges[] = *
 
 ### How to enable some bridges
@@ -390,9 +394,7 @@ Modify `report_limit` so that an error must occur 3 times before it is reported.
 
 The report count is reset to 0 each day.
 
-### How to password-protect the instance
-
-HTTP basic access authentication:
+### How to password-protect the instance (HTTP Basic Auth)
 
     [authentication]
 
