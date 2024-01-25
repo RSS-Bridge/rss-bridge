@@ -8,14 +8,62 @@ class CarThrottleBridge extends BridgeAbstract
     const MAINTAINER = 't0stiman';
     const DONATION_URI = 'https://ko-fi.com/tostiman';
 
+    const PARAMETERS = array(
+        'Show articles from these categories:' => array(
+            'news' => array(
+                'name' => 'news',
+                'type' => 'checkbox'
+            ),
+            'reviews' => array(
+                'name' => 'reviews',
+                'type' => 'checkbox'
+            ),
+            'features' => array(
+                'name' => 'features',
+                'type' => 'checkbox'
+            ),
+            'videos' => array(
+                'name' => 'videos',
+                'type' => 'checkbox'
+            ),
+            'gaming' => array(
+                'name' => 'gaming',
+                'type' => 'checkbox'
+            )
+        )
+    );
+
     public function collectData()
     {
-        $news = getSimpleHTMLDOMCached(self::URI . 'news');
-
         $this->items = [];
+        
+        $this->handleCategory('news');
+        $this->handleCategory('reviews');
+        $this->handleCategory('features');
+        $this->handleCategory2('videos', 'video');
+        $this->handleCategory('gaming');
+    }
+
+    private function handleCategory($category)
+    {
+        if($this->getInput($category)){
+            $this->getArticles($category);
+        }
+    }
+
+    private function handleCategory2($categoryParameter, $categoryURLname)
+    {
+        if($this->getInput($categoryParameter)){
+            $this->getArticles($categoryURLname);
+        }
+    }
+
+    private function getArticles($category)
+    {
+        $categoryPage = getSimpleHTMLDOMCached(self::URI . $category);
 
         //for each post
-        foreach ($news->find('div.cmg-card') as $post) {
+        foreach ($categoryPage->find('div.cmg-card') as $post) {
             $item = [];
 
             $titleElement = $post->find('div.title a')[0];
@@ -30,24 +78,100 @@ class CarThrottleBridge extends BridgeAbstract
 
             $articlePage = getSimpleHTMLDOMCached($item['uri']);
 
-            $authorDiv = $articlePage->find('div address');
-            if ($authorDiv) {
-                $item['author'] = $authorDiv[0]->innertext;
-            }
+            $item['author'] = $this->parseAuthor($articlePage);
 
-            $fullArticle = $articlePage->find('article')[0];
+            $articleElement = $articlePage->find('article')[0];
+
             //remove ads
-            foreach ($fullArticle->find('aside') as $ad) {
+            foreach ($articleElement->find('aside') as $ad) {
                 $ad->outertext = '';
-                $fullArticle->save();
             }
 
-            $summary = $fullArticle->find('div.summary')[0];
-            $articleMain = $fullArticle->find('#lbs-content')[0];
+            $summary = $articleElement->find('div.summary')[0];
 
-            $item['content'] = $summary . $articleMain;
+            //remove header so we are left with the article content
+            foreach ($articleElement->find('header') as $found) {
+                $found->outertext = '';
+            }
+
+            //remove comments (registering on carthrottle.com is impossible so the comment sections are empty anyway)
+            foreach ($articleElement->find('#lbs-comments') as $found) {
+                $found->outertext = '';
+            }
+
+            //these are supposed to be hidden
+            foreach ($articleElement->find('.visually-hidden') as $found) {
+                $found->outertext = '';
+            }
+
+            //todo is this necessary?
+            //replace embedded youtube videos with links
+            // foreach ($articleElement->find('iframe') as $found) {
+            //     $iframeUrl = $found->getAttribute('src');
+
+            //     //simply using the existing url doesn't work because RSS-bridge removes double slashes
+            //     if(preg_match('/youtu\.be\/+(\w+)/', $iframeUrl, $matches))
+            //     {
+            //         $youtubeID = $matches[1];
+            //     }
+            //     else {
+            //         continue;
+            //     }
+
+            //     $thumbnailURL = 'https://i.ytimg.com/vi/' . $youtubeID . '/hqdefault.jpg';
+            //     $videoURL = 'https://youtu/be/' . $youtubeID;
+            //     $found->outertext = '<a href="' . $videoURL . '"><img src="' . $thumbnailURL . '" alt="' . $videoURL . '"></a>';
+            // }
+
+            $item['content'] = $summary . $articleElement;
 
             array_push($this->items, $item);
         }
+    }
+
+    private function parseAuthor($articlePage)
+    {
+        $authorDivs = $articlePage->find('div address');
+        if (!$authorDivs) {
+            return '';
+        }
+
+        $a = $authorDivs[0]->find('a');
+        if($a){
+            return $a->innertext;
+        }
+        
+        return $authorDivs[0]->innertext;
+    }
+
+    //convert relative url to absolute
+    //https://stackoverflow.com/a/4444490/4671120
+    private function rel2abs($rel, $base)
+    {
+        /* return if already absolute URL */
+        if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;
+    
+        /* queries and anchors */
+        if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel;
+    
+        /* parse base URL and convert to local variables:
+           $scheme, $host, $path */
+        extract(parse_url($base));
+    
+        /* remove non-directory element from path */
+        $path = preg_replace('#/[^/]*$#', '', $path);
+    
+        /* destroy path if relative url points to root */
+        if ($rel[0] == '/') $path = '';
+    
+        /* dirty absolute URL */
+        $abs = "$host$path/$rel";
+    
+        /* replace '//' or '/./' or '/foo/../' with '/' */
+        $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
+        for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
+    
+        /* absolute URL is ready! */
+        return $scheme.'://'.$abs;
     }
 }
