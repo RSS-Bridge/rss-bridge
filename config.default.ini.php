@@ -102,21 +102,13 @@ by_bridge = false
 
 [authentication]
 
-; Enables basic authentication for all requests to this RSS-Bridge instance.
-;
-; Warning: You'll have to upgrade existing feeds after enabling this option!
-;
-; true  = enabled
-; false = disabled (default)
+; HTTP basic authentication
 enable = false
-
 username = "admin"
-
-; The password cannot be the empty string if authentication is enabled.
 password = ""
 
-; This will be used only for actions that require privileged access
-access_token = ""
+; Token authentication (URL)
+token = ""
 
 [error]
 

@@ -102,6 +102,7 @@ class DisplayAction implements ActionInterface
             $bridge->loadConfiguration();
             // Remove parameters that don't concern bridges
             $remove = [
+                'token',
                 'action',
                 'bridge',
                 'format',

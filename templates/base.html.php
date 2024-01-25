@@ -7,6 +7,8 @@
     <title><?= e($_title ?? 'RSS-Bridge') ?></title>
     <link href="static/style.css?2023-03-24" rel="stylesheet">
     <link rel="icon" type="image/png" href="static/favicon.png">
+
+    <script src="static/rss-bridge.js"></script>
 </head>
 
 <body>

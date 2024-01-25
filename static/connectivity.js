@@ -48,7 +48,7 @@ function buildTable(bridgeList) {
 
 		// Link to the actual bridge on frontpage
 		var a = document.createElement('a');
-		a.href = remote + "/?show_inactive=1#bridge-" + bridge;
+		a.href = remote + "/?#bridge-" + bridge;
 		a.target = '_blank';
 		a.innerText = '[Show]';
 		a.style.marginLeft = '5px';
