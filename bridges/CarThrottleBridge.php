@@ -8,35 +8,35 @@ class CarThrottleBridge extends BridgeAbstract
     const MAINTAINER = 't0stiman';
     const DONATION_URI = 'https://ko-fi.com/tostiman';
 
-    const PARAMETERS = array(
-        'Show articles from these categories:' => array(
-            'news' => array(
+    const PARAMETERS = [
+        'Show articles from these categories:' => [
+            'news' => [
                 'name' => 'news',
                 'type' => 'checkbox'
-            ),
-            'reviews' => array(
+            ],
+            'reviews' => [
                 'name' => 'reviews',
                 'type' => 'checkbox'
-            ),
-            'features' => array(
+            ],
+            'features' => [
                 'name' => 'features',
                 'type' => 'checkbox'
-            ),
-            'videos' => array(
+            ],
+            'videos' => [
                 'name' => 'videos',
                 'type' => 'checkbox'
-            ),
-            'gaming' => array(
+            ],
+            'gaming' => [
                 'name' => 'gaming',
                 'type' => 'checkbox'
-            )
-        )
-    );
+            ]
+        ]
+    ];
 
     public function collectData()
     {
         $this->items = [];
-        
+
         $this->handleCategory('news');
         $this->handleCategory('reviews');
         $this->handleCategory('features');
@@ -46,14 +46,14 @@ class CarThrottleBridge extends BridgeAbstract
 
     private function handleCategory($category)
     {
-        if($this->getInput($category)){
+        if ($this->getInput($category)) {
             $this->getArticles($category);
         }
     }
 
     private function handleCategory2($categoryParameter, $categoryURLname)
     {
-        if($this->getInput($categoryParameter)){
+        if ($this->getInput($categoryParameter)) {
             $this->getArticles($categoryURLname);
         }
     }
@@ -137,10 +137,10 @@ class CarThrottleBridge extends BridgeAbstract
         }
 
         $a = $authorDivs[0]->find('a');
-        if($a){
+        if ($a) {
             return $a->innertext;
         }
-        
+
         return $authorDivs[0]->innertext;
     }
 
@@ -149,29 +149,36 @@ class CarThrottleBridge extends BridgeAbstract
     private function rel2abs($rel, $base)
     {
         /* return if already absolute URL */
-        if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;
-    
+        if (parse_url($rel, PHP_URL_SCHEME) != '') {
+            return $rel;
+        }
+
         /* queries and anchors */
-        if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel;
-    
+        if ($rel[0] == '#' || $rel[0] == '?') {
+            return $base . $rel;
+        }
+
         /* parse base URL and convert to local variables:
            $scheme, $host, $path */
         extract(parse_url($base));
-    
+
         /* remove non-directory element from path */
         $path = preg_replace('#/[^/]*$#', '', $path);
-    
+
         /* destroy path if relative url points to root */
-        if ($rel[0] == '/') $path = '';
-    
+        if ($rel[0] == '/') {
+            $path = '';
+        }
+
         /* dirty absolute URL */
         $abs = "$host$path/$rel";
-    
+
         /* replace '//' or '/./' or '/foo/../' with '/' */
-        $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
-        for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
-    
+        $re = ['#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#'];
+        for ($n = 1; $n > 0; $abs = preg_replace($re, '/', $abs, -1, $n)) {
+        }
+
         /* absolute URL is ready! */
-        return $scheme.'://'.$abs;
+        return $scheme . '://' . $abs;
     }
 }
