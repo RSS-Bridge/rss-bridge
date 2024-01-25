@@ -19,17 +19,17 @@ final class BridgeCard
         $name = $bridge->getName();
         $icon = $bridge->getIcon();
         $description = $bridge->getDescription();
-        $parameters = $bridge->getParameters();
+        $contexts = $bridge->getParameters();
 
         if (Configuration::getConfig('proxy', 'url') && Configuration::getConfig('proxy', 'by_bridge')) {
-            $parameters['global']['_noproxy'] = [
+            $contexts['global']['_noproxy'] = [
                 'name' => 'Disable proxy (' . (Configuration::getConfig('proxy', 'name') ?: Configuration::getConfig('proxy', 'url')) . ')',
                 'type' => 'checkbox'
             ];
         }
 
         if (Configuration::getConfig('cache', 'custom_timeout')) {
-            $parameters['global']['_cache_timeout'] = [
+            $contexts['global']['_cache_timeout'] = [
                 'name' => 'Cache timeout in seconds',
                 'type' => 'number',
                 'defaultValue' => $bridge->getCacheTimeout()
@@ -38,41 +38,46 @@ final class BridgeCard
 
         $shortName = $bridge->getShortName();
         $card = <<<CARD
-                <section
-                    class="bridge-card"
-                    id="bridge-{$bridgeClassName}"
-                    data-ref="{$name}"
-                    data-short-name="$shortName"
-                >
+            <section
+                class="bridge-card"
+                id="bridge-{$bridgeClassName}"
+                data-ref="{$name}"
+                data-short-name="$shortName"
+            >
 
-                <h2><a href="{$uri}">{$name}</a></h2>
-                <p class="description">{$description}</p>
-                <input type="checkbox" class="showmore-box" id="showmore-{$bridgeClassName}" />
-                <label class="showmore" for="showmore-{$bridgeClassName}">Show more</label>
-CARD;
+            <h2><a href="{$uri}">{$name}</a></h2>
+            <p class="description">{$description}</p>
+            <input type="checkbox" class="showmore-box" id="showmore-{$bridgeClassName}" />
+            <label class="showmore" for="showmore-{$bridgeClassName}">Show more</label>
+
+
+        CARD;
 
         // If we don't have any parameter for the bridge, we print a generic form to load it.
-        if (count($parameters) === 0) {
+        if (count($contexts) === 0) {
+            // The bridge has zero parameters
             $card .= self::getForm($bridgeClassName, $isActive);
-
-            // Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
-        } elseif (count($parameters) === 1 && array_key_exists('global', $parameters)) {
-            $card .= self::getForm($bridgeClassName, $isActive, '', $parameters['global']);
+        } elseif (count($contexts) === 1 && array_key_exists('global', $contexts)) {
+            // The bridge has a single context with key 'global'
+            $card .= self::getForm($bridgeClassName, $isActive, '', $contexts['global']);
         } else {
-            foreach ($parameters as $parameterName => $parameter) {
-                if (!is_numeric($parameterName) && $parameterName === 'global') {
+            // The bridge has one or more contexts (named or unnamed)
+            foreach ($contexts as $contextName => $contextParameters) {
+                if ($contextName === 'global') {
                     continue;
                 }
 
-                if (array_key_exists('global', $parameters)) {
-                    $parameter = array_merge($parameter, $parameters['global']);
+                if (array_key_exists('global', $contexts)) {
+                    // Merge the global parameters into current context
+                    $contextParameters = array_merge($contextParameters, $contexts['global']);
                 }
 
-                if (!is_numeric($parameterName)) {
-                    $card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
+                if (!is_numeric($contextName)) {
+                    // This is a named context
+                    $card .= '<h5>' . $contextName . '</h5>' . PHP_EOL;
                 }
 
-                $card .= self::getForm($bridgeClassName, $isActive, $parameterName, $parameter);
+                $card .= self::getForm($bridgeClassName, $isActive, $contextName, $contextParameters);
             }
         }
 
@@ -92,35 +97,27 @@ CARD;
         return $card;
     }
 
-    /**
-     * Get the form body for a bridge
-     *
-     * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
-     * @param bool $isActive Indicates if a bridge is enabled or not
-     * @param string $parameterName Sets the bridge context for the current form
-     * @param array $parameters The bridge parameters
-     * @return string The form body
-     */
     private static function getForm(
-        $bridgeClassName,
-        $isActive = false,
-        $parameterName = '',
-        $parameters = []
+        string $bridgeClassName,
+        bool $isActive = false,
+        string $contextName = '',
+        array $contextParameters = []
     ) {
         $form = <<<EOD
-            <form method="GET" action="?">
-                <input type="hidden" name="action" value="display" />
-                <input type="hidden" name="bridge" value="{$bridgeClassName}" />
-EOD;
+        <form method="GET" action="?">
+            <input type="hidden" name="action" value="display" />
+            <input type="hidden" name="bridge" value="{$bridgeClassName}" />
 
-        if (!empty($parameterName)) {
-            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $parameterName);
+        EOD;
+
+        if (!empty($contextName)) {
+            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $contextName);
         }
 
-        if (count($parameters) > 0) {
+        if (count($contextParameters) > 0) {
             $form .= '<div class="parameters">';
 
-            foreach ($parameters as $id => $inputEntry) {
+            foreach ($contextParameters as $id => $inputEntry) {
                 if (!isset($inputEntry['exampleValue'])) {
                     $inputEntry['exampleValue'] = '';
                 }
@@ -129,7 +126,7 @@ EOD;
                     $inputEntry['defaultValue'] = '';
                 }
 
-                $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($parameterName) . '-' . urlencode($id);
+                $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
 
                 $inputName = filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $form .= '<label for="' . $idArg . '">' . $inputName . '</label>' . PHP_EOL;
@@ -138,13 +135,16 @@ EOD;
                     !isset($inputEntry['type'])
                     || $inputEntry['type'] === 'text'
                 ) {
-                    $form .= self::getTextInput($inputEntry, $idArg, $id);
+                    $form .= self::getTextInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'number') {
                     $form .= self::getNumberInput($inputEntry, $idArg, $id);
                 } elseif ($inputEntry['type'] === 'list') {
-                    $form .= self::getListInput($inputEntry, $idArg, $id);
+                    $form .= self::getListInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'checkbox') {
                     $form .= self::getCheckboxInput($inputEntry, $idArg, $id);
+                } else {
+                    $foo = 2;
+                    // oops?
                 }
 
                 $infoText = [];
@@ -182,7 +182,7 @@ EOD;
         $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $attributes = self::getInputAttributes($entry);
 
-        return sprintf('<input %s id="%s" type="text" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
+        return sprintf('<input %s id="%s" type="text" value="%s" placeholder="%s" name="%s" />', $attributes, $id, $defaultValue, $exampleValue, $name);
     }
 
     public static function getNumberInput(array $entry, string $id, string $name): string
@@ -203,7 +203,7 @@ EOD;
         }
 
         $attributes = self::getInputAttributes($entry);
-        $list = sprintf('<select %s id="%s" name="%s" >', $attributes, $id, $name);
+        $list = sprintf('<select %s id="%s" name="%s" >' . "\n", $attributes, $id, $name);
 
         foreach ($entry['values'] as $name => $value) {
             if (is_array($value)) {
@@ -224,9 +224,9 @@ EOD;
                     $entry['defaultValue'] === $name
                     || $entry['defaultValue'] === $value
                 ) {
-                    $list .= '<option value="' . $value . '" selected>' . $name . '</option>';
+                    $list .= '<option value="' . $value . '" selected>' . $name . '</option>' . "\n";
                 } else {
-                    $list .= '<option value="' . $value . '">' . $name . '</option>';
+                    $list .= '<option value="' . $value . '">' . $name . '</option>' . "\n";
                 }
             }
         }

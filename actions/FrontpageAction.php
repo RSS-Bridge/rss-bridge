@@ -27,7 +27,7 @@ final class FrontpageAction implements ActionInterface
                 $body .= BridgeCard::displayBridgeCard($bridgeClassName);
                 $activeBridges++;
             } elseif ($showInactive) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName, false) . PHP_EOL;
+                $body .= BridgeCard::displayBridgeCard($bridgeClassName, false) . "\n";
             }
         }
 

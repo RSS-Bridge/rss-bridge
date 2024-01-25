@@ -105,6 +105,7 @@ class DisplayAction implements ActionInterface
                 '_noproxy',
                 '_cache_timeout',
                 '_error_time',
+                '_', // Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
             ];
             $input = array_diff_key($request, array_fill_keys($remove, ''));
             $bridge->setInput($input);
