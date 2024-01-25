@@ -6,17 +6,14 @@ final class BridgeCard
      * Gets a single bridge card
      *
      * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
-     * @param array $formats A list of formats
      * @param bool $isActive Indicates if the bridge is active or not
      * @return string The bridge card
      */
-    public static function displayBridgeCard($bridgeClassName, $formats, $isActive = true)
+    public static function displayBridgeCard($bridgeClassName, $isActive = true)
     {
         $bridgeFactory = new BridgeFactory();
 
         $bridge = $bridgeFactory->create($bridgeClassName);
-
-        $isHttps = str_starts_with($bridge->getURI(), 'https');
 
         $uri = $bridge->getURI();
         $name = $bridge->getName();
@@ -56,11 +53,11 @@ CARD;
 
         // If we don't have any parameter for the bridge, we print a generic form to load it.
         if (count($parameters) === 0) {
-            $card .= self::getForm($bridgeClassName, $formats, $isActive, $isHttps);
+            $card .= self::getForm($bridgeClassName, $isActive);
 
             // Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
         } elseif (count($parameters) === 1 && array_key_exists('global', $parameters)) {
-            $card .= self::getForm($bridgeClassName, $formats, $isActive, $isHttps, '', $parameters['global']);
+            $card .= self::getForm($bridgeClassName, $isActive, '', $parameters['global']);
         } else {
             foreach ($parameters as $parameterName => $parameter) {
                 if (!is_numeric($parameterName) && $parameterName === 'global') {
@@ -75,11 +72,12 @@ CARD;
                     $card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
                 }
 
-                $card .= self::getForm($bridgeClassName, $formats, $isActive, $isHttps, $parameterName, $parameter);
+                $card .= self::getForm($bridgeClassName, $isActive, $parameterName, $parameter);
             }
         }
 
         $card .= sprintf('<label class="showless" for="showmore-%s">Show less</label>', $bridgeClassName);
+
         if ($bridge->getDonationURI() !== '' && Configuration::getConfig('admin', 'donations')) {
             $card .= sprintf(
                 '<p class="maintainer">%s ~ <a href="%s">Donate</a></p>',
@@ -98,22 +96,26 @@ CARD;
      * Get the form body for a bridge
      *
      * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
-     * @param array $formats A list of supported formats
      * @param bool $isActive Indicates if a bridge is enabled or not
-     * @param bool $isHttps Indicates if a bridge uses HTTPS or not
      * @param string $parameterName Sets the bridge context for the current form
      * @param array $parameters The bridge parameters
      * @return string The form body
      */
     private static function getForm(
         $bridgeClassName,
-        $formats,
         $isActive = false,
-        $isHttps = false,
         $parameterName = '',
         $parameters = []
     ) {
-        $form = self::getFormHeader($bridgeClassName, $isHttps, $parameterName);
+        $form = <<<EOD
+            <form method="GET" action="?">
+                <input type="hidden" name="action" value="display" />
+                <input type="hidden" name="bridge" value="{$bridgeClassName}" />
+EOD;
+
+        if (!empty($parameterName)) {
+            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $parameterName);
+        }
 
         if (count($parameters) > 0) {
             $form .= '<div class="parameters">';
@@ -132,7 +134,10 @@ CARD;
                 $inputName = filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
                 $form .= '<label for="' . $idArg . '">' . $inputName . '</label>' . PHP_EOL;
 
-                if (!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
+                if (
+                    !isset($inputEntry['type'])
+                    || $inputEntry['type'] === 'text'
+                ) {
                     $form .= self::getTextInput($inputEntry, $idArg, $id);
                 } elseif ($inputEntry['type'] === 'number') {
                     $form .= self::getNumberInput($inputEntry, $idArg, $id);
@@ -169,32 +174,6 @@ CARD;
         }
 
         return $form . '</form>' . PHP_EOL;
-    }
-
-    /**
-     * Get the form header for a bridge card
-     *
-     * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
-     * @param bool $isHttps If disabled, adds a warning to the form
-     * @return string The form header
-     */
-    private static function getFormHeader($bridgeClassName, $isHttps = false, $parameterName = '')
-    {
-        $form = <<<EOD
-            <form method="GET" action="?">
-                <input type="hidden" name="action" value="display" />
-                <input type="hidden" name="bridge" value="{$bridgeClassName}" />
-EOD;
-
-        if (!empty($parameterName)) {
-            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $parameterName);
-        }
-
-        if (!$isHttps) {
-            $form .= '<div class="secure-warning">Warning: This bridge is not fetching its content through a secure connection</div>';
-        }
-
-        return $form;
     }
 
     public static function getTextInput(array $entry, string $id, string $name): string
