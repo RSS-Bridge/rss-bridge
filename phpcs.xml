@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="RSS-Bridge Ruleset">
-  <description>Created with the PHP Coding Standard Generator. http://edorian.github.com/php-coding-standard-generator/</description>
+  <description>
+    Originally created with the PHP Coding Standard Generator.
+    But later manually tweaked.
+    http://edorian.github.com/php-coding-standard-generator/
+  </description>
+
   <exclude-pattern>./static</exclude-pattern>
   <exclude-pattern>./vendor</exclude-pattern>
   <exclude-pattern>./templates</exclude-pattern>
@@ -11,6 +16,7 @@
     <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
     <exclude name="PSR1.Classes.ClassDeclaration.MultipleClasses"/>
     <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
+    <exclude name="PSR2.Files.EndFileNewline"/>
     <exclude name="PSR12.Properties.ConstantVisibility.NotFound"/>
   </rule>
 

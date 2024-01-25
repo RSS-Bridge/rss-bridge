@@ -37,6 +37,7 @@ class CacheFactory
         if ($index === false) {
             throw new \InvalidArgumentException(sprintf('Invalid cache name: "%s"', $name));
         }
+
         $className = $cacheNames[$index] . 'Cache';
         if (!preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $className)) {
             throw new \InvalidArgumentException(sprintf('Invalid cache classname: "%s"', $className));

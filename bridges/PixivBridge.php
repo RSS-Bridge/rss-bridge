@@ -1,9 +1,11 @@
 <?php
 
+/**
+ * Good resource on API return values (Ex: illustType):
+ * https://hackage.haskell.org/package/pixiv-0.1.0/docs/Web-Pixiv-Types.html
+ */
 class PixivBridge extends BridgeAbstract
 {
-    // Good resource on API return values (Ex: illustType):
-    // https://hackage.haskell.org/package/pixiv-0.1.0/docs/Web-Pixiv-Types.html
     const NAME = 'Pixiv Bridge';
     const URI = 'https://www.pixiv.net/';
     const DESCRIPTION = 'Returns the tag search from pixiv.net';
@@ -18,7 +20,6 @@ class PixivBridge extends BridgeAbstract
             'defaultValue' => null
         ]
     ];
-
 
     const PARAMETERS = [
         'global' => [
@@ -251,14 +252,13 @@ class PixivBridge extends BridgeAbstract
                     $img_url = preg_replace('/https:\/\/i\.pximg\.net/', $proxy_url, $result['url']);
                 }
             } else {
-                //else cache and use image.
-                $img_url = $this->cacheImage(
-                    $result['url'],
-                    $result['id'],
-                    array_key_exists('illustType', $result)
-                );
+                $img_url = $result['url'];
+                // Temporarily disabling caching of the image
+                //$img_url = $this->cacheImage($result['url'], $result['id'], array_key_exists('illustType', $result));
             }
-            $item['content'] = "<img src='" . $img_url . "' />";
+
+            // Currently, this might result in broken image due to their strict referrer check
+            $item['content'] = sprintf('<a href="%s"><img src="%s"/></a>', $img_url, $img_url);
 
             // Additional content items
             if (array_key_exists('pageCount', $result)) {
@@ -318,7 +318,7 @@ class PixivBridge extends BridgeAbstract
             if (
                 !(strlen($proxy) > 0 && preg_match('/https?:\/\/.*/', $proxy))
             ) {
-                return returnServerError('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
+                returnServerError('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
             }
         }
 
@@ -326,8 +326,7 @@ class PixivBridge extends BridgeAbstract
         if ($cookie) {
             $isAuth = $this->loadCacheValue('is_authenticated');
             if (!$isAuth) {
-                $res = $this->getData('https://www.pixiv.net/ajax/webpush', true, true)
-                    or returnServerError('Invalid PHPSESSID cookie provided. Please check the 🍪 and try again.');
+                $res = $this->getData('https://www.pixiv.net/ajax/webpush', true, true);
                 if ($res['error'] === false) {
                     $this->saveCacheValue('is_authenticated', true);
                 }
@@ -374,11 +373,11 @@ class PixivBridge extends BridgeAbstract
         if ($cache) {
             $data = $this->loadCacheValue($url);
             if (!$data) {
-                $data = getContents($url, $httpHeaders, $curlOptions, true) or returnServerError("Could not load $url");
+                $data = getContents($url, $httpHeaders, $curlOptions, true);
                 $this->saveCacheValue($url, $data);
             }
         } else {
-            $data = getContents($url, $httpHeaders, $curlOptions, true) or returnServerError("Could not load $url");
+            $data = getContents($url, $httpHeaders, $curlOptions, true);
         }
 
         $this->checkCookie($data['headers']);

@@ -171,6 +171,7 @@ function parse_mime_type($url)
             'jpg' => 'image/jpeg',
             'gif' => 'image/gif',
             'png' => 'image/png',
+            'webp' => 'image/webp',
             'image' => 'image/*',
             'mp3' => 'audio/mpeg',
         ];

@@ -149,6 +149,7 @@ final class StreamHandler
         );
         error_log($text);
         if ($record['level'] < Logger::ERROR && Debug::isEnabled()) {
+            // The record level is INFO or WARNING here
             // Not a good idea to print here because http headers might not have been sent
             print sprintf("<pre>%s</pre>\n", e($text));
         }

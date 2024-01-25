@@ -8,7 +8,7 @@ if (!class_exists('Releases3DSBridge')) {
 class ReleasesSwitchBridge extends Releases3DSBridge
 {
     const NAME = 'Switch Scene Releases';
-    const URI = 'http://www.nswdb.com/';
+    const URI = 'http://nswdb.com/';
     const DESCRIPTION = 'Returns the newest scene releases for Nintendo Switch.';
 
     public function collectData()

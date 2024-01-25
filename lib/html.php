@@ -36,7 +36,7 @@ function render(string $template, array $context = []): string
 /**
  * Render php template with context
  *
- * DO NOT PASS USER INPUT IN $template or $context
+ * DO NOT PASS USER INPUT IN $template OR $context (keys!)
  */
 function render_template(string $template, array $context = []): string
 {

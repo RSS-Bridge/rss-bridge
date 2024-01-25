@@ -61,7 +61,7 @@ abstract class BaseFormatTest extends TestCase
         $formatFactory = new FormatFactory();
         $format = $formatFactory->create($formatName);
         $format->setItems($sample->items);
-        $format->setExtraInfos($sample->meta);
+        $format->setFeed($sample->meta);
         $format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
         return $format->stringify();

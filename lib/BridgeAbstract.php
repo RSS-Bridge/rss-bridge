@@ -40,9 +40,38 @@ abstract class BridgeAbstract
 
     abstract public function collectData();
 
-    public function getItems()
+    public function getFeed(): array
     {
-        return $this->items;
+        return [
+            'name'          => $this->getName(),
+            'uri'           => $this->getURI(),
+            'donationUri'   => $this->getDonationURI(),
+            'icon'          => $this->getIcon(),
+        ];
+    }
+
+    public function getName()
+    {
+        return static::NAME;
+    }
+
+    public function getURI()
+    {
+        return static::URI ?? 'https://github.com/RSS-Bridge/rss-bridge/';
+    }
+
+    public function getDonationURI(): string
+    {
+        return static::DONATION_URI;
+    }
+
+    public function getIcon()
+    {
+        if (static::URI) {
+            // This favicon may or may not exist
+            return rtrim(static::URI, '/') . '/favicon.ico';
+        }
+        return '';
     }
 
     public function getOption(string $name)
@@ -50,6 +79,9 @@ abstract class BridgeAbstract
         return $this->configuration[$name] ?? null;
     }
 
+    /**
+     * The description is currently not used in feed production
+     */
     public function getDescription()
     {
         return static::DESCRIPTION;
@@ -60,29 +92,14 @@ abstract class BridgeAbstract
         return static::MAINTAINER;
     }
 
-    public function getName()
-    {
-        return static::NAME;
-    }
-
-    public function getIcon()
-    {
-        return static::URI . '/favicon.ico';
-    }
-
     public function getParameters(): array
     {
         return static::PARAMETERS;
     }
 
-    public function getURI()
+    public function getItems()
     {
-        return static::URI;
-    }
-
-    public function getDonationURI(): string
-    {
-        return static::DONATION_URI;
+        return $this->items;
     }
 
     public function getCacheTimeout()
@@ -154,8 +171,8 @@ abstract class BridgeAbstract
     {
         // Import and assign all inputs to their context
         foreach ($input as $name => $value) {
-            foreach (static::PARAMETERS as $context => $set) {
-                if (array_key_exists($name, static::PARAMETERS[$context])) {
+            foreach ($this->getParameters() as $context => $set) {
+                if (array_key_exists($name, $this->getParameters()[$context])) {
                     $this->inputs[$context][$name]['value'] = $value;
                 }
             }
@@ -163,16 +180,16 @@ abstract class BridgeAbstract
 
         // Apply default values to missing data
         $contexts = [$queriedContext];
-        if (array_key_exists('global', static::PARAMETERS)) {
+        if (array_key_exists('global', $this->getParameters())) {
             $contexts[] = 'global';
         }
 
         foreach ($contexts as $context) {
-            if (!isset(static::PARAMETERS[$context])) {
+            if (!isset($this->getParameters()[$context])) {
                 // unknown context provided by client, throw exception here? or continue?
             }
 
-            foreach (static::PARAMETERS[$context] as $name => $properties) {
+            foreach ($this->getParameters()[$context] as $name => $properties) {
                 if (isset($this->inputs[$context][$name]['value'])) {
                     continue;
                 }
@@ -204,8 +221,8 @@ abstract class BridgeAbstract
         }
 
         // Copy global parameter values to the guessed context
-        if (array_key_exists('global', static::PARAMETERS)) {
-            foreach (static::PARAMETERS['global'] as $name => $properties) {
+        if (array_key_exists('global', $this->getParameters())) {
+            foreach ($this->getParameters()['global'] as $name => $properties) {
                 if (isset($input[$name])) {
                     $value = $input[$name];
                 } else {
@@ -246,8 +263,8 @@ abstract class BridgeAbstract
         if (!isset($this->inputs[$this->queriedContext][$input]['value'])) {
             return null;
         }
-        if (array_key_exists('global', static::PARAMETERS)) {
-            if (array_key_exists($input, static::PARAMETERS['global'])) {
+        if (array_key_exists('global', $this->getParameters())) {
+            if (array_key_exists($input, $this->getParameters()['global'])) {
                 $context = 'global';
             }
         }
@@ -256,7 +273,7 @@ abstract class BridgeAbstract
         }
 
         $needle = $this->inputs[$this->queriedContext][$input]['value'];
-        foreach (static::PARAMETERS[$context][$input]['values'] as $first_level_key => $first_level_value) {
+        foreach ($this->getParameters()[$context][$input]['values'] as $first_level_key => $first_level_value) {
             if (!is_array($first_level_value) && $needle === (string)$first_level_value) {
                 return $first_level_key;
             } elseif (is_array($first_level_value)) {
@@ -273,7 +290,7 @@ abstract class BridgeAbstract
     {
         $regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
         if (
-            empty(static::PARAMETERS)
+            empty($this->getParameters())
             && preg_match($regex, $url, $urlMatches) > 0
             && preg_match($regex, static::URI, $bridgeUriMatches) > 0
             && $urlMatches[3] === $bridgeUriMatches[3]
