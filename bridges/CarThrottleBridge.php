@@ -6,6 +6,7 @@ class CarThrottleBridge extends BridgeAbstract
     const URI = 'https://www.carthrottle.com/';
     const DESCRIPTION = 'Get the latest car-related news from Car Throttle.';
     const MAINTAINER = 't0stiman';
+    const DONATION_URI = 'https://ko-fi.com/tostiman';
 
     public function collectData()
     {
@@ -17,8 +18,14 @@ class CarThrottleBridge extends BridgeAbstract
         foreach ($news->find('div.cmg-card') as $post) {
             $item = [];
 
-            $titleElement = $post->find('div.title a.cmg-link')[0];
-            $item['uri'] = self::URI . $titleElement->getAttribute('href');
+            $titleElement = $post->find('div.title a')[0];
+            $post_uri = self::URI . $titleElement->getAttribute('href');
+
+            if (!isset($post_uri) || $post_uri == '') {
+                continue;
+            }
+
+            $item['uri'] = $post_uri;
             $item['title'] = $titleElement->innertext;
 
             $articlePage = getSimpleHTMLDOMCached($item['uri']);
