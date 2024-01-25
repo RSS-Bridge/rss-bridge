@@ -12,20 +12,21 @@ class HtmlFormat extends FormatAbstract
         $formatFactory = new FormatFactory();
         $buttons = [];
         $linkTags = [];
-        foreach ($formatFactory->getFormatNames() as $format) {
+        foreach ($formatFactory->getFormatNames() as $formatName) {
             // Dynamically build buttons for all formats (except HTML)
-            if ($format === 'Html') {
+            if ($formatName === 'Html') {
                 continue;
             }
-            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $format, htmlentities($queryString));
+            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $formatName, htmlentities($queryString));
             $buttons[] = [
                 'href' => $formatUrl,
-                'value' => $format,
+                'value' => $formatName,
             ];
+            $format = $formatFactory->create($formatName);
             $linkTags[] = [
                 'href' => $formatUrl,
-                'title' => $format,
-                'type' => $formatFactory->create($format)->getMimeType(),
+                'title' => $formatName,
+                'type' => $format->getMimeType(),
             ];
         }
 

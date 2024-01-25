@@ -26,6 +26,7 @@ abstract class FeedExpander extends BridgeAbstract
         $badStrings = [
             '&nbsp;',
             '&raquo;',
+            '&rsquo;',
         ];
         $xmlString = str_replace($badStrings, '', $xmlString);
         $feedParser = new FeedParser();

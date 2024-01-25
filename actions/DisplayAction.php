@@ -11,9 +11,13 @@ class DisplayAction implements ActionInterface
         $this->logger = RssBridge::getLogger();
     }
 
-    public function execute(array $request)
+    public function execute(Request $request)
     {
-        $cacheKey = 'http_' . json_encode($request);
+        $bridgeName = $request->get('bridge');
+        $format = $request->get('format');
+        $noproxy = $request->get('_noproxy');
+
+        $cacheKey = 'http_' . json_encode($request->toArray());
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
         if ($cachedResponse) {
@@ -31,7 +35,6 @@ class DisplayAction implements ActionInterface
             return $cachedResponse;
         }
 
-        $bridgeName = $request['bridge'] ?? null;
         if (!$bridgeName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Missing bridge parameter']), 400);
         }
@@ -40,7 +43,7 @@ class DisplayAction implements ActionInterface
         if (!$bridgeClassName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Bridge not found']), 404);
         }
-        $format = $request['format'] ?? null;
+
         if (!$format) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'You must specify a format']), 400);
         }
@@ -48,7 +51,7 @@ class DisplayAction implements ActionInterface
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'This bridge is not whitelisted']), 400);
         }
 
-        $noproxy = $request['_noproxy'] ?? null;
+
         if (
             Configuration::getConfig('proxy', 'url')
             && Configuration::getConfig('proxy', 'by_bridge')
@@ -65,7 +68,7 @@ class DisplayAction implements ActionInterface
         $response = $this->createResponse($request, $bridge, $format);
 
         if ($response->getCode() === 200) {
-            $ttl = $request['_cache_timeout'] ?? null;
+            $ttl = $request->get('_cache_timeout');
             if (Configuration::getConfig('cache', 'custom_timeout') && $ttl) {
                 $ttl = (int) $ttl;
             } else {
@@ -90,7 +93,7 @@ class DisplayAction implements ActionInterface
         return $response;
     }
 
-    private function createResponse(array $request, BridgeAbstract $bridge, FormatAbstract $format)
+    private function createResponse(Request $request, BridgeAbstract $bridge, FormatAbstract $format)
     {
         $items = [];
         $feed = [];
@@ -107,7 +110,8 @@ class DisplayAction implements ActionInterface
                 '_error_time',
                 '_', // Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
             ];
-            $input = array_diff_key($request, array_fill_keys($remove, ''));
+            $requestArray = $request->toArray();
+            $input = array_diff_key($requestArray, array_fill_keys($remove, ''));
             $bridge->setInput($input);
             $bridge->collectData();
             $items = $bridge->getItems();

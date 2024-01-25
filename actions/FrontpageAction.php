@@ -2,10 +2,11 @@
 
 final class FrontpageAction implements ActionInterface
 {
-    public function execute(array $request)
+    public function execute(Request $request)
     {
+        $showInactive = (bool) $request->get('show_inactive');
+
         $messages = [];
-        $showInactive = (bool) ($request['show_inactive'] ?? null);
         $activeBridges = 0;
 
         $bridgeFactory = new BridgeFactory();
@@ -18,16 +19,13 @@ final class FrontpageAction implements ActionInterface
             ];
         }
 
-        $formatFactory = new FormatFactory();
-        $formats = $formatFactory->getFormatNames();
-
         $body = '';
         foreach ($bridgeClassNames as $bridgeClassName) {
             if ($bridgeFactory->isEnabled($bridgeClassName)) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName);
+                $body .= BridgeCard::render($bridgeClassName);
                 $activeBridges++;
             } elseif ($showInactive) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName, false) . "\n";
+                $body .= BridgeCard::render($bridgeClassName, false) . "\n";
             }
         }
 
