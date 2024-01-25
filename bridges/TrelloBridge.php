@@ -648,7 +648,7 @@ class TrelloBridge extends BridgeAbstract
                 $action->type
             ];
             if (isset($action->data->card)) {
-                $item['categories'][] = $action->data->card->name;
+                $item['categories'][] = $action->data->card->name ?? $action->data->card->id;
                 $item['uri'] = 'https://trello.com/c/'
                     . $action->data->card->shortLink
                     . '#action-'

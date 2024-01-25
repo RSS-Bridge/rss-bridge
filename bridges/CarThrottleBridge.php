@@ -9,8 +9,10 @@ class CarThrottleBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $news = getSimpleHTMLDOMCached(self::URI . 'news')
-            or returnServerError('could not retrieve page');
+        $news = getSimpleHTMLDOMCached(self::URI . 'news');
+
+        // $reviews = getSimpleHTMLDOMCached(self::URI . 'reviews')
+        //     or returnServerError('could not retrieve page');
 
         // $reviews = getSimpleHTMLDOMCached(self::URI . 'reviews')
         //     or returnServerError('could not retrieve page');
@@ -31,8 +33,7 @@ class CarThrottleBridge extends BridgeAbstract
             $item['uri'] = $post_uri;
             $item['title'] = $titleElement->innertext;
 
-            $articlePage = getSimpleHTMLDOMCached($item['uri'])
-                or returnServerError('could not retrieve page');
+            $articlePage = getSimpleHTMLDOMCached($item['uri']);
 
             $authorDiv = $articlePage->find('div.author div');
             if ($authorDiv) {

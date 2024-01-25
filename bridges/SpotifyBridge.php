@@ -317,8 +317,10 @@ class SpotifyBridge extends BridgeAbstract
 
     private function getFirstEntry()
     {
-        $uris = explode(',', $this->getInput('spotifyuri'));
-        if (!is_null($this->getInput('spotifyuri')) && strpos($this->getInput('spotifyuri'), ',') === false) {
+        $spotifyUri = $this->getInput('spotifyuri');
+
+        if (!is_null($spotifyUri) && strpos($spotifyUri, ',') === false) {
+            $uris = explode(',', $spotifyUri);
             $firstUri = $uris[0];
             $type = explode(':', $firstUri)[1];
             $spotifyId = explode(':', $firstUri)[2];

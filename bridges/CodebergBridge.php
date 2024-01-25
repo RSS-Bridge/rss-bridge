@@ -79,9 +79,9 @@ class CodebergBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
-
-        $html = defaultLinkTo($html, $this->getURI());
+        $url = $this->getURI();
+        $html = getSimpleHTMLDOM($url);
+        $html = defaultLinkTo($html, $url);
 
         switch ($this->queriedContext) {
             case 'Commits':
@@ -205,22 +205,22 @@ class CodebergBridge extends BridgeAbstract
      */
     private function extractIssues($html)
     {
-        $div = $html->find('div.issue.list', 0);
+        $issueList = $html->find('div#issue-list', 0);
 
-        foreach ($div->find('li.item') as $li) {
+        foreach ($issueList->find('div.flex-item') as $div) {
             $item = [];
 
-            $number = trim($li->find('a.index,ml-0.mr-2', 0)->plaintext);
+            $number = trim($div->find('a.index,ml-0.mr-2', 0)->plaintext);
 
-            $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
-            $item['uri'] = $li->find('a.title', 0)->href;
+            $item['title'] = $div->find('a.issue-title', 0)->plaintext . ' (' . $number . ')';
+            $item['uri'] = $div->find('a.issue-title', 0)->href;
 
-            $time = $li->find('relative-time.time-since', 0);
+            $time = $div->find('relative-time.time-since', 0);
             if ($time) {
                 $item['timestamp'] = $time->datetime;
             }
 
-            $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
+            //$item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch issue page
             $issuePage = getSimpleHTMLDOMCached($item['uri'], 3600);
@@ -228,7 +228,7 @@ class CodebergBridge extends BridgeAbstract
 
             $item['content'] = $issuePage->find('div.timeline-item.comment.first', 0)->find('div.render-content.markup', 0);
 
-            foreach ($li->find('a.ui.label') as $label) {
+            foreach ($div->find('a.ui.label') as $label) {
                 $item['categories'][] = $label->plaintext;
             }
 
@@ -275,22 +275,26 @@ class CodebergBridge extends BridgeAbstract
      */
     private function extractPulls($html)
     {
-        $div = $html->find('div.issue.list', 0);
+        $div = $html->find('div#issue-list', 0);
 
-        foreach ($div->find('li.item') as $li) {
+        $var2 = $div->find('div.flex-item');
+        foreach ($var2 as $li) {
             $item = [];
 
             $number = trim($li->find('a.index,ml-0.mr-2', 0)->plaintext);
 
-            $item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
-            $item['uri'] = $li->find('a.title', 0)->href;
+            $a = $li->find('a.issue-title', 0);
+            $item['title'] = $a->plaintext . ' (' . $number . ')';
+            $item['uri'] = $a->href;
 
             $time = $li->find('relative-time.time-since', 0);
             if ($time) {
                 $item['timestamp'] = $time->datetime;
             }
 
-            $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
+            // Extracting the author is a bit awkward after they changed their html
+            //$desc = $li->find('div.desc', 0);
+            //$item['author'] = $desc->find('a', 1)->plaintext;
 
             // Fetch pull request page
             $pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600);

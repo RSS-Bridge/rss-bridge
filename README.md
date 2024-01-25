@@ -2,16 +2,18 @@
 
 ![RSS-Bridge](static/logo_600px.png)
 
-RSS-Bridge is a web application.
+RSS-Bridge is a PHP web application.
 
 It generates web feeds for websites that don't have one.
 
 Officially hosted instance: https://rss-bridge.org/bridge01/
 
+IRC channel #rssbridge at https://libera.chat/
+
+
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
 [![irc.libera.chat](https://img.shields.io/badge/irc.libera.chat-%23rssbridge-blue.svg)](https://web.libera.chat/#rssbridge)
-[![Chat on Matrix](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#rssbridge:libera.chat)
 [![Actions Status](https://img.shields.io/github/actions/workflow/status/RSS-Bridge/rss-bridge/tests.yml?branch=master&label=GitHub%20Actions&logo=github)](https://github.com/RSS-Bridge/rss-bridge/actions)
 
 |||
@@ -49,53 +51,146 @@ Check out RSS-Bridge right now on https://rss-bridge.org/bridge01/
 Alternatively find another
 [public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
 
-## Tutorial
-
-### Install with composer or git
-
 Requires minimum PHP 7.4.
 
+## Tutorial
+
+### How to install on traditional shared web hosting
+
+RSS-Bridge can basically be unzipped in a web folder. Should be working instantly.
+
+Latest zip as of Sep 2023: https://github.com/RSS-Bridge/rss-bridge/archive/refs/tags/2023-09-24.zip
+
+### How to install on Debian 12 (nginx + php-fpm)
+
+These instructions have been tested on a fresh Debian 12 VM from Digital Ocean (1vcpu-512mb-10gb, 5 USD/month).
+
 ```shell
-apt install nginx php-fpm php-mbstring php-simplexml php-curl
+timedatectl set-timezone Europe/Oslo
+
+apt install git nginx php8.2-fpm php-mbstring php-simplexml php-curl
+
+# Create a new user account
+useradd --shell /bin/bash --create-home rss-bridge
+
+cd /var/www
+
+# Create folder and change ownership
+mkdir rss-bridge && chown rss-bridge:rss-bridge rss-bridge/
+
+# Become user
+su rss-bridge
+
+# Fetch latest master
+git clone https://github.com/RSS-Bridge/rss-bridge.git rss-bridge/
+cd rss-bridge
+
+# Copy over the default config
+cp -v config.default.ini.php config.ini.php
+
+# Give full permissions only to owner (rss-bridge)
+chmod 700 -R ./
+
+# Give read and execute to others (nginx and php-fpm)
+chmod o+rx ./ ./static
+
+# Give read to others (nginx)
+chmod o+r -R ./static
 ```
+
+Nginx config:
+
+```nginx
+# /etc/nginx/sites-enabled/rss-bridge.conf
+
+server {
+    listen 80;
+    server_name example.com;
+    access_log /var/log/nginx/rss-bridge.access.log;
+    error_log /var/log/nginx/rss-bridge.error.log;
+
+    # Intentionally not setting a root folder here
+        
+    # autoindex is off by default but feels good to explicitly turn off
+    autoindex off;
+
+    # Static content only served here 
+    location /static/ {
+        alias /var/www/rss-bridge/static/;
+    }
+
+    # Pass off to php-fpm only when location is exactly /
+    location = / {
+        root /var/www/rss-bridge/;
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/rss-bridge.sock;
+    }
+
+    # Reduce spam
+    location = /favicon.ico {
+        access_log off;
+        log_not_found off;
+    }
+
+    # Reduce spam
+    location = /robots.txt {
+        access_log off;
+        log_not_found off;
+    }
+}
+```
+
+PHP FPM pool config:
+```ini
+; /etc/php/8.2/fpm/pool.d/rss-bridge.conf
+
+[rss-bridge]
+
+user = rss-bridge
+group = rss-bridge
+
+listen = /run/php/rss-bridge.sock
+
+listen.owner = www-data
+listen.group = www-data
+
+pm = static
+pm.max_children = 10
+pm.max_requests = 500
+```
+
+PHP ini config:
+```ini
+; /etc/php/8.2/fpm/conf.d/30-rss-bridge.ini
+
+max_execution_time = 15
+memory_limit = 64M
+```
+
+Restart fpm and nginx:
+
+```shell
+# Lint and restart php-fpm
+php-fpm8.2 -t
+systemctl restart php8.2-fpm
+
+# Lint and restart nginx
+nginx -t
+systemctl restart nginx
+```
+
+### How to install from Composer
+
+Install the latest release.
 
 ```shell
 cd /var/www
 composer create-project -v --no-dev rss-bridge/rss-bridge
 ```
 
-```shell
-cd /var/www
-git clone https://github.com/RSS-Bridge/rss-bridge.git
-```
+### How to install with Caddy
 
-Config:
-
-```shell
-# Give the http user write permission to the cache folder
-chown www-data:www-data /var/www/rss-bridge/cache
-
-# Optionally copy over the default config file
-cp config.default.ini.php config.ini.php
-```
-
-Example config for nginx:
-
-```nginx
-# /etc/nginx/sites-enabled/rssbridge
-server {
-    listen 80;
-    server_name example.com;
-    root /var/www/rss-bridge;
-    index index.php;
-
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_read_timeout 60s;
-        fastcgi_pass unix:/run/php/php-fpm.sock;
-    }
-}
-```
+TODO. See https://github.com/RSS-Bridge/rss-bridge/issues/3785
 
 ### Install from Docker Hub:
 
@@ -156,13 +251,57 @@ Browse http://localhost:3000/
 [![Deploy to Cloudron](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/com.rssbridgeapp.cloudronapp.html)
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=rssbridge)
 
-The Heroku quick deploy currently does not work. It might possibly work if you fork this repo and
+The Heroku quick deploy currently does not work. It might work if you fork this repo and
 modify the `repository` in `scalingo.json`. See https://github.com/RSS-Bridge/rss-bridge/issues/2688
 
 Learn more in
 [Installation](https://rss-bridge.github.io/rss-bridge/For_Hosts/Installation.html).
 
 ## How-to
+
+### How to remove all cache items
+
+As current user:
+
+    bin/cache-clear
+
+As user rss-bridge:
+
+    sudo -u rss-bridge bin/cache-clear
+
+As root:
+
+    sudo bin/cache-clear
+
+### How to remove all expired cache items
+
+    bin/cache-prune
+
+### How to fix "PHP Fatal error:  Uncaught Exception: The FileCache path is not writable"
+
+```shell
+# Give rss-bridge ownership
+chown rss-bridge:rss-bridge -R /var/www/rss-bridge/cache
+
+# Or, give www-data ownership
+chown www-data:www-data -R /var/www/rss-bridge/cache
+
+# Or, give everyone write permission
+chmod 777 -R /var/www/rss-bridge/cache
+
+# Or last ditch effort (CAREFUL)
+rm -rf /var/www/rss-bridge/cache/ && mkdir /var/www/rss-bridge/cache/
+```
+
+### How to fix "attempt to write a readonly database"
+
+The sqlite files (db, wal and shm) are not writeable.
+
+    chown -v rss-bridge:rss-bridge cache/*
+
+### How to fix "Unable to prepare statement: 1, no such table: storage"
+
+    rm cache/*
 
 ### How to create a new bridge from scratch
 
@@ -277,6 +416,8 @@ These commands require that you have installed the dev dependencies in `composer
 
     ./vendor/bin/phpunit
     ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
+
+https://github.com/squizlabs/PHP_CodeSniffer/wiki
 
 ### How to spawn a minimal development environment
 

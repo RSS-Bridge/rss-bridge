@@ -25,18 +25,18 @@ class JsonFormat extends FormatAbstract
 
     public function stringify()
     {
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        $extraInfos = $this->getExtraInfos();
+        $feedArray = $this->getFeed();
+
         $data = [
-            'version' => 'https://jsonfeed.org/version/1',
-            'title' => empty($extraInfos['name']) ? $host : $extraInfos['name'],
-            'home_page_url' => empty($extraInfos['uri']) ? REPOSITORY : $extraInfos['uri'],
-            'feed_url' => get_current_url(),
+            'version'       => 'https://jsonfeed.org/version/1',
+            'title'         => $feedArray['name'],
+            'home_page_url' => $feedArray['uri'],
+            'feed_url'      => get_current_url(),
         ];
 
-        if (!empty($extraInfos['icon'])) {
-            $data['icon'] = $extraInfos['icon'];
-            $data['favicon'] = $extraInfos['icon'];
+        if ($feedArray['icon']) {
+            $data['icon'] = $feedArray['icon'];
+            $data['favicon'] = $feedArray['icon'];
         }
 
         $items = [];
@@ -47,7 +47,7 @@ class JsonFormat extends FormatAbstract
             $entryTitle = $item->getTitle();
             $entryUri = $item->getURI();
             $entryTimestamp = $item->getTimestamp();
-            $entryContent = $item->getContent() ? break_annoying_html_tags($item->getContent()) : '';
+            $entryContent = $item->getContent() ?? '';
             $entryEnclosures = $item->getEnclosures();
             $entryCategories = $item->getCategories();
 

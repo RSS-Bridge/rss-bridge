@@ -13,12 +13,6 @@ class DisplayAction implements ActionInterface
 
     public function execute(array $request)
     {
-        if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
-            return new Response(render(__DIR__ . '/../templates/error.html.php', [
-                'title'     => '503 Service Unavailable',
-                'message'   => 'RSS-Bridge is down for maintenance.',
-            ]), 503);
-        }
         $cacheKey = 'http_' . json_encode($request);
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
@@ -80,23 +74,26 @@ class DisplayAction implements ActionInterface
             $this->cache->set($cacheKey, $response, $ttl);
         }
 
-        if (in_array($response->getCode(), [429, 503])) {
-            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10)); // average 20m
+        if (in_array($response->getCode(), [403, 429, 503])) {
+            // Cache these responses for about ~20 mins on average
+            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10));
         }
 
         if ($response->getCode() === 500) {
             $this->cache->set($cacheKey, $response, 60 * 15);
         }
+
         if (rand(1, 100) === 2) {
             $this->cache->prune();
         }
+
         return $response;
     }
 
     private function createResponse(array $request, BridgeAbstract $bridge, FormatAbstract $format)
     {
         $items = [];
-        $infos = [];
+        $feed = [];
 
         try {
             $bridge->loadConfiguration();
@@ -112,13 +109,9 @@ class DisplayAction implements ActionInterface
                 }
                 $items = $feedItems;
             }
-            $infos = [
-                'name'          => $bridge->getName(),
-                'uri'           => $bridge->getURI(),
-                'donationUri'   => $bridge->getDonationURI(),
-                'icon'          => $bridge->getIcon()
-            ];
+            $feed = $bridge->getFeed();
         } catch (\Exception $e) {
+            // Probably an exception inside a bridge
             if ($e instanceof HttpException) {
                 // Reproduce (and log) these responses regardless of error output and report limit
                 if ($e->getCode() === 429) {
@@ -151,7 +144,7 @@ class DisplayAction implements ActionInterface
         }
 
         $format->setItems($items);
-        $format->setExtraInfos($infos);
+        $format->setFeed($feed);
         $now = time();
         $format->setLastModified($now);
         $headers = [
@@ -187,6 +180,7 @@ class DisplayAction implements ActionInterface
 
     private function logBridgeError($bridgeName, $code)
     {
+        // todo: it's not really necessary to json encode $report
         $cacheKey = 'error_reporting_' . $bridgeName . '_' . $code;
         $report = $this->cache->get($cacheKey);
         if ($report) {

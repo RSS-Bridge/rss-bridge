@@ -2,7 +2,7 @@
 
 class GoogleScholarBridge extends BridgeAbstract
 {
-    const NAME = 'Google Scholar v2';
+    const NAME = 'Google Scholar';
     const URI = 'https://scholar.google.com/';
     const DESCRIPTION = 'Search for publications or follow authors on Google Scholar.';
     const MAINTAINER = 'nicholasmccarthy';
@@ -192,6 +192,11 @@ class GoogleScholarBridge extends BridgeAbstract
                     $articleTitleElement = $publication->find('h3[class="gs_rt"]', 0);
                     $articleUrl = $articleTitleElement->find('a', 0)->href;
                     $articleTitle = $articleTitleElement->plaintext;
+
+                    // Break the loop if 'Check for Updates' is found in the article title
+                    if (strpos($articleTitle, 'Check for updates') !== false) {
+                        break;
+                    }
 
                     $articleDateElement = $publication->find('div[class="gs_a"]', 0);
                     $articleDate = $articleDateElement ? $articleDateElement->plaintext : '';

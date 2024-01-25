@@ -47,7 +47,13 @@ enable_debug_mode = false
 enable_maintenance_mode = false
 
 [http]
-timeout = 60
+; Operation timeout in seconds
+timeout = 15
+
+; Operation retry count in case of curl error
+retries = 2
+
+; User agent
 useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
 
 ; Max http response size in MB
