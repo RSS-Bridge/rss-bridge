@@ -12,7 +12,7 @@ class CarThrottleBridge extends BridgeAbstract
     {
         $news = getSimpleHTMLDOMCached(self::URI . 'news');
 
-        $this->items[] = [];
+        $this->items = [];
 
         //for each post
         foreach ($news->find('div.cmg-card') as $post) {
@@ -30,27 +30,22 @@ class CarThrottleBridge extends BridgeAbstract
 
             $articlePage = getSimpleHTMLDOMCached($item['uri']);
 
-            $authorDiv = $articlePage->find('div.author div');
+            $authorDiv = $articlePage->find('div address');
             if ($authorDiv) {
-                $item['author'] = $authorDiv[1]->innertext;
+                $item['author'] = $authorDiv[0]->innertext;
             }
 
-            $dinges = $articlePage->find('div.main-body')[0] ?? null;
+            $fullArticle = $articlePage->find('article')[0];
             //remove ads
-            if ($dinges) {
-                foreach ($dinges->find('aside') as $ad) {
-                    $ad->outertext = '';
-                    $dinges->save();
-                }
+            foreach ($fullArticle->find('aside') as $ad) {
+                $ad->outertext = '';
+                $fullArticle->save();
             }
 
-            $var = $articlePage->find('div.summary')[0] ?? '';
-            $var1 = $articlePage->find('figure.main-image')[0] ?? '';
-            $dinges1 = $dinges ?? '';
+            $summary = $fullArticle->find('div.summary')[0];
+            $articleMain = $fullArticle->find('#lbs-content')[0];
 
-            $item['content'] = $var .
-                $var1 .
-                $dinges1;
+            $item['content'] = $summary . $articleMain;
 
             array_push($this->items, $item);
         }
