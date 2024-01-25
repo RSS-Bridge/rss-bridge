@@ -31,7 +31,8 @@ abstract class FeedExpander extends BridgeAbstract
         $xmlString = str_replace($badStrings, '', $xmlString);
         $feedParser = new FeedParser();
         $this->feed = $feedParser->parseFeed($xmlString);
-        $items = array_slice($this->feed['items'], 0, $maxItems);
+        $items = $this->feed['items'];
+        // todo: extract parse logic out from FeedParser
         foreach ($items as $item) {
             // Give bridges a chance to modify the item
             $item = $this->parseItem($item);

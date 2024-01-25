@@ -181,43 +181,27 @@ final class FeedParser
                 'type'      => (string) $enclosure['type'],
             ];
         }
-        if (isset($feedItem->guid)) {
-            // Pluck out a url from guid
-            foreach ($feedItem->guid->attributes() as $attribute => $value) {
-                if (
-                    $attribute === 'isPermaLink'
-                    && (
-                        $value === 'true' || (
-                            filter_var($feedItem->guid, FILTER_VALIDATE_URL)
-                            && (empty($item['uri']) || !filter_var($item['uri'], FILTER_VALIDATE_URL))
-                        )
-                    )
-                ) {
-                    $item['uri'] = (string)$feedItem->guid;
-                    break;
+        if (!$item['uri']) {
+            // Let's use guid as uri if it's a permalink
+            if (isset($feedItem->guid)) {
+                foreach ($feedItem->guid->attributes() as $attribute => $value) {
+                    if ($attribute === 'isPermaLink' && ($value === 'true' || (filter_var($feedItem->guid, FILTER_VALIDATE_URL)))) {
+                        $item['uri'] = (string) $feedItem->guid;
+                        break;
+                    }
                 }
             }
         }
 
-        if (isset($feedItem->pubDate)) {
-            $item['timestamp'] = strtotime((string)$feedItem->pubDate);
-        } elseif (isset($dc->date)) {
-            $item['timestamp'] = strtotime((string)$dc->date);
-        }
+        $item['timestamp'] = $feedItem->pubDate ?? $dc->date ?? '';
+        $item['timestamp'] = strtotime((string) $item['timestamp']);
 
-        if (isset($feedItem->author)) {
-            $item['author'] = (string)$feedItem->author;
-        } elseif (isset($feedItem->creator)) {
-            $item['author'] = (string)$feedItem->creator;
-        } elseif (isset($dc->creator)) {
-            $item['author'] = (string)$dc->creator;
-        } elseif (isset($media->credit)) {
-            $item['author'] = (string)$media->credit;
-        }
+        $item['author'] = $feedItem->author ?? $feedItem->creator ?? $dc->creator ?? $media->credit ?? '';
+        $item['author'] = (string) $item['author'];
 
         if (isset($feedItem->enclosure) && !empty($feedItem->enclosure['url'])) {
             $item['enclosures'] = [
-                (string)$feedItem->enclosure['url'],
+                (string) $feedItem->enclosure['url'],
             ];
         }
         return $item;
@@ -263,7 +247,7 @@ final class FeedParser
         $result = [];
         $module = $element->children($namespaceUrl);
         foreach ($module as $name => $value) {
-            // todo: add parsing if it's something other than a string
+            // todo: add custom parsing if it's something other than a string
             $result[$name] = (string) $value;
         }
         return $result;
