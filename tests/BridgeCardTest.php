@@ -30,12 +30,12 @@ class BridgeCardTest extends TestCase
             'defaultValue' => 'yo1',
             'exampleValue' => 'yo2',
         ];
-        $this->assertSame('<input  id="id" type="text" value="yo1" placeholder="yo2" name="name" />' . "\n", BridgeCard::getTextInput($entry, 'id', 'name'));
+        $this->assertSame('<input  id="id" type="text" value="yo1" placeholder="yo2" name="name" />', BridgeCard::getTextInput($entry, 'id', 'name'));
 
         $entry = [
             'values' => [],
         ];
-        $this->assertSame('<select  id="id" name="name" ></select>', BridgeCard::getListInput($entry, 'id', 'name'));
+        $this->assertSame('<select  id="id" name="name" >' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
 
         $entry = [
             'defaultValue' => 2,
@@ -43,7 +43,7 @@ class BridgeCardTest extends TestCase
                 'foo' => 'bar',
             ],
         ];
-        $this->assertSame('<select  id="id" name="name" ><option value="bar">foo</option></select>', BridgeCard::getListInput($entry, 'id', 'name'));
+        $this->assertSame('<select  id="id" name="name" >' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
 
         // optgroup
         $entry = [
@@ -52,6 +52,9 @@ class BridgeCardTest extends TestCase
                 'f' => 'b',
             ]],
         ];
-        $this->assertSame('<select  id="id" name="name" ><optgroup label="kek"><option value="b">f</option></optgroup></select>', BridgeCard::getListInput($entry, 'id', 'name'));
+        $this->assertSame(
+            '<select  id="id" name="name" >' . "\n" . '<optgroup label="kek"><option value="b">f</option></optgroup></select>',
+            BridgeCard::getListInput($entry, 'id', 'name')
+        );
     }
 }

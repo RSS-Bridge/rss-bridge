@@ -24,14 +24,14 @@ final class FrontpageAction implements ActionInterface
         $body = '';
         foreach ($bridgeClassNames as $bridgeClassName) {
             if ($bridgeFactory->isEnabled($bridgeClassName)) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats);
+                $body .= BridgeCard::displayBridgeCard($bridgeClassName);
                 $activeBridges++;
             } elseif ($showInactive) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats, false) . PHP_EOL;
+                $body .= BridgeCard::displayBridgeCard($bridgeClassName, false) . "\n";
             }
         }
 
-        // todo: cache this renderered template
+        // todo: cache this renderered template?
         return render(__DIR__ . '/../templates/frontpage.html.php', [
             'messages' => $messages,
             'admin_email' => Configuration::getConfig('admin', 'email'),

@@ -98,7 +98,16 @@ class DisplayAction implements ActionInterface
         try {
             $bridge->loadConfiguration();
             // Remove parameters that don't concern bridges
-            $input = array_diff_key($request, array_fill_keys(['action', 'bridge', 'format', '_noproxy', '_cache_timeout', '_error_time'], ''));
+            $remove = [
+                'action',
+                'bridge',
+                'format',
+                '_noproxy',
+                '_cache_timeout',
+                '_error_time',
+                '_', // Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
+            ];
+            $input = array_diff_key($request, array_fill_keys($remove, ''));
             $bridge->setInput($input);
             $bridge->collectData();
             $items = $bridge->getItems();

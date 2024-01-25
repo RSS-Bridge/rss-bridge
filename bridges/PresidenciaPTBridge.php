@@ -52,7 +52,9 @@ class PresidenciaPTBridge extends BridgeAbstract
 
     public function collectData()
     {
-        foreach (array_keys($this->getParameters()['Section']) as $k) {
+        $contexts = $this->getParameters();
+
+        foreach (array_keys($contexts['Section']) as $k) {
             Debug::log('Key: ' . var_export($k, true));
             if ($this->getInput($k)) {
                 $html = getSimpleHTMLDOMCached($this->getURI() . $k);
