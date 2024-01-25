@@ -168,6 +168,9 @@ final class FeedParser
             $media = $feedItem->children($namespaces['media']);
         }
         foreach ($namespaces as $namespaceName => $namespaceUrl) {
+            if (in_array($namespaceName, ['', 'content', 'media'])) {
+                continue;
+            }
             $item[$namespaceName] = $this->parseModule($feedItem, $namespaceName, $namespaceUrl);
         }
         if (isset($namespaces['itunes'])) {
@@ -257,9 +260,6 @@ final class FeedParser
 
     private function parseModule(\SimpleXMLElement $element, string $namespaceName, string $namespaceUrl): array
     {
-        if (in_array($namespaceName, ['', 'content', 'media'])) {
-            return [];
-        }
         $result = [];
         $module = $element->children($namespaceUrl);
         foreach ($module as $name => $value) {
