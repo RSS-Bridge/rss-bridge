@@ -125,4 +125,59 @@ class FeedParserTest extends TestCase
         $this->assertSame('root', $item['author']);
         $this->assertSame('html', $item['content']);
     }
+
+    public function testAppleItunesModule()
+    {
+        $xml = <<<XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <rss
+            version="2.0"
+            xmlns:atom="http://www.w3.org/2005/Atom"
+            xmlns:cc="http://web.resource.org/cc/"
+            xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+            xmlns:media="http://search.yahoo.com/mrss/"
+            xmlns:content="http://purl.org/rss/1.0/modules/content/"
+            xmlns:podcast="https://podcastindex.org/namespace/1.0"
+            xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0"
+            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        >
+            <channel>
+
+                <item>
+                    <itunes:duration>30:05</itunes:duration>
+                    <enclosure length="48123248" type="audio/mpeg" url="https://example.com/1.mp3" />
+                </item>
+            </channel>
+        </rss>
+        XML;
+
+        $sut = new \FeedParser();
+        $feed = $sut->parseFeed($xml);
+        $expected = [
+            'title' => '',
+            'uri' => '',
+            'icon' => '',
+            'items' => [
+                [
+                    'uri' => '',
+                    'title' => '',
+                    'content' => '',
+                    'timestamp' => '',
+                    'author' => '',
+                    'itunes' => [
+                        'duration' => '30:05',
+                    ],
+                    'enclosure' => [
+                        'url' => 'https://example.com/1.mp3',
+                        'length' => '48123248',
+                        'type' => 'audio/mpeg',
+                    ],
+                    'enclosures' => [
+                        'https://example.com/1.mp3',
+                    ],
+                ]
+            ],
+        ];
+        $this->assertEquals($expected, $feed);
+    }
 }

@@ -36,7 +36,7 @@ final class FeedParser
             $channel = $xml->channel[0];
             $feed['title'] = trim((string)$channel->title);
             $feed['uri'] = trim((string)$channel->link);
-            if (!empty($channel->image)) {
+            if (isset($channel->image->url)) {
                 $feed['icon'] = trim((string)$channel->image->url);
             }
             foreach ($xml->item as $item) {
@@ -47,7 +47,7 @@ final class FeedParser
             $channel = $xml->channel[0];
             $feed['title'] = trim((string)$channel->title);
             $feed['uri'] = trim((string)$channel->link);
-            if (!empty($channel->image)) {
+            if (isset($channel->image->url)) {
                 $feed['icon'] = trim((string)$channel->image->url);
             }
             foreach ($channel->item as $item) {
@@ -70,10 +70,10 @@ final class FeedParser
                     }
                 }
             }
-            if (!empty($xml->icon)) {
-                $feed['icon'] = (string)$xml->icon;
-            } elseif (!empty($xml->logo)) {
-                $feed['icon'] = (string)$xml->logo;
+            if (isset($xml->icon)) {
+                $feed['icon'] = (string) $xml->icon;
+            } elseif (isset($xml->logo)) {
+                $feed['icon'] = (string) $xml->logo;
             }
             foreach ($xml->entry as $item) {
                 $feed['items'][] = $this->parseAtomItem($item);
@@ -168,14 +168,7 @@ final class FeedParser
             $media = $feedItem->children($namespaces['media']);
         }
         foreach ($namespaces as $namespaceName => $namespaceUrl) {
-            if (in_array($namespaceName, ['', 'content', 'media'])) {
-                continue;
-            }
-            $module = $feedItem->children($namespaceUrl);
-            $item[$namespaceName] = [];
-            foreach ($module as $moduleKey => $moduleValue) {
-                $item[$namespaceName][$moduleKey] = (string) $moduleValue;
-            }
+            $item[$namespaceName] = $this->parseModule($feedItem, $namespaceName, $namespaceUrl);
         }
         if (isset($namespaces['itunes'])) {
             $enclosure = $feedItem->enclosure;
@@ -260,5 +253,19 @@ final class FeedParser
             }
         }
         return $item;
+    }
+
+    private function parseModule(\SimpleXMLElement $element, string $namespaceName, string $namespaceUrl): array
+    {
+        if (in_array($namespaceName, ['', 'content', 'media'])) {
+            return [];
+        }
+        $result = [];
+        $module = $element->children($namespaceUrl);
+        foreach ($module as $name => $value) {
+            // todo: add parsing if it's something other than a string
+            $result[$name] = (string) $value;
+        }
+        return $result;
     }
 }
