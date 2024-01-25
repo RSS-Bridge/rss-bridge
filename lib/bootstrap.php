@@ -1,12 +1,6 @@
 <?php
 
-// Path to the formats library
-const PATH_LIB_FORMATS = __DIR__ . '/../formats/';
-
-/** Path to the caches library */
 const PATH_LIB_CACHES = __DIR__ . '/../caches/';
-
-/** Path to the cache folder */
 const PATH_CACHE = __DIR__ . '/../cache/';
 
 // Allow larger files for simple_html_dom

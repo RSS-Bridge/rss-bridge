@@ -2,7 +2,7 @@
 
 class ListAction implements ActionInterface
 {
-    public function execute(array $request)
+    public function execute(Request $request)
     {
         $list = new \stdClass();
         $list->bridges = [];

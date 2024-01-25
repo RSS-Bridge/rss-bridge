@@ -9,15 +9,17 @@ class SetBridgeCacheAction implements ActionInterface
         $this->cache = RssBridge::getCache();
     }
 
-    public function execute(array $request)
+    public function execute(Request $request)
     {
+        $requestArray = $request->toArray();
+
         // Authentication
         $accessTokenInConfig = Configuration::getConfig('authentication', 'access_token');
         if (!$accessTokenInConfig) {
             return new Response('Access token is not set in this instance', 403, ['content-type' => 'text/plain']);
         }
-        if (isset($request['access_token'])) {
-            $accessTokenGiven = $request['access_token'];
+        if (isset($requestArray['access_token'])) {
+            $accessTokenGiven = $requestArray['access_token'];
         } else {
             $header = trim($_SERVER['HTTP_AUTHORIZATION'] ?? '');
             $position = strrpos($header, 'Bearer ');
@@ -35,33 +37,32 @@ class SetBridgeCacheAction implements ActionInterface
         }
 
         // Begin actual work
-        $key = $request['key'] ?? null;
+        $key = $requestArray['key'] ?? null;
         if (!$key) {
-            returnClientError('You must specify key!');
+            return new Response('You must specify key', 400, ['content-type' => 'text/plain']);
         }
 
         $bridgeFactory = new BridgeFactory();
 
-        $bridgeName = $request['bridge'] ?? null;
+        $bridgeName = $requestArray['bridge'] ?? null;
         $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
-            throw new \Exception(sprintf('Bridge not found: %s', $bridgeName));
+            return new Response(sprintf('Bridge not found: %s', $bridgeName), 400, ['content-type' => 'text/plain']);
         }
 
         // whitelist control
         if (!$bridgeFactory->isEnabled($bridgeClassName)) {
-            throw new \Exception('This bridge is not whitelisted', 401);
+            return new Response('This bridge is not whitelisted', 401, ['content-type' => 'text/plain']);
         }
 
         $bridge = $bridgeFactory->create($bridgeClassName);
         $bridge->loadConfiguration();
-        $value = $request['value'];
+        $value = $requestArray['value'];
 
         $cacheKey = get_class($bridge) . '_' . $key;
         $ttl = 86400 * 3;
         $this->cache->set($cacheKey, $value, $ttl);
 
-        header('Content-Type: text/plain');
-        echo 'done';
+        return new Response('done', 200, ['Content-Type' => 'text/plain']);
     }
 }

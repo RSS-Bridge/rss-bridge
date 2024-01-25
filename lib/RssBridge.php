@@ -27,9 +27,17 @@ final class RssBridge
     {
         if ($argv) {
             parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
-            $request = $cliArgs;
+            $request = Request::fromCli($cliArgs);
         } else {
-            $request = array_merge($_GET, $_POST);
+            $request = Request::fromGlobals();
+        }
+
+        foreach ($request->toArray() as $key => $value) {
+            if (!is_string($value)) {
+                return new Response(render(__DIR__ . '/../templates/error.html.php', [
+                    'message' => "Query parameter \"$key\" is not a string.",
+                ]), 400);
+            }
         }
 
         if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
@@ -43,8 +51,8 @@ final class RssBridge
             if (Configuration::getConfig('authentication', 'password') === '') {
                 return new Response('The authentication password cannot be the empty string', 500);
             }
-            $user = $_SERVER['PHP_AUTH_USER'] ?? null;
-            $password = $_SERVER['PHP_AUTH_PW'] ?? null;
+            $user = $request->server('PHP_AUTH_USER');
+            $password = $request->server('PHP_AUTH_PW');
             if ($user === null || $password === null) {
                 $html = render(__DIR__ . '/../templates/error.html.php', [
                     'message' => 'Please authenticate in order to access this instance!',
@@ -63,16 +71,8 @@ final class RssBridge
             // At this point the username and password was correct
         }
 
-        foreach ($request as $key => $value) {
-            if (!is_string($value)) {
-                return new Response(render(__DIR__ . '/../templates/error.html.php', [
-                    'message' => "Query parameter \"$key\" is not a string.",
-                ]), 400);
-            }
-        }
-
-        $actionName = $request['action'] ?? 'Frontpage';
-        $actionName = strtolower($actionName) . 'Action';
+        $action = $request->get('action', 'Frontpage');
+        $actionName = strtolower($action) . 'Action';
         $actionName = implode(array_map('ucfirst', explode('-', $actionName)));
         $filePath = __DIR__ . '/../actions/' . $actionName . '.php';
         if (!file_exists($filePath)) {
@@ -80,9 +80,9 @@ final class RssBridge
         }
 
         $className = '\\' . $actionName;
-        $action = new $className();
+        $actionObject = new $className();
 
-        $response = $action->execute($request);
+        $response = $actionObject->execute($request);
 
         if (is_string($response)) {
             $response = new Response($response);

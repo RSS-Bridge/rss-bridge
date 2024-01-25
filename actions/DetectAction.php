@@ -2,10 +2,10 @@
 
 class DetectAction implements ActionInterface
 {
-    public function execute(array $request)
+    public function execute(Request $request)
     {
-        $targetURL = $request['url'] ?? null;
-        $format = $request['format'] ?? null;
+        $targetURL = $request->get('url');
+        $format = $request->get('format');
 
         if (!$targetURL) {
             throw new \Exception('You must specify a url!');

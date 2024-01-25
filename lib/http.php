@@ -166,6 +166,46 @@ final class CurlHttpClient implements HttpClient
     }
 }
 
+final class Request
+{
+    private array $get;
+    private array $server;
+
+    private function __construct()
+    {
+    }
+
+    public static function fromGlobals(): self
+    {
+        $self = new self();
+        $self->get = $_GET;
+        $self->server = $_SERVER;
+        return $self;
+    }
+
+    public static function fromCli(array $cliArgs): self
+    {
+        $self = new self();
+        $self->get = $cliArgs;
+        return $self;
+    }
+
+    public function get(string $key, $default = null): ?string
+    {
+        return $this->get[$key] ?? $default;
+    }
+
+    public function server(string $key, string $default = null): ?string
+    {
+        return $this->server[$key] ?? $default;
+    }
+
+    public function toArray(): array
+    {
+        return $this->get;
+    }
+}
+
 final class Response
 {
     public const STATUS_CODES = [

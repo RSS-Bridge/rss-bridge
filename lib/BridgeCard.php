@@ -3,13 +3,13 @@
 final class BridgeCard
 {
     /**
-     * Gets a single bridge card
+     * Render bridge card
      *
      * @param class-string<BridgeAbstract> $bridgeClassName The bridge name
      * @param bool $isActive Indicates if the bridge is active or not
      * @return string The bridge card
      */
-    public static function displayBridgeCard($bridgeClassName, $isActive = true)
+    public static function render($bridgeClassName, $isActive = true)
     {
         $bridgeFactory = new BridgeFactory();
 
@@ -56,10 +56,10 @@ final class BridgeCard
         // If we don't have any parameter for the bridge, we print a generic form to load it.
         if (count($contexts) === 0) {
             // The bridge has zero parameters
-            $card .= self::getForm($bridgeClassName, $isActive);
+            $card .= self::renderForm($bridgeClassName, $isActive);
         } elseif (count($contexts) === 1 && array_key_exists('global', $contexts)) {
             // The bridge has a single context with key 'global'
-            $card .= self::getForm($bridgeClassName, $isActive, '', $contexts['global']);
+            $card .= self::renderForm($bridgeClassName, $isActive, '', $contexts['global']);
         } else {
             // The bridge has one or more contexts (named or unnamed)
             foreach ($contexts as $contextName => $contextParameters) {
@@ -77,7 +77,7 @@ final class BridgeCard
                     $card .= '<h5>' . $contextName . '</h5>' . PHP_EOL;
                 }
 
-                $card .= self::getForm($bridgeClassName, $isActive, $contextName, $contextParameters);
+                $card .= self::renderForm($bridgeClassName, $isActive, $contextName, $contextParameters);
             }
         }
 
@@ -97,7 +97,7 @@ final class BridgeCard
         return $card;
     }
 
-    private static function getForm(
+    private static function renderForm(
         string $bridgeClassName,
         bool $isActive = false,
         string $contextName = '',
