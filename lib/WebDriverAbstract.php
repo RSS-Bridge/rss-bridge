@@ -13,8 +13,6 @@ use Facebook\WebDriver\WebDriverCapabilities;
  */
 abstract class WebDriverAbstract extends BridgeAbstract
 {
-    const SERVERURL = 'http://localhost:4444';  // TODO get from configuration (config.default.ini.php)
-
     protected RemoteWebDriver $driver;
 
     public function getDriver(): RemoteWebDriver
@@ -37,7 +35,7 @@ abstract class WebDriverAbstract extends BridgeAbstract
     protected function prepareWebDriver()   // TODO move to __construct()
     {
         // TODO try catch WebDriverCurlException -> Couldn't connect to server
-        $this->driver = RemoteWebDriver::create(self::SERVERURL, $this->getDesiredCapabilities());
+        $this->driver = RemoteWebDriver::create(Configuration::getConfig('webdriver', 'selenium_server_url'), $this->getDesiredCapabilities());
         $this->driver->manage()->window()->maximize();
     }
 

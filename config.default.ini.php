@@ -100,6 +100,11 @@ name = "Hidden proxy name"
 ; false = disabled (default)
 by_bridge = false
 
+[webdriver]
+
+; Sets the url of the webdriver or selenium server
+selenium_server_url = "http://localhost:4444"
+
 [authentication]
 
 ; Enables basic authentication for all requests to this RSS-Bridge instance.
