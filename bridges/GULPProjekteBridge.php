@@ -10,6 +10,8 @@ class GULPProjekteBridge extends WebDriverAbstract
     const DESCRIPTION = 'Projektsuche';
     const MAINTAINER = 'hleskien';
 
+    // TODO fix icon
+
     protected function getBrowserOptions()
     {
         $chromeOptions = parent::getBrowserOptions();
@@ -19,6 +21,7 @@ class GULPProjekteBridge extends WebDriverAbstract
 
     public function clickAwayCookieBanner()
     {
+        // TODO handle ->until exceptions
         $this->getDriver()->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('onetrust-reject-all-handler')));
         $buttonRejectCookies = $this->getDriver()->findElement(WebDriverBy::id('onetrust-reject-all-handler'));
         $buttonRejectCookies->click();
@@ -27,6 +30,7 @@ class GULPProjekteBridge extends WebDriverAbstract
 
     public function clickNextPage()
     {
+        // TODO handle ->until exceptions
         $nextPage = $this->getDriver()->findElement(WebDriverBy::xpath('//app-linkable-paginator//li[@id="next-page"]/a'));
         $href = $nextPage->getAttribute('href');
         $nextPage->click();
@@ -72,23 +76,23 @@ class GULPProjekteBridge extends WebDriverAbstract
                 $feedItem->setTitle($heading->getText());
                 $feedItem->setURI('https://www.gulp.de' . $heading->getAttribute('href'));
                 $info = $item->findElement(WebDriverBy::tagName('app-icon-info-list'));
+                // TODO add Projektanbieter image as enclosure?
                 if (str_contains($info->getText(), 'Projektanbieter:')) {
                     $feedItem->setAuthor($info->findElement(WebDriverBy::xpath('.//li/span[2]/span'))->getText());
                 }
                 $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
+                // TODO add tags as categories?
                 $timestamp = $this->timeAgo2Timestamp($item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText());
                 $feedItem->setTimestamp($timestamp);
 
                 $this->items[] = $feedItem;
             }
 
-            if ((time() - $timestamp) < 86400) {  // less than 24 hours
+            if ((time() - $timestamp) < (2 * 24 * 60 * 60)) {  // less than two days
                 $this->clickNextPage();
             } else {
                 break;
             }
         }
-
-        $this->getDriver()->quit();    // TODO try finally
     }
 }
