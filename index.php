@@ -57,12 +57,6 @@ if ($errors) {
     exit;
 }
 
-$customConfig = [];
-if (file_exists(__DIR__ . '/config.ini.php')) {
-    $customConfig = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
-}
-Configuration::loadConfiguration($customConfig, getenv());
-
 // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
 
 date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
