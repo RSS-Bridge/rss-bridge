@@ -11,8 +11,9 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
             'platform' => [
                 'name' => 'Platform',
                 'type' => 'list',
+                'required' => true,
                 'values' => [
-                    'Desktop' => '',
+                    'Desktop' => 'desktop',
                     'Beta' => 'beta',
                     'Nightly' => 'nightly',
                     'Android' => 'android',
@@ -31,7 +32,13 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
     public function collectData()
     {
         $platform = $this->getKey('platform');
-        $url = self::URI . $this->getInput('platform') . '/notes/';
+
+        if ($platform === 'Desktop') {
+            $url = self::URI . '/notes/';
+        } else {
+            $url = self::URI . $this->getInput('platform') . '/notes/';
+        }
+
         $dom = getSimpleHTMLDOM($url);
 
         $version = $dom->find('.c-release-version', 0)->innertext;
