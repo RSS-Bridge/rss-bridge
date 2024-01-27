@@ -4,7 +4,7 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
 {
     const NAME = 'Firefox Release Notes';
     const URI = 'https://www.mozilla.org/en-US/firefox/';
-    const DESCRIPTION = 'Retrieve the latest Firefox release notes';
+    const DESCRIPTION = 'Retrieve the latest Firefox release notes.';
     const MAINTAINER = 'tillcash';
     const PARAMETERS = [
         [
