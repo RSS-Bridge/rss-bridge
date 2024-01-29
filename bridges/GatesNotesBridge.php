@@ -20,12 +20,9 @@ class GatesNotesBridge extends BridgeAbstract
         $apiUrl = self::URI . $api_endpoint . http_build_query($params);
 
         $rawContent = getContents($apiUrl);
-        $cleanedContent = str_replace([
-            '<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/">',
-            '</string>',
-        ], '', $rawContent);
-        // $cleanedContent = str_replace('\"', '"', $cleanedContent);
-        // $cleanedContent = trim($cleanedContent, '"');
+        $cleanedContent = trim($rawContent, '"');
+        $cleanedContent = str_replace('\r\n', "\n", $cleanedContent);
+        $cleanedContent = stripslashes($cleanedContent);
 
         $json = Json::decode($cleanedContent, false);
         if (is_string($json)) {
