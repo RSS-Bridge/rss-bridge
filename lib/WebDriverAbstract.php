@@ -15,11 +15,6 @@ abstract class WebDriverAbstract extends BridgeAbstract
 {
     protected RemoteWebDriver $driver;
 
-    public function __destruct()
-    {
-        $this->getDriver()->quit();
-    }
-
     public function getDriver(): RemoteWebDriver
     {
         return $this->driver;
@@ -37,8 +32,6 @@ abstract class WebDriverAbstract extends BridgeAbstract
         return $desiredCapabilities;
     }
 
-    // TODO move to __construct()
-    //      @Dag is BridgeAbstract::__construct(CacheInterface, Logger) really necessary? It's not used anywhere
     protected function prepareWebDriver()
     {
         $server = Configuration::getConfig('webdriver', 'selenium_server_url');
@@ -49,6 +42,11 @@ abstract class WebDriverAbstract extends BridgeAbstract
     {
         $this->getDriver()->manage()->window()->maximize();
         $this->getDriver()->get($this->getURI());
+    }
+
+    protected function cleanUp()
+    {
+        $this->getDriver()->quit();
     }
 
     public function collectData()

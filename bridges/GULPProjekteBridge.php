@@ -65,34 +65,38 @@ class GULPProjekteBridge extends WebDriverAbstract
     {
         parent::collectData();
 
-        $this->clickAwayCookieBanner();
+        try {
+            $this->clickAwayCookieBanner();
 
-        $timestamp = time();
-        while (true) {
-            $items = $this->getDriver()->findElements(WebDriverBy::tagName('app-project-view'));
-            foreach ($items as $item) {
-                $feedItem = new FeedItem();
-                $heading = $item->findElement(WebDriverBy::xpath('.//app-heading-tag/h1/a'));
-                $feedItem->setTitle($heading->getText());
-                $feedItem->setURI('https://www.gulp.de' . $heading->getAttribute('href'));
-                $info = $item->findElement(WebDriverBy::tagName('app-icon-info-list'));
-                // TODO add Projektanbieter image as enclosure?
-                if (str_contains($info->getText(), 'Projektanbieter:')) {
-                    $feedItem->setAuthor($info->findElement(WebDriverBy::xpath('.//li/span[2]/span'))->getText());
+            $timestamp = time();
+            while (true) {
+                $items = $this->getDriver()->findElements(WebDriverBy::tagName('app-project-view'));
+                foreach ($items as $item) {
+                    $feedItem = new FeedItem();
+                    $heading = $item->findElement(WebDriverBy::xpath('.//app-heading-tag/h1/a'));
+                    $feedItem->setTitle($heading->getText());
+                    $feedItem->setURI('https://www.gulp.de' . $heading->getAttribute('href'));
+                    $info = $item->findElement(WebDriverBy::tagName('app-icon-info-list'));
+                    // TODO add Projektanbieter image as enclosure?
+                    if (str_contains($info->getText(), 'Projektanbieter:')) {
+                        $feedItem->setAuthor($info->findElement(WebDriverBy::xpath('.//li/span[2]/span'))->getText());
+                    }
+                    $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
+                    // TODO add tags as categories?
+                    $timestamp = $this->timeAgo2Timestamp($item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText());
+                    $feedItem->setTimestamp($timestamp);
+
+                    $this->items[] = $feedItem;
                 }
-                $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
-                // TODO add tags as categories?
-                $timestamp = $this->timeAgo2Timestamp($item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText());
-                $feedItem->setTimestamp($timestamp);
 
-                $this->items[] = $feedItem;
+                if ((time() - $timestamp) < (2 * 24 * 60 * 60)) {  // less than two days
+                    $this->clickNextPage();
+                } else {
+                    break;
+                }
             }
-
-            if ((time() - $timestamp) < (2 * 24 * 60 * 60)) {  // less than two days
-                $this->clickNextPage();
-            } else {
-                break;
-            }
+        } finally {
+            $this->cleanUp();
         }
     }
 }
