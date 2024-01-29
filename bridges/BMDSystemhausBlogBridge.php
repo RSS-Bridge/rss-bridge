@@ -102,12 +102,17 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     //-----------------------------------------------------
     public function detectParameters($url)
     {
-        $parsed_url = parse_url($url);
-        if ($parsed_url['host'] != 'www.bmd.com') {
+        try {
+            $parsedUrl = Url::fromString($url);
+        } catch (UrlException $e) {
             return null;
         }
 
-        $path = explode('/', $parsed_url['path']);
+        if ($parsedUrl->getHost() != 'www.bmd.com') {
+            return null;
+        }
+
+        $path = explode('/', $parsedUrl->getPath());
 
         if ($this->getURIbyCountry($path[1]) == '') {
             return null;

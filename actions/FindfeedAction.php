@@ -9,10 +9,10 @@ class FindfeedAction implements ActionInterface
 {
     public function execute(Request $request)
     {
-        $targetURL = $request->get('url');
+        $url = $request->get('url');
         $format = $request->get('format');
 
-        if (!$targetURL) {
+        if (!$url) {
             return new Response('You must specify a url', 400);
         }
         if (!$format) {
@@ -29,7 +29,7 @@ class FindfeedAction implements ActionInterface
 
             $bridge = $bridgeFactory->create($bridgeClassName);
 
-            $bridgeParams = $bridge->detectParameters($targetURL);
+            $bridgeParams = $bridge->detectParameters($url);
 
             if ($bridgeParams === null) {
                 continue;
