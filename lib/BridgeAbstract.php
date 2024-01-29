@@ -80,7 +80,7 @@ abstract class BridgeAbstract
     }
 
     /**
-     * The description is currently not used in feed production
+     * The description is only used in bridge card rendering on frontpage
      */
     public function getDescription()
     {
