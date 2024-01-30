@@ -17,7 +17,7 @@ abstract class WebDriverAbstract extends BridgeAbstract
 
     private $feedIcon;
 
-    public function getDriver(): RemoteWebDriver
+    protected function getDriver(): RemoteWebDriver
     {
         return $this->driver;
     }
@@ -27,7 +27,7 @@ abstract class WebDriverAbstract extends BridgeAbstract
         return $this->feedIcon ?: parent::getIcon();
     }
 
-    public function setIcon($iconurl)
+    protected function setIcon($iconurl)
     {
         $this->feedIcon = $iconurl;
     }

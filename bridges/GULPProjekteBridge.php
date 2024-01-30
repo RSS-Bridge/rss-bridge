@@ -19,7 +19,7 @@ class GULPProjekteBridge extends WebDriverAbstract
         return $chromeOptions;
     }
 
-    public function clickAwayCookieBanner()
+    protected function clickAwayCookieBanner()
     {
         $this->getDriver()->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('onetrust-reject-all-handler')));
         $buttonRejectCookies = $this->getDriver()->findElement(WebDriverBy::id('onetrust-reject-all-handler'));
@@ -27,7 +27,7 @@ class GULPProjekteBridge extends WebDriverAbstract
         $this->getDriver()->wait()->until(WebDriverExpectedCondition::invisibilityOfElementLocated(WebDriverBy::id('onetrust-reject-all-handler')));
     }
 
-    public function clickNextPage()
+    protected function clickNextPage()
     {
         $nextPage = $this->getDriver()->findElement(WebDriverBy::xpath('//app-linkable-paginator//li[@id="next-page"]/a'));
         $href = $nextPage->getAttribute('href');
@@ -39,7 +39,7 @@ class GULPProjekteBridge extends WebDriverAbstract
         ));
     }
 
-    public function timeAgo2Timestamp(string $timestr): int
+    protected function timeAgo2Timestamp(string $timestr): int
     {
         if (str_contains($timestr, 'Minute')) {
             $factor = 60;
@@ -59,7 +59,7 @@ class GULPProjekteBridge extends WebDriverAbstract
         return time() - $quantity * $factor;
     }
 
-    public function getLogo(RemoteWebElement $item)
+    protected function getLogo(RemoteWebElement $item)
     {
         try {
             $logo = $item->findElement(WebDriverBy::tagName('img'))->getAttribute('src');
