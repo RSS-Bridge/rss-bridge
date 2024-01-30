@@ -22,7 +22,11 @@ abstract class WebDriverAbstract extends BridgeAbstract
 
     protected function getBrowserOptions()
     {
-        return new ChromeOptions();
+        $chromeOptions = new ChromeOptions();
+        if (Configuration::getConfig('webdriver', 'headless')) {
+            $chromeOptions->addArguments(['--headless']);
+        }
+        return $chromeOptions;
     }
 
     protected function getDesiredCapabilities(): WebDriverCapabilities
@@ -40,7 +44,7 @@ abstract class WebDriverAbstract extends BridgeAbstract
 
     protected function prepareWindow()
     {
-        $this->getDriver()->manage()->window()->maximize();
+        $this->getDriver()->manage()->window()->maximize(); // TODO? 1024 x 1024
         $this->getDriver()->get($this->getURI());
     }
 
