@@ -63,8 +63,14 @@ class GULPProjekteBridge extends WebDriverAbstract
     {
         try {
             $logo = $item->findElement(WebDriverBy::tagName('img'))->getAttribute('src');
-            $remove = substr(self::URI, strrpos(self::URI, '/') + 1);
-            return substr(self::URI, 0, -strlen($remove)) . $logo;
+            if (str_starts_with($logo, 'http')) {
+                // different domain
+                return $logo;
+            } else {
+                // relative path
+                $remove = substr(self::URI, strrpos(self::URI, '/') + 1);
+                return substr(self::URI, 0, -strlen($remove)) . $logo;
+            }
         } catch (NoSuchElementException $e) {
             return false;
         }
