@@ -10,8 +10,6 @@ class GULPProjekteBridge extends WebDriverAbstract
     const DESCRIPTION = 'Projektsuche';
     const MAINTAINER = 'hleskien';
 
-    // TODO fix icon
-
     protected function getBrowserOptions()
     {
         $chromeOptions = parent::getBrowserOptions();
@@ -21,7 +19,6 @@ class GULPProjekteBridge extends WebDriverAbstract
 
     public function clickAwayCookieBanner()
     {
-        // TODO handle ->until exceptions
         $this->getDriver()->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('onetrust-reject-all-handler')));
         $buttonRejectCookies = $this->getDriver()->findElement(WebDriverBy::id('onetrust-reject-all-handler'));
         $buttonRejectCookies->click();
@@ -30,7 +27,6 @@ class GULPProjekteBridge extends WebDriverAbstract
 
     public function clickNextPage()
     {
-        // TODO handle ->until exceptions
         $nextPage = $this->getDriver()->findElement(WebDriverBy::xpath('//app-linkable-paginator//li[@id="next-page"]/a'));
         $href = $nextPage->getAttribute('href');
         $nextPage->click();
@@ -67,6 +63,7 @@ class GULPProjekteBridge extends WebDriverAbstract
 
         try {
             $this->clickAwayCookieBanner();
+            $this->setIcon($this->getDriver()->findElement(WebDriverBy::xpath('//link[@rel="shortcut icon"]'))->getAttribute('href'));
 
             $timestamp = time();
             while (true) {

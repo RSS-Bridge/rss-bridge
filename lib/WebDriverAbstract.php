@@ -15,16 +15,28 @@ abstract class WebDriverAbstract extends BridgeAbstract
 {
     protected RemoteWebDriver $driver;
 
+    private $feedIcon;
+
     public function getDriver(): RemoteWebDriver
     {
         return $this->driver;
+    }
+
+    public function getIcon()
+    {
+        return $this->feedIcon ?: parent::getIcon();
+    }
+
+    public function setIcon($iconurl)
+    {
+        $this->feedIcon = $iconurl;
     }
 
     protected function getBrowserOptions()
     {
         $chromeOptions = new ChromeOptions();
         if (Configuration::getConfig('webdriver', 'headless')) {
-            $chromeOptions->addArguments(['--headless']);
+            $chromeOptions->addArguments(['--headless']);   // --window-size=1024,1024
         }
         return $chromeOptions;
     }
@@ -44,7 +56,7 @@ abstract class WebDriverAbstract extends BridgeAbstract
 
     protected function prepareWindow()
     {
-        $this->getDriver()->manage()->window()->maximize(); // TODO? 1024 x 1024
+        $this->getDriver()->manage()->window()->maximize();
         $this->getDriver()->get($this->getURI());
     }
 
