@@ -1,5 +1,7 @@
 <?php
 
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 
@@ -57,6 +59,17 @@ class GULPProjekteBridge extends WebDriverAbstract
         return time() - $quantity * $factor;
     }
 
+    public function getLogo(RemoteWebElement $item)
+    {
+        try {
+            $logo = $item->findElement(WebDriverBy::tagName('img'))->getAttribute('src');
+            $remove = substr(self::URI, strrpos(self::URI, '/') + 1);
+            return substr(self::URI, 0, -strlen($remove)) . $logo;
+        } catch (NoSuchElementException $e) {
+            return false;
+        }
+    }
+
     public function collectData()
     {
         parent::collectData();
@@ -74,12 +87,13 @@ class GULPProjekteBridge extends WebDriverAbstract
                     $feedItem->setTitle($heading->getText());
                     $feedItem->setURI('https://www.gulp.de' . $heading->getAttribute('href'));
                     $info = $item->findElement(WebDriverBy::tagName('app-icon-info-list'));
-                    // TODO add Projektanbieter image as enclosure?
+                    if ($logo = $this->getLogo($item)) {
+                        $feedItem->setEnclosures([$logo]);
+                    }
                     if (str_contains($info->getText(), 'Projektanbieter:')) {
                         $feedItem->setAuthor($info->findElement(WebDriverBy::xpath('.//li/span[2]/span'))->getText());
                     }
                     $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
-                    // TODO add tags as categories?
                     $timestamp = $this->timeAgo2Timestamp($item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText());
                     $feedItem->setTimestamp($timestamp);
 
