@@ -41,7 +41,9 @@ class GULPProjekteBridge extends WebDriverAbstract
 
     protected function timeAgo2Timestamp(string $timestr): int
     {
-        if (str_contains($timestr, 'Minute')) {
+        if (str_contains($timestr, 'Sekunde')) {
+            $factor = 1;
+        } elseif (str_contains($timestr, 'Minute')) {
             $factor = 60;
         } elseif (str_contains($timestr, 'Stunde')) {
             $factor = 60 * 60;
@@ -51,7 +53,7 @@ class GULPProjekteBridge extends WebDriverAbstract
             throw new UnexpectedValueException($timestr);
         }
         $quantitystr = explode(' ', $timestr)[1];
-        if (($quantitystr == 'einem') || ($quantitystr == 'einer')) {
+        if (($quantitystr == 'einem') || ($quantitystr == 'einer') || ($quantitystr == 'einigen')) {
             $quantity = 1;
         } else {
             $quantity = intval($quantitystr);
