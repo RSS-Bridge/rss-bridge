@@ -100,7 +100,7 @@ class GULPProjekteBridge extends WebDriverAbstract
                     $this->items[] = $feedItem;
                 }
 
-                if ((time() - $timestamp) < (2 * 24 * 60 * 60)) {  // less than two days
+                if ((time() - $timestamp) < (24 * 60 * 60)) {  // less than 24 hours
                     $this->clickNextPage();
                 } else {
                     break;
