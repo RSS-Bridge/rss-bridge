@@ -106,11 +106,11 @@ server {
     error_log /var/log/nginx/rss-bridge.error.log;
 
     # Intentionally not setting a root folder here
-        
+
     # autoindex is off by default but feels good to explicitly turn off
     autoindex off;
 
-    # Static content only served here 
+    # Static content only served here
     location /static/ {
         alias /var/www/rss-bridge/static/;
     }
