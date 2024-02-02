@@ -6,7 +6,17 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     const NAME = 'BMD SYSTEMHAUS GesmbH';
     const CACHE_TIMEOUT = 21600; //6h
     const URI = 'https://www.bmd.com';
-    const DESCRIPTION = 'BMD Systemhaus - Blog';
+    const DONATION_URI = 'https://paypal.me/cntools';
+    const DESCRIPTION = 'BMD Systemhaus - We make business easy';
+
+    const ITEMSTYLE = [
+        'ilcr' => '<table width="100%"><tr><td style="vertical-align: top;">{data_img}</td><td style="vertical-align: top;">{data_content}</td></tr></table>',
+        'clir' => '<table width="100%"><tr><td style="vertical-align: top;">{data_content}</td><td style="vertical-align: top;">{data_img}</td></tr></table>',
+        'itcb' => '<div>{data_img}<br />{data_content}</div>',
+        'ctib' => '<div>{data_content}<br />{data_img}</div>',
+        'co' => '{data_content}',
+        'io' => '{data_img}'
+    ];
 
     const PARAMETERS = [
         'Blog' => [
@@ -19,8 +29,22 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
                     'Schweiz' => 'ch',
                     'Slovensko' => 'sk',
                     'Cesko' => 'cz',
-                    'Hungary' => 'hu'
-                ]
+                    'Hungary' => 'hu',
+                ],
+                'defaultValue' => 'at',
+            ],
+            'style' => [
+                'name' => 'Style',
+                'type' => 'list',
+                'values' => [
+                    'Image left, content right' => 'ilcr',
+                    'Content left, image right' => 'clir',
+                    'Image top, content bottom' => 'itcb',
+                    'Content top, image bottom' => 'ctib',
+                    'Content only' => 'co',
+                    'Image only' => 'io',
+                ],
+                'defaultValue' => 'ilcr',
             ]
         ]
     ];
@@ -28,35 +52,50 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     //-----------------------------------------------------
     public function collectData()
     {
-/*
-        $item['uri']        // URI to reach the subject ("https://...")
-        $item['title']      // Title of the item
-        $item['timestamp']  // Timestamp of the item in numeric or text format (compatible for strtotime())
-        $item['author']     // Name of the author for this item
-        $item['content']    // Content in HTML format
-        $item['enclosures'] // Array of URIs to an attachments (pictures, files, etc...)
-        $item['categories'] // Array of categories / tags / topics
-        $item['uid']        // A unique ID to identify the current item
-*/
+        // get website content
+        $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('No contents received!');
 
-        $html = getSimpleHTMLDOM($this->getURI());
+        // Convert relative links in HTML into absolute links
+        $html = defaultLinkTo($html, self::URI);
+
+        // Convert lazy-loading images and frames (video embeds) into static elements
+        $html = convertLazyLoading($html);
 
         foreach ($html->find('div#bmdNewsList div#bmdNewsList-Item') as $element) {
             $itemScope = $element->find('div[itemscope=itemscope]', 0);
 
             $item = [];
+
+            // set base article data
             $item['title'] = $this->getMetaItemPropContent($itemScope, 'headline');
-            $item['content'] = $this->getMetaItemPropContent($itemScope, 'description');
             $item['timestamp'] = strtotime($this->getMetaItemPropContent($itemScope, 'datePublished'));
-
             $item['author'] = $this->getMetaItemPropContent($itemScope->find('div[itemprop=author]', 0), 'name');
-            $item['enclosures'] = [self::URI . $element->find('div.mediaelement.mediaelement-image img', 0)->src];
 
-            $link = $element->find('div#bmdNewsList-Text div#bmdNewsList-Title a', 0);
-            if (!is_null($link)) {
-                $item['uri'] = self::URI . $link->href;
+            // find article image
+            $imageTag = '';
+            $image = $element->find('div.mediaelement.mediaelement-image img', 0);
+            if ((!is_null($image)) and ($image->src != '')) {
+                $item['enclosures'] = [$image->src];
+                $imageTag = '<img src="' . $image->src . '"/>';
             }
 
+            // begin with right style
+            $content = self::ITEMSTYLE[$this->getInput('style')];
+
+            // render placeholder
+            $content = str_replace('{data_content}', $this->getMetaItemPropContent($itemScope, 'description'), $content);
+            $content = str_replace('{data_img}', $imageTag, $content);
+
+            // set finished content
+            $item['content'] = $content;
+
+            // get link to article
+            $link = $element->find('div#bmdNewsList-Text div#bmdNewsList-Title a', 0);
+            if (!is_null($link)) {
+                $item['uri'] = $link->href;
+            }
+
+            // init categories
             $categories = [];
             $tmpOne = [];
             $tmpTwo = [];
@@ -80,7 +119,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
                 $categories = array_merge($categories, $tmpData);
             }
 
-            // trim all entries
+            // trim each categorie entries
             $categories = array_map('trim', $categories);
 
             // remove empty entries
@@ -93,6 +132,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
                 $item['categories'] = $categories;
             }
 
+            // add item
             if (($item['title'] != '') and ($item['content'] != '') and ($item['uri'] != '')) {
                 $this->items[] = $item;
             }
