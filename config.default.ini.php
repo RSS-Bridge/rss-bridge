@@ -21,7 +21,6 @@ enabled_bridges[] = Telegram
 enabled_bridges[] = ThePirateBay
 enabled_bridges[] = TikTokBridge
 enabled_bridges[] = Twitch
-enabled_bridges[] = Twitter
 enabled_bridges[] = Vk
 enabled_bridges[] = XPathBridge
 enabled_bridges[] = Youtube
