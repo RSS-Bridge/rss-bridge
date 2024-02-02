@@ -255,6 +255,12 @@ Learn more in
 
 ## How-to
 
+### How to fix "Access denied."
+
+Output is from php-fpm. It is unable to read index.php.
+
+    chown rss-bridge:rss-bridge /var/www/rss-bridge/index.php
+
 ### How to password-protect the instance (token)
 
 Modify `config.ini.php`:

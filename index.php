@@ -6,6 +6,12 @@ if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
     exit;
 }
 
+if (! is_readable(__DIR__ . '/lib/bootstrap.php')) {
+    http_response_code(500);
+    print 'Unable to read lib/bootstrap.php. Check file permissions.';
+    exit;
+}
+
 require_once __DIR__ . '/lib/bootstrap.php';
 
 set_exception_handler(function (\Throwable $e) {
