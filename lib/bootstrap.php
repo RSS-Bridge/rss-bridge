@@ -70,6 +70,9 @@ $files = [
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Remote/FileDetector.php',
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Remote/UselessFileDetector.php',
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Support/IsElementDisplayedAtom.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Support/ScreenshotHelper.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/WebDriverTimeouts.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/UnknownErrorException.php',
 ];
 foreach ($files as $file) {
     require_once $file;
