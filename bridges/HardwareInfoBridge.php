@@ -6,6 +6,7 @@ class HardwareInfoBridge extends FeedExpander
     const URI = 'https://nl.hardware.info/';
     const DESCRIPTION = 'Tech news from hardware.info (Dutch)';
     const MAINTAINER = 't0stiman';
+    const DONATION_URI = 'https://ko-fi.com/tostiman';
 
     public function collectData()
     {
