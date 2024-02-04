@@ -12,6 +12,8 @@ class GULPProjekteBridge extends WebDriverAbstract
     const DESCRIPTION = 'Projektsuche';
     const MAINTAINER = 'hleskien';
 
+    const MAXITEMS = 60;
+
     protected function getBrowserOptions()
     {
         $chromeOptions = parent::getBrowserOptions();
@@ -86,7 +88,6 @@ class GULPProjekteBridge extends WebDriverAbstract
             $this->clickAwayCookieBanner();
             $this->setIcon($this->getDriver()->findElement(WebDriverBy::xpath('//link[@rel="shortcut icon"]'))->getAttribute('href'));
 
-            $timestamp = time();
             while (true) {
                 $items = $this->getDriver()->findElements(WebDriverBy::tagName('app-project-view'));
                 foreach ($items as $item) {
@@ -105,13 +106,14 @@ class GULPProjekteBridge extends WebDriverAbstract
                         $feedItem->setAuthor($item->findElement(WebDriverBy::tagName('b'))->getText());
                     }
                     $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
-                    $timestamp = $this->timeAgo2Timestamp($item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText());
+                    $timeAgo = $item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText();
+                    $timestamp = $this->timeAgo2Timestamp($timeAgo);
                     $feedItem->setTimestamp($timestamp);
 
                     $this->items[] = $feedItem;
                 }
 
-                if ((time() - $timestamp) < (24 * 60 * 60)) {  // less than 24 hours
+                if (count($this->items) < self::MAXITEMS) {
                     $this->clickNextPage();
                 } else {
                     break;
