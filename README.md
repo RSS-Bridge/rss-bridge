@@ -10,6 +10,13 @@ Officially hosted instance: https://rss-bridge.org/bridge01/
 
 IRC channel #rssbridge at https://libera.chat/
 
+[Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
+
+Alternatively find another
+[public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
+
+Requires minimum PHP 7.4.
+
 
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
@@ -21,9 +28,8 @@ IRC channel #rssbridge at https://libera.chat/
 |![Screenshot #1](/static/screenshot-1.png?raw=true)|![Screenshot #2](/static/screenshot-2.png?raw=true)|
 |![Screenshot #3](/static/screenshot-3.png?raw=true)|![Screenshot #4](/static/screenshot-4.png?raw=true)|
 |![Screenshot #5](/static/screenshot-5.png?raw=true)|![Screenshot #6](/static/screenshot-6.png?raw=true)|
-|![Screenshot #7](/static/twitter-form.png?raw=true)|![Screenshot #8](/static/twitter-rasmus.png?raw=true)|
 
-## A subset of bridges (17/412)
+## A subset of bridges (16/447)
 
 * `CssSelectorBridge`: [Scrape out a feed using CSS selectors](https://rss-bridge.org/bridge01/#bridge-CssSelectorBridge)
 * `FeedMergeBridge`: [Combine multiple feeds into one](https://rss-bridge.org/bridge01/#bridge-FeedMergeBridge)
@@ -38,20 +44,10 @@ IRC channel #rssbridge at https://libera.chat/
 * `ThePirateBayBridge:` [Fetches torrents by search/user/category](https://rss-bridge.org/bridge01/#bridge-ThePirateBayBridge)
 * `TikTokBridge`: [Fetches posts by username](https://rss-bridge.org/bridge01/#bridge-TikTokBridge)
 * `TwitchBridge`: [Fetches videos from channel](https://rss-bridge.org/bridge01/#bridge-TwitchBridge)
-* `TwitterBridge`: [Fetches tweets](https://rss-bridge.org/bridge01/#bridge-TwitterBridge)
 * `VkBridge`: [Fetches posts from user/group](https://rss-bridge.org/bridge01/#bridge-VkBridge)
 * `XPathBridge`: [Scrape out a feed using XPath expressions](https://rss-bridge.org/bridge01/#bridge-XPathBridge)
 * `YoutubeBridge`: [Fetches videos by username/channel/playlist/search](https://rss-bridge.org/bridge01/#bridge-YoutubeBridge)
 * `YouTubeCommunityTabBridge`: [Fetches posts from a channel's community tab](https://rss-bridge.org/bridge01/#bridge-YouTubeCommunityTabBridge)
-
-[Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
-
-Check out RSS-Bridge right now on https://rss-bridge.org/bridge01/
-
-Alternatively find another
-[public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
-
-Requires minimum PHP 7.4.
 
 ## Tutorial
 
@@ -110,11 +106,11 @@ server {
     error_log /var/log/nginx/rss-bridge.error.log;
 
     # Intentionally not setting a root folder here
-        
+
     # autoindex is off by default but feels good to explicitly turn off
     autoindex off;
 
-    # Static content only served here 
+    # Static content only served here
     location /static/ {
         alias /var/www/rss-bridge/static/;
     }
@@ -259,6 +255,20 @@ Learn more in
 
 ## How-to
 
+### How to fix "Access denied."
+
+Output is from php-fpm. It is unable to read index.php.
+
+    chown rss-bridge:rss-bridge /var/www/rss-bridge/index.php
+
+### How to password-protect the instance (token)
+
+Modify `config.ini.php`:
+
+    [authentication]
+
+    token = "hunter2"
+
 ### How to remove all cache items
 
 As current user:
@@ -332,8 +342,6 @@ Learn more in [bridge api](https://rss-bridge.github.io/rss-bridge/Bridge_API/in
 
 ### How to enable all bridges
 
-Modify `config.ini.php`:
-
     enabled_bridges[] = *
 
 ### How to enable some bridges
@@ -390,9 +398,7 @@ Modify `report_limit` so that an error must occur 3 times before it is reported.
 
 The report count is reset to 0 each day.
 
-### How to password-protect the instance
-
-HTTP basic access authentication:
+### How to password-protect the instance (HTTP Basic Auth)
 
     [authentication]
 
@@ -442,7 +448,7 @@ Cached files are deleted automatically after 24 hours.
 RSS-Bridge allows you to take full control over which bridges are displayed to the user.
 That way you can host your own RSS-Bridge service with your favorite collection of bridges!
 
-Current maintainers (as of 2023): @dvikan and @Mynacol #2519
+Current maintainers (as of 2024): @dvikan and @Mynacol #2519
 
 ## Reference
 

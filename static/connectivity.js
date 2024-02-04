@@ -4,7 +4,7 @@ var abort = false;
 
 window.onload = function() {
 
-	fetch(remote + '/index.php?action=list').then(function(response) {
+	fetch(remote + '/?action=list').then(function(response) {
 		return response.text()
 	}).then(function(data){
 		processBridgeList(data);
@@ -46,9 +46,9 @@ function buildTable(bridgeList) {
 		var td_bridge = document.createElement('td');
 		td_bridge.innerText = bridgeList.bridges[bridge].name;
 
-		// Link to the actual bridge on index.php
+		// Link to the actual bridge on frontpage
 		var a = document.createElement('a');
-		a.href = remote + "/index.php?show_inactive=1#bridge-" + bridge;
+		a.href = remote + "/?#bridge-" + bridge;
 		a.target = '_blank';
 		a.innerText = '[Show]';
 		a.style.marginLeft = '5px';
@@ -104,7 +104,7 @@ function checkNextBridgeAsync() {
 
 			msg.getElementsByTagName('span')[0].textContent = 'Processing ' + bridge + '...';
 
-			fetch(remote + '/index.php?action=Connectivity&bridge=' + bridge)
+			fetch(remote + '/?action=Connectivity&bridge=' + bridge)
 			.then(function(response) { return response.text() })
 			.then(JSON.parse)
 			.then(processBridgeResultAsync)

@@ -281,23 +281,13 @@ p.maintainer {
     text-align: right;
 }
 
-.secure-warning {
-    background-color: #ffc600;
-    color: #5f5f5f;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-    border: 1px solid transparent;
-    width: 80%;
-    margin: auto auto 6px;
-}
-
 .error strong {
     display: inline-block;
     width: 100px;
 }
 
 /* Hide all forms on the frontpage by default */
-form {
+form.bridge-form {
     display: none;
 }
 
@@ -395,11 +385,6 @@ button {
         }
 
     } /* @supports (display: grid) */
-
-    .secure-warning {
-        width: 100%;
-    }
-
 }
 
 /* Dark theme */

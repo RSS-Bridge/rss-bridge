@@ -80,7 +80,7 @@ abstract class BridgeAbstract
     }
 
     /**
-     * The description is currently not used in feed production
+     * The description is only used in bridge card rendering on frontpage
      */
     public function getDescription()
     {
@@ -92,6 +92,9 @@ abstract class BridgeAbstract
         return static::MAINTAINER;
     }
 
+    /**
+     * A more correct method name would have been "getContexts"
+     */
     public function getParameters(): array
     {
         return static::PARAMETERS;
@@ -128,16 +131,17 @@ abstract class BridgeAbstract
 
     public function setInput(array $input)
     {
-        $context = $input['context'] ?? null;
-        if ($context) {
+        // This is the submitted context
+        $contextName = $input['context'] ?? null;
+        if ($contextName) {
             // Context hinting (optional)
-            $this->queriedContext = $context;
+            $this->queriedContext = $contextName;
             unset($input['context']);
         }
 
-        $parameters = $this->getParameters();
+        $contexts = $this->getParameters();
 
-        if (!$parameters) {
+        if (!$contexts) {
             if ($input) {
                 throw new \Exception('Invalid parameters value(s)');
             }
@@ -146,15 +150,16 @@ abstract class BridgeAbstract
 
         $validator = new ParameterValidator();
 
-        // $input is passed by reference!
-        if (!$validator->validateInput($input, $parameters)) {
-            $invalidParameterKeys = array_column($validator->getInvalidParameters(), 'name');
+        // $input IS PASSED BY REFERENCE!
+        $errors = $validator->validateInput($input, $contexts);
+        if ($errors !== []) {
+            $invalidParameterKeys = array_column($errors, 'name');
             throw new \Exception(sprintf('Invalid parameters value(s): %s', implode(', ', $invalidParameterKeys)));
         }
 
         // Guess the context from input data
         if (empty($this->queriedContext)) {
-            $queriedContext = $validator->getQueriedContext($input, $parameters);
+            $queriedContext = $validator->getQueriedContext($input, $contexts);
             $this->queriedContext = $queriedContext;
         }
 
@@ -179,12 +184,12 @@ abstract class BridgeAbstract
         }
 
         // Apply default values to missing data
-        $contexts = [$queriedContext];
+        $contextNames = [$queriedContext];
         if (array_key_exists('global', $this->getParameters())) {
-            $contexts[] = 'global';
+            $contextNames[] = 'global';
         }
 
-        foreach ($contexts as $context) {
+        foreach ($contextNames as $context) {
             if (!isset($this->getParameters()[$context])) {
                 // unknown context provided by client, throw exception here? or continue?
             }
@@ -240,7 +245,9 @@ abstract class BridgeAbstract
 
         // Only keep guessed context parameters values
         if (isset($this->inputs[$queriedContext])) {
-            $this->inputs = [$queriedContext => $this->inputs[$queriedContext]];
+            $this->inputs = [
+                $queriedContext => $this->inputs[$queriedContext],
+            ];
         } else {
             $this->inputs = [];
         }
@@ -263,17 +270,20 @@ abstract class BridgeAbstract
         if (!isset($this->inputs[$this->queriedContext][$input]['value'])) {
             return null;
         }
-        if (array_key_exists('global', $this->getParameters())) {
-            if (array_key_exists($input, $this->getParameters()['global'])) {
-                $context = 'global';
+
+        $contexts = $this->getParameters();
+
+        if (array_key_exists('global', $contexts)) {
+            if (array_key_exists($input, $contexts['global'])) {
+                $contextName = 'global';
             }
         }
-        if (!isset($context)) {
-            $context = $this->queriedContext;
+        if (!isset($contextName)) {
+            $contextName = $this->queriedContext;
         }
 
         $needle = $this->inputs[$this->queriedContext][$input]['value'];
-        foreach ($this->getParameters()[$context][$input]['values'] as $first_level_key => $first_level_value) {
+        foreach ($contexts[$contextName][$input]['values'] as $first_level_key => $first_level_value) {
             if (!is_array($first_level_value) && $needle === (string)$first_level_value) {
                 return $first_level_key;
             } elseif (is_array($first_level_value)) {
@@ -289,8 +299,11 @@ abstract class BridgeAbstract
     public function detectParameters($url)
     {
         $regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
+
+        $contexts = $this->getParameters();
+
         if (
-            empty($this->getParameters())
+            empty($contexts)
             && preg_match($regex, $url, $urlMatches) > 0
             && preg_match($regex, static::URI, $bridgeUriMatches) > 0
             && $urlMatches[3] === $bridgeUriMatches[3]
