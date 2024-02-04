@@ -104,25 +104,6 @@ class CarThrottleBridge extends BridgeAbstract
                 $found->outertext = '';
             }
 
-            //todo is this necessary?
-            //replace embedded youtube videos with links
-            // foreach ($articleElement->find('iframe') as $found) {
-            //     $iframeUrl = $found->getAttribute('src');
-
-            //     //simply using the existing url doesn't work because RSS-bridge removes double slashes
-            //     if(preg_match('/youtu\.be\/+(\w+)/', $iframeUrl, $matches))
-            //     {
-            //         $youtubeID = $matches[1];
-            //     }
-            //     else {
-            //         continue;
-            //     }
-
-            //     $thumbnailURL = 'https://i.ytimg.com/vi/' . $youtubeID . '/hqdefault.jpg';
-            //     $videoURL = 'https://youtu/be/' . $youtubeID;
-            //     $found->outertext = '<a href="' . $videoURL . '"><img src="' . $thumbnailURL . '" alt="' . $videoURL . '"></a>';
-            // }
-
             $item['content'] = $summary . $articleElement;
 
             array_push($this->items, $item);
