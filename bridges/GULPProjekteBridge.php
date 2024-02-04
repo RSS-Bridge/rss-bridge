@@ -100,6 +100,9 @@ class GULPProjekteBridge extends WebDriverAbstract
                     }
                     if (str_contains($info->getText(), 'Projektanbieter:')) {
                         $feedItem->setAuthor($info->findElement(WebDriverBy::xpath('.//li/span[2]/span'))->getText());
+                    } else {
+                        # mostly "Direkt vom Auftraggeber" or "GULP Agentur"
+                        $feedItem->setAuthor($item->findElement(WebDriverBy::tagName('b'))->getText());
                     }
                     $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
                     $timestamp = $this->timeAgo2Timestamp($item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText());
