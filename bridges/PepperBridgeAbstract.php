@@ -437,37 +437,9 @@ HEREDOC;
      */
     private function getImage($deal)
     {
-        $selectorLazy = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'thread-image',
-                'width--all-auto',
-                'height--all-auto',
-                'imgFrame-img',
-                'img--dummy',
-                'js-lazy-img'
-            ]
-        );
-
-        $selectorPlain = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'thread-image',
-                'width--all-auto',
-                'height--all-auto',
-                'imgFrame-img',
-            ]
-        );
-        if ($deal->find('img[class=' . $selectorLazy . ']', 0) != null) {
-            return json_decode(
-                html_entity_decode(
-                    $deal->find('img[class=' . $selectorLazy . ']', 0)
-                        ->getAttribute('data-lazy-img')
-                )
-            )->{'src'};
-        } else {
-            return $deal->find('img[class*=' . $selectorPlain . ']', 0)->src ?? '';
-        }
+        // Get thread Image JSON content
+        $content = Json::decode($deal->find('div[class*=threadGrid-image]', 0)->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
+        return $content['props']['threadImageUrl'];
     }
 
     /**
