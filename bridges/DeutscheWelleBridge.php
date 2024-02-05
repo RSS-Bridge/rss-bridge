@@ -73,12 +73,12 @@ class DeutscheWelleBridge extends FeedExpander
 
     protected function parseItem(array $item)
     {
-        $parsedUrl = parse_url($item['uri']);
-        unset($parsedUrl['query']);
-        $url = $this->unparseUrl($parsedUrl);
+        $parsedUri = parse_url($item['uri']);
+        unset($parsedUri['query']);
+        $item['uri'] = $this->unparseUrl($parsedUri);
 
-        $page = getSimpleHTMLDOM($url);
-        $page = defaultLinkTo($page, $url);
+        $page = getSimpleHTMLDOM($item['uri']);
+        $page = defaultLinkTo($page, $item['uri']);
 
         $article = $page->find('article', 0);
 
