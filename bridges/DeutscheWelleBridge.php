@@ -112,6 +112,13 @@ class DeutscheWelleBridge extends FeedExpander
             $img->height = null;
         }
 
+        // remove bad img src's added by defaultLinkTo() above
+        // these images should have src="" and will then use
+        // the srcset attribute to load the best image for the displayed size
+        foreach ($article->find('figure > picture > img') as $img) {
+            $img->src = '';
+        }
+
         // replace lazy-loaded images
         foreach ($article->find('figure.placeholder-image') as $figure) {
             $img = $figure->find('img', 0);
