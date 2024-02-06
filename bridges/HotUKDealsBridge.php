@@ -3278,6 +3278,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract
         'request-error' => 'Could not request HotUKDeals',
         'thread-error' => 'Unable to determine the thread ID. Check the URL you entered',
         'no-results' => 'Ooops, looks like we could',
+        'currency' => '£',
         'relative-date-indicator' => [
             'ago',
         ],
