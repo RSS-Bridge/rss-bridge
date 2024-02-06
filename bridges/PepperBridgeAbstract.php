@@ -113,8 +113,8 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $this->getImage($deal)
                     . '"/></td><td>'
                     . $this->getHTMLTitle($item)
-                    . $this->getPrice($deal)
-                    . $this->getDiscount($deal)
+                    . $this->getPrice($jsonDealData)
+                    . $this->getDiscount($jsonDealData)
                     . $this->getShipsFrom($deal)
                     . $this->getShippingCost($deal)
                     . $this->getSource($jsonDealData)
@@ -273,20 +273,12 @@ HEREDOC;
      * Get the Price from a Deal if it exists
      * @return string String of the deal price
      */
-    private function getPrice($deal)
+    private function getPrice($jsonDealData)
     {
-        if (
-            $deal->find(
-                'span[class*=thread-price]',
-                0
-            ) != null
-        ) {
-            return '<div>' . $this->i8n('price') . ' : '
-                . $deal->find(
-                    'span[class*=thread-price]',
-                    0
-                )->plaintext
-                . '</div>';
+        if ($jsonDealData['props']['thread']['discountType'] == null) {
+            $price = $jsonDealData['props']['thread']['price'];
+                return '<div>' . $this->i8n('price') . ' : '
+                . $price . ' ' . $this->i8n('currency') . '</div>';
         } else {
             return '';
         }
@@ -409,23 +401,22 @@ HEREDOC;
      * Get the original Price and discout from a Deal if it exists
      * @return string String of the deal original price and discount
      */
-    private function getDiscount($deal)
+    private function getDiscount($jsonDealData)
     {
-        if ($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
-            $discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
-            if ($discountHtml != null) {
-                $discount = $discountHtml->plaintext;
-            } else {
-                $discount = '';
+        $oldPrice = $jsonDealData['props']['thread']['nextBestPrice'];
+        $newPrice = $jsonDealData['props']['thread']['price'];
+        $percentage = $jsonDealData['props']['thread']['percentage'];
+
+        if ($oldPrice != 0) {
+            // If there is no percentage calculated, then calculate it manually
+            if ($percentage == 0) {
+                $percentage = round(100 - ($newPrice * 100 / $oldPrice), 2);
             }
             return '<div>' . $this->i8n('discount') . ' : <span style="text-decoration: line-through;">'
-                . $deal->find(
-                    'span[class*=mute--text text--lineThrough]',
-                    0
-                )->plaintext
-                . '</span>&nbsp;'
-                . $discount
-                . '</div>';
+                . $oldPrice . ' ' . $this->i8n('currency')
+                . '</span>&nbsp; -'
+                . $percentage
+                . ' %</div>';
         } else {
             return '';
         }
@@ -448,18 +439,16 @@ HEREDOC;
      */
     private function getShipsFrom($deal)
     {
-        $selector = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'hide--toW2',
-                'metaRibbon',
-            ]
-        );
-        if ($deal->find('span[class*=' . $selector . ']', 0) != null) {
-            $children = $deal->find('span[class*=' . $selector . ']', 0)->children(2);
-            if ($children) {
-                return '<div>' . $children->plaintext . '</div>';
+        $dealMeta = Json::decode($deal->find('div[class=threadGrid-headerMeta]', 0)->find('div[class=js-vue2]', 1)->getAttribute('data-vue2'));
+        $metas = $dealMeta['props']['metaRibbons'];
+        $shipsFrom = null;
+        foreach ($metas as $meta) {
+            if ($meta['type'] == 'dispatched-from') {
+                $shipsFrom = $meta['text'];
             }
+        }
+        if ($shipsFrom != null) {
+            return '<div>' . $shipsFrom . '</div>';
         }
         return '';
     }
