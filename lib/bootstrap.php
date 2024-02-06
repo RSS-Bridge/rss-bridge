@@ -63,6 +63,20 @@ $files = [
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Support/ScreenshotHelper.php',
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/WebDriverTimeouts.php',
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/UnknownErrorException.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/WebDriverPoint.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/WebDriverMouse.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Remote/RemoteMouse.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/MoveTargetOutOfBoundsException.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Interactions/WebDriverActions.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/WebDriverKeyboard.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Remote/RemoteKeyboard.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/WebDriverAction.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Interactions/WebDriverCompositeAction.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Interactions/Internal/WebDriverMouseAction.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Interactions/Internal/WebDriverMoveToOffsetAction.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Interactions/Internal/WebDriverCoordinates.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/TimeoutException.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/StaleElementReferenceException.php',
 ];
 foreach ($files as $file) {
     require_once $file;
