@@ -34,7 +34,6 @@ class GULPProjekteBridge extends WebDriverAbstract
     {
         $nextPage = $this->getDriver()->findElement(WebDriverBy::xpath('//app-linkable-paginator//li[@id="next-page"]/a'));
         $href = $nextPage->getAttribute('href');
-        $this->scrollIntoView($nextPage);   // or else tooltip might cover link
         $nextPage->click();
         $this->getDriver()->wait()->until(WebDriverExpectedCondition::not(
             WebDriverExpectedCondition::presenceOfElementLocated(
@@ -61,75 +60,35 @@ class GULPProjekteBridge extends WebDriverAbstract
     }
 
     /*
-     * Converts a string like "vor einigen Minuten" into reasonable numbers.
+     * Converts a string like "vor einigen Minuten" into a reasonable timestamp.
      * Long and complicated, but we don't want to be more specific than
-     * the information we have available. That's why DateInterval doesn't work here.
+     * the information we have available.
      */
-    protected function calculateTimeAgo(string $timeAgoStr): array
+    protected function getTimestamp(string $timeAgo): int
     {
-        $now = getdate();
-        $secs = $now['seconds'];
-        $mins = $now['minutes'];
-        $hours = $now['hours'];
-        $quantityStr = explode(' ', $timeAgoStr)[1];
+        $dateTime = new DateTime();
+        $dateArray = explode(' ', $dateTime->format('Y m d H i s'));
+        $quantityStr = explode(' ', $timeAgo)[1];
+        // convert possible word into number
         if (in_array($quantityStr, ['einem', 'einer', 'einigen'])) {
             $quantity = 1;
         } else {
             $quantity = intval($quantityStr);
         }
-        // substract time ago
-        if (str_contains($timeAgoStr, 'Sekunde')) {
-            $secs -= $quantity;
-        } elseif (str_contains($timeAgoStr, 'Minute')) {
-            $mins -= $quantity;
-            $secs = 0;
-        } elseif (str_contains($timeAgoStr, 'Stunde')) {
-            $hours -= $quantity;
-            $mins = 0;
-            $secs = 0;
-        } elseif (str_contains($timeAgoStr, 'Tag')) {
-            $hours = 0;
-            $mins = 0;
-            $secs = 0;
+        // substract time ago + inferior units for lower precision
+        if (str_contains($timeAgo, 'Sekunde')) {
+            $interval = new DateInterval('PT' . $quantity . 'S');
+        } elseif (str_contains($timeAgo, 'Minute')) {
+            $interval = new DateInterval('PT' . $quantity . 'M' . $dateArray[5] . 'S');
+        } elseif (str_contains($timeAgo, 'Stunde')) {
+            $interval = new DateInterval('PT' . $quantity . 'H' . $dateArray[4] . 'M' . $dateArray[5] . 'S');
+        } elseif (str_contains($timeAgo, 'Tag')) {
+            $interval = new DateInterval('P' . $quantity . 'DT' . $dateArray[3] . 'H' . $dateArray[4] . 'M' . $dateArray[5] . 'S');
         } else {
-            throw new UnexpectedValueException($timeAgoStr);
+            throw new UnexpectedValueException($timeAgo);
         }
-        // correct carry
-        if ($secs < 0) {
-            $secs += +60;
-            $mins -= 1;
-        }
-        if ($mins < 0) {
-            $mins += 60;
-            $hours -= 1;
-        }
-        if ($hours < 0) {
-            $hours += 24;
-        }
-        return ['seconds' => $secs, 'minutes' => $mins, 'hours' => $hours];
-    }
-
-    protected function getTimestamp(RemoteWebElement $item): int
-    {
-        // get time ago and published date
-        $timeAgo = $item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'));
-        $this->scrollIntoView($timeAgo);    // to raise tooltip
-        $tooltipXpath = '//div[contains(@class, "p-tooltip-text")]';
-        $this->getDriver()->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::xpath($tooltipXpath)));
-        $publishedStr = $this->getDriver()->findElement(WebDriverBy::xpath($tooltipXpath))->getText();
-        // construct reasonable timestamp
-        $calculatedTime = $this->calculateTimeAgo($timeAgo->getText());
-        $publishedDate = explode('.', explode(' ', $publishedStr)[2]);
-        $date = new DateTime();
-        $date->setDate($publishedDate[2], $publishedDate[1], $publishedDate[0]);
-        $date->setTime($calculatedTime['hours'], $calculatedTime['minutes'], $calculatedTime['seconds']);
-        return $date->getTimestamp();
-    }
-
-    protected function scrollIntoView(RemoteWebElement $item)
-    {
-        $actions = new WebDriverActions($this->getDriver());
-        $actions->moveToElement($item)->perform();
+        $dateTime = $dateTime->sub($interval);
+        return $dateTime->getTimestamp();
     }
 
     public function collectData()
@@ -159,7 +118,8 @@ class GULPProjekteBridge extends WebDriverAbstract
                         $feedItem->setAuthor($item->findElement(WebDriverBy::tagName('b'))->getText());
                     }
                     $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
-                    $feedItem->setTimestamp($this->getTimestamp($item));
+                    $timeAgo = $item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText();
+                    $feedItem->setTimestamp($this->getTimestamp($timeAgo));
 
                     $this->items[] = $feedItem;
                 }
