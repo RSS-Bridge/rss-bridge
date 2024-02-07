@@ -106,11 +106,11 @@ server {
     error_log /var/log/nginx/rss-bridge.error.log;
 
     # Intentionally not setting a root folder here
-        
+
     # autoindex is off by default but feels good to explicitly turn off
     autoindex off;
 
-    # Static content only served here 
+    # Static content only served here
     location /static/ {
         alias /var/www/rss-bridge/static/;
     }
@@ -254,6 +254,12 @@ Learn more in
 [Installation](https://rss-bridge.github.io/rss-bridge/For_Hosts/Installation.html).
 
 ## How-to
+
+### How to fix "Access denied."
+
+Output is from php-fpm. It is unable to read index.php.
+
+    chown rss-bridge:rss-bridge /var/www/rss-bridge/index.php
 
 ### How to password-protect the instance (token)
 

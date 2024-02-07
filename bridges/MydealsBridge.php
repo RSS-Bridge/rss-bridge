@@ -2025,6 +2025,7 @@ class MydealsBridge extends PepperBridgeAbstract
         'request-error' => 'Could not request mydeals',
         'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
         'no-results' => 'Ups, wir konnten nichts',
+        'currency' => '€',
         'relative-date-indicator' => [
             'vor',
             'seit'

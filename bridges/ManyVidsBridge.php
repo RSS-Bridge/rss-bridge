@@ -29,19 +29,20 @@ class ManyVidsBridge extends BridgeAbstract
         } else {
             throw new \Exception('nope');
         }
-
         $url = sprintf('https://www.manyvids.com/Profile/%s/Store/Videos/', $profile);
         $dom = getSimpleHTMLDOM($url);
-        $el = $dom->find('section[id="app-store-videos"]', 0);
-        $json = $el->getAttribute('data-store-videos');
-        $json = html_entity_decode($json);
-        $data = Json::decode($json, false);
-        foreach ($data->content->items as $item) {
+        $videos = $dom->find('div[class^="ProfileTabGrid_card"]');
+        foreach ($videos as $item) {
+            $a = $item->find('a', 1);
+            $uri = 'https://www.manyvids.com' . $a->href;
+            if (preg_match('#Video/(\d+)/#', $uri, $m)) {
+                $uid = 'manyvids/' . $m[1];
+            }
             $this->items[] = [
-                'title' => $item->title,
-                'uri' => 'https://www.manyvids.com' . $item->preview->path,
-                'uid' => 'manyvids/' . $item->id,
-                'content' => sprintf('<img src="%s">', $item->videoThumb),
+                'title'     => $a->plaintext,
+                'uri'       => $uri,
+                'uid'       => $uid ?? $uri,
+                'content'   => $item->innertext,
             ];
         }
     }
