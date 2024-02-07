@@ -516,7 +516,7 @@ class YoutubeBridge extends BridgeAbstract
 
         $item = [];
         // This should probably be uid?
-        $item['id'] = $videoId;
+        $item['uid'] = $videoId;
         $item['title'] = $title;
         $item['author'] = $author ?? '';
         $item['timestamp'] = $timestamp;
