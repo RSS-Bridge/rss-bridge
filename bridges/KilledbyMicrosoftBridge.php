@@ -16,7 +16,7 @@ class KilledbyMicrosoftBridge extends BridgeAbstract
         $discontinuedServices = json_decode($json, true);
 
         // Sort the array based on dateClose in descending order
-        usort($discontinuedServices, function($a, $b) {
+        usort($discontinuedServices, function ($a, $b) {
             return strtotime($b['dateClose']) - strtotime($a['dateClose']);
         });
 
