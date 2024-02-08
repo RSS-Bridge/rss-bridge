@@ -38,6 +38,16 @@ class RedditBridge extends BridgeAbstract
                 'required' => false,
                 'exampleValue' => 'cats, dogs',
                 'title' => 'Keyword search, separated by commas'
+            ],
+            'frontend' => [
+                'type' => 'list',
+                'name' => 'frontend',
+                'title' => 'choose frontend for  reddit',
+                'values' => [
+                    'old.reddit.com' => 'https://old.reddit.com',
+                    'reddit.com' => 'https://reddit.com',
+                    'libreddit.kavin.rocks' => 'https://libreddit.kavin.rocks',
+                ]
             ]
         ],
         'single' => [
@@ -109,6 +119,10 @@ class RedditBridge extends BridgeAbstract
     {
         $user = false;
         $comments = false;
+        $frontend = $this->getInput('frontend');
+        if ($frontend == '') {
+                $frontend = 'https://old.reddit.com';
+        }
         $section = $this->getInput('d');
 
         switch ($this->queriedContext) {
@@ -174,6 +188,10 @@ class RedditBridge extends BridgeAbstract
                 $item['uid'] = $data->id;
                 $item['timestamp'] = $data->created_utc;
                 $item['uri'] = $this->urlEncodePathParts($data->permalink);
+
+                if ($frontend != 'https://old.reddit.com') {
+                    $item['uri'] = preg_replace('#^https://old\.reddit\.com#', $frontend, $item['uri']);
+                }
 
                 $item['categories'] = [];
 
