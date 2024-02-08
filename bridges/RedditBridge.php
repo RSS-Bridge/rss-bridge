@@ -46,7 +46,7 @@ class RedditBridge extends BridgeAbstract
                 'values' => [
                     'old.reddit.com' => 'https://old.reddit.com',
                     'reddit.com' => 'https://reddit.com',
-                    'libreddit.kavin.rocks' => 'https://libreddit.kavin.rocks'
+                    'libreddit.kavin.rocks' => 'https://libreddit.kavin.rocks',
                 ]
             ]
         ],
@@ -190,7 +190,7 @@ class RedditBridge extends BridgeAbstract
                 $item['uri'] = $this->urlEncodePathParts($data->permalink);
 
                 if ($frontend != 'https://old.reddit.com') {
-                        $item['uri'] = preg_replace('/^https:\/\/old\.reddit\.com/', $frontend, $item['uri']);
+                    $item['uri'] = preg_replace('#^https://old\.reddit\.com#', $frontend, $item['uri']);
                 }
 
                 $item['categories'] = [];
