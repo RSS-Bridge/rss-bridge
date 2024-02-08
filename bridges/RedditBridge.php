@@ -38,6 +38,12 @@ class RedditBridge extends BridgeAbstract
                 'required' => false,
                 'exampleValue' => 'cats, dogs',
                 'title' => 'Keyword search, separated by commas'
+            ],
+            'newreddit' => [
+                'type' => 'checkbox',
+                'name' => 'newreddit',
+                'title' => 'link to new reddit',
+                'defaultValue' => false
             ]
         ],
         'single' => [
@@ -109,6 +115,7 @@ class RedditBridge extends BridgeAbstract
     {
         $user = false;
         $comments = false;
+        $newreddit = $this->getInput('newreddit');
         $section = $this->getInput('d');
 
         switch ($this->queriedContext) {
@@ -174,6 +181,9 @@ class RedditBridge extends BridgeAbstract
                 $item['uid'] = $data->id;
                 $item['timestamp'] = $data->created_utc;
                 $item['uri'] = $this->urlEncodePathParts($data->permalink);
+
+                if ($newreddit == true)
+                    $item['uri'] = preg_replace("/^https:\/\/old\./", "https://", $item['uri']);
 
                 $item['categories'] = [];
 
