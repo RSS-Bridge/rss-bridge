@@ -179,7 +179,7 @@ class HeiseBridge extends FeedExpander
             }
         }
 
-        $categories = $article->find('.article-footer__topics ul.topics li.topics__item');
+        $categories = $article->find('.article-footer__topics ul.topics li.topics__item a-topic a');
         foreach ($categories as $category) {
             $item['categories'][] = trim($category->plaintext);
         }
