@@ -41,7 +41,7 @@ class RedditBridge extends BridgeAbstract
             ],
             'newreddit' => [
                 'type' => 'checkbox',
-                'name' => 'newreddit',
+                'name' => 'new reddit',
                 'title' => 'link to new reddit',
                 'defaultValue' => false
             ]
@@ -182,9 +182,10 @@ class RedditBridge extends BridgeAbstract
                 $item['timestamp'] = $data->created_utc;
                 $item['uri'] = $this->urlEncodePathParts($data->permalink);
 
-                if ($newreddit == true)
-                    $item['uri'] = preg_replace("/^https:\/\/old\./", "https://", $item['uri']);
-
+                if ($newreddit == true) {
+                    $item['uri'] = preg_replace('/^https:\/\/old\./', 'https://', $item['uri']);
+                }
+                    
                 $item['categories'] = [];
 
                 if ($post->kind == 't1') {
