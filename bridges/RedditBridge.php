@@ -48,6 +48,7 @@ class RedditBridge extends BridgeAbstract
                     'reddit.com' => 'https://reddit.com',
                     'libreddit.kavin.rocks' => 'https://libreddit.kavin.rocks'
                 ]
+            ]
         ],
         'single' => [
             'r' => [
