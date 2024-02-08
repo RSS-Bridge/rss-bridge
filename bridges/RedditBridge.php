@@ -39,12 +39,15 @@ class RedditBridge extends BridgeAbstract
                 'exampleValue' => 'cats, dogs',
                 'title' => 'Keyword search, separated by commas'
             ],
-            'newreddit' => [
-                'type' => 'checkbox',
-                'name' => 'new reddit',
-                'title' => 'link to new reddit',
-                'defaultValue' => false
-            ]
+            'frontend' => [
+                'type' => 'list',
+                'name' => 'frontend',
+                'title' => 'choose frontend for  reddit',
+                'values' => [
+                    'old.reddit.com' => 'https://old.reddit.com',
+                    'reddit.com' => 'https://reddit.com',
+                    'libreddit.kavin.rocks' => 'https://libreddit.kavin.rocks'
+                ]
         ],
         'single' => [
             'r' => [
@@ -115,7 +118,7 @@ class RedditBridge extends BridgeAbstract
     {
         $user = false;
         $comments = false;
-        $newreddit = $this->getInput('newreddit');
+        $frontend = $this->getInput('frontend');
         $section = $this->getInput('d');
 
         switch ($this->queriedContext) {
@@ -182,10 +185,10 @@ class RedditBridge extends BridgeAbstract
                 $item['timestamp'] = $data->created_utc;
                 $item['uri'] = $this->urlEncodePathParts($data->permalink);
 
-                if ($newreddit == true) {
-                    $item['uri'] = preg_replace('/^https:\/\/old\./', 'https://', $item['uri']);
+                if ($frontend != 'https://old.reddit.com') {
+                        $item['uri'] = preg_replace('/^https:\/\/old\.reddit\.com/', $frontend, $item['uri']);
                 }
-
+   
                 $item['categories'] = [];
 
                 if ($post->kind == 't1') {
