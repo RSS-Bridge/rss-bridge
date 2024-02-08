@@ -77,6 +77,9 @@ $files = [
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Interactions/Internal/WebDriverCoordinates.php',
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/TimeoutException.php',
     __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/StaleElementReferenceException.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/WebDriverKeys.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/ElementNotInteractableException.php',
+    __DIR__ . '/../vendor/php-webdriver/webdriver/lib/Exception/InvalidArgumentException.php',
 ];
 foreach ($files as $file) {
     require_once $file;
