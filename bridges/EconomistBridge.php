@@ -99,7 +99,12 @@ class EconomistBridge extends FeedExpander
 
     protected function parseItem(array $item)
     {
-        $dom = getSimpleHTMLDOM($item['uri']);
+        try {
+            $dom = getSimpleHTMLDOM($item['uri']);
+        } catch (Exception $e) {
+            $item['content'] = $e->getMessage();
+            return $item;
+        }
 
         $article = $dom->find('#new-article-template', 0);
         if ($article == null) {
