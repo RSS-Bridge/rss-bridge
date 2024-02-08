@@ -189,7 +189,7 @@ class RedditBridge extends BridgeAbstract
                 if ($frontend != 'https://old.reddit.com') {
                         $item['uri'] = preg_replace('/^https:\/\/old\.reddit\.com/', $frontend, $item['uri']);
                 }
-   
+
                 $item['categories'] = [];
 
                 if ($post->kind == 't1') {
