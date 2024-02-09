@@ -34,7 +34,7 @@ class KilledbyMicrosoftBridge extends BridgeAbstract
 
             // Construct the content
             $content = sprintf(
-                '<p>%s</p><p>Scheduled Closure: %s</p>',
+                '<p>%s</p><p>Scheduled closure on %s.</p>',
                 $service['description'],
                 $service['dateClose']
             );
