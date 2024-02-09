@@ -18,9 +18,9 @@ $files = [
     __DIR__ . '/../lib/url.php',
     __DIR__ . '/../lib/seotags.php',
     // Vendor
-    __DIR__ . '/../vendor/parsedown/Parsedown.php',
-    __DIR__ . '/../vendor/php-urljoin/src/urljoin.php',
-    __DIR__ . '/../vendor/simplehtmldom/simple_html_dom.php',
+    __DIR__ . '/../lib/parsedown/Parsedown.php',
+    __DIR__ . '/../lib/php-urljoin/src/urljoin.php',
+    __DIR__ . '/../lib/simplehtmldom/simple_html_dom.php',
 ];
 foreach ($files as $file) {
     require_once $file;
