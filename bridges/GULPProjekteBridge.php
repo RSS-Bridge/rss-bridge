@@ -1,7 +1,6 @@
 <?php
 
 use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -15,6 +14,11 @@ class GULPProjekteBridge extends WebDriverAbstract
 
     const MAXITEMS = 60;
 
+    /**
+     * Adds accept language german to the Chrome Options.
+     *
+     * @return Facebook\WebDriver\Chrome\ChromeOptions
+     */
     protected function getBrowserOptions()
     {
         $chromeOptions = parent::getBrowserOptions();
@@ -22,6 +26,10 @@ class GULPProjekteBridge extends WebDriverAbstract
         return $chromeOptions;
     }
 
+    /**
+     * @throws Facebook\WebDriver\Exception\NoSuchElementException
+     * @throws Facebook\WebDriver\Exception\TimeoutException
+     */
     protected function clickAwayCookieBanner()
     {
         $this->getDriver()->wait()->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('onetrust-reject-all-handler')));
@@ -30,6 +38,10 @@ class GULPProjekteBridge extends WebDriverAbstract
         $this->getDriver()->wait()->until(WebDriverExpectedCondition::invisibilityOfElementLocated(WebDriverBy::id('onetrust-reject-all-handler')));
     }
 
+    /**
+     * @throws Facebook\WebDriver\Exception\NoSuchElementException
+     * @throws Facebook\WebDriver\Exception\TimeoutException
+     */
     protected function clickNextPage()
     {
         $nextPage = $this->getDriver()->findElement(WebDriverBy::xpath('//app-linkable-paginator//li[@id="next-page"]/a'));
@@ -42,6 +54,12 @@ class GULPProjekteBridge extends WebDriverAbstract
         ));
     }
 
+    /**
+     * Returns the uri of the 'Projektanbieter' logo or false if there is
+     * no logo present in the item.
+     *
+     * @return string | false
+     */
     protected function getLogo(RemoteWebElement $item)
     {
         try {
@@ -59,23 +77,25 @@ class GULPProjekteBridge extends WebDriverAbstract
         }
     }
 
-    /*
+    /**
      * Converts a string like "vor einigen Minuten" into a reasonable timestamp.
      * Long and complicated, but we don't want to be more specific than
      * the information we have available.
+     *
+     * @throws Exception If the DateInterval can't be parsed.
      */
     protected function getTimestamp(string $timeAgo): int
     {
         $dateTime = new DateTime();
         $dateArray = explode(' ', $dateTime->format('Y m d H i s'));
         $quantityStr = explode(' ', $timeAgo)[1];
-        // convert possible word into number
+        // convert possible word into a number
         if (in_array($quantityStr, ['einem', 'einer', 'einigen'])) {
             $quantity = 1;
         } else {
             $quantity = intval($quantityStr);
         }
-        // substract time ago + inferior units for lower precision
+        // subtract time ago + inferior units for lower precision
         if (str_contains($timeAgo, 'Sekunde')) {
             $interval = new DateInterval('PT' . $quantity . 'S');
         } elseif (str_contains($timeAgo, 'Minute')) {
@@ -91,6 +111,13 @@ class GULPProjekteBridge extends WebDriverAbstract
         return $dateTime->getTimestamp();
     }
 
+    /**
+     * The main loop which clicks through search result pages and puts
+     * the content into the $items array.
+     *
+     * @throws Facebook\WebDriver\Exception\NoSuchElementException
+     * @throws Facebook\WebDriver\Exception\TimeoutException
+     */
     public function collectData()
     {
         parent::collectData();

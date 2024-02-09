@@ -8,6 +8,7 @@ Base class | Description
 -----------|------------
 [`BridgeAbstract`](./02_BridgeAbstract.md) | This class is intended for standard _Bridges_ that need to filter HTML pages for content.
 [`FeedExpander`](./03_FeedExpander.md) | Expand/modify existing feed urls
-[`XPathAbstract`](./04_XPathAbstract.md) | This class is meant as an alternative base class for bridge implementations. It offers preliminary functionality for generating feeds based on _XPath expressions_.
+[`WebDriverAbstract`](./04_WebDriverAbstract) |
+[`XPathAbstract`](./05_XPathAbstract) | This class is meant as an alternative base class for bridge implementations. It offers preliminary functionality for generating feeds based on _XPath expressions_.
 
 For more information about how to create a new _Bridge_, read [How to create a new Bridge?](./01_How_to_create_a_new_bridge.md)

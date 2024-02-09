@@ -10,6 +10,11 @@ class ScalableCapitalBlogBridge extends WebDriverAbstract
     const DESCRIPTION = 'Alle Artikel';
     const MAINTAINER = 'hleskien';
 
+    /**
+     * Adds accept language german to the Chrome Options.
+     *
+     * @return Facebook\WebDriver\Chrome\ChromeOptions
+     */
     protected function getBrowserOptions()
     {
         $chromeOptions = parent::getBrowserOptions();
@@ -17,6 +22,12 @@ class ScalableCapitalBlogBridge extends WebDriverAbstract
         return $chromeOptions;
     }
 
+    /**
+     * Puts the content of the first page into the $items array.
+     *
+     * @throws Facebook\WebDriver\Exception\NoSuchElementException
+     * @throws Facebook\WebDriver\Exception\TimeoutException
+     */
     public function collectData()
     {
         parent::collectData();
@@ -48,6 +59,12 @@ class ScalableCapitalBlogBridge extends WebDriverAbstract
         }
     }
 
+    /**
+     * Converts the given date (dd.mm.yyyy) into a timestamp.
+     *
+     * @param $value string
+     * @return int
+     */
     protected function formatItemTimestamp($value)
     {
         $formatter = new IntlDateFormatter('de', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
