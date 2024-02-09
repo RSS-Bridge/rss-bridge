@@ -52,9 +52,8 @@ class SubstackBridge extends BridgeAbstract
         $selectedCategory = $this->getInput('category');
         $apiUrl = $this->constructApiUrl($selectedCategory);
         $json = json_decode(getContents($apiUrl));
-    
-        foreach ($json->posts as $post)
-        {
+
+        foreach ($json->posts as $post) {
             $this->items[] = [
                 'uri' => $post->canonical_url,
                 'title' => $post->title,
