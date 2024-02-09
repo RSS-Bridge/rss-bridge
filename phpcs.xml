@@ -8,6 +8,9 @@
 
   <exclude-pattern>./static</exclude-pattern>
   <exclude-pattern>./vendor</exclude-pattern>
+  <exclude-pattern>./lib/parsedown</exclude-pattern>
+  <exclude-pattern>./lib/php-urljoin</exclude-pattern>
+  <exclude-pattern>./lib/simplehtmldom</exclude-pattern>
   <exclude-pattern>./templates</exclude-pattern>
   <exclude-pattern>./config.default.ini.php</exclude-pattern>
   <exclude-pattern>./config.ini.php</exclude-pattern>
