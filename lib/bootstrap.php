@@ -1,5 +1,9 @@
 <?php
 
+if (is_file(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/../vendor/autoload.php';
+}
+
 const PATH_LIB_CACHES = __DIR__ . '/../caches/';
 const PATH_CACHE = __DIR__ . '/../cache/';
 
