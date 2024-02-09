@@ -106,7 +106,7 @@ final class BridgeCard
 
         if ($token) {
             // todo: maybe escape the token?
-            $form .= sprintf('<input type="hidden" name="token" value="%s" />', $token);
+            $form .= sprintf('<input type="hidden" name="token" value="%s" />', e($token));
         }
 
         if (!empty($contextName)) {
