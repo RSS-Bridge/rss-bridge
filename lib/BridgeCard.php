@@ -104,9 +104,8 @@ final class BridgeCard
             <input type="hidden" name="bridge" value="{$bridgeClassName}" />
         EOD;
 
-        if ($token) {
-            // todo: maybe escape the token?
-            $form .= sprintf('<input type="hidden" name="token" value="%s" />', $token);
+        if (Configuration::getConfig('authentication', 'token') && $token) {
+            $form .= sprintf('<input type="hidden" name="token" value="%s" />', e($token));
         }
 
         if (!empty($contextName)) {

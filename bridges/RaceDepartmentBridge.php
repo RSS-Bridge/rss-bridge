@@ -6,6 +6,7 @@ class RaceDepartmentBridge extends FeedExpander
     const URI = 'https://racedepartment.com/';
     const DESCRIPTION = 'Get the latest (sim)racing news from RaceDepartment.';
     const MAINTAINER = 't0stiman';
+    const DONATION_URI = 'https://ko-fi.com/tostiman';
 
     public function collectData()
     {

@@ -126,7 +126,8 @@ class AnnasArchiveBridge extends BridgeAbstract
             return;
         }
 
-        foreach ($list->find('.w-full > .mb-4 > div > a') as $element) {
+        $elements = $list->find('.w-full > .mb-4 > div > a');
+        foreach ($elements as $element) {
             $item = [];
             $item['title'] = $element->find('h3', 0)->plaintext;
             $item['author'] = $element->find('div.italic', 0)->plaintext;
@@ -134,7 +135,8 @@ class AnnasArchiveBridge extends BridgeAbstract
             $item['content'] = $element->plaintext;
             $item['uid'] = $item['uri'];
 
-            if ($item_html = getSimpleHTMLDOMCached($item['uri'])) {
+            $item_html = getSimpleHTMLDOMCached($item['uri'], 86400 * 20);
+            if ($item_html) {
                 $item_html = defaultLinkTo($item_html, self::URI);
                 $item['content'] .= $item_html->find('main img', 0);
                 $item['content'] .= $item_html->find('main .mt-4', 0); // Summary
