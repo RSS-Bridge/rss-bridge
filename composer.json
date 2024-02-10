@@ -23,7 +23,6 @@
     },
     "require": {
         "php": ">=7.4",
-        "php-webdriver/webdriver": "*",
         "ext-mbstring": "*",
         "ext-curl": "*",
         "ext-openssl": "*",
