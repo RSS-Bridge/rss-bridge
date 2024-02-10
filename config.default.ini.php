@@ -99,6 +99,16 @@ name = "Hidden proxy name"
 ; false = disabled (default)
 by_bridge = false
 
+[webdriver]
+
+; Sets the url of the webdriver or selenium server
+selenium_server_url = "http://localhost:4444"
+
+; Sets whether the browser should run in headless mode (no visible ui)
+; true = enabled
+; false = disabled (default)
+headless = false
+
 [authentication]
 
 ; HTTP basic authentication
