@@ -39,7 +39,7 @@ class OpenCVEBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => false,
                 'exampleValue' => 'search:jenkins;product:gitlab,cvss:critical',
-                'title' => 'Syntax: param1:value1,param2:value2;param1query1:param2query2. See https://docs.opencve.io/api/cve/ for parameters'
+                'title' => 'Syntax: param1:value1,param2:value2;param1query2:param2query2. See https://docs.opencve.io/api/cve/ for parameters'
             ],
             'upd_timestamp' => [
                 'name' => 'Use updated_at instead of created_at as timestamp',
