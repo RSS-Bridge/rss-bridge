@@ -38,7 +38,6 @@ class OpenCVEBridge extends BridgeAbstract
                 'name' => 'Filter',
                 'type' => 'text',
                 'required' => false,
-                'defaultValue' => '',
                 'exampleValue' => 'search:jenkins;product:gitlab,cvss:critical',
                 'title' => 'Syntax: param1:value1,param2:value2;param1query1:param2query2. See https://docs.opencve.io/api/cve/ for parameters'
             ],
@@ -122,7 +121,7 @@ class OpenCVEBridge extends BridgeAbstract
         $queries = [];
         $filter = $this->getInput('filter');
         $filterValues = [];
-        if (mb_strlen($filter) > 0) {
+        if ($filter && mb_strlen($filter) > 0) {
             $filterValues = explode(';', $filter);
         } else {
             $queries[''] = [];
