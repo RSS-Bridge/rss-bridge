@@ -193,6 +193,7 @@ class AO3Bridge extends BridgeAbstract
 
     public function getURI()
     {
+        $url = parent::getURI();
         switch ($this->queriedContext) {
             case 'Bookmarks':
                 $user = $this->getInput('user');
