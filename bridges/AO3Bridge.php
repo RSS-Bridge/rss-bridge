@@ -12,13 +12,13 @@ class AO3Bridge extends BridgeAbstract
             'url' => [
                 'name' => 'url',
                 'required' => true,
-                // Example: F/F tag, complete works only
-                'exampleValue' => 'https://archiveofourown.org/works?work_search[complete]=T&tag_id=F*s*F',
+                // Example: F/F tag
+                'exampleValue' => 'https://archiveofourown.org/tags/F*s*F/works',
             ],
             'range' => [
                 'name' => 'Chapter Content',
                 'title' => 'Chapter(s) to include in each work\'s feed entry',
-                'defaultValue' => 'none',
+                'defaultValue' => null,
                 'type' => 'list',
                 'values' => [
                     'None' => null,
