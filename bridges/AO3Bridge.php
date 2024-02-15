@@ -51,18 +51,13 @@ class AO3Bridge extends BridgeAbstract
     {
         switch ($this->queriedContext) {
             case 'Bookmarks':
-                $user = $this->getInput('user');
-                $this->title = $user;
-                $url = self::URI
-                    . '/users/' . $user
-                    . '/bookmarks?bookmark_search[sort_column]=bookmarkable_date';
-                $this->collectList($url);
+                $this->collectList($this->getURI());
                 break;
             case 'List':
-                $this->collectList($this->getInput('url'));
+                $this->collectList($this->getURI());
                 break;
             case 'Work':
-                $this->collectWork($this->getInput('id'));
+                $this->collectWork($this->getURI());
                 break;
         }
     }
@@ -73,13 +68,11 @@ class AO3Bridge extends BridgeAbstract
      */
     private function collectList($url)
     {
-        $this->url = $url;
         $httpClient = RssBridge::getHttpClient();
-
         $version = 'v0.0.1';
         $agent = ['useragent' => "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"];
-        $response = $httpClient->request($url, $agent);
 
+        $response = $httpClient->request($url, $agent);
         $html = \str_get_html($response->getBody());
         $html = defaultLinkTo($html, self::URI);
 
@@ -146,12 +139,9 @@ class AO3Bridge extends BridgeAbstract
     /**
      * Feed for recent chapters of a specific work.
      */
-    private function collectWork($id)
+    private function collectWork($url)
     {
-        $url = self::URI . "/works/$id";
-        $this->url = $url;
         $httpClient = RssBridge::getHttpClient();
-
         $version = 'v0.0.1';
         $agent = ['useragent' => "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"];
 
@@ -203,10 +193,20 @@ class AO3Bridge extends BridgeAbstract
 
     public function getURI()
     {
-        $uri = parent::getURI();
-        if (isset($this->url)) {
-            $uri = $this->url;
+        switch ($this->queriedContext) {
+            case 'Bookmarks':
+                $user = $this->getInput('user');
+                $url = self::URI
+                    . '/users/' . $user
+                    . '/bookmarks?bookmark_search[sort_column]=bookmarkable_date';
+                break;
+            case 'List':
+                $url = $this->getInput('url');
+                break;
+            case 'Work':
+                $url = self::URI . '/works/' . $this->getInput('id');
+                break;
         }
-        return $uri;
+        return $url;
     }
 }
