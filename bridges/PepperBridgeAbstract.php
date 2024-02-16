@@ -44,7 +44,7 @@ class PepperBridgeAbstract extends BridgeAbstract
     protected function collectDeals($url)
     {
         $html = getSimpleHTMLDOM($url);
-        $list = $html->find('article[id]');
+        $list = $html->find('article[id][class*=thread--deal]]');
 
         // Deal Image Link CSS Selector
         $selectorImageLink = implode(
@@ -109,9 +109,9 @@ class PepperBridgeAbstract extends BridgeAbstract
 
                 $item['content'] = '<table><tr><td><a href="'
                     . $item['uri']
-                    . '"><img src="'
+                    . '">'
                     . $this->getImage($deal)
-                    . '"/></td><td>'
+                    . '</td><td>'
                     . $this->getHTMLTitle($item)
                     . $this->getPrice($jsonDealData)
                     . $this->getDiscount($jsonDealData)
@@ -430,7 +430,7 @@ HEREDOC;
     {
         // Get thread Image JSON content
         $content = Json::decode($deal->find('div[class*=threadGrid-image]', 0)->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
-        return $content['props']['threadImageUrl'];
+        return '<img src="' . $content['props']['threadImageUrl'] . '"/>';
     }
 
     /**
