@@ -26,8 +26,13 @@ class LuftfahrtBundesAmtBridge extends XPathAbstract
     protected function formatItemTimestamp($value)
     {
         $value = trim($value);
-        $dti = DateTimeImmutable::createFromFormat('d.m.Y', $value);
-        $dti = $dti->setTime(0, 0, 0);
+        if (strpos($value, 'Uhr') !== false) {
+            $value = str_replace(' Uhr', '', $value);
+            $dti = DateTimeImmutable::createFromFormat('d.m.Y G:i', $value);
+        } else {
+            $dti = DateTimeImmutable::createFromFormat('d.m.Y', $value);
+            $dti = $dti->setTime(0, 0);
+        }
         return $dti->getTimestamp();
     }
 
