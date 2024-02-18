@@ -87,7 +87,8 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                 selectionvalue = ''
                 listname = listing.get('name')
                 cleanlist = []
-                for option in listing.contents:
+                options = listing.find_all('option')
+                for option in options:
                     if 'optgroup' in option.name:
                         cleanlist.extend(option)
                     else:

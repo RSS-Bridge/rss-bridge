@@ -19,13 +19,13 @@ class ConnectivityAction implements ActionInterface
         $this->bridgeFactory = new BridgeFactory();
     }
 
-    public function execute(array $request)
+    public function execute(Request $request)
     {
         if (!Debug::isEnabled()) {
             return new Response('This action is only available in debug mode!', 403);
         }
 
-        $bridgeName = $request['bridge'] ?? null;
+        $bridgeName = $request->get('bridge');
         if (!$bridgeName) {
             return render_template('connectivity.html.php');
         }

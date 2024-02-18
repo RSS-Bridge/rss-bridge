@@ -2021,9 +2021,11 @@ class MydealsBridge extends PepperBridgeAbstract
         'context-talk' => 'Überwachung Diskussion',
         'uri-group' => 'gruppe/',
         'uri-deal' => 'deals/',
+        'uri-merchant' => 'search/gutscheine?merchant-id=',
         'request-error' => 'Could not request mydeals',
         'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
-        'no-results' => 'Ups, wir konnten nichts',
+        'no-results' => 'keine Ergebnisse',
+        'currency' => '€',
         'relative-date-indicator' => [
             'vor',
             'seit'
@@ -2068,7 +2070,9 @@ class MydealsBridge extends PepperBridgeAbstract
         'relative-date-alt-prefixes' => [
             'aktualisiert vor ',
             'kommentiert vor ',
-            'heiß seit '
+            'eingestellt vor ',
+            'heiß seit ',
+            'vor '
         ],
         'relative-date-ignore-suffix' => [
             '/von.*$/'

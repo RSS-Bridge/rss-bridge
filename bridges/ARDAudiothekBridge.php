@@ -63,11 +63,13 @@ class ARDAudiothekBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $oldTz = date_default_timezone_get();
+        $path = $this->getInput('path');
+        $limit = $this->getInput('limit');
 
+        $oldTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Berlin');
 
-        $pathComponents = explode('/', $this->getInput('path'));
+        $pathComponents = explode('/', $path);
         if (empty($pathComponents)) {
             returnClientError('Path may not be empty');
         }
@@ -82,17 +84,21 @@ class ARDAudiothekBridge extends BridgeAbstract
         }
 
         $url = self::APIENDPOINT . 'programsets/' . $showID . '/';
-        $rawJSON = getContents($url);
-        $processedJSON = json_decode($rawJSON)->data->programSet;
+        $json1 = getContents($url);
+        $data1 = Json::decode($json1, false);
+        $processedJSON = $data1->data->programSet;
+        if (!$processedJSON) {
+            throw new \Exception('Unable to find show id: ' . $showID);
+        }
 
-        $limit = $this->getInput('limit');
         $answerLength = 1;
         $offset = 0;
         $numberOfElements = 1;
 
         while ($answerLength != 0 && $offset < $numberOfElements && (is_null($limit) || $offset < $limit)) {
-            $rawJSON = getContents($url . '?offset=' . $offset);
-            $processedJSON = json_decode($rawJSON)->data->programSet;
+            $json2 = getContents($url . '?offset=' . $offset);
+            $data2 = Json::decode($json2, false);
+            $processedJSON = $data2->data->programSet;
 
             $answerLength = count($processedJSON->items->nodes);
             $offset = $offset + $answerLength;
@@ -118,6 +124,10 @@ class ARDAudiothekBridge extends BridgeAbstract
                 if ($category) {
                     $item['categories'] = [$category];
                 }
+
+                $item['itunes'] = [
+                    'duration' => $audio->duration,
+                ];
 
                 $this->items[] = $item;
             }

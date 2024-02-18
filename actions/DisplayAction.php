@@ -11,15 +11,13 @@ class DisplayAction implements ActionInterface
         $this->logger = RssBridge::getLogger();
     }
 
-    public function execute(array $request)
+    public function execute(Request $request)
     {
-        if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
-            return new Response(render(__DIR__ . '/../templates/error.html.php', [
-                'title'     => '503 Service Unavailable',
-                'message'   => 'RSS-Bridge is down for maintenance.',
-            ]), 503);
-        }
-        $cacheKey = 'http_' . json_encode($request);
+        $bridgeName = $request->get('bridge');
+        $format = $request->get('format');
+        $noproxy = $request->get('_noproxy');
+
+        $cacheKey = 'http_' . json_encode($request->toArray());
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
         if ($cachedResponse) {
@@ -37,7 +35,6 @@ class DisplayAction implements ActionInterface
             return $cachedResponse;
         }
 
-        $bridgeName = $request['bridge'] ?? null;
         if (!$bridgeName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Missing bridge parameter']), 400);
         }
@@ -46,7 +43,7 @@ class DisplayAction implements ActionInterface
         if (!$bridgeClassName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Bridge not found']), 404);
         }
-        $format = $request['format'] ?? null;
+
         if (!$format) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'You must specify a format']), 400);
         }
@@ -54,7 +51,7 @@ class DisplayAction implements ActionInterface
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'This bridge is not whitelisted']), 400);
         }
 
-        $noproxy = $request['_noproxy'] ?? null;
+
         if (
             Configuration::getConfig('proxy', 'url')
             && Configuration::getConfig('proxy', 'by_bridge')
@@ -71,7 +68,7 @@ class DisplayAction implements ActionInterface
         $response = $this->createResponse($request, $bridge, $format);
 
         if ($response->getCode() === 200) {
-            $ttl = $request['_cache_timeout'] ?? null;
+            $ttl = $request->get('_cache_timeout');
             if (Configuration::getConfig('cache', 'custom_timeout') && $ttl) {
                 $ttl = (int) $ttl;
             } else {
@@ -80,28 +77,42 @@ class DisplayAction implements ActionInterface
             $this->cache->set($cacheKey, $response, $ttl);
         }
 
-        if (in_array($response->getCode(), [429, 503])) {
-            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10)); // average 20m
+        if (in_array($response->getCode(), [403, 429, 503])) {
+            // Cache these responses for about ~20 mins on average
+            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10));
         }
 
         if ($response->getCode() === 500) {
             $this->cache->set($cacheKey, $response, 60 * 15);
         }
+
         if (rand(1, 100) === 2) {
             $this->cache->prune();
         }
+
         return $response;
     }
 
-    private function createResponse(array $request, BridgeAbstract $bridge, FormatAbstract $format)
+    private function createResponse(Request $request, BridgeAbstract $bridge, FormatAbstract $format)
     {
         $items = [];
-        $infos = [];
+        $feed = [];
 
         try {
             $bridge->loadConfiguration();
             // Remove parameters that don't concern bridges
-            $input = array_diff_key($request, array_fill_keys(['action', 'bridge', 'format', '_noproxy', '_cache_timeout', '_error_time'], ''));
+            $remove = [
+                'token',
+                'action',
+                'bridge',
+                'format',
+                '_noproxy',
+                '_cache_timeout',
+                '_error_time',
+                '_', // Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
+            ];
+            $requestArray = $request->toArray();
+            $input = array_diff_key($requestArray, array_fill_keys($remove, ''));
             $bridge->setInput($input);
             $bridge->collectData();
             $items = $bridge->getItems();
@@ -112,13 +123,9 @@ class DisplayAction implements ActionInterface
                 }
                 $items = $feedItems;
             }
-            $infos = [
-                'name'          => $bridge->getName(),
-                'uri'           => $bridge->getURI(),
-                'donationUri'   => $bridge->getDonationURI(),
-                'icon'          => $bridge->getIcon()
-            ];
+            $feed = $bridge->getFeed();
         } catch (\Exception $e) {
+            // Probably an exception inside a bridge
             if ($e instanceof HttpException) {
                 // Reproduce (and log) these responses regardless of error output and report limit
                 if ($e->getCode() === 429) {
@@ -151,7 +158,7 @@ class DisplayAction implements ActionInterface
         }
 
         $format->setItems($items);
-        $format->setExtraInfos($infos);
+        $format->setFeed($feed);
         $now = time();
         $format->setLastModified($now);
         $headers = [
@@ -187,6 +194,7 @@ class DisplayAction implements ActionInterface
 
     private function logBridgeError($bridgeName, $code)
     {
+        // todo: it's not really necessary to json encode $report
         $cacheKey = 'error_reporting_' . $bridgeName . '_' . $code;
         $report = $this->cache->get($cacheKey);
         if ($report) {

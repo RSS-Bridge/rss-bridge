@@ -36,6 +36,7 @@
         "squizlabs/php_codesniffer": "^3.6"
     },
     "suggest": {
+        "php-webdriver/webdriver": "Required for Selenium usage",
         "ext-memcached": "Allows to use memcached as cache type",
         "ext-sqlite3": "Allows to use an SQLite database for caching",
         "ext-zip": "Required for FDroidRepoBridge",

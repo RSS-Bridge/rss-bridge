@@ -5,5 +5,5 @@ interface ActionInterface
     /**
      * @return string|Response
      */
-    public function execute(array $request);
+    public function execute(Request $request);
 }

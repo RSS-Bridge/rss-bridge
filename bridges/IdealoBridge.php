@@ -42,8 +42,13 @@ class IdealoBridge extends BridgeAbstract
 
     public function collectData()
     {
+        // Needs header with user-agent to function properly.
+        $header = [
+            'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15'
+        ];
+
         $link = $this->getInput('Link');
-        $html = getSimpleHTMLDOM($link);
+        $html = getSimpleHTMLDOM($link, $header);
 
         // Get Productname
         $titleobj = $html->find('.oopStage-title', 0);
@@ -80,7 +85,7 @@ class IdealoBridge extends BridgeAbstract
             // Generate Content
             if ($PriceNew > 1) {
                 $content = "<p><b>Price New:</b><br>$PriceNew</p>";
-                $content .= "<p><b>Price Newbefore:</b><br>$OldPriceNew</p>";
+                $content .= "<p><b>Price New before:</b><br>$OldPriceNew</p>";
             }
 
             if ($this->getInput('MaxPriceNew') != '') {

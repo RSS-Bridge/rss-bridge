@@ -18,6 +18,7 @@ class NintendoBridge extends XPathAbstract
                     'Splatoon 2' => 's2',
                     'Super Mario 3D All-Stars' => 'sm3as',
                     'Super Mario 3D World + Bowser’s Fury' => 'sm3wbf',
+                    'Super Mario Bros. Wonder' => 'smbw',
                     'Super Mario Maker 2' => 'smm2',
                     'Super Mario Odyssey' => 'smo',
                     'Super Smash Bros. Ultimate' => 'ssbu',
@@ -62,6 +63,7 @@ class NintendoBridge extends XPathAbstract
         's2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Splatoon-2-1482897.html',
         'sm3as' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-All-Stars-1844226.html',
         'sm3wbf' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-World-Bowser-s-Fury-1920668.html',
+        'smbw' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Bros-Wonder-2485410.html',
         'smm2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Maker-2-1586745.html',
         'smo' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Odyssey-1482901.html',
         'ssbu' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Smash-Bros-Ultimate-1484130.html',
@@ -73,7 +75,7 @@ class NintendoBridge extends XPathAbstract
     ];
     const XPATH_EXPRESSION_ITEM = '//div[@class="col-xs-12 content"]/div[starts-with(@id,"v") and @class="collapse"]';
     const XPATH_EXPRESSION_ITEM_FIRMWARE = '//div[@id="latest" and @class="collapse" and @rel="1"]';
-    const XPATH_EXPRESSION_ITEM_TITLE = './/h2[1]/node()';
+    const XPATH_EXPRESSION_ITEM_TITLE = '(.//h2[1] | .//strong[1])[1]/node()';
     const XPATH_EXPRESSION_ITEM_CONTENT = '.';
     const XPATH_EXPRESSION_ITEM_URI = '//link[@rel="canonical"]/@href';
 
@@ -122,6 +124,15 @@ class NintendoBridge extends XPathAbstract
             'it' => 'istribuita il ',
             'nl' => 'itgebracht op ',
             'pt' => 'ançada no dia ',
+            'en' => 'eleased ',
+        ],
+        'smbw' => [
+            'de' => 'eröffentlicht am ',
+            'es' => 'isponible desde el ',
+            'fr' => 'atée du ',
+            'it' => 'istribuita il ',
+            'nl' => 'itgebracht op ',
+            'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
         'smm2' => [
@@ -235,6 +246,15 @@ class NintendoBridge extends XPathAbstract
             'pt' => 'd/m/y',
             'en' => 'F j, Y',
         ],
+        'smbw' => [
+            'de' => 'd. m Y',
+            'es' => 'j \d\e m \d\e Y',
+            'fr' => 'd/m/Y',
+            'it' => 'j m Y',
+            'nl' => 'd m Y',
+            'pt' => 'j \d\e m \d\e Y',
+            'en' => 'j F Y',
+        ],
         'smm2' => [
             'de' => 'd.m.Y',
             'es' => 'd-m-Y',
@@ -345,7 +365,11 @@ class NintendoBridge extends XPathAbstract
     public function getURI()
     {
         $category = $this->getInput('category');
-        return 'all' === $category ? self::URI : $this->getSourceUrl();
+        if ('all' === $category) {
+            return self::URI;
+        } else {
+            return $this->getSourceUrl();
+        }
     }
 
     protected function provideFeedTitle(\DOMXPath $xpath)
@@ -357,7 +381,7 @@ class NintendoBridge extends XPathAbstract
 
     protected function getSourceUrl()
     {
-        $country = $this->getInput('country');
+        $country = $this->getInput('country') ?? '';
         $category = $this->getCurrentCategory();
         return str_replace(self::PARAMETERS['']['country']['defaultValue'], $country, self::FEED_SOURCE_URL[$category]);
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class HealthAction implements ActionInterface
 {
-    public function execute(array $request)
+    public function execute(Request $request)
     {
         $response = [
             'code' => 200,

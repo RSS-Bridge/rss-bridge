@@ -96,7 +96,7 @@ class EZTVBridge extends BridgeAbstract
     protected function getItemFromTorrent($torrent)
     {
         $item = [];
-        $item['uri'] = $torrent->episode_url;
+        $item['uri'] = $torrent->episode_url ?? $torrent->torrent_url;
         $item['author'] = $torrent->imdb_id;
         $item['timestamp'] = $torrent->date_released_unix;
         $item['title'] = $torrent->title;

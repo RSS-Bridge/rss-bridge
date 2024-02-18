@@ -2,16 +2,25 @@
 
 ![RSS-Bridge](static/logo_600px.png)
 
-RSS-Bridge is a web application.
+RSS-Bridge is a PHP web application.
 
 It generates web feeds for websites that don't have one.
 
 Officially hosted instance: https://rss-bridge.org/bridge01/
 
+IRC channel #rssbridge at https://libera.chat/
+
+[Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
+
+Alternatively find another
+[public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
+
+Requires minimum PHP 7.4.
+
+
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
 [![irc.libera.chat](https://img.shields.io/badge/irc.libera.chat-%23rssbridge-blue.svg)](https://web.libera.chat/#rssbridge)
-[![Chat on Matrix](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#rssbridge:libera.chat)
 [![Actions Status](https://img.shields.io/github/actions/workflow/status/RSS-Bridge/rss-bridge/tests.yml?branch=master&label=GitHub%20Actions&logo=github)](https://github.com/RSS-Bridge/rss-bridge/actions)
 
 |||
@@ -19,9 +28,8 @@ Officially hosted instance: https://rss-bridge.org/bridge01/
 |![Screenshot #1](/static/screenshot-1.png?raw=true)|![Screenshot #2](/static/screenshot-2.png?raw=true)|
 |![Screenshot #3](/static/screenshot-3.png?raw=true)|![Screenshot #4](/static/screenshot-4.png?raw=true)|
 |![Screenshot #5](/static/screenshot-5.png?raw=true)|![Screenshot #6](/static/screenshot-6.png?raw=true)|
-|![Screenshot #7](/static/twitter-form.png?raw=true)|![Screenshot #8](/static/twitter-rasmus.png?raw=true)|
 
-## A subset of bridges (17/412)
+## A subset of bridges (16/447)
 
 * `CssSelectorBridge`: [Scrape out a feed using CSS selectors](https://rss-bridge.org/bridge01/#bridge-CssSelectorBridge)
 * `FeedMergeBridge`: [Combine multiple feeds into one](https://rss-bridge.org/bridge01/#bridge-FeedMergeBridge)
@@ -36,66 +44,149 @@ Officially hosted instance: https://rss-bridge.org/bridge01/
 * `ThePirateBayBridge:` [Fetches torrents by search/user/category](https://rss-bridge.org/bridge01/#bridge-ThePirateBayBridge)
 * `TikTokBridge`: [Fetches posts by username](https://rss-bridge.org/bridge01/#bridge-TikTokBridge)
 * `TwitchBridge`: [Fetches videos from channel](https://rss-bridge.org/bridge01/#bridge-TwitchBridge)
-* `TwitterBridge`: [Fetches tweets](https://rss-bridge.org/bridge01/#bridge-TwitterBridge)
 * `VkBridge`: [Fetches posts from user/group](https://rss-bridge.org/bridge01/#bridge-VkBridge)
 * `XPathBridge`: [Scrape out a feed using XPath expressions](https://rss-bridge.org/bridge01/#bridge-XPathBridge)
 * `YoutubeBridge`: [Fetches videos by username/channel/playlist/search](https://rss-bridge.org/bridge01/#bridge-YoutubeBridge)
 * `YouTubeCommunityTabBridge`: [Fetches posts from a channel's community tab](https://rss-bridge.org/bridge01/#bridge-YouTubeCommunityTabBridge)
 
-[Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
-
-Check out RSS-Bridge right now on https://rss-bridge.org/bridge01/
-
-Alternatively find another
-[public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
-
 ## Tutorial
 
-### Install with composer or git
+### How to install on traditional shared web hosting
 
-Requires minimum PHP 7.4.
+RSS-Bridge can basically be unzipped in a web folder. Should be working instantly.
+
+Latest zip as of Sep 2023: https://github.com/RSS-Bridge/rss-bridge/archive/refs/tags/2023-09-24.zip
+
+### How to install on Debian 12 (nginx + php-fpm)
+
+These instructions have been tested on a fresh Debian 12 VM from Digital Ocean (1vcpu-512mb-10gb, 5 USD/month).
 
 ```shell
-apt install nginx php-fpm php-mbstring php-simplexml php-curl
+timedatectl set-timezone Europe/Oslo
+
+apt install git nginx php8.2-fpm php-mbstring php-simplexml php-curl
+
+# Create a new user account
+useradd --shell /bin/bash --create-home rss-bridge
+
+cd /var/www
+
+# Create folder and change ownership
+mkdir rss-bridge && chown rss-bridge:rss-bridge rss-bridge/
+
+# Become user
+su rss-bridge
+
+# Fetch latest master
+git clone https://github.com/RSS-Bridge/rss-bridge.git rss-bridge/
+cd rss-bridge
+
+# Copy over the default config
+cp -v config.default.ini.php config.ini.php
+
+# Give full permissions only to owner (rss-bridge)
+chmod 700 -R ./
+
+# Give read and execute to others (nginx and php-fpm)
+chmod o+rx ./ ./static
+
+# Give read to others (nginx)
+chmod o+r -R ./static
 ```
+
+Nginx config:
+
+```nginx
+# /etc/nginx/sites-enabled/rss-bridge.conf
+
+server {
+    listen 80;
+    server_name example.com;
+    access_log /var/log/nginx/rss-bridge.access.log;
+    error_log /var/log/nginx/rss-bridge.error.log;
+    log_not_found off;
+
+    # Intentionally not setting a root folder here
+
+    # autoindex is off by default but feels good to explicitly turn off
+    autoindex off;
+
+    # Static content only served here
+    location /static/ {
+        alias /var/www/rss-bridge/static/;
+    }
+
+    # Pass off to php-fpm when location is exactly /
+    location = / {
+        root /var/www/rss-bridge/;
+        include snippets/fastcgi-php.conf;
+        fastcgi_read_timeout 45s;
+        fastcgi_pass unix:/run/php/rss-bridge.sock;
+    }
+
+    # Reduce spam
+    location = /favicon.ico {
+        access_log off;
+    }
+
+    # Reduce spam
+    location = /robots.txt {
+        access_log off;
+    }
+}
+```
+
+PHP FPM pool config:
+```ini
+; /etc/php/8.2/fpm/pool.d/rss-bridge.conf
+
+[rss-bridge]
+
+user = rss-bridge
+group = rss-bridge
+
+listen = /run/php/rss-bridge.sock
+
+listen.owner = www-data
+listen.group = www-data
+
+pm = static
+pm.max_children = 10
+pm.max_requests = 500
+```
+
+PHP ini config:
+```ini
+; /etc/php/8.2/fpm/conf.d/30-rss-bridge.ini
+
+max_execution_time = 15
+memory_limit = 64M
+```
+
+Restart fpm and nginx:
+
+```shell
+# Lint and restart php-fpm
+php-fpm8.2 -t
+systemctl restart php8.2-fpm
+
+# Lint and restart nginx
+nginx -t
+systemctl restart nginx
+```
+
+### How to install from Composer
+
+Install the latest release.
 
 ```shell
 cd /var/www
 composer create-project -v --no-dev rss-bridge/rss-bridge
 ```
 
-```shell
-cd /var/www
-git clone https://github.com/RSS-Bridge/rss-bridge.git
-```
+### How to install with Caddy
 
-Config:
-
-```shell
-# Give the http user write permission to the cache folder
-chown www-data:www-data /var/www/rss-bridge/cache
-
-# Optionally copy over the default config file
-cp config.default.ini.php config.ini.php
-```
-
-Example config for nginx:
-
-```nginx
-# /etc/nginx/sites-enabled/rssbridge
-server {
-    listen 80;
-    server_name example.com;
-    root /var/www/rss-bridge;
-    index index.php;
-
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_read_timeout 60s;
-        fastcgi_pass unix:/run/php/php-fpm.sock;
-    }
-}
-```
+TODO. See https://github.com/RSS-Bridge/rss-bridge/issues/3785
 
 ### Install from Docker Hub:
 
@@ -156,13 +247,71 @@ Browse http://localhost:3000/
 [![Deploy to Cloudron](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/com.rssbridgeapp.cloudronapp.html)
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=rssbridge)
 
-The Heroku quick deploy currently does not work. It might possibly work if you fork this repo and
+The Heroku quick deploy currently does not work. It might work if you fork this repo and
 modify the `repository` in `scalingo.json`. See https://github.com/RSS-Bridge/rss-bridge/issues/2688
 
 Learn more in
 [Installation](https://rss-bridge.github.io/rss-bridge/For_Hosts/Installation.html).
 
 ## How-to
+
+### How to fix "Access denied."
+
+Output is from php-fpm. It is unable to read index.php.
+
+    chown rss-bridge:rss-bridge /var/www/rss-bridge/index.php
+
+### How to password-protect the instance (token)
+
+Modify `config.ini.php`:
+
+    [authentication]
+
+    token = "hunter2"
+
+### How to remove all cache items
+
+As current user:
+
+    bin/cache-clear
+
+As user rss-bridge:
+
+    sudo -u rss-bridge bin/cache-clear
+
+As root:
+
+    sudo bin/cache-clear
+
+### How to remove all expired cache items
+
+    bin/cache-prune
+
+### How to fix "PHP Fatal error:  Uncaught Exception: The FileCache path is not writable"
+
+```shell
+# Give rss-bridge ownership
+chown rss-bridge:rss-bridge -R /var/www/rss-bridge/cache
+
+# Or, give www-data ownership
+chown www-data:www-data -R /var/www/rss-bridge/cache
+
+# Or, give everyone write permission
+chmod 777 -R /var/www/rss-bridge/cache
+
+# Or last ditch effort (CAREFUL)
+rm -rf /var/www/rss-bridge/cache/ && mkdir /var/www/rss-bridge/cache/
+```
+
+### How to fix "attempt to write a readonly database"
+
+The sqlite files (db, wal and shm) are not writeable.
+
+    chown -v rss-bridge:rss-bridge cache/*
+
+### How to fix "Unable to prepare statement: 1, no such table: storage"
+
+    rm cache/*
 
 ### How to create a new bridge from scratch
 
@@ -192,8 +341,6 @@ class BearBlogBridge extends BridgeAbstract
 Learn more in [bridge api](https://rss-bridge.github.io/rss-bridge/Bridge_API/index.html).
 
 ### How to enable all bridges
-
-Modify `config.ini.php`:
 
     enabled_bridges[] = *
 
@@ -251,9 +398,7 @@ Modify `report_limit` so that an error must occur 3 times before it is reported.
 
 The report count is reset to 0 each day.
 
-### How to password-protect the instance
-
-HTTP basic access authentication:
+### How to password-protect the instance (HTTP Basic Auth)
 
     [authentication]
 
@@ -278,6 +423,8 @@ These commands require that you have installed the dev dependencies in `composer
     ./vendor/bin/phpunit
     ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
 
+https://github.com/squizlabs/PHP_CodeSniffer/wiki
+
 ### How to spawn a minimal development environment
 
     php -S 127.0.0.1:9001
@@ -301,7 +448,7 @@ Cached files are deleted automatically after 24 hours.
 RSS-Bridge allows you to take full control over which bridges are displayed to the user.
 That way you can host your own RSS-Bridge service with your favorite collection of bridges!
 
-Current maintainers (as of 2023): @dvikan and @Mynacol #2519
+Current maintainers (as of 2024): @dvikan and @Mynacol #2519
 
 ## Reference
 

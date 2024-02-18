@@ -2,6 +2,29 @@
 
 class HttpException extends \Exception
 {
+    public ?Response $response;
+
+    public function __construct(string $message = '', int $statusCode = 0, ?Response $response = null)
+    {
+        parent::__construct($message, $statusCode);
+        $this->response = $response ?? new Response('', 0);
+    }
+
+    public static function fromResponse(Response $response, string $url): HttpException
+    {
+        $message = sprintf(
+            '%s resulted in %s %s %s',
+            $url,
+            $response->getCode(),
+            $response->getStatusLine(),
+            // If debug, include a part of the response body in the exception message
+            Debug::isEnabled() ? mb_substr($response->getBody(), 0, 500) : '',
+        );
+        if (CloudFlareException::isCloudFlareResponse($response)) {
+            return new CloudFlareException($message, $response->getCode(), $response);
+        }
+        return new HttpException(trim($message), $response->getCode(), $response);
+    }
 }
 
 final class CloudFlareException extends HttpException
@@ -40,7 +63,7 @@ final class CurlHttpClient implements HttpClient
             'proxy' => null,
             'curl_options' => [],
             'if_not_modified_since' => null,
-            'retries' => 3,
+            'retries' => 2,
             'max_filesize' => null,
             'max_redirections' => 5,
         ];
@@ -113,31 +136,87 @@ final class CurlHttpClient implements HttpClient
             return $len;
         });
 
-        $attempts = 0;
+        // This retry logic is a bit hard to understand, but it works
+        $tries = 0;
         while (true) {
-            $attempts++;
+            $tries++;
             $body = curl_exec($ch);
             if ($body !== false) {
                 // The network call was successful, so break out of the loop
                 break;
             }
-            if ($attempts > $config['retries']) {
-                // Finally give up
-                $curl_error = curl_error($ch);
-                $curl_errno = curl_errno($ch);
-                throw new HttpException(sprintf(
-                    'cURL error %s: %s (%s) for %s',
-                    $curl_error,
-                    $curl_errno,
-                    'https://curl.haxx.se/libcurl/c/libcurl-errors.html',
-                    $url
-                ));
+            if ($tries <= $config['retries']) {
+                continue;
             }
+            // Max retries reached, give up
+            $curl_error = curl_error($ch);
+            $curl_errno = curl_errno($ch);
+            throw new HttpException(sprintf(
+                'cURL error %s: %s (%s) for %s',
+                $curl_error,
+                $curl_errno,
+                'https://curl.haxx.se/libcurl/c/libcurl-errors.html',
+                $url
+            ));
         }
 
         $statusCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         curl_close($ch);
         return new Response($body, $statusCode, $responseHeaders);
+    }
+}
+
+final class Request
+{
+    private array $get;
+    private array $server;
+    private array $attributes;
+
+    private function __construct()
+    {
+    }
+
+    public static function fromGlobals(): self
+    {
+        $self = new self();
+        $self->get = $_GET;
+        $self->server = $_SERVER;
+        $self->attributes = [];
+        return $self;
+    }
+
+    public static function fromCli(array $cliArgs): self
+    {
+        $self = new self();
+        $self->get = $cliArgs;
+        return $self;
+    }
+
+    public function get(string $key, $default = null): ?string
+    {
+        return $this->get[$key] ?? $default;
+    }
+
+    public function server(string $key, string $default = null): ?string
+    {
+        return $this->server[$key] ?? $default;
+    }
+
+    public function withAttribute(string $name, $value = true): self
+    {
+        $clone = clone $this;
+        $clone->attributes[$name] = $value;
+        return $clone;
+    }
+
+    public function attribute(string $key, $default = null)
+    {
+        return $this->attributes[$key] ?? $default;
+    }
+
+    public function toArray(): array
+    {
+        return $this->get;
     }
 }
 
@@ -233,6 +312,10 @@ final class Response
     }
 
     /**
+     * HTTP response may have multiple headers with the same name.
+     *
+     * This method by default, returns only the last header.
+     *
      * @return string[]|string|null
      */
     public function getHeader(string $name, bool $all = false)

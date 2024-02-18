@@ -9,9 +9,42 @@ abstract class FormatAbstract
     protected string $charset = 'UTF-8';
     protected array $items = [];
     protected int $lastModified;
-    protected array $extraInfos = [];
+
+    protected array $feed = [];
 
     abstract public function stringify();
+
+    public function setFeed(array $feed)
+    {
+        $default = [
+            'name'          => '',
+            'uri'           => '',
+            'icon'          => '',
+            'donationUri'   => '',
+        ];
+        $this->feed = array_merge($default, $feed);
+    }
+
+    public function getFeed(): array
+    {
+        return $this->feed;
+    }
+
+    /**
+     * @param FeedItem[] $items
+     */
+    public function setItems(array $items): void
+    {
+        $this->items = $items;
+    }
+
+    /**
+     * @return FeedItem[] The items
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
 
     public function getMimeType(): string
     {
@@ -31,45 +64,5 @@ abstract class FormatAbstract
     public function setLastModified(int $lastModified)
     {
         $this->lastModified = $lastModified;
-    }
-
-    /**
-     * @param FeedItem[] $items
-     */
-    public function setItems(array $items): void
-    {
-        $this->items = $items;
-    }
-
-    /**
-     * @return FeedItem[] The items
-     */
-    public function getItems(): array
-    {
-        return $this->items;
-    }
-
-    public function setExtraInfos(array $infos = [])
-    {
-        $extras = [
-            'name',
-            'uri',
-            'icon',
-            'donationUri',
-        ];
-        foreach ($extras as $extra) {
-            if (!isset($infos[$extra])) {
-                $infos[$extra] = '';
-            }
-        }
-        $this->extraInfos = $infos;
-    }
-
-    public function getExtraInfos(): array
-    {
-        if (!$this->extraInfos) {
-            $this->setExtraInfos();
-        }
-        return $this->extraInfos;
     }
 }

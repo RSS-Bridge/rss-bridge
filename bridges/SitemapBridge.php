@@ -58,6 +58,11 @@ class SitemapBridge extends CssSelectorBridge
                 'title' => 'Some sites set their logo as thumbnail for every article. Use this option to discard it.',
                 'type' => 'checkbox',
             ],
+            'thumbnail_as_header' => [
+                'name' => '[Optional] Insert thumbnail as article header',
+                'title' => 'Insert article main image on top of article contents.',
+                'type' => 'checkbox',
+            ],
             'limit' => self::LIMIT
         ]
     ];
@@ -71,6 +76,7 @@ class SitemapBridge extends CssSelectorBridge
         $title_cleanup = $this->getInput('title_cleanup');
         $site_map = $this->getInput('site_map');
         $discard_thumbnail = $this->getInput('discard_thumbnail');
+        $thumbnail_as_header = $this->getInput('thumbnail_as_header');
         $limit = $this->getInput('limit');
 
         $this->feedName = $this->titleCleanup($this->getPageTitle($this->homepageUrl), $title_cleanup);
@@ -86,6 +92,9 @@ class SitemapBridge extends CssSelectorBridge
             $item = $this->expandEntryWithSelector($link, $content_selector, $content_cleanup, $title_cleanup);
             if ($discard_thumbnail && isset($item['enclosures'])) {
                 unset($item['enclosures']);
+            }
+            if ($thumbnail_as_header && isset($item['enclosures'])) {
+                $item['content'] = '<p><img src="' . $item['enclosures'][0] . '" /></p>' . $item['content'];
             }
             $this->items[] = $item;
         }

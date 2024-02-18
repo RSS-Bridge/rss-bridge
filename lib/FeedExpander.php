@@ -23,14 +23,22 @@ abstract class FeedExpander extends BridgeAbstract
             throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url), 10);
         }
         // prepare/massage the xml to make it more acceptable
-        $badStrings = [
+        $problematicStrings = [
             '&nbsp;',
             '&raquo;',
+            '&rsquo;',
         ];
-        $xmlString = str_replace($badStrings, '', $xmlString);
+        $xmlString = str_replace($problematicStrings, '', $xmlString);
+
         $feedParser = new FeedParser();
-        $this->feed = $feedParser->parseFeed($xmlString);
+        try {
+            $this->feed = $feedParser->parseFeed($xmlString);
+        } catch (\Exception $e) {
+            throw new \Exception(sprintf('Failed to parse xml from %s: %s', $url, create_sane_exception_message($e)));
+        }
+
         $items = array_slice($this->feed['items'], 0, $maxItems);
+        // todo: extract parse logic out from FeedParser
         foreach ($items as $item) {
             // Give bridges a chance to modify the item
             $item = $this->parseItem($item);
@@ -41,7 +49,7 @@ abstract class FeedExpander extends BridgeAbstract
     }
 
     /**
-     * This method is overidden by bridges
+     * This method is overridden by bridges
      *
      * @return array
      */

@@ -7,9 +7,9 @@ declare(strict_types=1);
  *
  * Scrapes out rss 0.91, 1.0, 2.0 and atom 1.0.
  *
- * Produce arrays meant to be used inside rss-bridge.
+ * Produces array meant to be used inside rss-bridge.
  *
- * The item structure is tweaked so that works with FeedItem
+ * The item structure is tweaked so that it works with FeedItem
  */
 final class FeedParser
 {
@@ -36,7 +36,7 @@ final class FeedParser
             $channel = $xml->channel[0];
             $feed['title'] = trim((string)$channel->title);
             $feed['uri'] = trim((string)$channel->link);
-            if (!empty($channel->image)) {
+            if (isset($channel->image->url)) {
                 $feed['icon'] = trim((string)$channel->image->url);
             }
             foreach ($xml->item as $item) {
@@ -47,7 +47,7 @@ final class FeedParser
             $channel = $xml->channel[0];
             $feed['title'] = trim((string)$channel->title);
             $feed['uri'] = trim((string)$channel->link);
-            if (!empty($channel->image)) {
+            if (isset($channel->image->url)) {
                 $feed['icon'] = trim((string)$channel->image->url);
             }
             foreach ($channel->item as $item) {
@@ -70,10 +70,10 @@ final class FeedParser
                     }
                 }
             }
-            if (!empty($xml->icon)) {
-                $feed['icon'] = (string)$xml->icon;
-            } elseif (!empty($xml->logo)) {
-                $feed['icon'] = (string)$xml->logo;
+            if (isset($xml->icon)) {
+                $feed['icon'] = (string) $xml->icon;
+            } elseif (isset($xml->logo)) {
+                $feed['icon'] = (string) $xml->logo;
             }
             foreach ($xml->entry as $item) {
                 $feed['items'][] = $this->parseAtomItem($item);
@@ -171,11 +171,7 @@ final class FeedParser
             if (in_array($namespaceName, ['', 'content', 'media'])) {
                 continue;
             }
-            $module = $feedItem->children($namespaceUrl);
-            $item[$namespaceName] = [];
-            foreach ($module as $moduleKey => $moduleValue) {
-                $item[$namespaceName][$moduleKey] = (string) $moduleValue;
-            }
+            $item[$namespaceName] = $this->parseModule($feedItem, $namespaceName, $namespaceUrl);
         }
         if (isset($namespaces['itunes'])) {
             $enclosure = $feedItem->enclosure;
@@ -185,43 +181,27 @@ final class FeedParser
                 'type'      => (string) $enclosure['type'],
             ];
         }
-        if (isset($feedItem->guid)) {
-            // Pluck out a url from guid
-            foreach ($feedItem->guid->attributes() as $attribute => $value) {
-                if (
-                    $attribute === 'isPermaLink'
-                    && (
-                        $value === 'true' || (
-                            filter_var($feedItem->guid, FILTER_VALIDATE_URL)
-                            && (empty($item['uri']) || !filter_var($item['uri'], FILTER_VALIDATE_URL))
-                        )
-                    )
-                ) {
-                    $item['uri'] = (string)$feedItem->guid;
-                    break;
+        if (!$item['uri']) {
+            // Let's use guid as uri if it's a permalink
+            if (isset($feedItem->guid)) {
+                foreach ($feedItem->guid->attributes() as $attribute => $value) {
+                    if ($attribute === 'isPermaLink' && ($value === 'true' || (filter_var($feedItem->guid, FILTER_VALIDATE_URL)))) {
+                        $item['uri'] = (string) $feedItem->guid;
+                        break;
+                    }
                 }
             }
         }
 
-        if (isset($feedItem->pubDate)) {
-            $item['timestamp'] = strtotime((string)$feedItem->pubDate);
-        } elseif (isset($dc->date)) {
-            $item['timestamp'] = strtotime((string)$dc->date);
-        }
+        $item['timestamp'] = $feedItem->pubDate ?? $dc->date ?? '';
+        $item['timestamp'] = strtotime((string) $item['timestamp']);
 
-        if (isset($feedItem->author)) {
-            $item['author'] = (string)$feedItem->author;
-        } elseif (isset($feedItem->creator)) {
-            $item['author'] = (string)$feedItem->creator;
-        } elseif (isset($dc->creator)) {
-            $item['author'] = (string)$dc->creator;
-        } elseif (isset($media->credit)) {
-            $item['author'] = (string)$media->credit;
-        }
+        $item['author'] = $feedItem->author ?? $feedItem->creator ?? $dc->creator ?? $media->credit ?? '';
+        $item['author'] = (string) $item['author'];
 
         if (isset($feedItem->enclosure) && !empty($feedItem->enclosure['url'])) {
             $item['enclosures'] = [
-                (string)$feedItem->enclosure['url'],
+                (string) $feedItem->enclosure['url'],
             ];
         }
         return $item;
@@ -260,5 +240,16 @@ final class FeedParser
             }
         }
         return $item;
+    }
+
+    private function parseModule(\SimpleXMLElement $element, string $namespaceName, string $namespaceUrl): array
+    {
+        $result = [];
+        $module = $element->children($namespaceUrl);
+        foreach ($module as $name => $value) {
+            // todo: add custom parsing if it's something other than a string
+            $result[$name] = (string) $value;
+        }
+        return $result;
     }
 }
