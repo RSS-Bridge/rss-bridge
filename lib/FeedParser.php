@@ -92,7 +92,7 @@ final class FeedParser
             $item['uri'] = (string)$feedItem->id;
         }
         if (isset($feedItem->title)) {
-            $item['title'] = html_entity_decode((string)$feedItem->title);
+            $item['title'] = trim(html_entity_decode((string)$feedItem->title));
         }
         if (isset($feedItem->updated)) {
             $item['timestamp'] = strtotime((string)$feedItem->updated);
@@ -154,7 +154,7 @@ final class FeedParser
             $item['uri'] = (string)$feedItem->link;
         }
         if (isset($feedItem->title)) {
-            $item['title'] = html_entity_decode((string)$feedItem->title);
+            $item['title'] = trim(html_entity_decode((string)$feedItem->title));
         }
         if (isset($feedItem->description)) {
             $item['content'] = (string)$feedItem->description;
