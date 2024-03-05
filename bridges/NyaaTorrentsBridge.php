@@ -93,7 +93,7 @@ class NyaaTorrentsBridge extends BridgeAbstract
         $name = parent::getName();
         $name .= $this->getInput('u') ? ' - ' . $this->getInput('u') : '';
         $name .= $this->getInput('q') ? ' - ' . $this->getInput('q') : '';
-        $name .= ' (' . $this->getKey('c') . ')';
+        $name .= $this->getInput('c') ? ' (' . $this->getKey('c') . ')' : '';
         return $name;
     }
 
