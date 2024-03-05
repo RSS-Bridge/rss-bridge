@@ -59,7 +59,7 @@ class M3uItem
         if ($this->url === null) {
             return '';
         }
-        $text = '';
+        $text = "\n";
         $commentParts = [];
         if ($this->duration !== null && $this->duration > 0) {
             $commentParts[] = $this->duration;
