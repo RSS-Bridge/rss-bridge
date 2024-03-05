@@ -33,7 +33,11 @@ class M3uFormat extends FormatAbstract
     }
 }
 
-function parse_duration($duration_string)
+/*
+ * parse_duration converts a string like "00:4:20" to 260
+ * allowing to convert duration as used in the itunes:duration tag to the number of seconds
+ */
+function parse_duration(string $duration_string): int
 {
     $seconds = 0;
     $parts = explode(':', $duration_string);
@@ -50,7 +54,7 @@ class M3uItem
     public $url = null;
     public $bytes = null;
 
-    public function render()
+    public function render(): string
     {
         if ($this->url === null) {
             return '';
