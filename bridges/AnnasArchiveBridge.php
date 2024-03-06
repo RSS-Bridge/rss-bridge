@@ -126,30 +126,36 @@ class AnnasArchiveBridge extends BridgeAbstract
             return;
         }
 
-        $elements = $list->find('.w-full > .mb-4 > div > a');
+        $elements = $list->find('.w-full > .mb-4 > div');
         foreach ($elements as $element) {
-            $item = [];
-            $item['title'] = $element->find('h3', 0)->plaintext;
-            $item['author'] = $element->find('div.italic', 0)->plaintext;
-            $item['uri'] = $element->href;
-            $item['content'] = $element->plaintext;
-            $item['uid'] = $item['uri'];
+            // stop added entries once partial match list starts
+            if (str_contains($element->innertext, 'partial match')) {
+                break;
+            }
+            if ($element = $element->find('a', 0)) {
+                $item = [];
+                $item['title'] = $element->find('h3', 0)->plaintext;
+                $item['author'] = $element->find('div.italic', 0)->plaintext;
+                $item['uri'] = $element->href;
+                $item['content'] = $element->plaintext;
+                $item['uid'] = $item['uri'];
 
-            $item_html = getSimpleHTMLDOMCached($item['uri'], 86400 * 20);
-            if ($item_html) {
-                $item_html = defaultLinkTo($item_html, self::URI);
-                $item['content'] .= $item_html->find('main img', 0);
-                $item['content'] .= $item_html->find('main .mt-4', 0); // Summary
-                if ($links = $item_html->find('main ul.mb-4', -1)) {
-                    foreach ($links->find('li > a.js-download-link') as $file) {
-                        $item['enclosures'][] = $file->href;
+                $item_html = getSimpleHTMLDOMCached($item['uri'], 86400 * 20);
+                if ($item_html) {
+                    $item_html = defaultLinkTo($item_html, self::URI);
+                    $item['content'] .= $item_html->find('main img', 0);
+                    $item['content'] .= $item_html->find('main .mt-4', 0); // Summary
+                    foreach ($item_html->find('main ul.mb-4 > li > a.js-download-link') as $file) {
+                        if (!str_contains($file->href, 'fast_download')) {
+                            $item['enclosures'][] = $file->href;
+                        }
                     }
                     // Remove bulk torrents from enclosures list
                     $item['enclosures'] = array_diff($item['enclosures'], [self::URI . 'datasets']);
                 }
-            }
 
-            $this->items[] = $item;
+                $this->items[] = $item;
+            }
         }
     }
 
