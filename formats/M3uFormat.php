@@ -7,36 +7,72 @@
 class M3uFormat extends FormatAbstract
 {
     const MIME_TYPE = 'application/mpegurl';
+    private $item_duration = null;
+    private $item_title = null;
+    private $item_url = null;
+    private $item_bytes = null;
+
+    private function resetItem()
+    {
+        $this->item_duration = null;
+        $this->item_title = null;
+        $this->item_url = null;
+        $this->item_bytes = null;
+    }
+    private function itemIsEmpty(): bool
+    {
+        return $this->item_url === null;
+    }
+    private function itemRender(): string
+    {
+        if ($this->itemIsEmpty()) {
+            return '';
+        }
+        $text = "\n";
+        $commentParts = [];
+        if ($this->item_duration !== null && $this->item_duration > 0) {
+            $commentParts[] = $this->item_duration;
+        }
+        if ($this->item_title !== null) {
+            $commentParts[] = $this->item_title;
+        }
+
+        if (count($commentParts) !== 0) {
+            $text .= '#EXTINF:' . implode(',', $commentParts) . "\n";
+        }
+
+        $text .= $this->item_url . "\n";
+        return $text;
+    }
 
     public function stringify()
     {
         $contents = "#EXTM3U\n";
 
         foreach ($this->getItems() as $item) {
+            $this->resetItem();
             $itemArray = $item->toArray();
 
-            $m3uitem = new M3uItem();
-
             if (isset($itemArray['enclosure'])) {
-                $m3uitem->url = $itemArray['enclosure']['url'];
-                $m3uitem->bytes = $itemArray['enclosure']['length'];
+                $this->item_url = $itemArray['enclosure']['url'];
+                $this->item_bytes = $itemArray['enclosure']['length'];
                 if (isset($itemArray['itunes']) && isset($itemArray['itunes']['duration'])) {
-                    $m3uitem->duration = self::parseDuration($itemArray['itunes']['duration']);
+                    $this->item_duration = self::parseDuration($itemArray['itunes']['duration']);
                 }
             }
             if (isset($itemArray['title'])) {
-                $m3uitem->title = $itemArray['title'];
+                $item->item_title = $itemArray['title'];
             }
-            if (! $m3uitem->isEmpty()) {
-                $contents .= $m3uitem->render();
+            if (! $this->itemIsEmpty()) {
+                $contents .= $this->itemRender();
             } else {
                 foreach ($item->enclosures as $url) {
-                    $m3uitem = new M3uItem();
-                    $m3uitem->url = $url;
+                    $this->resetItem();
+                    $this->item_url = $url;
                     if (isset($itemArray['title'])) {
-                        $m3uitem->title = $itemArray['title'];
+                        $this->item_title = $itemArray['title'];
                     }
-                    $contents .= $m3uitem->render();
+                    $contents .= $this->itemRender();
                 }
             }
         }
@@ -54,41 +90,5 @@ class M3uFormat extends FormatAbstract
             $seconds += intval($parts[count($parts) - $i - 1]) * pow(60, $i);
         }
         return $seconds;
-    }
-}
-
-
-class M3uItem
-{
-    public $duration = null;
-    public $title = null;
-    public $url = null;
-    public $bytes = null;
-
-    public function isEmpty(): bool
-    {
-        return $this->url === null;
-    }
-
-    public function render(): string
-    {
-        if ($this->isEmpty()) {
-            return '';
-        }
-        $text = "\n";
-        $commentParts = [];
-        if ($this->duration !== null && $this->duration > 0) {
-            $commentParts[] = $this->duration;
-        }
-        if ($this->title !== null) {
-            $commentParts[] = $this->title;
-        }
-
-        if (count($commentParts) !== 0) {
-            $text .= '#EXTINF:' . implode(',', $commentParts) . "\n";
-        }
-
-        $text .= $this->url . "\n";
-        return $text;
     }
 }
