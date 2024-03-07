@@ -22,7 +22,7 @@ class M3uFormat extends FormatAbstract
                 $m3uitem->bytes = $itemArray['enclosure']['length'];
             }
             if (isset($itemArray['itunes']) && isset($itemArray['itunes']['duration'])) {
-                $m3uitem->duration = parse_duration($itemArray['itunes']['duration']);
+                $m3uitem->duration = self::parseDuration($itemArray['itunes']['duration']);
             }
             if (isset($itemArray['title'])) {
                 $m3uitem->title = $itemArray['title'];
@@ -31,21 +31,21 @@ class M3uFormat extends FormatAbstract
         }
         return mb_convert_encoding($contents, $this->getCharset(), 'UTF-8');
     }
+    /*
+     * parseDuration converts a string like "00:4:20" to 260
+     * allowing to convert duration as used in the itunes:duration tag to the number of seconds
+     */
+    private static function parseDuration(string $duration_string): int
+    {
+        $seconds = 0;
+        $parts = explode(':', $duration_string);
+        for ($i = 0; $i < count($parts); $i++) {
+            $seconds += intval($parts[count($parts) - $i - 1]) * pow(60, $i);
+        }
+        return $seconds;
+    }
 }
 
-/*
- * parse_duration converts a string like "00:4:20" to 260
- * allowing to convert duration as used in the itunes:duration tag to the number of seconds
- */
-function parse_duration(string $duration_string): int
-{
-    $seconds = 0;
-    $parts = explode(':', $duration_string);
-    for ($i = 0; $i < count($parts); $i++) {
-        $seconds += intval($parts[count($parts) - $i - 1]) * pow(60, $i);
-    }
-    return $seconds;
-}
 
 class M3uItem
 {
