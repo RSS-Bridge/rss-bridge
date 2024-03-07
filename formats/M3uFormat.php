@@ -54,9 +54,14 @@ class M3uItem
     public $url = null;
     public $bytes = null;
 
+    public function isEmpty(): bool
+    {
+        return $this->url === null;
+    }
+
     public function render(): string
     {
-        if ($this->url === null) {
+        if ($this->isEmpty()) {
             return '';
         }
         $text = "\n";
