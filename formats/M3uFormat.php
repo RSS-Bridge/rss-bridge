@@ -20,14 +20,25 @@ class M3uFormat extends FormatAbstract
             if (isset($itemArray['enclosure'])) {
                 $m3uitem->url = $itemArray['enclosure']['url'];
                 $m3uitem->bytes = $itemArray['enclosure']['length'];
-            }
-            if (isset($itemArray['itunes']) && isset($itemArray['itunes']['duration'])) {
-                $m3uitem->duration = self::parseDuration($itemArray['itunes']['duration']);
+                if (isset($itemArray['itunes']) && isset($itemArray['itunes']['duration'])) {
+                    $m3uitem->duration = self::parseDuration($itemArray['itunes']['duration']);
+                }
             }
             if (isset($itemArray['title'])) {
                 $m3uitem->title = $itemArray['title'];
             }
-            $contents .= $m3uitem->render();
+            if (! $m3uitem->isEmpty()) {
+                $contents .= $m3uitem->render();
+            } else {
+                foreach ($item->enclosures as $url) {
+                    $m3uitem = new M3uItem();
+                    $m3uitem->url = $url;
+                    if (isset($itemArray['title'])) {
+                        $m3uitem->title = $itemArray['title'];
+                    }
+                    $contents .= $m3uitem->render();
+                }
+            }
         }
         return mb_convert_encoding($contents, $this->getCharset(), 'UTF-8');
     }
