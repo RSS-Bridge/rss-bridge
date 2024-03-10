@@ -87,7 +87,7 @@ class ZeitBridge extends FeedExpander
         // remove known bad elements
         foreach (
             $article->find(
-                'aside, .visually-hidden, .carousel-container, #tickaroo-liveblog, .zplus-badge, .article-heading__container--podcast'
+                'aside, .visually-hidden, .carousel-container, #tickaroo-liveblog, .zplus-badge, .article-heading__container--podcast, div[data-paywall], .js-embed-consent'
             ) as $bad
         ) {
             $bad->remove();
