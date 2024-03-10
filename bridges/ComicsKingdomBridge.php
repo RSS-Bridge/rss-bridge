@@ -5,7 +5,7 @@ class ComicsKingdomBridge extends BridgeAbstract
     const MAINTAINER = 'TReKiE';
     // const MAINTAINER = 'stjohnjohnson';
     const NAME = 'Comics Kingdom Unofficial RSS';
-    const API = 'https://wp.comicskingdom.com/wp-json/wp/v2/ck_comic';
+    const URI = 'https://wp.comicskingdom.com/wp-json/wp/v2/ck_comic';
     const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'Comics Kingdom Unofficial RSS';
     const PARAMETERS = [ [
@@ -59,7 +59,7 @@ class ComicsKingdomBridge extends BridgeAbstract
                 '_embed'            => 'true'
             ];
 
-            return self::API . '?' . http_build_query($params);
+            return self::URI . '?' . http_build_query($params);
         }
 
         return parent::getURI();
