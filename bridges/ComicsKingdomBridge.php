@@ -30,16 +30,17 @@ class ComicsKingdomBridge extends BridgeAbstract
     {
         $json = getContents($this->getURI());
         $data = json_decode($json, false);
-        
-        if (isset($data[0]->_embedded->{'wp:term'}[0][0]))
+
+        if (isset($data[0]->_embedded->{'wp:term'}[0][0])) {
             $this->comicName = $data[0]->_embedded->{'wp:term'}[0][0]->name;
+        }
 
         foreach ($data as $comicitem) {
             $item = [];
 
             $item['id'] = $comicitem->id;
             $item['uri'] = $comicitem->yoast_head_json->og_url;
-            $item['author'] = str_ireplace("By ", "", $comicitem->ck_comic_byline);
+            $item['author'] = str_ireplace('By ', '', $comicitem->ck_comic_byline);
             $item['title'] = $comicitem->yoast_head_json->title;
             $item['timestamp'] = $comicitem->date;
             $item['content'] = '<img src="' . $comicitem->yoast_head_json->og_image[0]->url . '" />';
