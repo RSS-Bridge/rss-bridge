@@ -39,6 +39,9 @@ class PinterestBridge extends FeedExpander
         $pattern = '/https\:\/\/i\.pinimg\.com\/[a-zA-Z0-9]*x\//';
         foreach ($this->items as $item) {
             $item['content'] = preg_replace($pattern, 'https://i.pinimg.com/originals/', $item['content']);
+            $item['enclosures'] = [
+                $item['uri'],
+            ];
             $newitems[] = $item;
         }
         $this->items = $newitems;

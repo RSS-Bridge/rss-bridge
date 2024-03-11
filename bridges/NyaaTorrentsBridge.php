@@ -66,28 +66,35 @@ class NyaaTorrentsBridge extends BridgeAbstract
         $feed = $feedParser->parseFeed(getContents($this->getURI()));
 
         foreach ($feed['items'] as $item) {
-            $item['id'] = str_replace(['https://nyaa.si/download/', '.torrent'], '', $item['uri']);
-            $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
+            $item['enclosures'] = [$item['uri']];
             $item['uri'] = str_replace('.torrent', '', $item['uri']);
+            $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
+            $item['id'] = str_replace('https://nyaa.si/view/', '', $item['uri']);
             $dom = getSimpleHTMLDOMCached($item['uri']);
             if ($dom) {
                 $description = $dom->find('#torrent-description', 0)->innertext ?? '';
-                $itemDom = str_get_html(markdownToHtml(html_entity_decode($description)));
-                $item_image = $this->getURI() . 'static/img/avatar/default.png';
-                foreach ($itemDom->find('img') as $img) {
-                    if (strpos($img->src, 'prez') === false) {
-                        $item_image = $img->src;
-                        break;
-                    }
-                }
-                $item['enclosures'] = [$item_image];
-                $item['content'] = (string) $itemDom;
+                $item['content'] = markdownToHtml(html_entity_decode($description));
+
+                $magnet = $dom->find('div.panel-footer.clearfix > a', 1)->href;
+                // can't put raw magnet link in enclosure, this gives information on
+                // magnet contents and works a way to sent magnet value
+                $magnet = 'https://torrent.parts/#' . html_entity_decode($magnet);
+                array_push($item['enclosures'], $magnet);
             }
             $this->items[] = $item;
             if (count($this->items) >= 10) {
                 break;
             }
         }
+    }
+
+    public function getName()
+    {
+        $name = parent::getName();
+        $name .= $this->getInput('u') ? ' - ' . $this->getInput('u') : '';
+        $name .= $this->getInput('q') ? ' - ' . $this->getInput('q') : '';
+        $name .= $this->getInput('c') ? ' (' . $this->getKey('c') . ')' : '';
+        return $name;
     }
 
     public function getIcon()
