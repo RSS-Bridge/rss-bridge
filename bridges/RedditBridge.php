@@ -139,36 +139,13 @@ class RedditBridge extends BridgeAbstract
                 break;
         }
 
-        if (!($this->getInput('search') === '')) {
-            $keywords = $this->getInput('search');
-            $keywords = str_replace([',', ' '], '%20', $keywords);
-            $keywords = $keywords . '%20';
-        } else {
-            $keywords = '';
-        }
-
-        if (!empty($this->getInput('f')) && $this->queriedContext == 'single') {
-            $flair = $this->getInput('f');
-            $flair = str_replace(' ', '%20', $flair);
-            $flair = 'flair%3A%22' . $flair . '%22%20';
-        } else {
-            $flair = '';
-        }
+        $search = $this->getInput('search');
+        $flareInput = $this->getInput('f');
 
         foreach ($subreddits as $subreddit) {
-            $name = trim($subreddit);
-            $url = self::URI
-                . '/search.json?q='
-                . $keywords
-                . $flair
-                . ($user ? 'author%3A' : 'subreddit%3A')
-                . $name
-                . '&sort='
-                . $this->getInput('d')
-                . '&include_over_18=on';
-
             $version = 'v0.0.1';
             $useragent = "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)";
+            $url = self::createUrl($search, $flareInput, $subreddit, $user, $section, $this->queriedContext);
             $json = getContents($url, ['User-Agent: ' . $useragent]);
             $parsedJson = Json::decode($json, false);
 
@@ -276,6 +253,32 @@ class RedditBridge extends BridgeAbstract
         usort($this->items, function ($a, $b) {
             return $b['timestamp'] <=> $a['timestamp'];
         });
+    }
+
+    public static function createUrl($search, $flareInput, $subreddit, bool $user, $section, $queriedContext): string
+    {
+        if ($search === '') {
+            $keywords = '';
+        } else {
+            $keywords = $search;
+            $keywords = str_replace([',', ' '], ' ', $keywords);
+            $keywords = $keywords . ' ';
+        }
+
+        if ($flareInput && $queriedContext == 'single') {
+            $flair = $flareInput;
+            $flair = str_replace([',', ' '], ' ', $flair);
+            $flair = 'flair:"' . $flair . '" ';
+        } else {
+            $flair = '';
+        }
+        $name = trim($subreddit);
+        $query = [
+            'q' => $keywords . $flair . ($user ? 'author:' : 'subreddit:') . $name,
+            'sort' => $section,
+            'include_over_18' => 'on',
+        ];
+        return 'https://old.reddit.com/search.json?' . http_build_query($query);
     }
 
     public function getIcon()
