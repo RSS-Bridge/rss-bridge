@@ -244,29 +244,19 @@ e('0 < 1 and 2 > 1');
 
 `e` will return the content of the string escape that can be rendered as is in HTML
 
-# truncate
-The `truncate` function is used to shorten a string if exceeds a certain length, and add a string indicating that the string has been shortened. This function accepts a few parameters:
+[Defined in lib/html.php](lib/html.php)
 
-| Parameter | Type   | Optional   | Description
-| --------- | ------ | ---------- | ----------
-| `s`       | string | *required* | The string to shorten
-| `length`  | int    | *optional* | The maximum length of the returned string
-| `marker`  | string | *optional* | The text to add ad the end of the string if the string has been shortened
+# truncate
+The `truncate` function is used to shorten a string if exceeds a certain length, and add a string indicating that the string has been shortened.
 
 ```PHP
 truncate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a neque nunc. Nam nibh sem.', 20 , '...');
 ```
 
+[Defined in lib/html.php](lib/html.php)
 
 # sanitize
-The `sanitize` function is used to remove some tags from a given HTML text. This function accepts a few parameters:
-
-| Parameter | Type   | Optional   | Description
-| --------- | ------ | ---------- | ----------
-| `html`    | string | *required* | The HTML text to sanitize
-| `tags_to_remove`  | array    | *optional* | A list of tags to remove from the DOM.
-| `attributes_to_keep`  | array | *optional* | A list of attributes to keep on tags (other attributes are removed)
-| `text_to_keep`  | array | *optional* | A list of tags where the innertext replaces the tag (i.e. `<p>Hello World!</p>` becomes `Hello World!`).
+The `sanitize` function is used to remove some tags from a given HTML text.
 
 ```PHP
 $html = '<head><title>Sample Page</title></head>
@@ -282,6 +272,7 @@ sanitize($html, $tags_to_remove, $attributes_to_keep, $text_to_keep);
 
 This function returns a simplehtmldom object of the remaining contents.
 
+[Defined in lib/html.php](lib/html.php)
 
 # convertLazyLoading
 The `convertLazyLoading` function is used to convert onvert lazy-loading images and frames (video embeds) into static elements. It accepts the HTML content as HTML objects or string objects. It returns the HTML content with fixed image/frame URLs (same type as input).
@@ -295,16 +286,11 @@ $html = '<html>
 backgroundToImg($html);
 ```
 
+[Defined in lib/html.php](lib/html.php)
+
 
 # Json::encode
 The `Json::encode` function is used to encode a value as à JSON string.
-
-| Parameter | Type   | Optional   | Description
-| --------- | ------ | ---------- | ----------
-| `value`       | any | *required* | The value to encode as JSON
-| `pretty`  | bool    | *optional* | If true, the output will be pretty printed
-| `asciiSafe`  | bool | *optional* | If true, the unicode content will be escaped so theoutput will be printable as ASCII, if false the unicode content will be sent as ais to the output.
-
 
 ```PHP
 $array = [
@@ -314,16 +300,10 @@ $array = [
 Json::encode($array, true, true);
 ```
 
+[Defined in lib/utils.php](lib/utils.php)
 
 # Json::decode
 The `Json::decode` function is used to decode a JSON string into à PHP variable.
-
-| Parameter | Type   | Optional   | Description
-| --------- | ------ | ---------- | ----------
-| `json`       | string | *required* | The JSON string to decode
-| `assoc`  | bool    | *optional* | If true, the output will be an associative array, if false as an object
-| `asciiSafe`  | bool | *optional* | If true, the unicode content will be escaped so theoutput will be printable as ASCII, if false the unicode content will be sent as ais to the output.
-
 
 ```PHP
 $json = '{
@@ -333,4 +313,4 @@ $json = '{
 Json::decode($json);
 ```
 
-
+[Defined in lib/utils.php](lib/utils.php)
