@@ -156,6 +156,11 @@ class ScribbleHubBridge extends FeedExpander
                 }
                 $title = html_entity_decode($page->find('.fic_title', 0)->plaintext);
                 break;
+            case 'List':
+                $page = getSimpleHTMLDOMCached($this->getURI());
+                $title = $page->find('head > title', 0)->plaintext;
+                $title = explode(' |', $title)[0];
+                break;
         }
         if (isset($title)) {
             $name .= " - $title";
