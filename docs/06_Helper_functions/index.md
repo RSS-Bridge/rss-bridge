@@ -244,7 +244,7 @@ e('0 < 1 and 2 > 1');
 
 `e` will return the content of the string escape that can be rendered as is in HTML
 
-[Defined in lib/html.php](lib/html.php)
+[Defined in lib/html.php](/lib/html.php)
 
 # truncate
 The `truncate` function is used to shorten a string if exceeds a certain length, and add a string indicating that the string has been shortened.
@@ -253,7 +253,7 @@ The `truncate` function is used to shorten a string if exceeds a certain length,
 truncate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a neque nunc. Nam nibh sem.', 20 , '...');
 ```
 
-[Defined in lib/html.php](lib/html.php)
+[Defined in lib/html.php](/lib/html.php)
 
 # sanitize
 The `sanitize` function is used to remove some tags from a given HTML text.
@@ -272,7 +272,7 @@ sanitize($html, $tags_to_remove, $attributes_to_keep, $text_to_keep);
 
 This function returns a simplehtmldom object of the remaining contents.
 
-[Defined in lib/html.php](lib/html.php)
+[Defined in lib/html.php](/lib/html.php)
 
 # convertLazyLoading
 The `convertLazyLoading` function is used to convert onvert lazy-loading images and frames (video embeds) into static elements. It accepts the HTML content as HTML objects or string objects. It returns the HTML content with fixed image/frame URLs (same type as input).
@@ -286,7 +286,7 @@ $html = '<html>
 backgroundToImg($html);
 ```
 
-[Defined in lib/html.php](lib/html.php)
+[Defined in lib/html.php](/lib/html.php)
 
 
 # Json::encode
@@ -300,7 +300,7 @@ $array = [
 Json::encode($array, true, true);
 ```
 
-[Defined in lib/utils.php](lib/utils.php)
+[Defined in lib/utils.php](/lib/utils.php)
 
 # Json::decode
 The `Json::decode` function is used to decode a JSON string into à PHP variable.
@@ -313,4 +313,4 @@ $json = '{
 Json::decode($json);
 ```
 
-[Defined in lib/utils.php](lib/utils.php)
+[Defined in lib/utils.php](/lib/utils.php)
