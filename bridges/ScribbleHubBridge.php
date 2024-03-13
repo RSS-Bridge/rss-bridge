@@ -23,6 +23,14 @@ class ScribbleHubBridge extends FeedExpander
                 // Example: latest chapters from Uskweirs
                 'exampleValue' => '965299',
             ],
+        ],
+        'List' => [
+            'url' => [
+                'name' => 'url',
+                'required' => true,
+                // Example: latest stories with the 'Transgender' tag
+                'exampleValue' => 'https://www.scribblehub.com/series-finder/?sf=1&gi=6&tgi=1088&sort=dateadded',
+            ],
         ]
     ];
 
@@ -34,12 +42,52 @@ class ScribbleHubBridge extends FeedExpander
     public function collectData()
     {
         $url = 'https://rssscribblehub.com/rssfeed.php?type=';
+        if ($this->queriedContext === 'List') {
+            $this->collectList($this->getURI());
+            return;
+        }
         if ($this->queriedContext === 'Author') {
             $url = $url . 'author&uid=' . $this->getInput('uid');
         } else { //All and Series use the same source feed
             $url = $url . 'main';
         }
         $this->collectExpandableDatas($url);
+    }
+
+    private function collectList($url)
+    {
+        $html = getSimpleHTMLDOMCached($url);
+        foreach ($html->find('.search_main_box') as $element) {
+            $item = [];
+
+            $title = $element->find('.search_title a', 0);
+            $item['title'] = $title->plaintext;
+            $item['uri'] = $title->href;
+
+            $strdate = $element->find('[title="Last Updated"]', 0)->plaintext;
+            $item['timestamp'] = strtotime($strdate);
+            $item['uid'] = $item['uri'] . "/$strdate";
+
+            $details = getSimpleHTMLDOMCached($item['uri']);
+            $item['enclosures'][] = $details->find('.fic_image img', 0)->src;
+            $item['content'] = $details->find('.wi_fic_desc', 0);
+
+            foreach ($details->find('.fic_genre') as $tag) {
+                $item['categories'][] = $tag->plaintext;
+            }
+            foreach ($details->find('.stag') as $tag) {
+                $item['categories'][] = $tag->plaintext;
+            }
+
+            $read_url = $details->find('.read_buttons a', 0)->href;
+            $read_html = getSimpleHTMLDOMCached($read_url);
+            $item['content'] .= '<hr><h3>';
+            $item['content'] .= $read_html->find('.chapter-title', 0);
+            $item['content'] .= '</h3>';
+            $item['content'] .= $read_html->find('#chp_raw', 0);
+
+            $this->items[] = $item;
+        }
     }
 
     protected function parseItem(array $item)
@@ -102,7 +150,7 @@ class ScribbleHubBridge extends FeedExpander
                 } catch (HttpException $e) {
                     // 403 Forbidden, This means we got anti-bot response
                     if ($e->getCode() === 403) {
-                        return $item;
+                        return $name;
                     }
                     throw $e;
                 }
@@ -124,6 +172,9 @@ class ScribbleHubBridge extends FeedExpander
                 break;
             case 'Series':
                 $uri = self::URI . 'series/' . $this->getInput('sid') . '/a';
+                break;
+            case 'List':
+                $uri = $this->getInput('url');
                 break;
         }
         return $uri;
