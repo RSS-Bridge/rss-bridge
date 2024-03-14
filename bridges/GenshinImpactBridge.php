@@ -7,6 +7,21 @@ class GenshinImpactBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 18000; // 5h
     const DESCRIPTION = 'Latest news from the Genshin Impact website';
     const MAINTAINER = 'Miicat_47';
+    const PARAMETERS = [
+        [
+            'category' => [
+                'name' => 'Category',
+                'type' => 'list',
+                'values' => [
+                    'Latest' => 10,
+                    'Info' => 11,
+                    'Updates' => 12,
+                    'Events' => 13
+                ],
+                'defaultValue' => 10
+            ]
+        ]
+    ];
 
     public function collectData()
     {
