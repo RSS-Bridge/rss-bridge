@@ -31,7 +31,7 @@ class GenshinImpactBridge extends BridgeAbstract
 
         foreach ($json_list['data']['list'] as $json_item) {
             $article_html = str_get_html($json_item['sContent']);
-            
+
             // Check if article contains a embed YouTube video
             $exp_youtube = '/https:\/\/[w\.]+youtube\.com\/embed\/([\w]+)/m';
             if (preg_match($exp_youtube, $article_html, $matches)) {
@@ -40,7 +40,6 @@ class GenshinImpactBridge extends BridgeAbstract
                 $yt_link = sprintf('<a href="https://youtube.com/watch?v=%1$s">https://youtube.com/watch?v=%1$s</a>', $matches[1]);
                 $article_html = str_replace($yt_embed, $yt_link, $article_html);
             }
-
             $item = [];
             $item['title'] = $json_item['sTitle'];
             $item['timestamp'] = $json_item['dtStartTime'];
