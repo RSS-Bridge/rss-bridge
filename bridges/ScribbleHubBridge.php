@@ -66,7 +66,7 @@ class ScribbleHubBridge extends FeedExpander
 
             $strdate = $element->find('[title="Last Updated"]', 0)->plaintext;
             $item['timestamp'] = strtotime($strdate);
-            $item['uid'] = $item['uri'] . "/$strdate";
+            $item['uid'] = $item['uri'];
 
             $details = getSimpleHTMLDOMCached($item['uri']);
             $item['enclosures'][] = $details->find('.fic_image img', 0)->src;
