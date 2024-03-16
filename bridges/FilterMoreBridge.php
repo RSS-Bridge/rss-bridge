@@ -86,6 +86,7 @@ class FilterMoreBridge extends FeedExpander
             ],
             'defaultValue' => 'asc',
         ],
+        'limit' => self::LIMIT,
 
         ]];
 
@@ -158,6 +159,7 @@ class FilterMoreBridge extends FeedExpander
     public function collectExpandableDatas($url, $maxItems = -1)
     {
         parent::collectExpandableDatas($url, $maxItems);
+        $limit = (int)($this->getInput('limit') ?: 10);
         if ($this->getInput('sort_by') === 'random') {
             shuffle($this->items);
         } elseif ($this->getInput('sort_by') !== 'none') {
@@ -170,6 +172,9 @@ class FilterMoreBridge extends FeedExpander
         }
         if ($this->getInput('sort_dir') === 'desc') {
             $this->items = array_reverse($this->items);
+        }
+        if ($limit > 0) {
+            $this->items = array_slice($this->items, 0, $limit);
         }
     }
 
