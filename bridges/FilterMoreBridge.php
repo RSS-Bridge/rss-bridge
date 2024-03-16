@@ -184,7 +184,7 @@ class FilterMoreBridge extends FeedExpander
     }
     private function filterByFieldRegexp($field, $re)
     {
-        if ($re === '') {
+        if ($re === '' || $re === null) {
             return null;
         } elseif (preg_match($re, $field)) {
             return true;
@@ -209,7 +209,7 @@ class FilterMoreBridge extends FeedExpander
     private function filterByDate($item, $input, $expected)
     {
         $val = $this->getInput($input);
-        if ($val === '') {
+        if ($val === '' || $val === null) {
             return null;
         }
         $ts = strtotime($val);
