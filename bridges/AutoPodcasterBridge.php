@@ -5,11 +5,17 @@ class AutoPodcasterBridge extends FeedExpander {
     const URI = '';
     const CACHE_TIMEOUT = 300; // 5 minuti
     const DESCRIPTION='Make a "multimedia" podcast out of a normal feed';
-    const PARAMETERS = array('url' => array(
-        'url' => array(
+    const PARAMETERS = array(array(
+        'url' => [
             'name' => 'URL',
             'required' => true
-    )));
+        ],
+        'feed_only' => [
+            'name' => 'Only look at the content of the feed, don\'t check on the website',
+            'type' => 'checkbox',
+            'required' => false,
+        ]
+    ));
 
     private function archiveIsAudioFormat($formatString) {
         return strpos($formatString, 'MP3') !== false ||
@@ -63,7 +69,12 @@ class AutoPodcasterBridge extends FeedExpander {
 	protected function parseItem($newItem){
 		$item = parent::parseItem($newItem);
 
-		$dom = getSimpleHTMLDOMCached($item['uri']);
+        if(! $this->getInput('feed_only')) {
+            $dom = getSimpleHTMLDOMCached($item['uri']);
+            // $dom will be false in case of errors
+        } else {
+            $dom = false;
+        }
         $audios = [];
         if ($dom !== false) {
             /* 1st extraction method: by "audio" tag */
@@ -73,12 +84,13 @@ class AutoPodcasterBridge extends FeedExpander {
             $audios = array_merge($audios, $this->extractIframeArchive($dom));
         }
         elseif($item['content'] !== NULL) {
+            $item_dom = str_get_html($item['content']);
             /* 1st extraction method: by "audio" tag */
-            $audios = array_merge($audios, $this->extractAudio(str_get_html($item['content'])));
+            $audios = array_merge($audios, $this->extractAudio($item_dom));
 
             /* 2nd extraction method: by "iframe" tag */
             $audios = array_merge($audios,
-                $this->extractIframeArchive(str_get_html($item['content'])));
+                $this->extractIframeArchive($item_dom));
         }
 
         if(count($audios) === 0) {
