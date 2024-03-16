@@ -74,7 +74,7 @@ class FilterMoreBridge extends FeedExpander
                 'Title' => 'title',
                 'Random' => 'random',
             ],
-            'defaultValue' => 'date',
+            'defaultValue' => 'timestamp',
         ],
         'sort_dir' => [
             'name' => 'Sort direction',
