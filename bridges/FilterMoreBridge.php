@@ -10,59 +10,59 @@ class FilterMoreBridge extends FeedExpander
 
     const PARAMETERS = [
         [
-        'url' => array(
+        'url' => [
             'name' => 'Feed URL',
             'required' => true,
-        ),
-        'conj_type' => array(
+        ],
+        'conj_type' => [
             'name' => 'Conjunction type type',
             'type' => 'list',
             'required' => false,
-            'values' => array(
+            'values' => [
                 'All conditions must be met' => 'and',
                 'Any condition must be met' => 'or',
-            ),
+            ],
             'defaultValue' => 'permit',
-        ),
+        ],
 
-        'title_re' => array(
+        'title_re' => [
             'name' => 'Filter item title (regular expression, see php.net/pcre_match for details)',
             'required' => false,
             'exampleValue' => '/breaking\ news/i',
-        ),
-        'body_re' => array(
+        ],
+        'body_re' => [
             'name' => 'Filter body (regular expression)',
             'required' => false,
-        ),
-        'author_re' => array(
+        ],
+        'author_re' => [
             'name' => 'Filter author (regular expression)',
             'required' => false,
             'exampleValue' => '/(technology|politics)/i',
-        ),
-        'newer_than' => array(
+        ],
+        'newer_than' => [
             'name' => 'Filter date: ok if newer than the value (see php.net/strtotime for details)',
             'required' => false,
             'exampleValue' => '-14 days',
-        ),
-        'older_than' => array(
+        ],
+        'older_than' => [
             'name' => 'Filter date: ok if older than the value (see php.net/strtotime for details)',
             'required' => false,
             'exampleValue' => '-1 hour',
-        ),
+        ],
 
-        'has_media' => array(
+        'has_media' => [
             'name' => 'Has at least 1 media inside',
             'type' => 'checkbox',
             'required' => false,
             'defaultValue' => false,
-        ),
+        ],
 
-        'invert_filter' => array(
+        'invert_filter' => [
             'name' => 'Invert filter result',
             'type' => 'checkbox',
             'required' => false,
             'defaultValue' => false,
-        ),
+        ],
 
         'sort_by' => [
             'name' => 'Sort by',
@@ -87,7 +87,7 @@ class FilterMoreBridge extends FeedExpander
             'defaultValue' => 'asc',
         ],
 
-    ]];
+        ]];
 
     protected function parseItem($newItem)
     {
@@ -158,30 +158,35 @@ class FilterMoreBridge extends FeedExpander
     public function collectExpandableDatas($url, $maxItems = -1)
     {
         parent::collectExpandableDatas($url, $maxItems);
-        if($this->getInput('sort_by') === 'random') {
+        if ($this->getInput('sort_by') === 'random') {
             shuffle($this->items);
-        } elseif($this->getInput('sort_by') !== 'none') {
-            usort($this->items, function($itemA, $itemB) {
+        } elseif ($this->getInput('sort_by') !== 'none') {
+            usort($this->items, function ($itemA, $itemB) {
                 $valA = $this->sortItemKey($itemA);
                 $valB = $this->sortItemKey($itemB);
                 $cmp = strcmp($valA, $valB);
                 return $cmp;
             });
         }
-        if($this->getInput('sort_dir') === 'desc')
+        if ($this->getInput('sort_dir') === 'desc') {
             $this->items = array_reverse($this->items);
+        }
     }
 
     private function cmp($a, $b)
     {
-        if($a > $b) return 1;
-        if($a < $b) return -1;
+        if ($a > $b) {
+            return 1;
+        } elseif ($a < $b) {
+            return -1;
+        }
         return 0;
     }
     private function filterByFieldRegexp($field, $re)
     {
-        if($re === "") return null;
-        if(preg_match($re, $field)) {
+        if ($re === '') {
+            return null;
+        } elseif (preg_match($re, $field)) {
             return true;
         }
         return false;
@@ -204,12 +209,14 @@ class FilterMoreBridge extends FeedExpander
     private function filterByDate($item, $input, $expected)
     {
         $val = $this->getInput($input);
-        if($val === "") return null;
-        $ts = strtotime($val);
-        if($ts === false) {
-            throw new Exception("Invalid time specification: " . $val);
+        if ($val === '') {
+            return null;
         }
-        $cmp =  $this->cmp($item['timestamp'], $ts); // 1 if newer, -1 if older
+        $ts = strtotime($val);
+        if ($ts === false) {
+            throw new Exception('Invalid time specification: ' . $val);
+        }
+        $cmp = $this->cmp($item['timestamp'], $ts); // 1 if newer, -1 if older
         return $cmp === $expected;
     }
     protected function filterByDateNewer($item)
@@ -222,8 +229,11 @@ class FilterMoreBridge extends FeedExpander
     }
     protected function filterByMedia($item)
     {
-        if(!$this->getInput('has_media')) return null;
-        if(count($item['enclosures']) > 0) return true;
+        if (!$this->getInput('has_media')) {
+            return null;
+        } elseif (count($item['enclosures']) > 0) {
+            return true;
+        }
         return false;
     }
 
@@ -248,8 +258,7 @@ class FilterMoreBridge extends FeedExpander
 
     public function collectData()
     {
-        if ($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http')
-        {
+        if ($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http') {
             // just in case someone find a way to access local files by playing with the url
             returnClientError('The url parameter must either refer to http or https protocol.');
         }
