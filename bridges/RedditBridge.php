@@ -189,7 +189,7 @@ class RedditBridge extends BridgeAbstract
                     // Comment
 
                     $item['content'] = htmlspecialchars_decode($data->body_html);
-                } elseif ($data->is_self) {
+                } elseif (isset($data->is_self)) {
                     // Text post
 
                     $item['content'] = htmlspecialchars_decode($data->selftext_html);
