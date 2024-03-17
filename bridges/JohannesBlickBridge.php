@@ -13,7 +13,7 @@ class JohannesBlickBridge extends BridgeAbstract
             or returnServerError('Could not request: ' . self::URI);
 
         $html = defaultLinkTo($html, self::URI);
-        foreach ($html->find('td > a') as $index => $a) {
+        foreach ($html->find('ul[class=easyfolderlisting] > li > a') as $index => $a) {
             $item = []; // Create an empty item
             $articlePath = $a->href;
             $item['title'] = $a->innertext;
