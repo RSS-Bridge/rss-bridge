@@ -13,6 +13,7 @@ class FilterMoreBridge extends FeedExpander
         'url' => [
             'name' => 'Feed URL',
             'required' => true,
+            'exampleValue' => 'https://example.com/feed/',
         ],
         'conj_type' => [
             'name' => 'Conjunction type type',
@@ -33,6 +34,7 @@ class FilterMoreBridge extends FeedExpander
         'body_re' => [
             'name' => 'Filter body (regular expression)',
             'required' => false,
+            'exampleValue' => '/(technology|politics)/i',
         ],
         'author_re' => [
             'name' => 'Filter author (regular expression)',
