@@ -2,15 +2,15 @@
 
 class IdealoBridge extends BridgeAbstract
 {
-    const NAME = 'Idealo.de Bridge';
+    const NAME = 'idealo.de / idealo.fr / idealo.es Bridge';
     const URI = 'https://www.idealo.de';
-    const DESCRIPTION = 'Tracks the price for a product on idealo.de. Pricealarm if specific price is set';
+    const DESCRIPTION = 'Tracks the price for a product on idealo.de / idealo.fr / idealo.es. Pricealarm if specific price is set';
     const MAINTAINER = 'SebLaus';
     const CACHE_TIMEOUT = 60 * 30; // 30 min
     const PARAMETERS = [
         [
             'Link' => [
-                'name'          => 'Idealo.de Link to productpage',
+                'name'          => 'idealo.de / idealo.fr / idealo.es Link to productpage',
                 'required'      => true,
                 'exampleValue'  => 'https://www.idealo.de/preisvergleich/OffersOfProduct/202007367_-s7-pro-ultra-roborock.html'
             ],
@@ -81,6 +81,25 @@ class IdealoBridge extends BridgeAbstract
         return $title . ' - ' . $this::NAME;
     }
 
+
+    /**
+     * Returns the Price Trend emoji
+     * @return string the Price Trend Emoji
+     */
+    private function getPriceTrend($NewPrice, $OldPrice)
+    {
+        // In case there is no old PRice, then show no trend
+        if ($OldPrice === null) {
+            $trend = '';
+        } else if ($NewPrice > $OldPrice) {
+            $trend = '&#x2197;';
+        } else if ($NewPrice == $OldPrice) {
+            $trend = '&#x27A1;';
+        } else if ($NewPrice < $OldPrice) {
+            $trend = '&#x2198;';
+        }
+        return $trend;
+    }
     public function collectData()
     {
         // Needs header with user-agent to function properly.
@@ -127,9 +146,11 @@ class IdealoBridge extends BridgeAbstract
             // Get Product Image
             $image = $html->find('.datasheet-cover-image', 0)->src;
 
+            $content = '';
+
             // Generate Content
             if (isset($PriceNew) && $PriceNew > 1) {
-                $content = "<p><b>Price New:</b><br>$PriceNew</p>";
+                $content .= sprintf('<p><b>Price New:</b><br>%s %s</p>', $PriceNew, $this->getPriceTrend($PriceNew, $OldPriceNew));
                 $content .= "<p><b>Price New before:</b><br>$OldPriceNew</p>";
             }
 
@@ -138,7 +159,7 @@ class IdealoBridge extends BridgeAbstract
             }
 
             if (isset($PriceUsed) && $PriceUsed > 1) {
-                $content .= "<p><b>Price Used:</b><br>$PriceUsed</p>";
+                $content .= sprintf('<p><b>Price Used:</b><br>%s %s</p>', $PriceUsed, $this->getPriceTrend($PriceUsed, $OldPriceUsed));
                 $content .= "<p><b>Price Used before:</b><br>$OldPriceUsed</p>";
             }
 
@@ -191,22 +212,11 @@ class IdealoBridge extends BridgeAbstract
                     $title = 'Priceupdate! ';
 
                     if (!$this->getInput('ExcludeNew')) {
-                        if (isset($PriceNew) &&  $PriceNew < $OldPriceNew) {
-                            $title .= 'NEW:&#11015 '; // Arrow Down Emoji
-                        }
-                        if (isset($PriceNew) && $PriceNew > $OldPriceNew) {
-                            $title .= 'NEW:&#11014 '; // Arrow Up Emoji
-                        }
+                        $title .= 'NEW' . $this->getPriceTrend($PriceNew, $OldPriceNew) . ' ';
                     }
 
-
                     if (!$this->getInput('ExcludeUsed')) {
-                        if (isset($PriceUsed) && $PriceUsed < $OldPriceUsed) {
-                            $title .= 'USED:&#11015 '; // Arrow Down Emoji
-                        }
-                        if (isset($PriceUsed) && $PriceUsed > $OldPriceUsed) {
-                            $title .= 'USED:&#11014 '; // Arrow Up Emoji
-                        }
+                        $title .= 'USED' . $this->getPriceTrend($PriceUsed, $OldPriceUsed) . ' ';
                     }
                     $title .= $Productname;
                     $title .= ' ';
