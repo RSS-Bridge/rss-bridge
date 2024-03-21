@@ -233,3 +233,84 @@ $html = markdownToHtml($input);
 // <li>Translation improvements</li>
 // </ul>
 ```
+
+
+# e
+The `e` function is used to convert special characters to HTML entities
+
+```PHP
+e('0 < 1 and 2 > 1');
+```
+
+`e` will return the content of the string escape that can be rendered as is in HTML
+
+[Defined in lib/html.php](/lib/html.php)
+
+# truncate
+The `truncate` function is used to shorten a string if exceeds a certain length, and add a string indicating that the string has been shortened.
+
+```PHP
+truncate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a neque nunc. Nam nibh sem.', 20 , '...');
+```
+
+[Defined in lib/html.php](/lib/html.php)
+
+# sanitize
+The `sanitize` function is used to remove some tags from a given HTML text.
+
+```PHP
+$html = '<head><title>Sample Page</title></head>
+<body><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+<iframe src="https://www.example.com" width="600" height="400" frameborder="0" allowfullscreen></iframe>
+</body>
+</html>';
+$tags_to_remove = ['script', 'iframe', 'input', 'form'];
+$attributes_to_keep = ['title', 'href', 'src'];
+$text_to_keep = [];
+sanitize($html, $tags_to_remove, $attributes_to_keep, $text_to_keep);
+```
+
+This function returns a simplehtmldom object of the remaining contents.
+
+[Defined in lib/html.php](/lib/html.php)
+
+# convertLazyLoading
+The `convertLazyLoading` function is used to convert onvert lazy-loading images and frames (video embeds) into static elements. It accepts the HTML content as HTML objects or string objects. It returns the HTML content with fixed image/frame URLs (same type as input).
+
+```PHP
+$html = '<html>
+<body style="background-image: url('bgimage.jpg');">
+<h1>Hello world!</h1>
+</body>
+</html>
+backgroundToImg($html);
+```
+
+[Defined in lib/html.php](/lib/html.php)
+
+
+# Json::encode
+The `Json::encode` function is used to encode a value as à JSON string.
+
+```PHP
+$array = [
+    "foo" => "bar",
+    "bar" => "foo",
+];
+Json::encode($array, true, true);
+```
+
+[Defined in lib/utils.php](/lib/utils.php)
+
+# Json::decode
+The `Json::decode` function is used to decode a JSON string into à PHP variable.
+
+```PHP
+$json = '{
+    "foo": "bar",
+    "bar": "foo"
+}';
+Json::decode($json);
+```
+
+[Defined in lib/utils.php](/lib/utils.php)
