@@ -28,8 +28,9 @@ class AnisearchBridge extends BridgeAbstract
         $limit = 10;
         $dom = getSimpleHTMLDOM($this->getInput('category'));
         foreach ($dom->find('li.btype0') as $key => $li) {
-            if ($key > $limit)
+            if ($key > $limit) {
                 break;
+            }
 
             $a = $li->find('a', 0);
             $title = $a->find('span.title', 0);
