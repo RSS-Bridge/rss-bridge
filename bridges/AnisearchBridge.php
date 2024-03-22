@@ -44,11 +44,6 @@ class AnisearchBridge extends BridgeAbstract
             $headerimage = $domarticle->find('img#details-cover', 0);
             $src = $headerimage->src;
 
-            //remove unwanted stuff
-            #foreach ($content->find('div.newsletter-signup') as $element) {
-            #    $element->remove();
-            #}
-
             $this->items[] = [
                 'title' => $title->plaintext,
                 'uri' => $url,
