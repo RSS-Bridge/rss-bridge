@@ -28,7 +28,7 @@ class AnisearchBridge extends BridgeAbstract
         $limit = 10;
         $dom = getSimpleHTMLDOM($this->getInput('category'));
         foreach ($dom->find('li.btype0') as $key => $li) {
-            if ($key > $limit) {
+            if ($key >= $limit) {
                 break;
             }
 
@@ -44,10 +44,23 @@ class AnisearchBridge extends BridgeAbstract
             $headerimage = $domarticle->find('img#details-cover', 0);
             $src = $headerimage->src;
 
+            foreach ($content->find('.hidden') as $element) {
+                $element->remove();
+            }
+
+            //get trailer
+            $trailerlink = $domarticle->find('section#trailers > div > div.swiper > ul.swiper-wrapper > li.swiper-slide > a', 0);
+            $ytlink = '';
+            if (isset($trailerlink)) {
+                $trailersite = getSimpleHTMLDOM($baseurl . $trailerlink->href);
+                $trailer = $trailersite->find('div#player > iframe', 0);
+                $ytlink = '<br /><iframe width="560" height="315" src="' . $trailer->{'data-xsrc'} . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+            }
+
             $this->items[] = [
                 'title' => $title->plaintext,
                 'uri' => $url,
-                'content' => $headerimage . '<br />' . $content
+                'content' => $headerimage . '<br />' . $content . $ytlink
             ];
         }
     }
