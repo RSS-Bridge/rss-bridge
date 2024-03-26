@@ -46,50 +46,11 @@ class PepperBridgeAbstract extends BridgeAbstract
         $html = getSimpleHTMLDOM($url);
         $list = $html->find('article[id][class*=thread--deal]]');
 
-        // Deal Image Link CSS Selector
-        $selectorImageLink = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'cept-thread-image-link',
-                'imgFrame',
-                'imgFrame--noBorder',
-                'thread-listImgCell',
-            ]
-        );
-
-        // Deal Link CSS Selector
-        $selectorLink = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'cept-tt',
-                'thread-link',
-                'linkPlain',
-            ]
-        );
-
-        // Deal Hotness CSS Selector
-        $selectorHot = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'vote-box'
-            ]
-        );
-
         // Deal Description CSS Selector
         $selectorDescription = implode(
             ' ', /* Notice this is a space! */
             [
                 'overflow--wrap-break'
-            ]
-        );
-
-        // Deal Date CSS Selector
-        $selectorDate = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'size--all-s',
-                'flex',
-                'boxAlign-jc--all-fe'
             ]
         );
 
@@ -99,49 +60,33 @@ class PepperBridgeAbstract extends BridgeAbstract
             $this->items = [];
         } else {
             foreach ($list as $deal) {
-                $item = [];
-                $item['uri'] = $this->getDealURI($deal);
-                $item['title'] = $this->getTitle($deal);
-                $item['author'] = $deal->find('span.thread-username', 0)->plaintext;
-
                 // Get the JSON Data stored as vue
                 $jsonDealData = $this->getDealJsonData($deal);
+                $dealMeta = Json::decode($deal->find('div[class=threadGrid-headerMeta]', 0)->find('div[class=js-vue2]', 1)->getAttribute('data-vue2'));
+
+                $item = [];
+                $item['uri'] = $this->getDealURI($jsonDealData);
+                $item['title'] = $this->getTitle($jsonDealData);
+                $item['author'] = $this->getDealAuthor($jsonDealData);
 
                 $item['content'] = '<table><tr><td><a href="'
                     . $item['uri']
                     . '">'
                     . $this->getImage($deal)
                     . '</td><td>'
-                    . $this->getHTMLTitle($item)
+                    . $this->getHTMLTitle($jsonDealData)
                     . $this->getPrice($jsonDealData)
                     . $this->getDiscount($jsonDealData)
-                    . $this->getShipsFrom($deal)
-                    . $this->getShippingCost($deal)
+                    . $this->getShipsFrom($dealMeta)
+                    . $this->getShippingCost($jsonDealData)
                     . $this->getSource($jsonDealData)
+                    . $this->getDealLocation($dealMeta)
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
                     . $this->getTemperature($jsonDealData)
                     . '</td></table>';
 
-                // Check if a clock icon is displayed on the deal
-                $clocks = $deal->find('svg[class*=icon--clock]');
-                if ($clocks !== null && count($clocks) > 0) {
-                    // Get the last clock, corresponding to the deal posting date
-                    $clock = end($clocks);
-
-                    // Find the text corresponding to the clock
-                    $spanDateDiv = $clock->next_sibling();
-                    $itemDate = $spanDateDiv->plaintext;
-                    // In some case of a Local deal, there is no date, but we can use
-                    // this case for other reason (like date not in the last field)
-                    if ($this->contains($itemDate, $this->i8n('localdeal'))) {
-                        $item['timestamp'] = time();
-                    } elseif ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
-                        $item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
-                    } else {
-                        $item['timestamp'] = $this->parseDate($itemDate);
-                    }
-                }
+                $item['timestamp'] = $this->getPublishedDate($jsonDealData);
                 $this->items[] = $item;
             }
         }
@@ -285,21 +230,30 @@ HEREDOC;
     }
 
     /**
+     * Get the Publish Date from a Deal if it exists
+     * @return integer Timestamp of the published date of the deal
+     */
+    private function getPublishedDate($jsonDealData)
+    {
+        return $jsonDealData['props']['thread']['publishedAt'];
+    }
+
+    /**
+     * Get the Deal Author from a Deal if it exists
+     * @return String Author of the deal
+     */
+    private function getDealAuthor($jsonDealData)
+    {
+        return $jsonDealData['props']['thread']['user']['username'];
+    }
+
+    /**
      * Get the Title from a Deal if it exists
      * @return string String of the deal title
      */
-    private function getTitle($deal)
+    private function getTitle($jsonDealData)
     {
-        $titleRoot = $deal->find('div[class*=threadGrid-title]', 0);
-        $titleA = $titleRoot->find('a[class*=thread-link]', 0);
-        $titleFirstChild = $titleRoot->first_child();
-        if ($titleA !== null) {
-            $title = $titleA->plaintext;
-        } else {
-            // In some case, expired deals have a different format
-            $title = $titleRoot->find('span', 0)->plaintext;
-        }
-
+        $title = $jsonDealData['props']['thread']['title'];
         return $title;
     }
 
@@ -318,14 +272,10 @@ HEREDOC;
      * Get the HTML Title code from an item
      * @return string String of the deal title
      */
-    private function getHTMLTitle($item)
+    private function getHTMLTitle($jsonDealData)
     {
-        if ($item['uri'] == '') {
-            $html = '<h2>' . $item['title'] . '</h2>';
-        } else {
-            $html = '<h2><a href="' . $item['uri'] . '">'
-                . $item['title'] . '</a></h2>';
-        }
+        $html = '<h2><a href="' . $this->getDealURI($jsonDealData) . '">'
+                . $this->getTitle($jsonDealData) . '</a></h2>';
 
         return $html;
     }
@@ -334,10 +284,11 @@ HEREDOC;
      * Get the URI from a Deal if it exists
      * @return string String of the deal URI
      */
-    private function getDealURI($deal)
+    private function getDealURI($jsonDealData)
     {
-        $dealId = $deal->attr['id'];
-        $uri = $this->i8n('bridge-uri') . $this->i8n('uri-deal') . str_replace('_', '-', $dealId);
+        $dealSlug = $jsonDealData['props']['thread']['titleSlug'];
+        $dealId = $jsonDealData['props']['thread']['threadId'];
+        $uri = $this->i8n('bridge-uri') . $this->i8n('uri-deal') . $dealSlug . '-' . $dealId;
         return $uri;
     }
 
@@ -345,18 +296,14 @@ HEREDOC;
      * Get the Shipping costs from a Deal if it exists
      * @return string String of the deal shipping Cost
      */
-    private function getShippingCost($deal)
+    private function getShippingCost($jsonDealData)
     {
-        if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0) != null) {
-            if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1) != null) {
+        $isFree = $jsonDealData['props']['thread']['shipping']['isFree'];
+        $price = $jsonDealData['props']['thread']['shipping']['price'];
+        if ($isFree !== null) {
                 return '<div>' . $this->i8n('shipping') . ' : '
-                    . strip_tags($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1)->innertext)
+                    . $price . ' ' . $this->i8n('currency')
                     . '</div>';
-            } else {
-                return '<div>' . $this->i8n('shipping') . ' : '
-                    . strip_tags($deal->find('span[class*=text--color-greyShade flex--inline]', 0)->innertext)
-                    . '</div>';
-            }
         } else {
             return '';
         }
@@ -423,6 +370,25 @@ HEREDOC;
     }
 
     /**
+     * Get the Deal location if it exists
+     * @return string String of the deal location
+     */
+    private function getDealLocation($dealMeta)
+    {
+        $ribbons = $dealMeta['props']['metaRibbons'];
+        $isLocal = false;
+        foreach ($ribbons as $ribbon) {
+            $isLocal |= ($ribbon['type'] == 'local');
+        }
+        if ($isLocal) {
+            $content = '<div>' . $this->i8n('deal-type') . ' : ' . $this->i8n('localdeal') . '</div>';
+        } else {
+            $content = '';
+        }
+        return $content;
+    }
+
+    /**
      * Get the Picture URL from a Deal if it exists
      * @return string String of the deal Picture URL
      */
@@ -437,9 +403,8 @@ HEREDOC;
      * Get the originating country from a Deal if it exists
      * @return string String of the deal originating country
      */
-    private function getShipsFrom($deal)
+    private function getShipsFrom($dealMeta)
     {
-        $dealMeta = Json::decode($deal->find('div[class=threadGrid-headerMeta]', 0)->find('div[class=js-vue2]', 1)->getAttribute('data-vue2'));
         $metas = $dealMeta['props']['metaRibbons'];
         $shipsFrom = null;
         foreach ($metas as $meta) {
@@ -451,104 +416,6 @@ HEREDOC;
             return '<div>' . $shipsFrom . '</div>';
         }
         return '';
-    }
-
-    /**
-     * Transforms a local date into a timestamp
-     * @return int timestamp of the input date
-     */
-    private function parseDate($string)
-    {
-        $month_local = $this->i8n('local-months');
-        $month_en = [
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December'
-        ];
-
-        // A date can be prfixed with some words, we remove theme
-        $string = $this->removeDatePrefixes($string);
-        // We translate the local months name in the english one
-        $date_str = trim(str_replace($month_local, $month_en, $string));
-
-        // If the date does not contain any year, we add the current year
-        if (!preg_match('/[0-9]{4}/', $string)) {
-            $date_str .= ' ' . date('Y');
-        }
-
-        // Add the Hour and minutes
-        $date_str .= ' 00:00';
-        $date = DateTime::createFromFormat('j F Y H:i', $date_str);
-        // In some case, the date is not recognized : as a workaround the actual date is taken
-        if ($date === false) {
-            $date = new DateTime();
-        }
-        return $date->getTimestamp();
-    }
-
-    /**
-     * Remove the prefix of a date if it has one
-     * @return the date without prefiux
-     */
-    private function removeDatePrefixes($string)
-    {
-        $string = str_replace($this->i8n('date-prefixes'), [], $string);
-        return $string;
-    }
-
-    /**
-     * Remove the suffix of a relative date if it has one
-     * @return the relative date without suffixes
-     */
-    private function removeRelativeDateSuffixes($string)
-    {
-        if (count($this->i8n('relative-date-ignore-suffix')) > 0) {
-            $string = preg_replace($this->i8n('relative-date-ignore-suffix'), '', $string);
-        }
-        return $string;
-    }
-
-    /**
-     * Transforms a relative local date into a timestamp
-     * @return int timestamp of the input date
-     */
-    private function relativeDateToTimestamp($str)
-    {
-        $date = new DateTime();
-
-        // The minimal amount of time substracted is a minute : the seconds in the resulting date would be related to the execution time of the script.
-        // This make no sense, so we set the seconds manually to "00".
-        $date->setTime($date->format('H'), $date->format('i'), 0);
-
-        // In case of update date, replace it by the regular relative date first word
-        $str = str_replace($this->i8n('relative-date-alt-prefixes'), $this->i8n('local-time-relative')[0], $str);
-
-        $str = $this->removeRelativeDateSuffixes($str);
-
-        $search = $this->i8n('local-time-relative');
-
-        $replace = [
-            '-',
-            'minute',
-            'hour',
-            'day',
-            'month',
-            'year',
-            ''
-        ];
-        $date->modify(str_replace($search, $replace, $str));
-
-
-        return $date->getTimestamp();
     }
 
     /**

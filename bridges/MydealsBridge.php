@@ -2026,10 +2026,6 @@ class MydealsBridge extends PepperBridgeAbstract
         'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
         'no-results' => 'keine Ergebnisse',
         'currency' => '€',
-        'relative-date-indicator' => [
-            'vor',
-            'seit'
-        ],
         'price' => 'Preis',
         'shipping' => 'Versand',
         'origin' => 'Ursprung',
@@ -2037,49 +2033,7 @@ class MydealsBridge extends PepperBridgeAbstract
         'title-keyword' => 'Suche',
         'title-group' => 'Gruppe',
         'title-talk' => 'Überwachung Diskussion',
-        'local-months' => [
-            'Jan',
-            'Feb',
-            'Mär',
-            'Apr',
-            'Mai',
-            'Jun',
-            'Jul',
-            'Aug',
-            'Sep',
-            'Okt',
-            'Nov',
-            'Dez',
-            '.'
-        ],
-        'local-time-relative' => [
-            'eingestellt vor ',
-            'm',
-            'h,',
-            'day',
-            'days',
-            'month',
-            'year',
-            'and '
-        ],
-        'date-prefixes' => [
-            'eingestellt am ',
-            'lokal ',
-            'aktualisiert ',
-        ],
-        'relative-date-alt-prefixes' => [
-            'aktualisiert vor ',
-            'kommentiert vor ',
-            'eingestellt vor ',
-            'heiß seit ',
-            'vor '
-        ],
-        'relative-date-ignore-suffix' => [
-            '/von.*$/'
-        ],
-        'localdeal' => [
-            'Lokal ',
-            'Läuft bis '
-        ]
+        'deal-type' => 'Angebotsart',
+        'localdeal' => 'Lokales Angebot',
     ];
 }
