@@ -106,17 +106,17 @@ class GolemBridge extends FeedExpander
 
         $article = $page->find('article', 0);
 
-	//built youtube iframes
+        //built youtube iframes
         foreach ($article->find('.embedcontent') as &$embedcontent) {
             $ytscript = $embedcontent->find('script', 0);
-            preg_match("/www.youtube.com.*?\"/", $ytscript->innertext, $link);
+            preg_match('/www.youtube.com.*?\"/', $ytscript->innertext, $link);
             $link = 'https://' . str_replace('\\', '', $link[0]);
             $embedcontent->innertext .= <<<EOT
                 <iframe width="560" height="315" src=$link title="YouTube video player" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"                                                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
             EOT;
-	}
-	    
+        }
+
         // delete known bad elements
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe,
