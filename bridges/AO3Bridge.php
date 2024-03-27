@@ -100,12 +100,12 @@ class AO3Bridge extends BridgeAbstract
             $element = str_get_html($element->outertext());
             $tags = $element->find('ul.required-tags', 0);
             foreach ($tags->childNodes() as $tag) {
-                $item['categories'][] = $tag->plaintext;
+                $item['categories'][] = html_entity_decode($tag->plaintext);
             }
             $tags->remove();
             $tags = $element->find('ul.tags', 0);
             foreach ($tags->childNodes() as $tag) {
-                $item['categories'][] = $tag->plaintext;
+                $item['categories'][] = html_entity_decode($tag->plaintext);
             }
             $tags->remove();
 
