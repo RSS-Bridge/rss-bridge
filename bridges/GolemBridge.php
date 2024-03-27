@@ -106,10 +106,21 @@ class GolemBridge extends FeedExpander
 
         $article = $page->find('article', 0);
 
+	//built youtube iframes
+        foreach ($article->find('.embedcontent') as &$embedcontent) {
+            $ytscript = $embedcontent->find('script', 0);
+            preg_match("/www.youtube.com.*?\"/", $ytscript->innertext, $link);
+            $link = 'https://' . str_replace('\\', '', $link[0]);
+            $embedcontent->innertext .= <<<EOT
+                <iframe width="560" height="315" src=$link title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"                                                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+            EOT;
+	}
+	    
         // delete known bad elements
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe,
-			div.gbox_affiliate, div.toc, .embedcontent, script') as $bad
+			div.gbox_affiliate, div.toc') as $bad
         ) {
             $bad->remove();
         }
@@ -129,7 +140,7 @@ class GolemBridge extends FeedExpander
             $img->src = $img->getAttribute('data-src-full');
         }
 
-        foreach ($content->find('p, h1, h2, h3, img[src*="."]') as $element) {
+        foreach ($content->find('p, h1, h2, h3, img[src*="."], iframe') as $element) {
             $item .= $element;
         }
 
