@@ -91,11 +91,25 @@ class AO3Bridge extends BridgeAbstract
                 continue; // discard deleted works
             }
             $item['title'] = $title->plaintext;
-            $item['content'] = $element;
             $item['uri'] = $title->href;
 
             $strdate = $element->find('div p.datetime', 0)->plaintext;
             $item['timestamp'] = strtotime($strdate);
+
+            // detach from rest of page because remove() is buggy
+            $element = str_get_html($element->outertext());
+            $tags = $element->find('ul.required-tags', 0);
+            foreach ($tags->childNodes() as $tag) {
+                $item['categories'][] = html_entity_decode($tag->plaintext);
+            }
+            $tags->remove();
+            $tags = $element->find('ul.tags', 0);
+            foreach ($tags->childNodes() as $tag) {
+                $item['categories'][] = html_entity_decode($tag->plaintext);
+            }
+            $tags->remove();
+
+            $item['content'] = implode('', $element->childNodes());
 
             $chapters = $element->find('dl dd.chapters', 0);
             // bookmarked series and external works do not have a chapters count
@@ -123,6 +137,10 @@ class AO3Bridge extends BridgeAbstract
                 $response = $httpClient->request($url, $agent);
                 $html = \str_get_html($response->getBody());
                 $html = defaultLinkTo($html, self::URI);
+                // remove duplicate fic summary
+                if ($ficsum = $html->find('#workskin > .preface > .summary', 0)) {
+                    $ficsum->remove();
+                }
                 $item['content'] .= $html->find('#workskin', 0);
             }
 
