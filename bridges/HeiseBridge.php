@@ -180,7 +180,7 @@ class HeiseBridge extends FeedExpander
         }
 
         //fix for embbedded youtube-videos
-        $oldlink = "";
+        $oldlink = '';
         foreach ($article->find('div.video__yt-container') as &$ytvideo) {
             if (preg_match('/www.youtube.*?\"/', $ytvideo->innertext, $link) && $link[0] != $oldlink) {
                 //save link to prevent duplicates
@@ -193,14 +193,14 @@ class HeiseBridge extends FeedExpander
                 //check if video is in header or article for correct possitioning
                 if (strpos($header->innertext, $link[0])) {
                     $item['content'] .= $ytiframe;
-                }
+                } 
                 else {
                     $ytvideo->innertext .= $ytiframe;
                     $reloadneeded = 1;
                 }
             }
         }
-        if(isset($reloadneeded)) {
+        if (isset($reloadneeded)) {
             $article = str_get_html($article->outertext);
         }
 
