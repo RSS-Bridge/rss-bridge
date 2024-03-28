@@ -160,7 +160,7 @@ class HeiseBridge extends FeedExpander
         $article = defaultLinkTo($article, $item['uri']);
 
         // remove unwanted stuff
-        foreach ($article->find('figure.branding, a-ad, div.ho-text, a-img, .opt-in__content-container, .a-toc__list, a-collapse') as $element) {
+        foreach ($article->find('figure.branding, a-ad, div.ho-text, a-img, .a-toc__list, a-collapse, .opt-in__description, .opt-in__footnote') as $element) {
             $element->remove();
         }
         // reload html, as remove() is buggy
@@ -177,6 +177,31 @@ class HeiseBridge extends FeedExpander
                     return $e->plaintext;
                 }, $authors));
             }
+        }
+
+        //fix for embbedded youtube-videos
+        $oldlink = "";
+        foreach ($article->find('div.video__yt-container') as &$ytvideo) {
+            if (preg_match('/www.youtube.*?\"/', $ytvideo->innertext, $link) && $link[0] != $oldlink) {
+                //save link to prevent duplicates
+                $oldlink = $link[0];
+                $ytiframe = <<<EOT
+                    <iframe width="560" height="315" src="https://$link[0] title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                EOT;
+                //check if video is in header or article for correct possitioning
+                if (strpos($header->innertext, $link[0])) {
+                    $item['content'] .= $ytiframe;
+                }
+                else {
+                    $ytvideo->innertext .= $ytiframe;
+                    $reloadneeded = 1;
+                }
+            }
+        }
+        if(isset($reloadneeded)) {
+            $article = str_get_html($article->outertext);
         }
 
         $categories = $article->find('.article-footer__topics ul.topics li.topics__item a-topic a');
