@@ -193,8 +193,7 @@ class HeiseBridge extends FeedExpander
                 //check if video is in header or article for correct possitioning
                 if (strpos($header->innertext, $link[0])) {
                     $item['content'] .= $ytiframe;
-                } 
-                else {
+                } else {
                     $ytvideo->innertext .= $ytiframe;
                     $reloadneeded = 1;
                 }
