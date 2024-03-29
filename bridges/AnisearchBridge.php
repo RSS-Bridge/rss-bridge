@@ -19,16 +19,29 @@ class AnisearchBridge extends BridgeAbstract
                 'JP'
                 => 'https://www.anisearch.de/anime/index/page-1?char=all&synchro=ja&sort=date&order=desc&view=4'
             ]
+        ],
+        'trailers' => [
+            'name' => 'Trailers',
+            'type' => 'checkbox',
+            'title' => 'Will include trailes',
+            'defaultValue' => false
         ]
     ]];
 
     public function collectData()
     {
         $baseurl = 'https://www.anisearch.de/';
+        $trailers = false;
+        $trailers = $this->getInput('trailers');
         $limit = 10;
+        if ($trailers) {
+            $limit = 5;
+        }
+
         $dom = getSimpleHTMLDOM($this->getInput('category'));
+
         foreach ($dom->find('li.btype0') as $key => $li) {
-            if ($key > $limit) {
+            if ($key >= $limit) {
                 break;
             }
 
@@ -44,10 +57,29 @@ class AnisearchBridge extends BridgeAbstract
             $headerimage = $domarticle->find('img#details-cover', 0);
             $src = $headerimage->src;
 
+            foreach ($content->find('.hidden') as $element) {
+                $element->remove();
+            }
+
+            //get trailer
+            $ytlink = '';
+            if ($trailers) {
+                $trailerlink = $domarticle->find('section#trailers > div > div.swiper > ul.swiper-wrapper > li.swiper-slide > a', 0);
+                if (isset($trailerlink)) {
+                    $trailersite = getSimpleHTMLDOM($baseurl . $trailerlink->href);
+                    $trailer = $trailersite->find('div#player > iframe', 0);
+                    $ytlink = <<<EOT
+                        <br /><iframe width="560" height="315" src="' . $trailer->{'data-xsrc'} . '" title="YouTube video player"
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+                    EOT;
+                }
+            }
+
             $this->items[] = [
                 'title' => $title->plaintext,
                 'uri' => $url,
-                'content' => $headerimage . '<br />' . $content
+                'content' => $headerimage . '<br />' . $content . $ytlink
             ];
         }
     }
