@@ -1,9 +1,9 @@
 <?php
 
-class AnisearchlocalBridge extends BridgeAbstract
+class AnisearchBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Tone866';
-    const NAME = 'Anisearch-local';
+    const NAME = 'Anisearch';
     const URI = 'https://www.anisearch.de';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Feed for Anisearch';
