@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Hosts/index.html">For Hosts</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Hosts/Whitelisting.html">Whitelisting</a></h1>
                 <span class="ModifiedDate">
-            February 10, 2024 at 6:59 AM        </span>
+            March 30, 2024 at 8:12 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/03_For_Hosts/05_Whitelisting.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,12 +108,16 @@
             </div>
 
     <div class="s-content">
-        <p>Modify <code>config.ini.php</code> to limit available bridges.</p>
+        <p>Modify <code>config.ini.php</code> to limit available bridges. Those changes should be applied in the <code>[system]</code> section.</p>
 <h2><a id="enable-all-bridges" href="#enable-all-bridges" class="Permalink" aria-hidden="true" title="Permalink">#</a>Enable all bridges</h2>
-<pre><code>enabled_bridges[] = *
+<pre><code>[system]
+
+enabled_bridges[] = *
 </code></pre>
 <h2><a id="enable-some-bridges" href="#enable-some-bridges" class="Permalink" aria-hidden="true" title="Permalink">#</a>Enable some bridges</h2>
-<pre><code>enabled_bridges[] = TwitchBridge
+<pre><code>[system]
+
+enabled_bridges[] = TwitchBridge
 enabled_bridges[] = GettrBridge
 </code></pre>
 <h2><a id="enable-all-bridges-legacy-shortcut" href="#enable-all-bridges-legacy-shortcut" class="Permalink" aria-hidden="true" title="Permalink">#</a>Enable all bridges (legacy shortcut)</h2>
