@@ -78,7 +78,7 @@ final class BridgeCard
 
         $card .= sprintf('<label class="showless" for="showmore-%s">Show less</label>', $bridgeClassName);
 
-        if ($bridge->getDonationURI() !== '' && Configuration::getConfig('admin', 'donations')) {
+        if (Configuration::getConfig('admin', 'donations') && $bridge->getDonationURI()) {
             $card .= sprintf(
                 '<p class="maintainer">%s ~ <a href="%s">Donate</a></p>',
                 $bridge->getMaintainer(),

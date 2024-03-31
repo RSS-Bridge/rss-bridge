@@ -6,34 +6,26 @@ class HtmlFormat extends FormatAbstract
 
     public function stringify()
     {
+        // This query string comes in already url decoded
         $queryString = $_SERVER['QUERY_STRING'];
 
         $feedArray = $this->getFeed();
         $formatFactory = new FormatFactory();
-        $buttons = [];
-        $linkTags = [];
-        foreach ($formatFactory->getFormatNames() as $formatName) {
-            // Dynamically build buttons for all formats (except HTML)
+        $formats = [];
+
+        // Create all formats (except HTML)
+        $formatNames = $formatFactory->getFormatNames();
+        foreach ($formatNames as $formatName) {
             if ($formatName === 'Html') {
                 continue;
             }
-            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $formatName, htmlentities($queryString));
-            $buttons[] = [
-                'href' => $formatUrl,
-                'value' => $formatName,
-            ];
-            $format = $formatFactory->create($formatName);
-            $linkTags[] = [
-                'href' => $formatUrl,
-                'title' => $formatName,
-                'type' => $format->getMimeType(),
-            ];
-        }
-
-        if (Configuration::getConfig('admin', 'donations') && $feedArray['donationUri']) {
-            $buttons[] = [
-                'href' => e($feedArray['donationUri']),
-                'value' => 'Donate to maintainer',
+            // The format url is relative, but should be absolute in order to help feed readers.
+            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $formatName, $queryString);
+            $formatObject = $formatFactory->create($formatName);
+            $formats[] = [
+                'url'       => $formatUrl,
+                'name'      => $formatName,
+                'type'      => $formatObject->getMimeType(),
             ];
         }
 
@@ -50,13 +42,18 @@ class HtmlFormat extends FormatAbstract
             ];
         }
 
+        $donationUri = null;
+        if (Configuration::getConfig('admin', 'donations') && $feedArray['donationUri']) {
+            $donationUri = $feedArray['donationUri'];
+        }
+
         $html = render_template(__DIR__ . '/../templates/html-format.html.php', [
-            'charset'   => $this->getCharset(),
-            'title'     => $feedArray['name'],
-            'linkTags'  => $linkTags,
-            'uri'       => $feedArray['uri'],
-            'buttons'   => $buttons,
-            'items'     => $items,
+            'charset'       => $this->getCharset(),
+            'title'         => $feedArray['name'],
+            'formats'       => $formats,
+            'uri'           => $feedArray['uri'],
+            'items'         => $items,
+            'donation_uri'  => $donationUri,
         ]);
         // Remove invalid characters
         ini_set('mbstring.substitute_character', 'none');
