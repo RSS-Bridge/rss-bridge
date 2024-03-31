@@ -8,12 +8,13 @@
     <link href="static/style.css?2023-03-24" rel="stylesheet">
     <link rel="icon" type="image/png" href="static/favicon.png">
 
-	<?php foreach ($linkTags as $link): ?>
+    <?php foreach ($formats as $format): ?>
+
         <link
-            href="<?= $link['href'] ?>"
-            title="<?= $link['title'] ?>"
+            href="<?= e($format['url']) ?>"
+            title="<?= e($format['name']) ?>"
             rel="alternate"
-            type="<?= $link['type'] ?>"
+            type="<?= e($format['type']) ?>"
         >
 	<?php endforeach; ?>
 
@@ -33,11 +34,21 @@
                 <button class="backbutton">← back to rss-bridge</button>
             </a>
 
-            <?php foreach ($buttons as $button): ?>
-                <a href="<?= $button['href'] ?>">
-                    <button class="rss-feed"><?= $button['value'] ?></button>
+            <?php foreach ($formats as $format): ?>
+                <a href="<?= e($format['url']) ?>">
+                    <button class="rss-feed">
+                        <?= e($format['name']) ?>
+                    </button>
                 </a>
             <?php endforeach; ?>
+
+            <?php if ($donation_uri): ?>
+                <a href="<?= e($donation_uri) ?>">
+                    <button class="rss-feed">
+                        Donate to maintainer
+                    </button>
+                </a>
+            <?php endif; ?>
         </div>
 
         <?php foreach ($items as $item): ?>

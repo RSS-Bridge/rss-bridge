@@ -56,7 +56,7 @@ class CNETBridge extends SitemapBridge
         foreach ($links as $article_uri) {
             $article_dom = convertLazyLoading(getSimpleHTMLDOMCached($article_uri));
             $title = trim($article_dom->find('h1', 0)->plaintext);
-            $author = $article_dom->find('span.c-assetAuthor_name', 0)->plaintext;
+            $author = $article_dom->find('span.c-assetAuthor_name', 0);
             $headline = $article_dom->find('p.c-contentHeader_description', 0);
             $content = $article_dom->find('div.c-pageArticle_content, div.single-article__content, div.article-main-body', 0);
             $date = null;
@@ -97,7 +97,11 @@ class CNETBridge extends SitemapBridge
             $item = [];
             $item['uri'] = $article_uri;
             $item['title'] = $title;
-            $item['author'] = $author;
+
+            if ($author) {
+                $item['author'] = $author->plaintext;
+            }
+
             $item['content'] = $content;
 
             if (!is_null($date)) {

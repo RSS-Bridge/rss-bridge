@@ -1,14 +1,18 @@
-Modify `config.ini.php` to limit available bridges.
+Modify `config.ini.php` to limit available bridges. Those changes should be applied in the `[system]` section.
 
 ## Enable all bridges
 
 ```
+[system]
+
 enabled_bridges[] = *
 ```
 
 ## Enable some bridges
 
 ```
+[system]
+
 enabled_bridges[] = TwitchBridge
 enabled_bridges[] = GettrBridge
 ```

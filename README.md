@@ -64,7 +64,7 @@ These instructions have been tested on a fresh Debian 12 VM from Digital Ocean (
 ```shell
 timedatectl set-timezone Europe/Oslo
 
-apt install git nginx php8.2-fpm php-mbstring php-simplexml php-curl
+apt install git nginx php8.2-fpm php-mbstring php-simplexml php-curl php-intl
 
 # Create a new user account
 useradd --shell /bin/bash --create-home rss-bridge
@@ -167,12 +167,10 @@ Restart fpm and nginx:
 
 ```shell
 # Lint and restart php-fpm
-php-fpm8.2 -t
-systemctl restart php8.2-fpm
+php-fpm8.2 -t && systemctl restart php8.2-fpm
 
 # Lint and restart nginx
-nginx -t
-systemctl restart nginx
+nginx -t && systemctl restart nginx
 ```
 
 ### How to install from Composer

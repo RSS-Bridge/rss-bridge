@@ -32,7 +32,7 @@ class DisplayAction implements ActionInterface
                     return new Response('', 304, ['last-modified' => $modificationTimeGMT . 'GMT']);
                 }
             }
-            return $cachedResponse;
+            return $cachedResponse->withHeader('rss-bridge', 'This is a cached response');
         }
 
         if (!$bridgeName) {
@@ -51,7 +51,6 @@ class DisplayAction implements ActionInterface
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'This bridge is not whitelisted']), 400);
         }
 
-
         if (
             Configuration::getConfig('proxy', 'url')
             && Configuration::getConfig('proxy', 'by_bridge')
@@ -62,8 +61,6 @@ class DisplayAction implements ActionInterface
         }
 
         $bridge = $bridgeFactory->create($bridgeClassName);
-        $formatFactory = new FormatFactory();
-        $format = $formatFactory->create($format);
 
         $response = $this->createResponse($request, $bridge, $format);
 
@@ -93,7 +90,7 @@ class DisplayAction implements ActionInterface
         return $response;
     }
 
-    private function createResponse(Request $request, BridgeAbstract $bridge, FormatAbstract $format)
+    private function createResponse(Request $request, BridgeAbstract $bridge, string $format)
     {
         $items = [];
         $feed = [];
@@ -156,6 +153,9 @@ class DisplayAction implements ActionInterface
                 }
             }
         }
+
+        $formatFactory = new FormatFactory();
+        $format = $formatFactory->create($format);
 
         $format->setItems($items);
         $format->setFeed($feed);
