@@ -460,7 +460,9 @@ abstract class XPathAbstract extends BridgeAbstract
      */
     protected function formatParamValue($param, $value)
     {
-        $value = $this->fixEncoding($value);
+        $value = is_array($value)
+            ? array_map([$this, 'fixEncoding'], $value)
+            : $this->fixEncoding($value);
         switch ($param) {
             case 'title':
                 return $this->formatItemTitle($value);
