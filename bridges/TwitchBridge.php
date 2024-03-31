@@ -96,9 +96,13 @@ EOD;
             throw new \Exception(sprintf('Unable to find channel `%s`', $channel));
         }
         $user = $data->user;
+        $user->videos = null;
         if ($user->videos === null) {
-            throw new HttpException('Service Unavailable', 503);
+            // twitch regularly does this for unknown reasons
+            $this->logger->info('Twitch returned empty set of videos', ['data' => $data]);
+            return;
         }
+
         foreach ($user->videos->edges as $edge) {
             $video = $edge->node;
 
