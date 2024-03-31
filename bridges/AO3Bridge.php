@@ -77,7 +77,7 @@ class AO3Bridge extends BridgeAbstract
         $html = defaultLinkTo($html, self::URI);
 
         // Get list title. Will include page range + count in some cases
-        $heading = ($html->find('#main > h2', 0));
+        $heading = ($html->find('#main h2', 0));
         if ($heading->find('a.tag')) {
             $heading = $heading->find('a.tag', 0);
         }
