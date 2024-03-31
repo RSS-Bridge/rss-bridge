@@ -23,6 +23,11 @@ class NiusBridge extends XPathAbstract
     const XPATH_EXPRESSION_ITEM_CATEGORIES = './/div[@class="subtitle"]/text()';
     const SETTING_FIX_ENCODING = false;
 
+    public function getIcon()
+    {
+        return 'https://www.nius.de/favicon.ico';
+    }
+
     protected function formatItemTitle($value)
     {
         return strip_tags($value);
