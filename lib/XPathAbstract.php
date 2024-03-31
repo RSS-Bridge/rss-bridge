@@ -460,9 +460,7 @@ abstract class XPathAbstract extends BridgeAbstract
      */
     protected function formatParamValue($param, $value)
     {
-        $value = is_array($value)
-            ? array_map([$this, 'fixEncoding'], $value)
-            : $this->fixEncoding($value);
+        $value = is_array($value) ? array_map([$this, 'fixEncoding'], $value) : $this->fixEncoding($value);
         switch ($param) {
             case 'title':
                 return $this->formatItemTitle($value);
@@ -610,10 +608,9 @@ abstract class XPathAbstract extends BridgeAbstract
         if ($typedResult instanceof \DOMNodeList && !$allowMultiple) {
             $item = $typedResult->item(0);
             $text = $this->extractNodeListContent($item, $returnXML);
-        }
-        elseif ($typedResult instanceof \DOMNodeList && $allowMultiple) {
+        } elseif ($typedResult instanceof \DOMNodeList && $allowMultiple) {
             $text = [];
-            foreach($typedResult as $item) {
+            foreach ($typedResult as $item) {
                 $text[] = $this->extractNodeListContent($item, $returnXML);
             }
         } elseif (is_string($typedResult) && strlen($typedResult) > 0) {
@@ -622,12 +619,11 @@ abstract class XPathAbstract extends BridgeAbstract
             throw new \Exception('Unknown type of XPath expression result.');
         }
 
-        if(is_array($text)) {
-            foreach($text as &$element) {
+        if (is_array($text)) {
+            foreach ($text as &$element) {
                 $element = $this->cleanExtractedText($element, $escapeHtml, $returnXML);
             }
-        }
-        else {
+        } else {
             $text = $this->cleanExtractedText($text, $escapeHtml, $returnXML);
         }
         return $text;
@@ -642,9 +638,7 @@ abstract class XPathAbstract extends BridgeAbstract
     protected function extractNodeListContent($item, $returnXML)
     {
         if ($item instanceof \DOMElement) {
-            return $returnXML
-                ? ($item->ownerDocument ?? $item)->saveXML($item)
-                : $item->nodeValue;
+            return $returnXML ? ($item->ownerDocument ?? $item)->saveXML($item) : $item->nodeValue;
         } elseif ($item instanceof \DOMAttr) {
             return $item->value;
         } elseif ($item instanceof \DOMText) {
