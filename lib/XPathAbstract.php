@@ -439,7 +439,8 @@ abstract class XPathAbstract extends BridgeAbstract
                 }
 
                 $isContent = $param === 'content';
-                $value = $this->getItemValueOrNodeValue($typedResult, $isContent, $isContent && !$this->getSettingUseRawItemContent());
+                $isCategories = 'categories' === $param;
+                $value = $this->getItemValueOrNodeValue($typedResult, $isContent, $isContent && !$this->getSettingUseRawItemContent(), $isCategories);
                 $item->__set($param, $this->formatParamValue($param, $value));
             }
 
@@ -572,12 +573,12 @@ abstract class XPathAbstract extends BridgeAbstract
      * formatted as array.
      * Can be easily overwritten for in case the values need to be transformed into something
      * else.
-     * @param string $value
+     * @param string|array $value
      * @return array
      */
     protected function formatItemCategories($value)
     {
-        return [$value];
+        return is_array($value) ? $value : [$value];
     }
 
     /**
@@ -596,22 +597,22 @@ abstract class XPathAbstract extends BridgeAbstract
 
     /**
      * @param $typedResult
-     * @return string
+     * @param bool $returnXML
+     * @param bool $escapeHtml
+     * @param bool $allowMultiple
+     * @return string|array
+     * @throws Exception
      */
-    protected function getItemValueOrNodeValue($typedResult, $returnXML = false, $escapeHtml = false)
+    protected function getItemValueOrNodeValue($typedResult, $returnXML = false, $escapeHtml = false, $allowMultiple = false)
     {
-        if ($typedResult instanceof \DOMNodeList) {
+        if ($typedResult instanceof \DOMNodeList && !$allowMultiple) {
             $item = $typedResult->item(0);
-            if ($item instanceof \DOMElement) {
-                // Don't escape XML
-                if ($returnXML) {
-                    return ($item->ownerDocument ?? $item)->saveXML($item);
-                }
-                $text = $item->nodeValue;
-            } elseif ($item instanceof \DOMAttr) {
-                $text = $item->value;
-            } elseif ($item instanceof \DOMText) {
-                $text = $item->wholeText;
+            $text = $this->extractNodeListContent($item, $returnXML);
+        }
+        elseif ($typedResult instanceof \DOMNodeList && $allowMultiple) {
+            $text = [];
+            foreach($typedResult as $item) {
+                $text[] = $this->extractNodeListContent($item, $returnXML);
             }
         } elseif (is_string($typedResult) && strlen($typedResult) > 0) {
             $text = $typedResult;
@@ -619,10 +620,49 @@ abstract class XPathAbstract extends BridgeAbstract
             throw new \Exception('Unknown type of XPath expression result.');
         }
 
+        if(is_array($text)) {
+            foreach($text as &$element) {
+                $element = $this->cleanExtractedText($element, $escapeHtml, $returnXML);
+            }
+        }
+        else {
+            $text = $this->cleanExtractedText($text, $escapeHtml, $returnXML);
+        }
+        return $text;
+    }
+
+    /**
+     * @param $item
+     * @param $returnXML
+     * @return false|string
+     * @throws Exception
+     */
+    protected function extractNodeListContent($item, $returnXML)
+    {
+        if ($item instanceof \DOMElement) {
+            return $returnXML
+                ? ($item->ownerDocument ?? $item)->saveXML($item)
+                : $item->nodeValue;
+        } elseif ($item instanceof \DOMAttr) {
+            return $item->value;
+        } elseif ($item instanceof \DOMText) {
+            return $item->wholeText;
+        }
+        throw new \Exception('Unknown type of XPath expression result.');
+    }
+
+    /**
+     * @param $text
+     * @param $escapeHtml
+     * @param $returnXML
+     * @return string
+     */
+    protected function cleanExtractedText($text, $escapeHtml, $returnXML)
+    {
         $text = trim($text);
 
-        if ($escapeHtml) {
-            return htmlspecialchars($text);
+        if ($escapeHtml && !$returnXML) {
+            $text = htmlspecialchars($text);
         }
         return $text;
     }
