@@ -57,4 +57,11 @@ class BlizzardNewsBridge extends XPathAbstract
         }
         return 'https://news.blizzard.com/' . $locale;
     }
+
+    public function getIcon()
+    {
+        return <<<icon
+https://blznews.akamaized.net/images/favicon-cb34a003c6f2f637ee8f4f7b406f3b9b120b918c04cabec7f03a760e708977ea9689a1c638f4396def8dce7b202cd007eae91946cc3c4a578aa8b5694226cfc6.ico
+icon;
+    }
 }
