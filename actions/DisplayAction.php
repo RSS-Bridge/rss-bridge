@@ -32,7 +32,7 @@ class DisplayAction implements ActionInterface
                     return new Response('', 304, ['last-modified' => $modificationTimeGMT . 'GMT']);
                 }
             }
-            return $cachedResponse;
+            return $cachedResponse->withHeader('rss-bridge', 'This is a cached response');
         }
 
         if (!$bridgeName) {
