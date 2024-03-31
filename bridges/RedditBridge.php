@@ -121,7 +121,7 @@ class RedditBridge extends BridgeAbstract
         $comments = false;
         $frontend = $this->getInput('frontend');
         if ($frontend == '') {
-                $frontend = 'https://old.reddit.com';
+            $frontend = 'https://old.reddit.com';
         }
         $section = $this->getInput('d');
 
