@@ -27,7 +27,7 @@ class GenshinImpactBridge extends BridgeAbstract
     {
         $url = 'https://api-os-takumi-static.hoyoverse.com/content_v2_user/app/a1b1f9d3315447cc/getContentList?iAppId=32&iChanId=395&iPageSize=5&iPage=1&sLangKey=en-us';
         $api_response = getContents($url);
-        $json_list = json_decode($api_response, true);
+        $json_list = Json::decode($api_response);
 
         foreach ($json_list['data']['list'] as $json_item) {
             $article_html = str_get_html($json_item['sContent']);
@@ -48,7 +48,7 @@ class GenshinImpactBridge extends BridgeAbstract
             $item['id'] = $json_item['iInfoId'];
 
             // Picture
-            $json_ext = json_decode($json_item['sExt'], true);
+            $json_ext = Json::decode($json_item['sExt']);
             $item['enclosures'] = $json_ext['banner'][0]['url'];
 
             $this->items[] = $item;
