@@ -84,11 +84,11 @@ class AllegroBridge extends BridgeAbstract
 
         $results = $html->find('article[data-analytics-view-custom-context="REGULAR"]');
 
-        if (!$this->getInput('includeSponsoredOffers')) {
+        if ($this->getInput('includeSponsoredOffers')) {
             $results = array_merge($results, $html->find('article[data-analytics-view-custom-context="SPONSORED"]'));
         }
 
-        if (!$this->getInput('includePromotedOffers')) {
+        if ($this->getInput('includePromotedOffers')) {
             $results = array_merge($results, $html->find('article[data-analytics-view-custom-context="PROMOTED"]'));
         }
 
