@@ -444,8 +444,7 @@ abstract class XPathAbstract extends BridgeAbstract
                     foreach ($typedResult as $domNode) {
                         $value[] = $this->getItemValueOrNodeValue($domNode, $returnXML);
                     }
-                }
-                else {
+                } else {
                     $value = $this->getItemValueOrNodeValue($typedResult, $returnXML);
                 }
 
