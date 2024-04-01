@@ -27,13 +27,13 @@ class GenshinImpactBridge extends BridgeAbstract
     {
         $url = 'https://api-os-takumi-static.hoyoverse.com/content_v2_user/app/a1b1f9d3315447cc/getContentList?iAppId=32&iChanId=395&iPageSize=5&iPage=1&sLangKey=en-us';
         $api_response = getContents($url);
-        $json_list = json_decode($api_response, true);
+        $json_list = Json::decode($api_response);
 
         foreach ($json_list['data']['list'] as $json_item) {
             $article_html = str_get_html($json_item['sContent']);
 
             // Check if article contains a embed YouTube video
-            $exp_youtube = '/https:\/\/[w\.]+youtube\.com\/embed\/([\w]+)/m';
+            $exp_youtube = '#https://[w\.]+youtube\.com/embed/([\w]+)#m';
             if (preg_match($exp_youtube, $article_html, $matches)) {
                 // Replace the YouTube embed with a YouTube link
                 $yt_embed = $article_html->find('div[class="ttr-video-frame"]', 0);
@@ -48,8 +48,8 @@ class GenshinImpactBridge extends BridgeAbstract
             $item['id'] = $json_item['iInfoId'];
 
             // Picture
-            $json_ext = json_decode($json_item['sExt'], true);
-            $item['enclosures'] = $json_ext['banner'][0]['url'];
+            $json_ext = Json::decode($json_item['sExt']);
+            $item['enclosures'] = [$json_ext['banner'][0]['url']];
 
             $this->items[] = $item;
         }
