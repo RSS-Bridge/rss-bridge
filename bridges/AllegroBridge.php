@@ -13,12 +13,9 @@ class AllegroBridge extends BridgeAbstract
             'exampleValue' => 'https://allegro.pl/kategoria/swieze-warzywa-cebula-318660',
             'required' => true,
         ],
-        'sessioncookie' => [
-            'name' => 'The \'wdctx\' session cookie',
-            'title' => 'Paste the value of the \'wdctx\' cookie from your browser if you want to prevent Allegro imposing rate limits',
-            'pattern' => '^.{70,};?$',
-            // phpcs:ignore
-            'exampleValue' => 'v4.1-oCrmXTMqv2ppC21GTUCKLmUwRPP1ssQVALKuqwsZ1VXjcKgL2vO5TTRM5xMxS9GiyqxF1gAeyc-63dl0coUoBKXCXi_nAmr95yyqGpq2RAFoneZ4L399E8n6iYyemcuGARjAoSfjvLHJCEwvvHHynSgaxlFBu7hUnKfuy39zo9sSQdyTUjotJg3CAZ53q9v2raAnPCyGOAR4ytRILd9p24EJnxp7_oR0XbVPIo1hDa4WmjXFOxph8rHaO5tWd',
+        'cookie' => [
+            'name' => 'The complete cookie value',
+            'title' => 'Paste the value of the cookie value from your browser if you want to prevent Allegro imposing rate limits',
             'required' => false,
         ],
         'includeSponsoredOffers' => [
@@ -70,9 +67,9 @@ class AllegroBridge extends BridgeAbstract
 
         $opts = [];
 
-        // If a session cookie is provided
-        if ($sessioncookie = $this->getInput('sessioncookie')) {
-            $opts[CURLOPT_COOKIE] = 'wdctx=' . $sessioncookie;
+        // If a cookie is provided
+        if ($cookie = $this->getInput('cookie')) {
+            $opts[CURLOPT_COOKIE] = $cookie;
         }
 
         $html = getSimpleHTMLDOM($url, [], $opts);
