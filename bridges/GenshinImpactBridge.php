@@ -49,7 +49,7 @@ class GenshinImpactBridge extends BridgeAbstract
 
             // Picture
             $json_ext = Json::decode($json_item['sExt']);
-            $item['enclosures'] = $json_ext['banner'][0]['url'];
+            $item['enclosures'] = [$json_ext['banner'][0]['url']];
 
             $this->items[] = $item;
         }
