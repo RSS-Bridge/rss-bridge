@@ -438,14 +438,13 @@ abstract class XPathAbstract extends BridgeAbstract
                     continue;
                 }
 
-                $returnXML = 'content' === $param;
                 if ('categories' === $param && $typedResult instanceof \DOMNodeList) {
                     $value = [];
                     foreach ($typedResult as $domNode) {
-                        $value[] = $this->getItemValueOrNodeValue($domNode, $returnXML);
+                        $value[] = $this->getItemValueOrNodeValue($domNode, false);
                     }
                 } else {
-                    $value = $this->getItemValueOrNodeValue($typedResult, $returnXML);
+                    $value = $this->getItemValueOrNodeValue($typedResult, 'content' === $param);
                 }
 
                 $item->__set($param, $this->formatParamValue($param, $value));
