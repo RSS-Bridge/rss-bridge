@@ -10,7 +10,7 @@ class EBayBridge extends BridgeAbstract
         'url' => [
             'name' => 'Search URL',
             'title' => 'Copy the URL from your browser\'s address bar after searching for your items and paste it here',
-            'pattern' => '^(https:\/\/)?(www.)?ebay\.(com|com\.au|at|be|ca|ch|cn|es|fr|de|com\.hk|ie|it|com\.my|nl|ph|pl|com\.sg|co\.uk).*$',
+            'pattern' => '^(https:\/\/)?(www\.)?(befr\.|benl\.)?ebay\.(com|com\.au|at|be|ca|ch|cn|es|fr|de|com\.hk|ie|it|com\.my|nl|ph|pl|com\.sg|co\.uk).*$',
             'exampleValue' => 'https://www.ebay.com/sch/i.html?_nkw=atom+rss',
             'required' => true,
         ]
