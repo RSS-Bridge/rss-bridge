@@ -77,15 +77,6 @@ abstract class XPathAbstract extends BridgeAbstract
     const XPATH_EXPRESSION_ITEM_CONTENT = '';
 
     /**
-     * Use raw item content
-     * Whether to use the raw item content or to replace certain characters with
-     * special significance in HTML by HTML entities (using the PHP function htmlspecialchars).
-     *
-     * Use {@see XPathAbstract::getSettingUseRawItemContent()} to read this parameter
-     */
-    const SETTING_USE_RAW_ITEM_CONTENT = false;
-
-    /**
      * XPath expression for extracting an item link from the item context
      * This expression should match a node's attribute containing the article URL
      * (usually the href attribute of an <a> tag). It should start with a dot
@@ -157,6 +148,15 @@ abstract class XPathAbstract extends BridgeAbstract
      * Use {@see XPathAbstract::getSettingFixEncoding()} to read this parameter
      */
     const SETTING_FIX_ENCODING = false;
+
+    /**
+     * Use raw item content
+     * Whether to use the raw item content or to replace certain characters with
+     * special significance in HTML by HTML entities (using the PHP function htmlspecialchars).
+     *
+     * Use {@see XPathAbstract::getSettingUseRawItemContent()} to read this parameter
+     */
+    const SETTING_USE_RAW_ITEM_CONTENT = true;
 
     /**
      * Internal storage for resulting feed name, automatically detected
@@ -510,7 +510,7 @@ abstract class XPathAbstract extends BridgeAbstract
      */
     protected function formatItemContent($value)
     {
-        return $this->getSettingUseRawItemContent() ? $value : htmlspecialchars($value);
+        return $this->getParam('raw_content') ? $value : htmlspecialchars($value);
     }
 
     /**
