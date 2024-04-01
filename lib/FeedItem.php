@@ -178,7 +178,6 @@ class FeedItem
         } else {
             $this->author = $author;
         }
-        return $this;
     }
 
     public function getContent(): ?string
@@ -284,7 +283,6 @@ class FeedItem
         } else {
             $this->misc[$name] = $value;
         }
-        return $this;
     }
 
     public function toArray(): array

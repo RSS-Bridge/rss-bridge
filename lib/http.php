@@ -331,7 +331,14 @@ final class Response
         return array_pop($header);
     }
 
-    public function withBody(string $body): Response
+    public function withHeader(string $name, string $value): self
+    {
+        $clone = clone $this;
+        $clone->headers[$name] = [$value];
+        return $clone;
+    }
+
+    public function withBody(string $body): self
     {
         $clone = clone $this;
         $clone->body = $body;
