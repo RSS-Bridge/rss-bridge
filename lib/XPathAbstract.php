@@ -77,15 +77,6 @@ abstract class XPathAbstract extends BridgeAbstract
     const XPATH_EXPRESSION_ITEM_CONTENT = '';
 
     /**
-     * Use raw item content
-     * Whether to use the raw item content or to replace certain characters with
-     * special significance in HTML by HTML entities (using the PHP function htmlspecialchars).
-     *
-     * Use {@see XPathAbstract::getSettingUseRawItemContent()} to read this parameter
-     */
-    const SETTING_USE_RAW_ITEM_CONTENT = false;
-
-    /**
      * XPath expression for extracting an item link from the item context
      * This expression should match a node's attribute containing the article URL
      * (usually the href attribute of an <a> tag). It should start with a dot
@@ -157,6 +148,15 @@ abstract class XPathAbstract extends BridgeAbstract
      * Use {@see XPathAbstract::getSettingFixEncoding()} to read this parameter
      */
     const SETTING_FIX_ENCODING = false;
+
+    /**
+     * Use raw item content
+     * Whether to use the raw item content or to replace certain characters with
+     * special significance in HTML by HTML entities (using the PHP function htmlspecialchars).
+     *
+     * Use {@see XPathAbstract::getSettingUseRawItemContent()} to read this parameter
+     */
+    const SETTING_USE_RAW_ITEM_CONTENT = true;
 
     /**
      * Internal storage for resulting feed name, automatically detected
@@ -246,15 +246,6 @@ abstract class XPathAbstract extends BridgeAbstract
     }
 
     /**
-     * Use raw item content
-     * @return bool
-     */
-    protected function getSettingUseRawItemContent(): bool
-    {
-        return static::SETTING_USE_RAW_ITEM_CONTENT;
-    }
-
-    /**
      * XPath expression for extracting an item link from the item context
      * @return string
      */
@@ -310,6 +301,15 @@ abstract class XPathAbstract extends BridgeAbstract
     }
 
     /**
+     * Use raw item content
+     * @return bool
+     */
+    protected function getSettingUseRawItemContent(): bool
+    {
+        return static::SETTING_USE_RAW_ITEM_CONTENT;
+    }
+
+    /**
      * Internal helper method for quickly accessing all the user defined constants
      * in derived classes
      *
@@ -331,8 +331,6 @@ abstract class XPathAbstract extends BridgeAbstract
                 return $this->getExpressionItemTitle();
             case 'content':
                 return $this->getExpressionItemContent();
-            case 'raw_content':
-                return $this->getSettingUseRawItemContent();
             case 'uri':
                 return $this->getExpressionItemUri();
             case 'author':
@@ -345,6 +343,8 @@ abstract class XPathAbstract extends BridgeAbstract
                 return $this->getExpressionItemCategories();
             case 'fix_encoding':
                 return $this->getSettingFixEncoding();
+            case 'raw_content':
+                return $this->getSettingUseRawItemContent();
         }
     }
 
@@ -438,9 +438,15 @@ abstract class XPathAbstract extends BridgeAbstract
                     continue;
                 }
 
-                $isContent = $param === 'content';
-                $isCategories = 'categories' === $param;
-                $value = $this->getItemValueOrNodeValue($typedResult, $isContent, $isContent && !$this->getSettingUseRawItemContent(), $isCategories);
+                if ('categories' === $param && $typedResult instanceof \DOMNodeList) {
+                    $value = [];
+                    foreach ($typedResult as $domNode) {
+                        $value[] = $this->getItemValueOrNodeValue($domNode, false);
+                    }
+                } else {
+                    $value = $this->getItemValueOrNodeValue($typedResult, 'content' === $param);
+                }
+
                 $item->__set($param, $this->formatParamValue($param, $value));
             }
 
@@ -460,6 +466,7 @@ abstract class XPathAbstract extends BridgeAbstract
      */
     protected function formatParamValue($param, $value)
     {
+        $value = is_array($value) ? array_map('trim', $value) : trim($value);
         $value = is_array($value) ? array_map([$this, 'fixEncoding'], $value) : $this->fixEncoding($value);
         switch ($param) {
             case 'title':
@@ -503,7 +510,7 @@ abstract class XPathAbstract extends BridgeAbstract
      */
     protected function formatItemContent($value)
     {
-        return $value;
+        return $this->getParam('raw_content') ? $value : htmlspecialchars($value);
     }
 
     /**
@@ -599,68 +606,28 @@ abstract class XPathAbstract extends BridgeAbstract
      * @param $typedResult
      * @param bool $returnXML
      * @param bool $escapeHtml
-     * @param bool $allowMultiple
-     * @return string|array
-     * @throws Exception
-     */
-    protected function getItemValueOrNodeValue($typedResult, $returnXML = false, $escapeHtml = false, $allowMultiple = false)
-    {
-        if ($typedResult instanceof \DOMNodeList && !$allowMultiple) {
-            $item = $typedResult->item(0);
-            $text = $this->extractNodeListContent($item, $returnXML);
-        } elseif ($typedResult instanceof \DOMNodeList && $allowMultiple) {
-            $text = [];
-            foreach ($typedResult as $item) {
-                $text[] = $this->extractNodeListContent($item, $returnXML);
-            }
-        } elseif (is_string($typedResult) && strlen($typedResult) > 0) {
-            $text = $typedResult;
-        } else {
-            throw new \Exception('Unknown type of XPath expression result.');
-        }
-
-        if (is_array($text)) {
-            foreach ($text as &$element) {
-                $element = $this->cleanExtractedText($element, $escapeHtml, $returnXML);
-            }
-        } else {
-            $text = $this->cleanExtractedText($text, $escapeHtml, $returnXML);
-        }
-        return $text;
-    }
-
-    /**
-     * @param $item
-     * @param $returnXML
-     * @return false|string
-     * @throws Exception
-     */
-    protected function extractNodeListContent($item, $returnXML)
-    {
-        if ($item instanceof \DOMElement) {
-            return $returnXML ? ($item->ownerDocument ?? $item)->saveXML($item) : $item->nodeValue;
-        } elseif ($item instanceof \DOMAttr) {
-            return $item->value;
-        } elseif ($item instanceof \DOMText) {
-            return $item->wholeText;
-        }
-        throw new \Exception('Unknown type of XPath expression result.');
-    }
-
-    /**
-     * @param $text
-     * @param $escapeHtml
-     * @param $returnXML
      * @return string
+     * @throws Exception
      */
-    protected function cleanExtractedText($text, $escapeHtml, $returnXML)
+    protected function getItemValueOrNodeValue($typedResult, $returnXML = false)
     {
-        $text = trim($text);
-
-        if ($escapeHtml && !$returnXML) {
-            $text = htmlspecialchars($text);
+        if ($typedResult instanceof \DOMNodeList) {
+            $typedResult = $typedResult->item(0);
         }
-        return $text;
+
+        if ($typedResult instanceof \DOMElement) {
+            return $returnXML ? ($typedResult->ownerDocument ?? $typedResult)->saveXML($typedResult) : $typedResult->nodeValue;
+        } elseif ($typedResult instanceof \DOMAttr) {
+            return $typedResult->value;
+        } elseif ($typedResult instanceof \DOMText) {
+            return $typedResult->wholeText;
+        } elseif (is_string($typedResult)) {
+            return $typedResult;
+        } elseif (null === $typedResult) {
+            return '';
+        }
+
+        throw new \Exception('Unknown type of XPath expression result: ' . gettype($typedResult));
     }
 
     /**
