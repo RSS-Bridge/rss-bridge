@@ -119,6 +119,16 @@ class GolemBridge extends FeedExpander
             }
         }
 
+        //built golem videos
+        foreach ($article->find('.gvideofig') as &$embedcontent) {
+            if (preg_match('/gvideo_(.*)/', $embedcontent->id, $videoid)) {
+                $embedcontent->innertext .= <<<EOT
+                    <video class="rmp-object-fit-contain rmp-video" x-webkit-airplay="allow" controlslist="nodownload" tabindex="-1"
+                    preload="metadata" src="https://video.golem.de/download/$videoid[1]"></video>                                                                      
+                EOT;
+            }
+        }
+
         // delete known bad elements
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe,
@@ -142,7 +152,7 @@ class GolemBridge extends FeedExpander
             $img->src = $img->getAttribute('data-src-full');
         }
 
-        foreach ($content->find('p, h1, h2, h3, img[src*="."], iframe') as $element) {
+        foreach ($content->find('p, h1, h2, h3, img[src*="."], iframe, video') as $element) {
             $item .= $element;
         }
 
