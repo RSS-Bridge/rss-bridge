@@ -175,8 +175,7 @@ HEREDOC;
             // Timestamp handling needs a new parsing function
             if ($onlyWithUrl == true) {
                 // Only parse the comment if it is not empry
-                if($item['content'] != '')
-                {
+                if ($item['content'] != '') {
                     // Count Links and Quote Links
                     $content = str_get_html($item['content']);
                     $countLinks = count($content->find('a[href]'));
