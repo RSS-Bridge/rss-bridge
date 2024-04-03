@@ -119,13 +119,13 @@ class GolemBridge extends FeedExpander
             }
         }
 
-	//built golem videos
+        //built golem videos
         foreach ($article->find('.gvideofig') as &$embedcontent) {
             if (preg_match('/gvideo_(.*)/', $embedcontent->id, $videoid)) {
                 $embedcontent->innertext .= <<<EOT
                     <video class="rmp-object-fit-contain rmp-video" x-webkit-airplay="allow" controlslist="nodownload" tabindex="-1"
                     preload="metadata" src="https://video.golem.de/download/$videoid[1]"></video>                                                                      
-                EOT;                                                                                                                                                   
+                EOT;
             }
         }
 
