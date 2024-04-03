@@ -2024,7 +2024,6 @@ class MydealsBridge extends PepperBridgeAbstract
         'uri-merchant' => 'search/gutscheine?merchant-id=',
         'request-error' => 'Could not request mydeals',
         'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
-        'no-results' => 'keine Ergebnisse',
         'currency' => '€',
         'price' => 'Preis',
         'shipping' => 'Versand',

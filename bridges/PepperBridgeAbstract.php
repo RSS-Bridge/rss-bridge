@@ -55,8 +55,8 @@ class PepperBridgeAbstract extends BridgeAbstract
         );
 
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('h3[class*=text--b]', 0);
-        if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
+        $noresult = $html->find('section[class=subNav]', 0)->find('div[class*=page-center listLayout aGrid]', 0);
+        if ($noresult === null) {
             $this->items = [];
         } else {
             foreach ($list as $deal) {
@@ -174,13 +174,17 @@ HEREDOC;
             $item['uid'] = $comment->commentId;
             // Timestamp handling needs a new parsing function
             if ($onlyWithUrl == true) {
-                // Count Links and Quote Links
-                $content = str_get_html($item['content']);
-                $countLinks = count($content->find('a[href]'));
-                $countQuoteLinks = count($content->find('a[href][class=userHtml-quote-source]'));
-                // Only add element if there are Links ans more links tant Quote links
-                if ($countLinks > 0 && $countLinks > $countQuoteLinks) {
-                    $this->items[] = $item;
+                // Only parse the comment if it is not empry
+                if($item['content'] != '')
+                {
+                    // Count Links and Quote Links
+                    $content = str_get_html($item['content']);
+                    $countLinks = count($content->find('a[href]'));
+                    $countQuoteLinks = count($content->find('a[href][class=userHtml-quote-source]'));
+                    // Only add element if there are Links and more links tant Quote links
+                    if ($countLinks > 0 && $countLinks > $countQuoteLinks) {
+                        $this->items[] = $item;
+                    }
                 }
             } else {
                 $this->items[] = $item;
@@ -264,7 +268,7 @@ HEREDOC;
     private function getTalkTitle()
     {
         $html = getSimpleHTMLDOMCached($this->getInput('url'));
-        $title = $html->find('.thread-title', 0)->plaintext;
+        $title = $html->find('title', 0)->plaintext;
         return $title;
     }
 
@@ -472,7 +476,7 @@ HEREDOC;
         $priceFrom = $this->getInput('priceFrom');
         $priceTo = $this->getInput('priceTo');
         $url = $this->i8n('bridge-uri')
-            . 'search/advanced?q='
+            . 'search?q='
             . urlencode($q)
             . '&hide_expired=' . $hide_expired
             . '&hide_local=' . $hide_local
