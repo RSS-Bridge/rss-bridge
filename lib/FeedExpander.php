@@ -34,6 +34,7 @@ abstract class FeedExpander extends BridgeAbstract
         try {
             $this->feed = $feedParser->parseFeed($xmlString);
         } catch (\Exception $e) {
+            // FeedMergeBridge relies on this string
             throw new \Exception(sprintf('Failed to parse xml from %s: %s', $url, create_sane_exception_message($e)));
         }
 

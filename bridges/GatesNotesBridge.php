@@ -21,6 +21,10 @@ class GatesNotesBridge extends BridgeAbstract
 
         $rawContent = getContents($apiUrl);
         $cleanedContent = trim($rawContent, '"');
+        $cleanedContent = str_replace([
+            '<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/">',
+            '</string>'
+        ], '', $cleanedContent);
         $cleanedContent = str_replace('\r\n', "\n", $cleanedContent);
         $cleanedContent = stripslashes($cleanedContent);
 
