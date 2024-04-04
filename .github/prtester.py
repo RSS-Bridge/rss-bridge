@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from typing import Iterable
 import os.path
+import urllib
 
 # This script is specifically written to be used in automation for https://github.com/RSS-Bridge/rss-bridge
 #
@@ -45,15 +46,14 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
         bridgeid = bridge_card.get('id')
         bridgeid = bridgeid.split('-')[1] # this extracts a readable bridge name from the bridge metadata
         print(f'{bridgeid}{instance_suffix}')
-        bridgestring = '/?action=display&bridge=' + bridgeid + '&format=Html'
         bridge_name = bridgeid.replace('Bridge', '')
         context_forms = bridge_card.find_all("form")
         form_number = 1
         for context_form in context_forms:
             # a bridge can have multiple contexts, named 'forms' in html
-            # this code will produce a fully working formstring that should create a working feed when called
+            # this code will produce a fully working url that should create a working feed when called
             # this will create an example feed for every single context, to test them all
-            formstring = ''
+            context_parameters = {}
             error_messages = []
             context_name = '*untitled*'
             context_name_element = context_form.find_previous_sibling('h5')
@@ -62,27 +62,27 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
             parameters = context_form.find_all("input")
             lists = context_form.find_all("select")
             # this for/if mess cycles through all available input parameters, checks if it required, then pulls
-            # the default or examplevalue and then combines it all together into the formstring
+            # the default or examplevalue and then combines it all together into the url parameters
             # if an example or default value is missing for a required attribute, it will throw an error
             # any non-required fields are not tested!!!
             for parameter in parameters:
-                if parameter.get('type') == 'hidden' and parameter.get('name') == 'context':
-                    cleanvalue = parameter.get('value').replace(" ","+")
-                    formstring = formstring + '&' + parameter.get('name') + '=' + cleanvalue
-                if parameter.get('type') == 'number' or parameter.get('type') == 'text':
+                parameter_type = parameter.get('type')
+                parameter_name = parameter.get('name')
+                if parameter_type == 'hidden':
+                    context_parameters[parameter_name] = parameter.get('value')
+                if parameter_type == 'number' or parameter_type == 'text':
                     if parameter.has_attr('required'):
                         if parameter.get('placeholder') == '':
                             if parameter.get('value') == '':
-                                name_value = parameter.get('name')
-                                error_messages.append(f'Missing example or default value for parameter "{name_value}"')
+                                error_messages.append(f'Missing example or default value for parameter "{parameter_name}"')
                             else:
-                                formstring = formstring + '&' + parameter.get('name') + '=' + parameter.get('value')
+                                context_parameters[parameter_name] = parameter.get('value')
                         else:
-                            formstring = formstring + '&' + parameter.get('name') + '=' + parameter.get('placeholder')
-                # same thing, just for checkboxes. If a checkbox is checked per default, it gets added to the formstring
-                if parameter.get('type') == 'checkbox':
+                            context_parameters[parameter_name] = parameter.get('placeholder')
+                # same thing, just for checkboxes. If a checkbox is checked per default, it gets added to the url parameters
+                if parameter_type == 'checkbox':
                     if parameter.has_attr('checked'):
-                        formstring = formstring + '&' + parameter.get('name') + '=on'
+                        context_parameters[parameter_name] = 'on'
             for listing in lists:
                 selectionvalue = ''
                 listname = listing.get('name')
@@ -102,15 +102,21 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                         if 'selected' in selectionentry.attrs:
                             selectionvalue = selectionentry.get('value')
                             break
-                formstring = formstring + '&' + listname + '=' + selectionvalue
+                context_parameters[listname] = selectionvalue
             termpad_url = 'about:blank'
             if error_messages:
                 status = '<br>'.join(map(lambda m: f'❌ `{m}`', error_messages))
             else:
-                # if all example/default values are present, form the full request string, run the request, add a <base> tag with
+                # if all example/default values are present, form the full request url, run the request, add a <base> tag with
                 # the url of em's public instance to the response text (so that relative paths work, e.g. to the static css file) and
                 # then upload it to termpad.com, a pastebin-like-site.
-                response = requests.get(instance.url + bridgestring + formstring)
+                context_parameters.update({
+                    'action': 'display',
+                    'bridge': bridgeid,
+                    'format': 'Html',
+                })
+                request_url = f'{instance.url}/?{urllib.parse.urlencode(context_parameters)}'
+                response = requests.get(request_url)
                 page_text = response.text.replace('<head>','<head><base href="https://rss-bridge.org/bridge01/" target="_blank">')
                 page_text = page_text.encode("utf_8")
                 soup = BeautifulSoup(page_text, "html.parser")
@@ -163,8 +169,8 @@ if __name__ == '__main__':
         for instance_arg in args.instances:
             instance_arg_parts = instance_arg.split('::')
             instance = Instance()
-            instance.name = instance_arg_parts[1] if len(instance_arg_parts) >= 2 else ''
-            instance.url = instance_arg_parts[0]
+            instance.name = instance_arg_parts[1].strip() if len(instance_arg_parts) >= 2 else ''
+            instance.url = instance_arg_parts[0].strip().rstrip("/")
             instances.append(instance)
     else:
         instance = Instance()
