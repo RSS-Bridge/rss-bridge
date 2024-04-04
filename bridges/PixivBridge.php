@@ -160,7 +160,8 @@ class PixivBridge extends BridgeAbstract
                         $json = array_reduce($json, function ($acc, $i) {
                             if ($i['illustType'] === 0) {
                                 $acc[] = $i;
-                            }return $acc;
+                            }
+                            return $acc;
                         }, []);
                         break;
                     case 'manga':
@@ -235,8 +236,10 @@ class PixivBridge extends BridgeAbstract
 
             $item = [];
             $item['uid'] = $result['id'];
+
             $subpath = array_key_exists('illustType', $result) ? 'artworks/' : 'novel/show.php?id=';
             $item['uri'] = static::URI . $subpath . $result['id'];
+
             $item['title'] = $result['title'];
             $item['author'] = $result['userName'];
             $item['timestamp'] = $result['updateDate'];
@@ -253,8 +256,6 @@ class PixivBridge extends BridgeAbstract
                 }
             } else {
                 $img_url = $result['url'];
-                // Temporarily disabling caching of the image
-                //$img_url = $this->cacheImage($result['url'], $result['id'], array_key_exists('illustType', $result));
             }
 
             // Currently, this might result in broken image due to their strict referrer check
@@ -269,46 +270,6 @@ class PixivBridge extends BridgeAbstract
 
             $this->items[] = $item;
         }
-    }
-
-    /**
-     * todo: remove manual file cache
-     * See bridge specific documentation for alternative option.
-     */
-    private function cacheImage($url, $illustId, $isImage)
-    {
-        $illustId = preg_replace('/[^0-9]/', '', $illustId);
-        $thumbnailurl = $url;
-
-        $path = PATH_CACHE . 'pixiv_img/';
-        if (!is_dir($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        $path .= $illustId;
-        if ($this->getInput('fullsize')) {
-            $path .= '_fullsize';
-        }
-        $path .= '.jpg';
-
-        if (!is_file($path)) {
-            // Get fullsize URL
-            if ($isImage && $this->getInput('fullsize')) {
-                $ajax_uri = static::URI . 'ajax/illust/' . $illustId;
-                $imagejson = $this->getData($ajax_uri, true, true);
-                $url = $imagejson['body']['urls']['original'];
-            }
-
-            $headers = ['Referer: ' . static::URI];
-            try {
-                $illust = $this->getData($url, true, false, $headers);
-            } catch (Exception $e) {
-                $illust = $this->getData($thumbnailurl, true, false, $headers); // Original thumbnail
-            }
-            file_put_contents($path, $illust);
-        }
-
-        return get_home_page_url() . 'cache/pixiv_img/' . preg_replace('/.*\//', '', $path);
     }
 
     private function checkOptions()
