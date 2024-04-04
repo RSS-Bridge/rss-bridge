@@ -1913,7 +1913,6 @@ class DealabsBridge extends PepperBridgeAbstract
         'uri-merchant' => 'search/bons-plans?merchant-id=',
         'request-error' => 'Impossible de joindre Dealabs',
         'thread-error' => 'Impossible de déterminer l\'ID de la discussion. Vérifiez l\'URL que vous avez entré',
-        'no-results' => 'Aucun résultat',
         'currency' => '€',
         'price' => 'Prix',
         'shipping' => 'Livraison',
