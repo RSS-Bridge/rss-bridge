@@ -49,7 +49,7 @@ class FDroidRepoBridge extends BridgeAbstract
             throw new \Exception('FDroidRepoBridge requires the php-zip extension');
         }
 
-        $this->repo = $this->getRepo();
+        $this->repo = $this->fetchData();
         switch ($this->queriedContext) {
             case 'Latest Updates':
                 $this->getAllUpdates();
@@ -58,63 +58,40 @@ class FDroidRepoBridge extends BridgeAbstract
                 $this->getPackage($this->getInput('package'));
                 break;
             default:
-                returnServerError('Unimplemented Context (collectData)');
+                throw new \Exception('Unimplemented Context (collectData)');
         }
     }
 
-    public function getURI()
-    {
-        if (empty($this->queriedContext)) {
-            return parent::getURI();
-        }
-
-        $url = rtrim($this->GetInput('url'), '/');
-        return strstr($url, '?', true) ?: $url;
-    }
-
-    public function getName()
-    {
-        if (empty($this->queriedContext)) {
-            return parent::getName();
-        }
-
-        $name = $this->repo['repo']['name'];
-        switch ($this->queriedContext) {
-            case 'Latest Updates':
-                return $name;
-            case 'Follow Package':
-                return $this->getInput('package') . ' - ' . $name;
-            default:
-                returnServerError('Unimplemented Context (getName)');
-        }
-    }
-
-    private function getRepo()
+    /**
+     * This method fetches data from arbitrary url and writes to os temp file.
+     * I don't think there's any security problem here but might be DOS problems.
+     */
+    private function fetchData()
     {
         $url = $this->getURI();
 
-        // Get repo information (only available as JAR)
-        $jar = getContents($url . '/index-v1.jar');
-        $jar_loc = tempnam(sys_get_temp_dir(), '');
-        file_put_contents($jar_loc, $jar);
+        $zipFile = getContents($url . '/index-v1.jar');
+        // On linux this creates a temp file in /tmp/
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'rssbridge_');
+        file_put_contents($temporaryFile, $zipFile);
 
-        // JAR files are specially formatted ZIP files
-        $jar = new \ZipArchive();
-        if ($jar->open($jar_loc) !== true) {
-            unlink($jar_loc);
+        $archive = new \ZipArchive();
+        if ($archive->open($temporaryFile) !== true) {
+            unlink($temporaryFile);
             throw new \Exception('Failed to extract archive');
         }
 
-        // Get file pointer to the relevant JSON inside
-        $fp = $jar->getStream('index-v1.json');
+        $fp = $archive->getStream('index-v1.json');
         if (!$fp) {
-            returnServerError('Failed to get file pointer');
+            unlink($temporaryFile);
+            throw new \Exception('Failed to get file pointer');
         }
 
-        $data = json_decode(stream_get_contents($fp), true);
+        $json = stream_get_contents($fp);
         fclose($fp);
-        $jar->close();
-        unlink($jar_loc);
+        $data = Json::decode($json);
+        $archive->close();
+        unlink($temporaryFile);
         return $data;
     }
 
@@ -158,9 +135,9 @@ class FDroidRepoBridge extends BridgeAbstract
             $summary = $lang['summary'] ?? $app['summary'] ?? '';
             $description = markdownToHtml(trim($lang['description'] ?? $app['description'] ?? 'None'));
             $whatsNew = markdownToHtml(trim($lang['whatsNew'] ?? 'None'));
-            $website = $this->link($lang['webSite'] ?? $app['webSite'] ?? $app['authorWebSite'] ?? null);
-            $source = $this->link($app['sourceCode'] ?? null);
-            $issueTracker = $this->link($app['issueTracker'] ?? null);
+            $website = $this->createAnchor($lang['webSite'] ?? $app['webSite'] ?? $app['authorWebSite'] ?? null);
+            $source = $this->createAnchor($app['sourceCode'] ?? null);
+            $issueTracker = $this->createAnchor($app['issueTracker'] ?? null);
             $license = $app['license'] ?? 'None';
             $item['content'] = <<<EOD
 {$icon}
@@ -182,7 +159,7 @@ EOD;
     private function getPackage($package)
     {
         if (!isset($this->repo['packages'][$package])) {
-            returnClientError('Invalid Package Name');
+            throw new \Exception('Invalid Package Name');
         }
         $package = $this->repo['packages'][$package];
 
@@ -192,7 +169,7 @@ EOD;
             $item['uri'] = $this->getURI() . '/' . $version['apkName'];
             $item['title'] = $version['versionName'];
             $item['timestamp'] = date(DateTime::ISO8601, (int) ($version['added'] / 1000));
-            $item['uid'] = $version['versionCode'];
+            $item['uid'] = (string) $version['versionCode'];
             $size = round($version['size'] / 1048576, 1); // Bytes -> MB
             $sdk_link = 'https://developer.android.com/studio/releases/platforms';
             $item['content'] = <<<EOD
@@ -208,11 +185,42 @@ EOD;
         }
     }
 
-    private function link($url)
+    public function getURI()
+    {
+        if (empty($this->queriedContext)) {
+            return parent::getURI();
+        }
+
+        $url = rtrim($this->getInput('url'), '/');
+        if (strstr($url, '?', true)) {
+            return strstr($url, '?', true);
+        } else {
+            return $url;
+        }
+    }
+
+    public function getName()
+    {
+        if (empty($this->queriedContext)) {
+            return parent::getName();
+        }
+
+        $name = $this->repo['repo']['name'];
+        switch ($this->queriedContext) {
+            case 'Latest Updates':
+                return $name;
+            case 'Follow Package':
+                return $this->getInput('package') . ' - ' . $name;
+            default:
+                throw new \Exception('Unimplemented Context (getName)');
+        }
+    }
+
+    private function createAnchor($url)
     {
         if (empty($url)) {
             return null;
         }
-        return '<a href="' . $url . '">' . $url . '</a>';
+        return sprintf('<a href="%s">%s</a>', $url, $url);
     }
 }
