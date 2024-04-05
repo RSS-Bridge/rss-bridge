@@ -45,10 +45,6 @@ class FDroidRepoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        if (!extension_loaded('zip')) {
-            throw new \Exception('FDroidRepoBridge requires the php-zip extension');
-        }
-
         $this->repo = $this->fetchData();
         switch ($this->queriedContext) {
             case 'Latest Updates':
@@ -62,36 +58,11 @@ class FDroidRepoBridge extends BridgeAbstract
         }
     }
 
-    /**
-     * This method fetches data from arbitrary url and writes to os temp file.
-     * I don't think there's any security problem here but might be DOS problems.
-     */
     private function fetchData()
     {
         $url = $this->getURI();
-
-        $zipFile = getContents($url . '/index-v1.jar');
-        // On linux this creates a temp file in /tmp/
-        $temporaryFile = tempnam(sys_get_temp_dir(), 'rssbridge_');
-        file_put_contents($temporaryFile, $zipFile);
-
-        $archive = new \ZipArchive();
-        if ($archive->open($temporaryFile) !== true) {
-            unlink($temporaryFile);
-            throw new \Exception('Failed to extract archive');
-        }
-
-        $fp = $archive->getStream('index-v1.json');
-        if (!$fp) {
-            unlink($temporaryFile);
-            throw new \Exception('Failed to get file pointer');
-        }
-
-        $json = stream_get_contents($fp);
-        fclose($fp);
+        $json = getContents($url . '/index-v1.json');
         $data = Json::decode($json);
-        $archive->close();
-        unlink($temporaryFile);
         return $data;
     }
 
