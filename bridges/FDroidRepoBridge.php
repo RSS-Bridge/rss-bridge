@@ -45,10 +45,6 @@ class FDroidRepoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        if (!extension_loaded('zip')) {
-            throw new \Exception('FDroidRepoBridge requires the php-zip extension');
-        }
-
         $this->repo = $this->fetchData();
         switch ($this->queriedContext) {
             case 'Latest Updates':
