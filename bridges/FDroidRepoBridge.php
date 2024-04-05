@@ -14,7 +14,7 @@ class FDroidRepoBridge extends BridgeAbstract
                 'name' => 'Repository URL',
                 'title' => 'Usually ends with /repo/',
                 'required' => true,
-                'exampleValue' => 'https://srv.tt-rss.org/fdroid/repo'
+                'exampleValue' => 'https://molly.im/fdroid/foss/fdroid/repo'
             ]
         ],
         'Latest Updates' => [
@@ -35,7 +35,7 @@ class FDroidRepoBridge extends BridgeAbstract
             'package' => [
                 'name' => 'Package Identifier',
                 'required' => true,
-                'exampleValue' => 'org.fox.ttrss'
+                'exampleValue' => 'im.molly.app'
             ]
         ]
     ];
