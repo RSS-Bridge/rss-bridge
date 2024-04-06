@@ -6,8 +6,17 @@ abstract class BridgeAbstract
     const URI = '';
     const DONATION_URI = '';
     const DESCRIPTION = 'No description provided';
+
+    /**
+     * Preferably a github username
+     */
     const MAINTAINER = 'No maintainer';
+
+    /**
+     * Cache TTL in seconds
+     */
     const CACHE_TIMEOUT = 3600;
+
     const CONFIGURATION = [];
     const PARAMETERS = [];
     const TEST_DETECT_PARAMETERS = [];
