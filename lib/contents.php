@@ -17,6 +17,8 @@ function getContents(
     $httpClient = RssBridge::getHttpClient();
     $cache = RssBridge::getCache();
 
+    // TODO: consider url validation at this point
+
     $httpHeadersNormalized = [];
     foreach ($httpHeaders as $httpHeader) {
         $parts = explode(':', $httpHeader);

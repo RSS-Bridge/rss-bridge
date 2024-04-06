@@ -6,7 +6,7 @@ class HtmlFormat extends FormatAbstract
 
     public function stringify()
     {
-        // This query string comes in already url decoded
+        // This query string is url encoded
         $queryString = $_SERVER['QUERY_STRING'];
 
         $feedArray = $this->getFeed();

@@ -77,7 +77,7 @@ class FilterBridge extends FeedExpander
     {
         $url = $this->getInput('url');
         if (!Url::validate($url)) {
-            returnClientError('The url parameter must either refer to http or https protocol.');
+            throw new \Exception('The url parameter must either refer to http or https protocol.');
         }
         $this->collectExpandableDatas($this->getURI());
     }

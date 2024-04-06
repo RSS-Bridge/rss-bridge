@@ -553,10 +553,8 @@ class TrelloBridge extends BridgeAbstract
 
     private function queryAPI($path, $params = [])
     {
-        $data = json_decode(getContents('https://trello.com/1/'
-            . $path
-            . '?'
-            . http_build_query($params)));
+        $url = 'https://trello.com/1/' . $path . '?' . http_build_query($params);
+        $data = json_decode(getContents($url));
         return $data;
     }
 
@@ -576,33 +574,21 @@ class TrelloBridge extends BridgeAbstract
                 && !$textOnly
                 && isset($entity->originalUrl)
             ) {
-                $string = '<p><a href="'
-                    . $entity->originalUrl
-                    . '"><img src="'
-                    . $entity->previewUrl
-                    . '"></a></p>';
+                $string = sprintf(
+                    '<p><a href="%s"><img src="%s"></a></p>',
+                    $entity->originalUrl,
+                    $entity->previewUrl ?? ''
+                );
             } elseif ($type === 'card' && !$textOnly) {
-                $string = '<a href="https://trello.com/c/'
-                    . $entity->shortLink
-                    . '">'
-                    . $entity->text
-                    . '</a>';
+                $string = sprintf('<a href="https://trello.com/c/%s">%s</a>', $entity->shortLink, $entity->text);
             } elseif ($type === 'member' && !$textOnly) {
-                $string = '<a href="https://trello.com/'
-                    . $entity->username
-                    . '">'
-                    . $entity->text
-                    . '</a>';
+                $string = sprintf('<a href="https://trello.com/%s">%s</a>', $entity->username, $entity->text);
             } elseif ($type === 'date') {
                 $string = gmdate('M j, Y \a\t g:i A T', strtotime($entity->date));
             } elseif ($type === 'translatable') {
                 $string = self::ACTION_TEXTS[$entity->translationKey];
             } else {
-                if (isset($entity->text)) {
-                    $string = $entity->text;
-                } else {
-                    $string = '';
-                }
+                $string = $entity->text ?? '';
             }
             $strings['{' . $entity_name . '}'] = $string;
         }
