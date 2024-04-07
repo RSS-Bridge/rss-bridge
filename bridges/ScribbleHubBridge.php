@@ -54,6 +54,8 @@ class ScribbleHubBridge extends FeedExpander
         $this->collectExpandableDatas($url);
     }
 
+    protected $author = '';
+
     private function collectList($url)
     {
         $html = getSimpleHTMLDOMCached($url);
