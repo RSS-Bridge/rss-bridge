@@ -89,9 +89,6 @@ class PicukiBridge extends BridgeAbstract
             $imageUrlParts[count($imageUrlParts) - 1] = urlencode($imageUrlParts[count($imageUrlParts) - 1]);
             $imageUrl = implode('/', $imageUrlParts);
 
-            // add fake file extension for it to be recognized as image/jpeg instead of application/octet-stream
-            $imageUrl = $imageUrl . '#.jpg';
-
             $this->items[] = [
                 'uri'        => $url,
                 'author'     => $author,
