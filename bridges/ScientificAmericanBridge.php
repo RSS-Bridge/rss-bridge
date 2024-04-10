@@ -66,7 +66,7 @@ class ScientificAmericanBridge extends FeedExpander
     private function collectIssues()
     {
         $html = getSimpleHTMLDOMCached(self::ISSUES);
-        $content = $html->getElementById('content')->children(3);
+        $content = $html->getElementById('app')->children(3);
         $issues = $content->children();
         $issues_count = min(
             (int)$this->getInput('parseIssues'),
@@ -125,6 +125,7 @@ class ScientificAmericanBridge extends FeedExpander
 
     private function updateItem($item)
     {
+        return $item;
         $html = getSimpleHTMLDOMCached($item['uri']);
         $article = $html->find('#sa_body', 0)->find('article', 0);
 
