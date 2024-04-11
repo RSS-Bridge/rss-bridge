@@ -107,7 +107,7 @@ class YorushikaBridge extends BridgeAbstract
                 preg_match('/\d+\.\d+\.\d+/', $date, $matches);
                 $formattedDate = $matches[0];
             }
-            $date = date_create_from_format('Y.m.d', $date);
+            $date = date_create_from_format('Y.m.d', $formattedDate);
             $date = date_format($date, 'd.m.Y');
 
             // Get article info
