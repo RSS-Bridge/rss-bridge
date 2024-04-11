@@ -12,13 +12,13 @@ class YorushikaBridge extends BridgeAbstract
                 'name' => 'Language',
                 'defaultValue' => 'jp',
                 'type' => 'list',
-                'values' => array(
+                'values' => [
                     '日本語' => 'jp',
                     'English' => 'en',
                     '한국어' => 'ko',
                     '中文(繁體字)' => 'zh-tw',
                     '中文(簡体字)' => 'zh-cn',
-                )
+                ]
             ],
         ],
         'All categories' => [
@@ -42,7 +42,7 @@ class YorushikaBridge extends BridgeAbstract
     public function collectData()
     {
         $url = 'https://yorushika.com/news/5/';
-        switch($this->getInput('lang')) {
+        switch ($this->getInput('lang')) {
             case 'jp':
                 $url = 'https://yorushika.com/news/5/';
                 break;
@@ -62,7 +62,7 @@ class YorushikaBridge extends BridgeAbstract
                 $url = 'https://yorushika.com/news/5/';
                 break;
         }
-        
+
         $categories = [];
         if ($this->queriedContext == 'All categories') {
             array_push($categories, 'all');
@@ -101,7 +101,7 @@ class YorushikaBridge extends BridgeAbstract
             $date = $art->find('.date', 0)->plaintext;
             if (preg_match('/(\d)年(\d)月(\d)/', $date, $matches)) {
                 // Some dates will contain Chinese characters, remove those from the string
-                $formattedDate = sprintf("%d.%02d.%02d", $matches[1], $matches[2], $matches[3]);
+                $formattedDate = sprintf('%d.%02d.%02d', $matches[1], $matches[2], $matches[3]);
             } else {
                 // Assume the date is already in 'Y.m.d' format
                 preg_match('/\d+\.\d+\.\d+/', $date, $matches);
