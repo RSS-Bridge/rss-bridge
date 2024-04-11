@@ -7,6 +7,20 @@ class YorushikaBridge extends BridgeAbstract
     const DESCRIPTION = 'Return news from Yorushika\'s offical website';
     const MAINTAINER = 'Miicat_47';
     const PARAMETERS = [
+        'global' => [
+            'lang' => [
+                'name' => 'Language',
+                'defaultValue' => 'jp',
+                'type' => 'list',
+                'values' => [
+                    '日本語' => 'jp',
+                    'English' => 'en',
+                    '한국어' => 'ko',
+                    '中文(繁體字)' => 'zh-tw',
+                    '中文(簡体字)' => 'zh-cn',
+                ]
+            ],
+        ],
         'All categories' => [
         ],
         'Only selected categories' => [
@@ -27,6 +41,28 @@ class YorushikaBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $url = 'https://yorushika.com/news/5/';
+        switch ($this->getInput('lang')) {
+            case 'jp':
+                $url = 'https://yorushika.com/news/5/';
+                break;
+            case 'en':
+                $url = 'https://yorushika.com/news/5/?lang=en';
+                break;
+            case 'ko':
+                $url = 'https://yorushika.com/news/5/?lang=ko';
+                break;
+            case 'zh-tw':
+                $url = 'https://yorushika.com/news/5/?lang=zh-tw';
+                break;
+            case 'zh-cn':
+                $url = 'https://yorushika.com/news/5/?lang=zh-cn';
+                break;
+            default:
+                $url = 'https://yorushika.com/news/5/';
+                break;
+        }
+
         $categories = [];
         if ($this->queriedContext == 'All categories') {
             array_push($categories, 'all');
@@ -42,7 +78,7 @@ class YorushikaBridge extends BridgeAbstract
             }
         }
 
-        $html = getSimpleHTMLDOM('https://yorushika.com/news/5/')->find('.list--news', 0);
+        $html = getSimpleHTMLDOM($url)->find('.list--news', 0);
         $html = defaultLinkTo($html, $this->getURI());
 
         foreach ($html->find('.inview') as $art) {
@@ -62,10 +98,16 @@ class YorushikaBridge extends BridgeAbstract
             $url = $art->find('a.clearfix', 0)->href;
 
             // Get article date
-            $exp_date = '/\d+\.\d+\.\d+/';
             $date = $art->find('.date', 0)->plaintext;
-            preg_match($exp_date, $date, $matches);
-            $date = date_create_from_format('Y.m.d', $matches[0]);
+            if (preg_match('/(\d)年(\d)月(\d)/', $date, $matches)) {
+                // Some dates will contain Chinese characters, remove those from the string
+                $formattedDate = sprintf('%d.%02d.%02d', $matches[1], $matches[2], $matches[3]);
+            } else {
+                // Assume the date is already in 'Y.m.d' format
+                preg_match('/\d+\.\d+\.\d+/', $date, $matches);
+                $formattedDate = $matches[0];
+            }
+            $date = date_create_from_format('Y.m.d', $formattedDate);
             $date = date_format($date, 'd.m.Y');
 
             // Get article info
