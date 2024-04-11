@@ -92,7 +92,7 @@ class ScientificAmericanBridge extends FeedExpander
         $html = getSimpleHTMLDOMCached($issue_link);
 
         $blocks = $html->find('[class^="issueArchiveArticleListCompact"]');
-        foreach($blocks as $block) {
+        foreach ($blocks as $block) {
             $articles = $block->find('article[class*="article"]');
             foreach ($articles as $article) {
                 $a = $article->find('a[class^="articleLink"]', 0);
@@ -141,12 +141,14 @@ class ScientificAmericanBridge extends FeedExpander
 
         $content = $article->find('div[class^="article__content"]', 0);
         if ($content) {
-            foreach($content->children() as $block) {
+            foreach ($content->children() as $block) {
                 if (str_contains($block->innertext, 'On supporting science journalism')) {
                     continue;
                 }
-                if (($block->tag == 'p' && $block->getAttribute('data-block') == 'sciam/paragraph')
-                    || ($block->tag == 'figure' && str_starts_with($block->class, 'article__image'))) {
+                if (
+                    ($block->tag == 'p' && $block->getAttribute('data-block') == 'sciam/paragraph')
+                    || ($block->tag == 'figure' && str_starts_with($block->class, 'article__image'))
+                ) {
                     $iframe = $block->find('iframe', 0);
                     if ($iframe) {
                         $res .= "<a href=\"{$iframe->src}\">{$iframe->src}</a>";
@@ -163,7 +165,7 @@ class ScientificAmericanBridge extends FeedExpander
             }
         }
 
-        $footer = $article->find('footer[class*="footer"]',  0);
+        $footer = $article->find('footer[class*="footer"]', 0);
         if ($footer) {
             $bios = $footer->find('div[class^=bio]');
             $bio = implode('', array_map(fn($b) => $b->innertext, $bios));
