@@ -24,6 +24,7 @@
 | ![](https://iplookup.flagfox.net/images/h16/PL.png) | https://rss.m3wz.su| ![](https://img.shields.io/badge/website-up-brightgreen) | [@m3oweezed](https://m3wz.su/en/about) | Poland, Hosted with Timeweb Cloud |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rb.ash.fail | ![](https://img.shields.io/website/https/rb.ash.fail.svg) | [@ash](https://ash.fail/contact.html) | Hosted with Hostaris, Germany
 | ![](https://iplookup.flagfox.net/images/h16/UA.png) | https://rss.noleron.com | ![](https://img.shields.io/website/https/rss.noleron.com) | [@ihor](https://noleron.com/about) | Hosted with Hosting Ukraine, Ukraine
+| ![](https://iplookup.flagfox.net/images/h16/IN.png) | https://rssbridge.projectsegfau.lt | ![](https://img.shields.io/website/https/rssbridge.projectsegfau.lt) | [@gi-yt](https://aryak.me) | Self-Hosted at Mumbai, India with Airtel (ISP) |
 
 
 ## Inactive instances
