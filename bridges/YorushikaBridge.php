@@ -41,7 +41,6 @@ class YorushikaBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = 'https://yorushika.com/news/5/';
         switch ($this->getInput('lang')) {
             case 'jp':
                 $url = 'https://yorushika.com/news/5/';
