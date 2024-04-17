@@ -55,8 +55,8 @@ class PepperBridgeAbstract extends BridgeAbstract
         );
 
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('section[class=subNav]', 0)->find('div[class*=page-center listLayout aGrid]', 0);
-        if ($noresult === null) {
+        $noresult = $html->find('div[id=content-list]', 0)->find('h2', 0);
+        if ($noresult !== null) {
             $this->items = [];
         } else {
             foreach ($list as $deal) {
