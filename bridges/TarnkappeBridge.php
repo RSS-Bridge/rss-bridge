@@ -61,8 +61,6 @@ class TarnkappeBridge extends FeedExpander
     {
         $item['content'] = $article->find('a.image-header', 0);
 
-        #$article = $article->find('main#article');
-        #$article = $article->find('div.content.entry-content');
         $article = $article->find('main#article article div.card-content div.content.entry-content', 0);
 
         // remove unwanted stuff
@@ -74,7 +72,6 @@ class TarnkappeBridge extends FeedExpander
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 
-        #$content = $article->find('div.entry-inner', 0);
         $item['content'] .= $article;
 
         return $item;
