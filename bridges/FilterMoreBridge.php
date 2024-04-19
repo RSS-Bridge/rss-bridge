@@ -92,9 +92,8 @@ class FilterMoreBridge extends FeedExpander
 
         ]];
 
-    protected function parseItem($newItem)
+    protected function parseItem($item)
     {
-        $item = parent::parseItem($newItem);
         $item['enclosures'] = [];
         if (isset($newItem->enclosure)) {
             foreach ($newItem->enclosure as $encl) {
