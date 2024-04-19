@@ -92,6 +92,19 @@ class FilterMoreBridge extends FeedExpander
 
         ]];
 
+    public function collectData()
+    {
+        if ($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http') {
+            // just in case someone find a way to access local files by playing with the url
+            returnClientError('The url parameter must either refer to http or https protocol.');
+        }
+        try {
+            $this->collectExpandableDatas($this->getURI());
+        } catch (HttpException $e) {
+            $this->collectExpandableDatas($this->getURI());
+        }
+    }
+
     protected function parseItem($item)
     {
         $item['enclosures'] = [];
@@ -151,12 +164,6 @@ class FilterMoreBridge extends FeedExpander
         }
     }
 
-    protected function sortItemKey($item)
-    {
-        $sort_by = $this->getInput('sort_by');
-        $key = $item[$sort_by];
-        return $key;
-    }
     public function collectExpandableDatas($url, $maxItems = -1)
     {
         parent::collectExpandableDatas($url, $maxItems);
@@ -178,6 +185,14 @@ class FilterMoreBridge extends FeedExpander
             $this->items = array_slice($this->items, 0, $limit);
         }
     }
+
+    protected function sortItemKey($item)
+    {
+        $sort_by = $this->getInput('sort_by');
+        $key = $item[$sort_by];
+        return $key;
+    }
+
 
     private function cmp($a, $b)
     {
@@ -260,19 +275,6 @@ class FilterMoreBridge extends FeedExpander
             $url = parent::getURI();
         }
         return $url;
-    }
-
-    public function collectData()
-    {
-        if ($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http') {
-            // just in case someone find a way to access local files by playing with the url
-            returnClientError('The url parameter must either refer to http or https protocol.');
-        }
-        try {
-            $this->collectExpandableDatas($this->getURI());
-        } catch (HttpException $e) {
-            $this->collectExpandableDatas($this->getURI());
-        }
     }
 }
 
