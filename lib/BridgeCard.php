@@ -2,7 +2,11 @@
 
 final class BridgeCard
 {
-    public static function render(string $bridgeClassName, Request $request): string
+    public static function render(
+        string $bridgeClassName,
+        Request $request,
+        bool $setValuesFromQuery = false
+    ): string
     {
         $bridgeFactory = new BridgeFactory();
 
@@ -49,12 +53,14 @@ final class BridgeCard
 
         $token = $request->attribute('token');
 
+        $formRequest = $setValuesFromQuery ? $request : null;
+
         if (count($contexts) === 0) {
             // The bridge has zero parameters
-            $card .= self::renderForm($bridgeClassName, '', [], $token);
+            $card .= self::renderForm($bridgeClassName, '', [], $token, $formRequest);
         } elseif (count($contexts) === 1 && array_key_exists('global', $contexts)) {
             // The bridge has a single context with key 'global'
-            $card .= self::renderForm($bridgeClassName, '', $contexts['global'], $token);
+            $card .= self::renderForm($bridgeClassName, '', $contexts['global'], $token, $formRequest);
         } else {
             // The bridge has one or more contexts (named or unnamed)
             foreach ($contexts as $contextName => $contextParameters) {
@@ -72,7 +78,7 @@ final class BridgeCard
                     $card .= '<h5>' . $contextName . '</h5>' . PHP_EOL;
                 }
 
-                $card .= self::renderForm($bridgeClassName, $contextName, $contextParameters, $token);
+                $card .= self::renderForm($bridgeClassName, $contextName, $contextParameters, $token, $formRequest);
             }
         }
 
@@ -96,7 +102,8 @@ final class BridgeCard
         string $bridgeClassName,
         string $contextName,
         array $contextParameters,
-        ?string $token
+        ?string $token,
+        ?Request $request
     ) {
         $form = <<<EOD
         <form method="GET" action="?" class="bridge-form">
@@ -133,13 +140,13 @@ final class BridgeCard
                     !isset($inputEntry['type'])
                     || $inputEntry['type'] === 'text'
                 ) {
-                    $form .= self::getTextInput($inputEntry, $idArg, $id) . "\n";
+                    $form .= self::getTextInput($inputEntry, $idArg, $id, $request) . "\n";
                 } elseif ($inputEntry['type'] === 'number') {
-                    $form .= self::getNumberInput($inputEntry, $idArg, $id);
+                    $form .= self::getNumberInput($inputEntry, $idArg, $id, $request);
                 } elseif ($inputEntry['type'] === 'list') {
-                    $form .= self::getListInput($inputEntry, $idArg, $id) . "\n";
+                    $form .= self::getListInput($inputEntry, $idArg, $id, $request) . "\n";
                 } elseif ($inputEntry['type'] === 'checkbox') {
-                    $form .= self::getCheckboxInput($inputEntry, $idArg, $id);
+                    $form .= self::getCheckboxInput($inputEntry, $idArg, $id, $request);
                 } else {
                     $foo = 2;
                     // oops?
@@ -170,25 +177,33 @@ final class BridgeCard
         return $form . '</form>' . PHP_EOL;
     }
 
-    public static function getTextInput(array $entry, string $id, string $name): string
+    public static function getTextInput(array $entry, string $id, string $name, ?Request $request): string
     {
-        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        if ($request === null) {
+            $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        } else {
+            $defaultValue = $request->get($name);
+        }
         $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $attributes = self::getInputAttributes($entry);
 
         return sprintf('<input %s id="%s" type="text" value="%s" placeholder="%s" name="%s" />', $attributes, $id, $defaultValue, $exampleValue, $name);
     }
 
-    public static function getNumberInput(array $entry, string $id, string $name): string
+    public static function getNumberInput(array $entry, string $id, string $name, ?Request $request): string
     {
-        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT);
+        if ($request === null) {
+            $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT);
+        } else {
+            $defaultValue = $request->get($name);
+        }
         $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT);
         $attributes = self::getInputAttributes($entry);
 
         return sprintf('<input %s id="%s" type="number" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
     }
 
-    public static function getListInput(array $entry, string $id, string $name): string
+    public static function getListInput(array $entry, string $id, string $name, ?Request $request): string
     {
         $required = $entry['required'] ?? null;
         if ($required) {
@@ -196,6 +211,11 @@ final class BridgeCard
             unset($entry['required']);
         }
 
+        if ($request === null) {
+            $defaultValue = $entry['defaultValue'];
+        } else {
+            $defaultValue = $request->get($name);
+        }
         $attributes = self::getInputAttributes($entry);
         $list = sprintf('<select %s id="%s" name="%s" >' . "\n", $attributes, $id, $name);
 
@@ -204,8 +224,8 @@ final class BridgeCard
                 $list .= '<optgroup label="' . htmlentities($name) . '">';
                 foreach ($value as $subname => $subvalue) {
                     if (
-                        $entry['defaultValue'] === $subname
-                        || $entry['defaultValue'] === $subvalue
+                        $defaultValue === $subname
+                        || $defaultValue === $subvalue
                     ) {
                         $list .= '<option value="' . $subvalue . '" selected>' . $subname . '</option>';
                     } else {
@@ -215,8 +235,8 @@ final class BridgeCard
                 $list .= '</optgroup>';
             } else {
                 if (
-                    $entry['defaultValue'] === $name
-                    || $entry['defaultValue'] === $value
+                    $defaultValue === $name
+                    || $defaultValue === $value
                 ) {
                     $list .= '<option value="' . $value . '" selected>' . $name . '</option>' . "\n";
                 } else {
@@ -231,15 +251,18 @@ final class BridgeCard
     }
 
 
-    public static function getCheckboxInput(array $entry, string $id, string $name): string
+    public static function getCheckboxInput(array $entry, string $id, string $name, ?Request $request): string
     {
         $required = $entry['required'] ?? null;
         if ($required) {
             Debug::log('The "required" attribute is not supported for checkboxes.');
             unset($entry['required']);
         }
-
-        $checked = $entry['defaultValue'] === 'checked' ? 'checked' : '';
+        if ($request === null) {
+            $checked = $entry['defaultValue'] === 'checked' ? 'checked' : '';
+        } else {
+            $checked = $request->get($name) === 'on' ? 'checked' : '';
+        }
         $attributes = self::getInputAttributes($entry);
 
         return sprintf('<input %s id="%s" type="checkbox" name="%s" %s />' . "\n", $attributes, $id, $name, $checked);
