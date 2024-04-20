@@ -177,7 +177,7 @@ final class BridgeCard
         return $form . '</form>' . PHP_EOL;
     }
 
-    public static function getTextInput(array $entry, string $id, string $name, ?Request $request): string
+    public static function getTextInput(array $entry, string $id, string $name, ?Request $request = null): string
     {
         if ($request === null) {
             $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -190,7 +190,7 @@ final class BridgeCard
         return sprintf('<input %s id="%s" type="text" value="%s" placeholder="%s" name="%s" />', $attributes, $id, $defaultValue, $exampleValue, $name);
     }
 
-    public static function getNumberInput(array $entry, string $id, string $name, ?Request $request): string
+    public static function getNumberInput(array $entry, string $id, string $name, ?Request $request = null): string
     {
         if ($request === null) {
             $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT);
@@ -203,7 +203,7 @@ final class BridgeCard
         return sprintf('<input %s id="%s" type="number" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
     }
 
-    public static function getListInput(array $entry, string $id, string $name, ?Request $request): string
+    public static function getListInput(array $entry, string $id, string $name, ?Request $request = null): string
     {
         $required = $entry['required'] ?? null;
         if ($required) {
@@ -212,7 +212,7 @@ final class BridgeCard
         }
 
         if ($request === null) {
-            $defaultValue = $entry['defaultValue'];
+            $defaultValue = $entry['defaultValue'] ?? null;
         } else {
             $defaultValue = $request->get($name);
         }
@@ -251,7 +251,7 @@ final class BridgeCard
     }
 
 
-    public static function getCheckboxInput(array $entry, string $id, string $name, ?Request $request): string
+    public static function getCheckboxInput(array $entry, string $id, string $name, ?Request $request = null): string
     {
         $required = $entry['required'] ?? null;
         if ($required) {
