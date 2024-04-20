@@ -6,8 +6,7 @@ final class BridgeCard
         string $bridgeClassName,
         Request $request,
         bool $setValuesFromQuery = false
-    ): string
-    {
+    ): string {
         $bridgeFactory = new BridgeFactory();
 
         $bridge = $bridgeFactory->create($bridgeClassName);
