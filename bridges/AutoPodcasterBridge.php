@@ -10,11 +10,13 @@ class AutoPodcasterBridge extends FeedExpander
     const PARAMETERS = ['url' => [
         'url' => [
             'name' => 'URL',
+            'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day',
             'required' => true
         ],
         'feed_only' => [
             'name' => 'Only look at the content of the feed, don\'t check on the website',
             'type' => 'checkbox',
+            'defaultValue' => 'checked',
             'required' => false,
         ]
     ]];
