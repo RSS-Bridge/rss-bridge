@@ -22,11 +22,15 @@ class TldrTechBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Tech' => 'tech',
-                    'Crypto' => 'crypto',
+                    'Web Dev' => 'webdev',
                     'AI' => 'ai',
-                    'Web Dev' => 'engineering',
+                    'Information Security' => 'infosec',
+                    'Product Management' => 'product',
+                    'DevOps' => 'devops',
+                    'Crypto' => 'crypto',
+                    'Design' => 'design',
+                    'Marketing' => 'marketing',
                     'Founders' => 'founders',
-                    'Cybersecurity' => 'cybersecurity'
                 ],
                 'defaultValue' => 'tech'
             ]
@@ -48,12 +52,17 @@ class TldrTechBridge extends BridgeAbstract
             // Convert /<topic>/2023-01-01 to unix timestamp
             $date_items = explode('/', $child->href);
             $date = strtotime(end($date_items));
-            $this->items[] = [
-                'uri'       => self::URI . $child->href,
-                'title'     => $child->plaintext,
-                'timestamp' => $date,
-                'content'   => $this->extractContent(self::URI . $child->href),
-            ];
+            $item_url = self::URI . ltrim($child->href, '/');
+            try {
+                $this->items[] = [
+                    'uri'       => self::URI . $child->href,
+                    'title'     => $child->plaintext,
+                    'timestamp' => $date,
+                    'content'   => $this->extractContent($item_url),
+                ];
+            } catch (HttpException $e) {
+                continue;
+            }
             $added++;
             if ($added >= $limit) {
                 break;
@@ -66,7 +75,7 @@ class TldrTechBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($url);
         $content = $html->find('div.content-center.mt-5', 0);
         if (!$content) {
-            return '';
+            throw new HttpException('Could not find content', 500);
         }
         $subscribe_form = $content->find('div.mt-5 > div > form', 0);
         if ($subscribe_form) {
