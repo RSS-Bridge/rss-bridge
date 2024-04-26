@@ -204,7 +204,15 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
         $text = '';
 
         foreach ($runs as $part) {
-            $text .= $this->formatUrls($part->text);
+            if (isset($part->navigationEndpoint->browseEndpoint->canonicalBaseUrl)) {
+                $text .= $this->formatUrls($part->text, $part->navigationEndpoint->browseEndpoint->canonicalBaseUrl);
+            } elseif (isset($part->navigationEndpoint->urlEndpoint->url)) {
+                $text .= $this->formatUrls($part->text, $part->navigationEndpoint->urlEndpoint->url);
+            } elseif (isset($part->navigationEndpoint->commandMetadata->webCommandMetadata->url)) {
+                $text .= $this->formatUrls($part->text, $part->navigationEndpoint->commandMetadata->webCommandMetadata->url);
+            } else {
+                $text .= $this->formatUrls($part->text, null);
+            }
         }
 
         return nl2br($text);
@@ -275,6 +283,7 @@ EOD;
     {
         $length = 100;
 
+        $text = strip_tags($text);
         if (strlen($text) > $length) {
             $text = explode('<br>', wordwrap($text, $length, '<br>'));
             return $text[0] . '...';
@@ -283,12 +292,26 @@ EOD;
         return $text;
     }
 
-    private function formatUrls($content)
+    private function formatUrls($content, $url)
     {
-        return preg_replace(
-            '/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
-            '<a target="_blank" href="$1" target="_blank">$1</a> ',
-            $content
-        );
+        if (substr(strval($url), 0, 1) == '/') {
+            // fix relative URL
+            $url = 'https://www.youtube.com' . $url;
+        } elseif (substr(strval($url), 0, 33) == 'https://www.youtube.com/redirect?') {
+            // extract actual URL from YouTube redirect
+            parse_str(substr($url, 33), $params);
+            if (strpos(($params['q'] ?? ''), rtrim($content, '.')) === 0) {
+                $url = $params['q'];
+            }
+        }
+
+        // ensure all URLs are made clickable
+        $url = $url ?? $content;
+
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            return '<a href="' . $url . '" target="_blank">' . $content . '</a>';
+        }
+
+        return $content;
     }
 }
