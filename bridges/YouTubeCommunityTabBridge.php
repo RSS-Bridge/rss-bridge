@@ -294,10 +294,10 @@ EOD;
 
     private function formatUrls($content, $url)
     {
-        if (substr($url, 0, 1) == '/') {
+        if (substr(strval($url), 0, 1) == '/') {
             // fix relative URL
             $url = 'https://www.youtube.com' . $url;
-        } elseif (substr($url, 0, 33) == 'https://www.youtube.com/redirect?') {
+        } elseif (substr(strval($url), 0, 33) == 'https://www.youtube.com/redirect?') {
             // extract actual URL from YouTube redirect
             parse_str(substr($url, 33), $params);
             if (strpos(($params['q'] ?? ''), rtrim($content, '.')) === 0) {
