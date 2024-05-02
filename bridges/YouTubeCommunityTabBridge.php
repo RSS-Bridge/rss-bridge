@@ -228,8 +228,8 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
         if (isset($details->backstageAttachment)) {
             $attachments = $details->backstageAttachment;
 
-            // Video
             if (isset($attachments->videoRenderer) && isset($attachments->videoRenderer->videoId)) {
+                // Video
                 if (empty($this->itemTitle)) {
                     $this->itemTitle = $this->feedName . ' posted a video';
                 }
@@ -238,10 +238,8 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
 <iframe width="100%" height="410" src="https://www.youtube.com/embed/{$attachments->videoRenderer->videoId}" 
 frameborder="0" allow="encrypted-media;" allowfullscreen></iframe>
 EOD;
-            }
-
-            // Image
-            if (isset($attachments->backstageImageRenderer)) {
+            } elseif (isset($attachments->backstageImageRenderer)) {
+                // Image
                 if (empty($this->itemTitle)) {
                     $this->itemTitle = $this->feedName . ' posted an image';
                 }
@@ -251,10 +249,8 @@ EOD;
                 $content = <<<EOD
 <p><img src="{$lastThumb->url}"></p>
 EOD;
-            }
-
-            // Poll
-            if (isset($attachments->pollRenderer)) {
+            } elseif (isset($attachments->pollRenderer)) {
+                // Poll
                 if (empty($this->itemTitle)) {
                     $this->itemTitle = $this->feedName . ' posted a poll';
                 }
@@ -270,6 +266,23 @@ EOD;
                 $content = <<<EOD
 <hr><p>Poll ({$attachments->pollRenderer->totalVotes->simpleText})<br><ul>{$pollChoices}</ul><p>
 EOD;
+            } elseif (isset($attachments->postMultiImageRenderer->images)) {
+                // Multiple images
+                $images = $attachments->postMultiImageRenderer->images;
+
+                if (is_array($images)) {
+                    if (empty($this->itemTitle)) {
+                        $this->itemTitle = $this->feedName . ' posted ' . count($images) . ' images';
+                    }
+
+                    foreach ($images as $image) {
+                        $lastThumb = end($image->backstageImageRenderer->image->thumbnails);
+
+                        $content .= <<<EOD
+<p><img src="{$lastThumb->url}"></p>
+EOD;
+                    }
+                }
             }
         }
 
