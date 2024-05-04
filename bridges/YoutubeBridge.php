@@ -193,14 +193,7 @@ class YoutubeBridge extends BridgeAbstract
             $html = $this->fetch($url_listing);
             $jsonData = $this->extractJsonFromHtml($html);
             $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
-            $jsonData = $jsonData->sectionListRenderer->contents;
-            foreach ($jsonData as $data) {
-                // Search result includes some ads, have to filter them
-                if (isset($data->itemSectionRenderer->contents[0]->videoRenderer)) {
-                    $jsonData = $data->itemSectionRenderer->contents;
-                    break;
-                }
-            }
+            $jsonData = $jsonData->sectionListRenderer->contents[0]->itemSectionRenderer->contents;
             $this->fetchItemsFromFromJsonData($jsonData);
             $this->feeduri = $url_listing;
             $this->feedName = 'Search: ' . $search;
