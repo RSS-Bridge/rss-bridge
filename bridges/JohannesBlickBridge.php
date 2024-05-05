@@ -3,7 +3,7 @@
 class JohannesBlickBridge extends BridgeAbstract
 {
     const NAME        = 'Johannes Blick';
-    const URI         = 'https://www.st-johannes-baptist.de/index.php/unsere-medien/johannesblick-archiv';
+    const URI         = 'https://www.st-johannes-baptist.de/index.php/medien-und-downloads/archiv-johannesblick';
     const DESCRIPTION = 'RSS feed for Johannes Blick';
     const MAINTAINER  = 'jummo4@yahoo.de';
 
