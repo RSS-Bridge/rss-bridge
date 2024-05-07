@@ -29,13 +29,13 @@ class MangaReaderBridge extends BridgeAbstract
     protected $feedName = '';
 
 
-    public function getName(){
+    public function getName()
+    {
         if (empty($this->feedName)) {
             return parent::getName();
-        }
-        else {
+        } else {
             return $this->feedName;
-	}
+        }
     }
 
     public function collectData()
