@@ -28,6 +28,8 @@ class GameBananaBridge extends BridgeAbstract
         return 'https://images.gamebanana.com/static/img/favicon/favicon.ico';
     }
 
+    private $title;
+
     public function collectData()
     {
         $url = 'https://api.gamebanana.com/Core/List/New?itemtype=Mod&page=1&gameid=' . $this->getInput('gid');
