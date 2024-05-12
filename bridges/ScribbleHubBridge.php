@@ -107,12 +107,13 @@ class ScribbleHubBridge extends FeedExpander
         }
 
         $item['comments'] = $item['uri'] . '#comments';
+        $item['uid'] = $item['uri'];
 
         try {
             $dom = getSimpleHTMLDOMCached($item['uri']);
         } catch (HttpException $e) {
             // 403 Forbidden, This means we got anti-bot response
-            if ($e->getCode() === 403) {
+            if ($e->getCode() === 403 || $e->getCode() === 429) {
                 return $item;
             }
             throw $e;
@@ -134,7 +135,6 @@ class ScribbleHubBridge extends FeedExpander
 
         //Generate UID
         $item_pid = $dom->find('#mypostid', 0)->value;
-        $item['uid'] = $item_sid . "/$item_pid";
 
         return $item;
     }
