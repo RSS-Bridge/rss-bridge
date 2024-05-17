@@ -39,6 +39,10 @@ class ArsTechnicaBridge extends FeedExpander
         $item_html = defaultLinkTo($item_html, self::URI);
         $item['content'] = $item_html->find('.article-content', 0);
 
+        $parsely = $item_html->find('[name="parsely-page"]', 0);
+        $parsely_json = json_decode(html_entity_decode($parsely->content), true);
+        $item['categories'] = $parsely_json['tags'];
+
         $pages = $item_html->find('nav.page-numbers > .numbers > a', -2);
         if (null !== $pages) {
             for ($i = 2; $i <= $pages->innertext; $i++) {
