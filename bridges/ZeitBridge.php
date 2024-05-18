@@ -87,7 +87,7 @@ class ZeitBridge extends FeedExpander
         // remove known bad elements
         foreach (
             $article->find(
-                'aside, .visually-hidden, .carousel-container, #tickaroo-liveblog, .zplus-badge, .article-heading__container--podcast, div[data-paywall], .js-embed-consent'
+                'aside, .visually-hidden, .carousel-container, #tickaroo-liveblog, .zplus-badge, .article-heading__container--podcast, .podcast-player__image, div[data-paywall], .js-embed-consent, script, nav, .article-flexible-toc__subheading-link, .faq-link'
             ) as $bad
         ) {
             $bad->remove();
@@ -114,7 +114,7 @@ class ZeitBridge extends FeedExpander
         }
 
         // header image
-        $headerimg = $article->find('*[data-ct-row="headerimage"]', 0) ?? $article->find('header', 0);
+        $headerimg = $article->find('*[data-ct-row="headerimage"]', 0) ?? $article->find('.article-header', 0) ?? $article->find('header', 0);
         if ($headerimg) {
             $item['content'] .= implode('', $headerimg->find('img[src], figcaption'));
         }
@@ -124,7 +124,7 @@ class ZeitBridge extends FeedExpander
 
         if ($pages) {
             foreach ($pages as $page) {
-                $elements = $page->find('p, h2, figcaption, img[src]');
+                $elements = $page->find('p, ul, ol, h2, figure.article__media img[src], figure.article__media figcaption, figure.quote');
                 $item['content'] .= implode('', $elements);
             }
         }
