@@ -442,7 +442,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
         if (!is_null($time_selector) && $time_selector != '') {
             $time_element = $entry_html->find($time_selector, 0);
             $time = $time_element->getAttribute('datetime');
-            if (is_null($time)) {
+            if (empty($time)) {
                 $time = $time_element->innertext;
             }
 
