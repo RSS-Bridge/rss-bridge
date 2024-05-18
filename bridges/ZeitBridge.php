@@ -108,12 +108,9 @@ class ZeitBridge extends FeedExpander
         }
 
         // authors
-        $authors = $article->find('*[itemtype*="schema.org/Person"]');
-        if (!$authors) {
-            $authors = $article->find('.metadata__source');
-        }
+        $authors = $article->find('*[itemtype*="schema.org/Person"]') ?? $article->find('.metadata__source');
         if ($authors) {
-            $item['author'] = implode(', ', $authors);
+            $item['author'] = implode(', ', array_map(function ($e) { return trim($e->plaintext); }, $authors));
         }
 
         // header image
