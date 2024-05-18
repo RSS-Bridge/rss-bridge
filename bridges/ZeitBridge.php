@@ -87,7 +87,9 @@ class ZeitBridge extends FeedExpander
         // remove known bad elements
         foreach (
             $article->find(
-                'aside, .visually-hidden, .carousel-container, #tickaroo-liveblog, .zplus-badge, .article-heading__container--podcast, .podcast-player__image, div[data-paywall], .js-embed-consent, script, nav, .article-flexible-toc__subheading-link, .faq-link'
+                'aside, .visually-hidden, .carousel-container, #tickaroo-liveblog, .zplus-badge,
+                .article-heading__container--podcast, .podcast-player__image, div[data-paywall],
+                .js-embed-consent, script, nav, .article-flexible-toc__subheading-link, .faq-link'
             ) as $bad
         ) {
             $bad->remove();
@@ -110,7 +112,9 @@ class ZeitBridge extends FeedExpander
         // authors
         $authors = $article->find('*[itemtype*="schema.org/Person"]') ?? $article->find('.metadata__source');
         if ($authors) {
-            $item['author'] = implode(', ', array_map(function ($e) { return trim($e->plaintext); }, $authors));
+            $item['author'] = implode(', ', array_map(function ($e) {
+                return trim($e->plaintext);
+            }, $authors));
         }
 
         // header image
