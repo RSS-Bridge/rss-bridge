@@ -214,7 +214,7 @@ class HeiseBridge extends FeedExpander
         $content = $article->find('.article-content', 0);
         if ($content) {
             $contentElements = $content->find(
-                'p, h3, ul, table, pre, noscript img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
+                'p, h3, ul, ol, table, pre, noscript img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
             );
             $item['content'] .= implode('', $contentElements);
         }
