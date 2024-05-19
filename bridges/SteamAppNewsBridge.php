@@ -69,7 +69,7 @@ class SteamAppNewsBridge extends BridgeAbstract
         $item['uri'] = preg_replace('[ ]', '%20', $json_item['url']);
         $item['title'] = $json_item['title'];
         $item['timestamp'] = $json_item['date'];
-        if ($this->getInput('use_app_name') == "yes") {
+        if ($this->getInput('use_app_name') == 'yes') {
             $item['author'] = $this->app_name;
         } else {
             $item['author'] = $json_item['author'];
