@@ -288,7 +288,7 @@ HTML,
             $params['context'] = 'Username';
             // Extract detected domain using the regex
             $domain = $matches[8] ?? $matches[4];
-            if ($domain == 'imgsed.com') {
+            if ($domain == 'imginn.com') {
                 $params['u'] = $matches[10];
                 return $params;
             } elseif ($domain == 'instagram.com') {
