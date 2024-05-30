@@ -7,6 +7,15 @@ class HarvardHealthBlogBridge extends BridgeAbstract
     const DESCRIPTION = 'Retrieve articles from health.harvard.edu';
     const MAINTAINER = 'tillcash';
     const MAX_ARTICLES = 10;
+    const PARAMETERS = [
+        [
+            'image' => [
+                'name' => 'Article Image',
+                'type' => 'checkbox',
+                'defaultValue' => 'checked',
+            ],
+        ],
+    ];
 
     public function collectData()
     {
@@ -46,9 +55,15 @@ class HarvardHealthBlogBridge extends BridgeAbstract
             return 'Content Not Found';
         }
 
-        // Remove ads
-        foreach ($article->find('.inline-ad') as $remove) {
-            $remove->outertext = '';
+        // remove article image
+        if (!$this->getInput('image')) {
+            $image = $article->find('p', 0);
+            $image->remove();
+        }
+
+        // remove ads
+        foreach ($article->find('.inline-ad') as $ad) {
+            $ad->outertext = '';
         }
 
         return $article->innertext;
