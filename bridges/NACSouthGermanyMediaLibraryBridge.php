@@ -85,12 +85,12 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
 
         foreach ($page->find('div.flex-columns.entry') as $parent) {
             # Find title
-            $title = $parent->find('h2', 0)->plaintext;
+            $title = trim($parent->find('h2')[0]->innertext);
 
             # Find content
-            $contentBlock = $parent->find('ul', 0);
+            $contentBlock = $parent->find('div')[2];
             $content = '';
-            foreach ($contentBlock->find('li') as $li) {
+            foreach ($contentBlock->find('li,p') as $li) {
                 $content .= '<p>' . $li->plaintext . '</p>';
             }
 
