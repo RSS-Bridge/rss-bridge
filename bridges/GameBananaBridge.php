@@ -40,7 +40,7 @@ class GameBananaBridge extends BridgeAbstract
         $json_list = json_decode($api_response, true); // Get first page mod list
 
         $url = 'https://api.gamebanana.com/Core/Item/Data?itemtype[]=Game&fields[]=name&itemid[]=' . $this->getInput('gid');
-        $fields = 'name,Owner().name,text,screenshots,Files().aFiles(),date,Url().sProfileUrl(),udate,Updates().aLatestUpdates()';
+        $fields = 'name,Owner().name,text,screenshots,Files().aFiles(),date,Url().sProfileUrl(),udate,Updates().aLatestUpdates(),Category().name,RootCategory().name';
         foreach ($json_list as $element) { // Build api request to minimize API calls
             $mid = $element[1];
             $url .= '&itemtype[]=Mod&fields[]=' . $fields . '&itemid[]=' . $mid;
@@ -57,6 +57,8 @@ class GameBananaBridge extends BridgeAbstract
             $item['comments'] = $item['uri'] . '#PostsListModule';
             $item['title'] = $element[0];
             $item['author'] = $element[1];
+            $item['categories'][] = $element[9];
+            $item['categories'][] = $element[10];
 
             $item['timestamp'] = $element[5];
             if ($this->getInput('updates')) {
