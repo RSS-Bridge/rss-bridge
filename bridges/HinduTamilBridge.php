@@ -66,7 +66,7 @@ class HinduTamilBridge extends FeedExpander
 
         $date = $dom->find('p span.date', 1);
         if ($date) {
-            $item['timestamp'] = $date->innertext;
+            $item['timestamp'] = $date->innertext . ' IST';
         }
 
         $content = $dom->find('#pgContentPrint', 0);
