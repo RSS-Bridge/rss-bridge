@@ -89,12 +89,16 @@ class IdealoBridge extends BridgeAbstract
     {
         // Every price is stored / displayed as "xxx,xx €", but PHP can't convert it as float
 
-        // Convert comma as dot
-        $price = str_replace(',', '.', $price);
-        // Remove the '€' char
-        $price = str_replace('€', '', $price);
-        // Convert to float
-        return floatval($price);
+        if ($price !== null) {
+            // Convert comma as dot
+            $price = str_replace(',', '.', $price);
+            // Remove the '€' char
+            $price = str_replace('€', '', $price);
+            // Convert to float
+            return floatval($price);
+        } else {
+            return $price;
+        }
     }
 
     /**
