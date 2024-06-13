@@ -40,7 +40,7 @@ class GameBananaBridge extends BridgeAbstract
         $json_list = json_decode($api_response, true); // Get first page mod list
 
         $url = 'https://api.gamebanana.com/Core/Item/Data?itemtype[]=Game&fields[]=name&itemid[]=' . $this->getInput('gid');
-        $fields = 'name,Owner().name,text,screenshots,Files().aFiles(),date,Url().sProfileUrl(),udate,Updates().aLatestUpdates()';
+        $fields = 'name,Owner().name,text,screenshots,Files().aFiles(),date,Url().sProfileUrl(),udate,Updates().aLatestUpdates(),Category().name,RootCategory().name';
         foreach ($json_list as $element) { // Build api request to minimize API calls
             $mid = $element[1];
             $url .= '&itemtype[]=Mod&fields[]=' . $fields . '&itemid[]=' . $mid;
@@ -52,11 +52,18 @@ class GameBananaBridge extends BridgeAbstract
         array_shift($json_list); // Take title from API request and remove from json
 
         foreach ($json_list as $element) {
+            // Trashed mod IDs are still picked up and return null; skip
+            if ($element[0] == null) {
+                continue;
+            }
+
             $item = [];
             $item['uri'] = $element[6];
             $item['comments'] = $item['uri'] . '#PostsListModule';
             $item['title'] = $element[0];
             $item['author'] = $element[1];
+            $item['categories'][] = $element[9];
+            $item['categories'][] = $element[10];
 
             $item['timestamp'] = $element[5];
             if ($this->getInput('updates')) {
@@ -74,9 +81,21 @@ class GameBananaBridge extends BridgeAbstract
             foreach ($img_list as $img_element) {
                 $item['content'] .= '<img src="https://images.gamebanana.com/img/ss/mods/' . $img_element['_sFile'] . '"/>';
             }
+
+            // Get updates from element[8], if applicable
             if ($this->getInput('updates') && sizeof($element[8]) > 0) {
-                $item['content'] .= '<br><strong>Update: ' . $element[8][0]['_sTitle'];
-                $item['content'] .= '</strong><br>' . $element[8][0]['_sText'] . '<hr>';
+                $update = $element[8][0];
+                $item['content'] .= '<br><strong>Update:</strong> ' . $update['_sTitle'];
+                if ($update['_sText'] != '') {
+                    $item['content'] .= '<br>' . $update['_sText'];
+                }
+                foreach ($update['_aChangeLog'] as $change) {
+                    if ($change['cat'] == '') {
+                        $change['cat'] = 'Change';
+                    }
+                    $item['content'] .= '<br><em>' . $change['cat'] . '</em>: ' . $change['text'];
+                }
+                $item['content'] .= '<br><hr>';
             }
             $item['content'] .= '<br>' . $element[2];
 
