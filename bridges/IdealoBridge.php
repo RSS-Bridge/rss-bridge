@@ -81,6 +81,25 @@ class IdealoBridge extends BridgeAbstract
         return $title . ' - ' . $this::NAME;
     }
 
+    /**
+     * Returns the Price as float
+     * @return float rhe price converted in float
+     */
+    private function convertPriceToFloat($price)
+    {
+        // Every price is stored / displayed as "xxx,xx €", but PHP can't convert it as float
+
+        if ($price !== null) {
+            // Convert comma as dot
+            $price = str_replace(',', '.', $price);
+            // Remove the '€' char
+            $price = str_replace('€', '', $price);
+            // Convert to float
+            return floatval($price);
+        } else {
+            return $price;
+        }
+    }
 
     /**
      * Returns the Price Trend emoji
@@ -88,8 +107,10 @@ class IdealoBridge extends BridgeAbstract
      */
     private function getPriceTrend($NewPrice, $OldPrice)
     {
-        // In case there is no old PRice, then show no trend
-        if ($OldPrice === null) {
+        $NewPrice = $this->convertPriceToFloat($NewPrice);
+        $OldPrice = $this->convertPriceToFloat($OldPrice);
+        // In case there is no old Price, then show no trend
+        if ($OldPrice === null || $OldPrice == 0) {
             $trend = '';
         } else if ($NewPrice > $OldPrice) {
             $trend = '&#x2197;';
@@ -125,7 +146,7 @@ class IdealoBridge extends BridgeAbstract
         $OldPriceNew = $this->loadCacheValue($KeyNEW);
         $OldPriceUsed = $this->loadCacheValue($KeyUSED);
 
-        // First button is new. Found at oopStage-conditionButton-wrapper-text class (.)
+        // First button contains the new price. Found at oopStage-conditionButton-wrapper-text class (.)
         $FirstButton = $html->find('.oopStage-conditionButton-wrapper-text', 0);
         if ($FirstButton) {
             $PriceNew = $FirstButton->find('strong', 0)->plaintext;
@@ -133,7 +154,7 @@ class IdealoBridge extends BridgeAbstract
             $this->saveCacheValue($KeyNEW, $PriceNew);
         }
 
-        // Second Button is used
+        // Second Button contains the used product price
         $SecondButton = $html->find('.oopStage-conditionButton-wrapper-text', 1);
         if ($SecondButton) {
             $PriceUsed = $SecondButton->find('strong', 0)->plaintext;
@@ -149,7 +170,7 @@ class IdealoBridge extends BridgeAbstract
             $content = '';
 
             // Generate Content
-            if (isset($PriceNew) && $PriceNew > 1) {
+            if (isset($PriceNew) && $this->convertPriceToFloat($PriceNew) > 0) {
                 $content .= sprintf('<p><b>Price New:</b><br>%s %s</p>', $PriceNew, $this->getPriceTrend($PriceNew, $OldPriceNew));
                 $content .= "<p><b>Price New before:</b><br>$OldPriceNew</p>";
             }
@@ -158,7 +179,7 @@ class IdealoBridge extends BridgeAbstract
                 $content .= sprintf('<p><b>Max Price New:</b><br>%s,00 €</p>', $this->getInput('MaxPriceNew'));
             }
 
-            if (isset($PriceUsed) && $PriceUsed > 1) {
+            if (isset($PriceUsed) && $this->convertPriceToFloat($PriceUsed) > 0) {
                 $content .= sprintf('<p><b>Price Used:</b><br>%s %s</p>', $PriceUsed, $this->getPriceTrend($PriceUsed, $OldPriceUsed));
                 $content .= "<p><b>Price Used before:</b><br>$OldPriceUsed</p>";
             }
@@ -176,7 +197,7 @@ class IdealoBridge extends BridgeAbstract
 
             // Currently under Max new price
             if ($this->getInput('MaxPriceNew') != '') {
-                if (isset($PriceNew) && $PriceNew < $this->getInput('MaxPriceNew')) {
+                if (isset($PriceNew) && $this->convertPriceToFloat($PriceNew) < $this->getInput('MaxPriceNew')) {
                     $title = sprintf($Pricealarm, 'New', $PriceNew, $Productname, $now);
                     $item = [
                         'title'     => $title,
@@ -190,7 +211,7 @@ class IdealoBridge extends BridgeAbstract
 
             // Currently under Max used price
             if ($this->getInput('MaxPriceUsed') != '') {
-                if (isset($PriceUsed) && $PriceUsed < $this->getInput('MaxPriceUsed')) {
+                if (isset($PriceUsed) && $this->convertPriceToFloat($PriceUsed) < $this->getInput('MaxPriceUsed')) {
                     $title = sprintf($Pricealarm, 'Used', $PriceUsed, $Productname, $now);
                     $item = [
                         'title'     => $title,
@@ -202,7 +223,7 @@ class IdealoBridge extends BridgeAbstract
                 }
             }
 
-            // General Priceupdate
+            // General Priceupdate Without any Max Price for new and Used product
             if ($this->getInput('MaxPriceUsed') == '' && $this->getInput('MaxPriceNew') == '') {
                 // check if a relevant pricechange happened
                 if (
@@ -211,11 +232,11 @@ class IdealoBridge extends BridgeAbstract
                 ) {
                     $title = 'Priceupdate! ';
 
-                    if (!$this->getInput('ExcludeNew')) {
+                    if (!$this->getInput('ExcludeNew') && isset($PriceNew)) {
                         $title .= 'NEW' . $this->getPriceTrend($PriceNew, $OldPriceNew) . ' ';
                     }
 
-                    if (!$this->getInput('ExcludeUsed')) {
+                    if (!$this->getInput('ExcludeUsed') && isset($PriceUsed)) {
                         $title .= 'USED' . $this->getPriceTrend($PriceUsed, $OldPriceUsed) . ' ';
                     }
                     $title .= $Productname;
