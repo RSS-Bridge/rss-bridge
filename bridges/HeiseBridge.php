@@ -166,6 +166,11 @@ class HeiseBridge extends FeedExpander
         ) {
             $element->remove();
         }
+        foreach ($article->find('img') as $element) {
+            if (str_contains($element->alt, 'l+f')) {
+                $element->remove();
+            }
+        }
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 
