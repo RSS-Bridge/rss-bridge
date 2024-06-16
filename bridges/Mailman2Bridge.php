@@ -3,7 +3,7 @@
 class Mailman2Bridge extends BridgeAbstract
 {
     const NAME = 'Mailman2Bridge';
-    const URI = 'https://list.org/';
+    const URI = 'https://list.org';
     const MAINTAINER = 'imagoiq';
     const CACHE_TIMEOUT = 60 * 30; // 30m
     const DESCRIPTION = 'Fetch latest messages from Mailman 2 archive (Pipermail)';
