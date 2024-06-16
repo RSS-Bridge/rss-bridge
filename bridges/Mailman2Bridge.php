@@ -68,7 +68,7 @@ class Mailman2Bridge extends BridgeAbstract
                     throw new \Exception('Failed to gzdecode');
                 }
             }
-            $mboxParts = preg_split('/^From /m', $data);
+            $mboxParts = preg_split('/^From\s.+\d{2}:\d{2}:\d{2}\s\d{4}$/m', $data);
             // Drop the first element which is always an empty string
             array_shift($mboxParts);
             $mboxMails = array_reverse($mboxParts);
