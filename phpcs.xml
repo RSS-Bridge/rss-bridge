@@ -35,6 +35,14 @@
     </properties>
   </rule>
 
+  <rule ref="Generic.PHP.ForbiddenFunctions">
+    <properties>
+      <property name="forbiddenFunctions" type="array">
+        <element key="sizeof" value="count"/>
+      </property>
+    </properties>
+  </rule>
+
   <!-- Duplicate class names are not allowed -->
   <rule ref="Generic.Classes.DuplicateClassName"/>
 

@@ -83,7 +83,7 @@ class GameBananaBridge extends BridgeAbstract
             }
 
             // Get updates from element[8], if applicable
-            if ($this->getInput('updates') && sizeof($element[8]) > 0) {
+            if ($this->getInput('updates') && count($element[8]) > 0) {
                 $update = $element[8][0];
                 $item['content'] .= '<br><strong>Update:</strong> ' . $update['_sTitle'];
                 if ($update['_sText'] != '') {

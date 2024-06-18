@@ -228,7 +228,7 @@ class PatreonBridge extends BridgeAbstract
             //post attachments
             if (
                 isset($post->relationships->attachments->data) &&
-                sizeof($post->relationships->attachments->data) > 0
+                count($post->relationships->attachments->data) > 0
             ) {
                 $item['enclosures'] = [];
                 $item['content'] .= '<hr><p><b>Attachments:</b><ul>';
