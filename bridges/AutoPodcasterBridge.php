@@ -4,27 +4,72 @@ class AutoPodcasterBridge extends FeedExpander
 {
     const MAINTAINER = 'boyska';
     const NAME = 'Auto Podcaster';
-    const URI = '';
-    const CACHE_TIMEOUT = 300; // 5 minuti
+    const URI = 'https://github.com/RSS-Bridge/rss-bridge/pull/4016';
+    const CACHE_TIMEOUT = 300; // 5m
     const DESCRIPTION = 'Make a "multimedia" podcast out of a normal feed';
-    const PARAMETERS = ['url' => [
+    const PARAMETERS = [
         'url' => [
-            'name' => 'URL',
-            'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day',
-            'required' => true
+            'url' => [
+                'name'          => 'URL',
+                'exampleValue'  => 'https://lorem-rss.herokuapp.com/feed?unit=day',
+                'required'      => true,
+            ],
+            'feed_only' => [
+                'name'          => 'Only look at the content of the feed, don\'t check on the website',
+                'type'          => 'checkbox',
+                'defaultValue'  => 'checked',
+                'required'      => false,
+            ],
         ],
-        'feed_only' => [
-            'name' => 'Only look at the content of the feed, don\'t check on the website',
-            'type' => 'checkbox',
-            'defaultValue' => 'checked',
-            'required' => false,
-        ]
-    ]];
+    ];
 
-    private function archiveIsAudioFormat($formatString)
+    public function collectData()
     {
-        return strpos($formatString, 'MP3') !== false ||
-            strpos($formatString, 'Ogg') === 0;
+        if (
+            $this->getInput('url')
+            && substr($this->getInput('url'), 0, strlen('http')) !== 'http'
+        ) {
+            // just in case someone find a way to access local files by playing with the url
+            throw new \Exception('The url parameter must either refer to http or https protocol.');
+        }
+        $this->collectExpandableDatas($this->getURI());
+    }
+
+    protected function parseItem($item)
+    {
+        $dom = false;
+        if (!$this->getInput('feed_only')) {
+            $dom = getSimpleHTMLDOMCached($item['uri'], 86400 * 10); // 10d
+            // $dom will be false in case of errors
+        }
+        $audios = [];
+        if ($dom) {
+            /* 1st extraction method: by "audio" tag */
+            $audios = array_merge($audios, $this->extractAudio($dom));
+
+            /* 2nd extraction method: by "iframe" tag */
+            $audios = array_merge($audios, $this->extractIframeArchive($dom));
+        } elseif ($item['content'] !== null) {
+            $item_dom = str_get_html($item['content']);
+            /* 1st extraction method: by "audio" tag */
+            $audios = array_merge($audios, $this->extractAudio($item_dom));
+
+            /* 2nd extraction method: by "iframe" tag */
+            $audios = array_merge($audios, $this->extractIframeArchive($item_dom));
+        }
+
+        if ($audios === []) {
+            return null;
+        }
+
+        // This will actually overwrite any exiting enclosures
+        $item['enclosures'] = [];
+
+        foreach ($audios as $audio) {
+            $item['enclosures'][] = $audio['sources'][0];
+        }
+
+        return $item;
     }
 
     private function extractAudio($dom)
@@ -44,6 +89,10 @@ class AutoPodcasterBridge extends FeedExpander
         }
         return $audios;
     }
+
+    /**
+     * Detects iframes pointing to https://archive.org/embed
+     */
     private function extractIframeArchive($dom)
     {
         $audios = [];
@@ -52,21 +101,24 @@ class AutoPodcasterBridge extends FeedExpander
             if (strpos($iframeEl->src, 'https://archive.org/embed/') === 0) {
                 $listURL = preg_replace('/\/embed\//', '/details/', $iframeEl->src, 1) . '?output=json';
                 $baseURL = preg_replace('/\/embed\//', '/download/', $iframeEl->src, 1);
-                $list = json_decode(file_get_contents($listURL));
+
+                $json = getContents($listURL);
+
+                $list = Json::decode($json, false);
                 $audios = [];
                 foreach ($list->files as $name => $data) {
                     if (
-                        $data->source === 'original' &&
-                        $this->archiveIsAudioFormat($data->format)
+                        $data->source === 'original'
+                        && $this->isAudioFormat($data->format)
                     ) {
                         $audios[$baseURL . $name] = ['sources' => [$baseURL . $name]];
                     }
                 }
                 foreach ($list->files as $name => $data) {
                     if (
-                        $data->source === 'derivative' &&
-                        $this->archiveIsAudioFormat($data->format) &&
-                        isset($audios[$baseURL . '/' . $data->original])
+                        $data->source === 'derivative'
+                        && $this->isAudioFormat($data->format)
+                        && isset($audios[$baseURL . '/' . $data->original])
                     ) {
                         $audios[$baseURL . '/' . $data->original]['sources'][] = $baseURL . $name;
                     }
@@ -77,52 +129,12 @@ class AutoPodcasterBridge extends FeedExpander
         return $audios;
     }
 
-    protected function parseItem($newItem)
+    private function isAudioFormat($formatString): bool
     {
-        $item = parent::parseItem($newItem);
-
-        if (! $this->getInput('feed_only')) {
-            $dom = getSimpleHTMLDOMCached($item['uri']);
-            // $dom will be false in case of errors
-        } else {
-            $dom = false;
-        }
-        $audios = [];
-        if ($dom !== false) {
-            /* 1st extraction method: by "audio" tag */
-            $audios = array_merge($audios, $this->extractAudio($dom));
-
-            /* 2nd extraction method: by "iframe" tag */
-            $audios = array_merge($audios, $this->extractIframeArchive($dom));
-        } elseif ($item['content'] !== null) {
-            $item_dom = str_get_html($item['content']);
-            /* 1st extraction method: by "audio" tag */
-            $audios = array_merge($audios, $this->extractAudio($item_dom));
-
-            /* 2nd extraction method: by "iframe" tag */
-            $audios = array_merge(
-                $audios,
-                $this->extractIframeArchive($item_dom)
-            );
-        }
-
-        if (count($audios) === 0) {
-            return null;
-        }
-        $item['enclosures'] = [];
-        foreach (array_values($audios) as $audio) {
-            $item['enclosures'][] = $audio['sources'][0];
-        }
-        return $item;
+        // TODO: str_contains and str_starts_with
+        return strpos($formatString, 'MP3') !== false || strpos($formatString, 'Ogg') === 0;
     }
-    public function collectData()
-    {
-        if ($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http') {
-            // just in case someone find a way to access local files by playing with the url
-            returnClientError('The url parameter must either refer to http or https protocol.');
-        }
-        $this->collectExpandableDatas($this->getURI());
-    }
+
     public function getName()
     {
         if (!is_null($this->getInput('url'))) {
@@ -131,9 +143,10 @@ class AutoPodcasterBridge extends FeedExpander
 
         return parent::getName();
     }
+
     public function getURI()
     {
-        return $this->getInput('url');
+        return $this->getInput('url') ?? parent::getURI();
     }
 }
 
