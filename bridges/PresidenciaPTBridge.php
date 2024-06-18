@@ -76,7 +76,7 @@ class PresidenciaPTBridge extends BridgeAbstract
                         }, self::PT_MONTH_NAMES),
                         array_map(function ($num) {
                             return sprintf('-%02d-', $num);
-                        }, range(1, sizeof(self::PT_MONTH_NAMES))),
+                        }, range(1, count(self::PT_MONTH_NAMES))),
                         $edt
                     );
 
