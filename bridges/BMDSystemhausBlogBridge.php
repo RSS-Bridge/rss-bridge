@@ -185,7 +185,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
                         } else {
                             $lang = substr($srvLanguages[0], 0, 2);
                         }
-        
+
                         Debug::log('check language ' . $i . ': ' . $lang);
                         // validate data
                         if ($this->getURIbyCountry($lang) == '') {
