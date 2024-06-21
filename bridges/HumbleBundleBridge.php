@@ -27,13 +27,10 @@ class HumbleBundleBridge extends BridgeAbstract
         $json = json_decode(html_entity_decode($json_text), true)['data'];
 
         $products = [];
-        if ($this->getInput('type') === 'bundles') {
-            $types = ['books', 'games', 'software'];
-            foreach ($types as $type) {
-                $products = array_merge($products, $json[$type]['mosaic'][0]['products']);
-            }
-        } else {
-            $products = $json[$this->getInput('type')]['mosaic'][0]['products'];
+        $types = ['books', 'games', 'software'];
+        $types = $this->getInput('type') === 'bundles' ? $types : [$this->getInput('type')];
+        foreach ($types as $type) {
+            $products = array_merge($products, $json[$type]['mosaic'][0]['products']);
         }
 
         foreach ($products as $element) {
@@ -47,14 +44,11 @@ class HumbleBundleBridge extends BridgeAbstract
             $item['content'] = $element['marketing_blurb'];
             $item['content'] .= '<br>' . $element['detailed_marketing_blurb'];
 
-            $type = explode(':', $element['tile_name'])[0];
             $item['categories'] = $element['hover_highlights'];
-            array_unshift($item['categories'], $type);
+            array_unshift($item['categories'], explode(':', $element['tile_name'])[0]);
             array_unshift($item['categories'], $element['tile_stamp']);
 
-            $logo = $element['tile_logo'];
-            $tile = $element['high_res_tile_image'];
-            $item['enclosures'] = [$logo, $tile];
+            $item['enclosures'] = [$element['tile_logo'], $element['high_res_tile_image']];
             $this->items[] = $item;
         }
     }
