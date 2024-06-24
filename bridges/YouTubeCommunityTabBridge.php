@@ -32,7 +32,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
     private $itemTitle = '';
 
     private $urlRegex = '/youtube\.com\/(channel|user|c)\/([\w]+)\/community/';
-    private $jsonRegex = '/var ytInitialData = (.*);<\/script>/';
+    private $jsonRegex = '/var ytInitialData = ([^<]*);<\/script>/';
 
     public function detectParameters($url)
     {
@@ -70,7 +70,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
             $html = getSimpleHTMLDOM($this->feedUrl);
         }
 
-        $json = $this->extractJson($html->find('body', 0)->innertext);
+        $json = $this->extractJson($html->find('html', 0)->innertext);
 
         $this->feedName = $json->header->c4TabbedHeaderRenderer->title;
 
