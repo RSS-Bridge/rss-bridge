@@ -66,7 +66,7 @@ class HinduTamilBridge extends FeedExpander
 
         $date = $dom->find('p span.date', 1);
         if ($date) {
-            $item['timestamp'] = $date->innertext . ' IST';
+            $item['timestamp'] = $this->convertToRFC3339($date->plaintext);
         }
 
         $content = $dom->find('#pgContentPrint', 0);
@@ -87,5 +87,17 @@ class HinduTamilBridge extends FeedExpander
         }
 
         return $content;
+    }
+
+    private function convertToRFC3339($DateString)
+    {
+        $timestamp = strtotime(trim($DateString));
+
+        if ($timestamp !== false) {
+            $rfc3339DateTime = date('Y-m-d\TH:i:s', $timestamp) . '+05:30';
+            return $rfc3339DateTime;
+        } else {
+            return null;
+        }
     }
 }
