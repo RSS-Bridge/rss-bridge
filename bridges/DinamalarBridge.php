@@ -82,7 +82,7 @@ class DinamalarBridge extends BridgeAbstract
                 'content' => $this->collectContent($element->newsid),
                 'timestamp' => $element->newsdate . '+05:30',
                 'title' => $element->newstitle,
-                'uid' => $element->newsid,
+                'uid' => $element->slug,
                 'uri' => self::URI . $element->slug,
             ];
         }
