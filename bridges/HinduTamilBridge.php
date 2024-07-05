@@ -63,18 +63,18 @@ class HinduTamilBridge extends FeedExpander
     protected function parseItem($item)
     {
         $dom = getSimpleHTMLDOMCached($item['uri']);
-
-        $date = $dom->find('p span.date', 1);
-        if ($date) {
-            $item['timestamp'] = $this->convertToRFC3339($date->plaintext);
-        }
-
         $content = $dom->find('#pgContentPrint', 0);
-        if (!$content) {
+
+        if ($content === null) {
             return $item;
         }
 
-        $image = $dom->find('#LoadArticle figure', 0);
+        $date = $dom->find('p span.date', 1);
+        if ($date) {
+            $item['timestamp'] = $this->toRFC3339($date->plaintext);
+        }
+
+        $image = $dom->find('#LoadArticle figure', 0) ?? '';
         $item['content'] = $image . $this->cleanContent($content);
 
         return $item;
@@ -89,15 +89,14 @@ class HinduTamilBridge extends FeedExpander
         return $content;
     }
 
-    private function convertToRFC3339($DateString)
+    private function toRFC3339($dateString)
     {
-        $timestamp = strtotime(trim($DateString));
+        $timestamp = strtotime(trim($dateString));
 
-        if ($timestamp !== false) {
-            $rfc3339DateTime = date('Y-m-d\TH:i:s', $timestamp) . '+05:30';
-            return $rfc3339DateTime;
-        } else {
+        if ($timestamp === false) {
             return null;
         }
+
+        return date('Y-m-d\TH:i:s', $timestamp) . '+05:30';
     }
 }
