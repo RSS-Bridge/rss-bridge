@@ -93,8 +93,8 @@ class HinduTamilBridge extends FeedExpander
     {
         $timestamp = strtotime(trim($dateString));
 
-        return $timestamp !== false
+        return ($timestamp !== false
             ? date('Y-m-d\TH:i:s', $timestamp) . '+05:30'
-            : null;
+            : null);
     }
 }
