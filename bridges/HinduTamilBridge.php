@@ -65,7 +65,7 @@ class HinduTamilBridge extends FeedExpander
         $dom = getSimpleHTMLDOMCached($item['uri']);
         $content = $dom->find('#pgContentPrint', 0);
 
-        if (!$content) {
+        if ($content === null) {
             return $item;
         }
 
