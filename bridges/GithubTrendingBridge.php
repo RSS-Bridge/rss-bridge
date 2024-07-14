@@ -591,7 +591,7 @@ class GithubTrendingBridge extends BridgeAbstract
                 'name' => 'Spoken Language Code',
                 'type' => 'text',
                 'exampleValue' => 'en',
-            ],
+            ]
         ]
     ];
 
