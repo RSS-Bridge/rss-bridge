@@ -3,11 +3,11 @@
 class ImgsedBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sysadminstory';
-    const NAME = 'Imgsed Bridge';
-    const URI = 'https://imgsed.com/';
+    const NAME = 'Imginn Bridge';
+    const URI = 'https://imginn.com/';
     const INSTAGRAMURI = 'https://www.instagram.com/';
     const CACHE_TIMEOUT = 3600; // 1h
-    const DESCRIPTION = 'Returns Imgsed (Instagram viewer) content by user';
+    const DESCRIPTION = 'Returns Imginn (formerly Imgsed) (Instagram viewer) content by user';
 
     const PARAMETERS = [
         'Username' => [
@@ -39,8 +39,8 @@ class ImgsedBridge extends BridgeAbstract
     const TEST_DETECT_PARAMETERS = [
         'https://www.instagram.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
         'https://instagram.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
-        'https://imgsed.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
-        'https://www.imgsed.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
+        'https://imginn.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
+        'https://www.imginn.com/instagram/' => ['context' => 'Username', 'u' => 'instagram', 'post' => 'on', 'story' => 'on', 'tagged' => 'on'],
     ];
 
     public function collectData()
@@ -76,7 +76,7 @@ class ImgsedBridge extends BridgeAbstract
             $description = $post->find('img', 0)->alt;
             $imageUrl = $post->find('img', 0)->src;
             // Sometimes, there is some lazy image instead of the real URL
-            if ($imageUrl == 'https://imgsed.com/img/lazy.jpg') {
+            if ($imageUrl == 'https://s1.imginn.com/img/lazy.jpg') {
                 $imageUrl = $post->find('img', 0)->getAttribute('data-src');
             }
             $download = $post->find('a[class=download]', 0)->href;
@@ -117,7 +117,9 @@ HTML,
     {
         try {
             $username = $this->getInput('u');
-            $html = getSimpleHTMLDOMCached(self::URI . 'api/media/?name=' . $username);
+            $idhtml = getSimpleHTMLDOMCached(self::URI . 'stories/' . $username);
+            $id = $idhtml->find('li[class*=reel]', 0)->getAttribute('data-id');
+            $html = getSimpleHTMLDOMCached(self::URI . 'api/media/?id=' . $id);
             $json = Json::decode($html);
 
             foreach ($json as $post) {
@@ -281,12 +283,12 @@ HTML,
             'story' => 'on',
             'tagged' => 'on',
         ];
-        $regex = '/^http(s|):\/\/((www\.|)(instagram.com)\/([a-zA-Z0-9_\.]{1,30})(\/reels\/|\/tagged\/|\/|)|(www\.|)(imgsed.com)\/(stories\/|tagged\/|)([a-zA-Z0-9_\.]{1,30})\/)/';
+        $regex = '/^http(s|):\/\/((www\.|)(instagram.com)\/([a-zA-Z0-9_\.]{1,30})(\/reels\/|\/tagged\/|\/|)|(www\.|)(imginn.com)\/(stories\/|tagged\/|)([a-zA-Z0-9_\.]{1,30})\/)/';
         if (preg_match($regex, $url, $matches) > 0) {
             $params['context'] = 'Username';
             // Extract detected domain using the regex
             $domain = $matches[8] ?? $matches[4];
-            if ($domain == 'imgsed.com') {
+            if ($domain == 'imginn.com') {
                 $params['u'] = $matches[10];
                 return $params;
             } elseif ($domain == 'instagram.com') {
