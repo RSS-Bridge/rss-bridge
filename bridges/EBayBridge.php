@@ -92,7 +92,9 @@ class EBayBridge extends BridgeAbstract
 
             $additionalPrice = $listing->find('.s-item__additional-price', 0)->plaintext ?? '';
             $discount = $listing->find('.s-item__discount', 0)->plaintext ?? '';
-            $discountLine = ($additionalPrice || $discount) ? "($additionalPrice; $discount)" : "";
+            $discountLine = ($additionalPrice || $discount)
+                ? ('(' . trim($additionalPrice ?? '') . '; ' . trim($discount ?? '') . ')')
+                : '';
 
             $shippingFree = $listing->find('.s-item__freeXDays', 0)->plaintext ?? '';
             $localDelivery = $listing->find('.s-item__localDelivery', 0)->plaintext ?? '';
