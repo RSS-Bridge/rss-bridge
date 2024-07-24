@@ -13,7 +13,13 @@ class EBayBridge extends BridgeAbstract
             'pattern' => '^(https:\/\/)?(www\.)?(befr\.|benl\.)?ebay\.(com|com\.au|at|be|ca|ch|cn|es|fr|de|com\.hk|ie|it|com\.my|nl|ph|pl|com\.sg|co\.uk)\/.*$',
             'exampleValue' => 'https://www.ebay.com/sch/i.html?_nkw=atom+rss',
             'required' => true,
-        ]
+        ],
+        'includesSearchLink' => [
+            'name' => 'Include Original Search Link',
+            'title' => 'Whether or not each feed item should include the original search query link to eBay which was used to find the given listing.',
+            'type' => 'checkbox',
+            'defaultValue' => false,
+        ],
     ]];
 
     public function getURI()
@@ -151,6 +157,11 @@ class EBayBridge extends BridgeAbstract
                 $item['enclosures'] = [$imageUrl];
             }
 
+            // Include the original search link, if specified.
+            if ($this->getInput('includesSearchLink')) {
+                $searchLink = '<p><small><a target="_blank" href="' . $this->getURI() . '">View Search</a></small></p>';
+            }
+
             // Build the final item's content to display and add the item onto the list.
             $item['content'] = <<<CONTENT
 <p>$sellerInfo $location</p>
@@ -158,7 +169,7 @@ class EBayBridge extends BridgeAbstract
     $discountLine
     <br /><small>$shippingFree $localDelivery $logisticsCost</small></p>
 <p>{$subtitle}</p>
-<p><small><a target="_blank" href="{$this->getURI()}">View Search</a></small></p>
+$searchLink
 CONTENT;
 
             $this->items[] = $item;
