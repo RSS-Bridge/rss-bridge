@@ -88,14 +88,17 @@ class EBayBridge extends BridgeAbstract
                 $item['uid'] = $matches[1];
             }
 
-            $priceDom = $listing->find('.s-item__details > .s-item__detail > .s-item__price', 0);
-            $price = $priceDom->plaintext ?? 'N/A';
+            $price = $listing->find('.s-item__price', 0)->plaintext ?? 'N/A';
 
-            $shippingFree = $listing->find('.s-item__details > .s-item__detail > .s-item__freeXDays', 0)->plaintext ?? '';
-            $localDelivery = $listing->find('.s-item__details > .s-item__detail > .s-item__localDelivery', 0)->plaintext ?? '';
-            $logisticsCost = $listing->find('.s-item__details > .s-item__detail > .s-item__logisticsCost', 0)->plaintext ?? '';
+            $additionalPrice = $listing->find('.s-item__additional-price', 0)->plaintext ?? '';
+            $discount = $listing->find('.s-item__discount', 0)->plaintext ?? '';
+            $discountLine = ($additionalPrice || $discount) ? "($additionalPrice; $discount)" : "";
 
-            $location = $listing->find('.s-item__details > .s-item__detail > .s-item__location', 0)->plaintext ?? '';
+            $shippingFree = $listing->find('.s-item__freeXDays', 0)->plaintext ?? '';
+            $localDelivery = $listing->find('.s-item__localDelivery', 0)->plaintext ?? '';
+            $logisticsCost = $listing->find('.s-item__logisticsCost', 0)->plaintext ?? '';
+
+            $location = $listing->find('.s-item__location', 0)->plaintext ?? '';
 
             $sellerInfo = $listing->find('.s-item__seller-info-text', 0)->plaintext ?? '';
 
@@ -108,7 +111,8 @@ class EBayBridge extends BridgeAbstract
 
             $item['content'] = <<<CONTENT
 <p>$sellerInfo $location</p>
-<p><span style="font-weight:bold">$price</span> $shippingFree $localDelivery $logisticsCost<span></span></p>
+<p><strong>$price</strong>&nbsp;<em>$discountLine</em>
+    <br /><small>$shippingFree $localDelivery $logisticsCost</small></p>
 <p>$subtitle</p>
 CONTENT;
             $this->items[] = $item;
