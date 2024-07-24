@@ -5,7 +5,7 @@ class EBayBridge extends BridgeAbstract
     const NAME = 'eBay';
     const DESCRIPTION = 'Returns the search results from the eBay auctioning platforms';
     const URI = 'https://www.eBay.com';
-    const MAINTAINER = 'wrobelda';
+    const MAINTAINER = 'NotsoanoNimus, wrobelda';
     const PARAMETERS = [[
         'url' => [
             'name' => 'Search URL',
@@ -22,6 +22,10 @@ class EBayBridge extends BridgeAbstract
             # make sure we order by the most recently listed offers
             $uri = trim(preg_replace('/([?&])_sop=[^&]+(&|$)/', '$1', $this->getInput('url')), '?&/');
             $uri .= (parse_url($uri, PHP_URL_QUERY) ? '&' : '?') . '_sop=10';
+
+            // Ensure the List View is used instead of the Gallery View.
+            $uri = trim(preg_replace('/[?&]_dmd=[^&]+(&|$)/i', '$1', $uri), '?&/');
+            $uri .= '&_dmd=1';
 
             return $uri;
         } else {
@@ -46,7 +50,7 @@ class EBayBridge extends BridgeAbstract
         });
 
         if ($searchQuery) {
-            return $searchQuery[0];
+            return 'eBay - ' . $searchQuery[0];
         }
 
         return parent::getName();
@@ -61,49 +65,85 @@ class EBayBridge extends BridgeAbstract
             $inexactMatches->remove();
         }
 
+        // Remove "NEW LISTING" labels: we sort by the newest, so this is redundant.
+        foreach ($html->find('.LIGHT_HIGHLIGHT') as $new_listing_label) {
+            $new_listing_label->remove();
+        }
+
         $results = $html->find('ul.srp-results > li.s-item');
         foreach ($results as $listing) {
             $item = [];
 
-            // Remove "NEW LISTING" label, we sort by the newest, so this is redundant
-            foreach ($listing->find('.LIGHT_HIGHLIGHT') as $new_listing_label) {
-                $new_listing_label->remove();
+            // Define a closure to shorten the ugliness of querying the current listing.
+            $find = function ($query, $altText = '') use ($listing) {
+                return $listing->find($query, 0)->plaintext ?? $altText;
+            };
+
+            $item['title'] = $find('.s-item__title');
+            if (!$item['title']) {
+                // Skip entries where the title cannot be found (for w/e reason).
+                continue;
             }
 
-            $listingTitle = $listing->find('.s-item__title', 0);
-            if ($listingTitle) {
-                $item['title'] = $listingTitle->plaintext;
-            }
-
-            $subtitle = implode('', $listing->find('.s-item__subtitle'));
-
-            $listingUrl = $listing->find('.s-item__link', 0);
-            if ($listingUrl) {
-                $item['uri'] = $listingUrl->href;
+            // It appears there may be more than a single 'subtitle' subclass in the listing. Collate them.
+            $subtitles = $listing->find('.s-item__subtitle');
+            if (is_array($subtitles)) {
+                $subtitle = trim(implode(' ', array_map(function ($s) { return $s->plaintext; }, $subtitles)));
             } else {
-                $item['uri'] = null;
+                $subtitle = trim($subtitles->plaintext ?? '');
             }
 
+            // Get the listing's link and uid.
+            $item['uri'] = $listing->find('.s-item__link', 0)?->href ?? null;
             if (preg_match('/.*\/itm\/(\d+).*/i', $item['uri'], $matches)) {
                 $item['uid'] = $matches[1];
             }
 
-            $price = $listing->find('.s-item__price', 0)->plaintext ?? 'N/A';
+            // Price should be fetched on its own so we can provide the alt text without complication.
+            $price = $find('.s-item__price', '[NO PRICE]');
 
-            $additionalPrice = $listing->find('.s-item__additional-price', 0)->plaintext ?? '';
-            $discount = $listing->find('.s-item__discount', 0)->plaintext ?? '';
-            $discountLine = ($additionalPrice || $discount)
-                ? ('(' . trim($additionalPrice ?? '') . '; ' . trim($discount ?? '') . ')')
-                : '';
+            // Map a list of dynamic variable names to their subclasses within the listing.
+            //   This is just a bit of sugar to make this cleaner and more maintainable.
+            $propertyMappings = [
+                'additionalPrice'   => '.s-item__additional-price',
+                'discount'          => '.s-item__discount',
+                'shippingFree'      => '.s-item__freeXDays',
+                'localDelivery'     => '.s-item__localDelivery',
+                'logisticsCost'     => '.s-item__logisticsCost',
+                'location'          => '.s-item__location',
+                'obo'               => '.s-item__formatBestOfferEnabled',
+                'sellerInfo'        => '.s-item__seller-info-text',
+                'bids'              => '.s-item__bidCount',
+                'timeLeft'          => '.s-item__time-left',
+                'timeEnd'           => '.s-item__time-end',
+            ];
 
-            $shippingFree = $listing->find('.s-item__freeXDays', 0)->plaintext ?? '';
-            $localDelivery = $listing->find('.s-item__localDelivery', 0)->plaintext ?? '';
-            $logisticsCost = $listing->find('.s-item__logisticsCost', 0)->plaintext ?? '';
+            foreach ($propertyMappings as $k => $v) {
+                $$k = $find($v);
+            }
 
-            $location = $listing->find('.s-item__location', 0)->plaintext ?? '';
+            // When an additional price detail or discount is defined, create the 'discountLine'.
+            if ($additionalPrice || $discount) {
+                $discountLine = '<br /><em>('
+                    . trim($additionalPrice ?? '')
+                    . '; ' . trim($discount ?? '')
+                    . ')</em>';
+            }
 
-            $sellerInfo = $listing->find('.s-item__seller-info-text', 0)->plaintext ?? '';
+            // Prepend the time-left info with a comma if the right details were found.
+            $timeInfo = trim($timeLeft . ' ' . $timeEnd);
+            if ($timeInfo) {
+                $timeInfo = ', ' . $timeInfo;
+            }
 
+            // Set the listing type.
+            if ($bids) {
+                $listingTypeDetails = "Auction: {$bids}{$timeInfo}";
+            } else {
+                $listingTypeDetails = 'Buy It Now';
+            }
+
+            // Acquire the listing's primary image and atach it.
             $image = $listing->find('.s-item__image-wrapper > img', 0);
             if ($image) {
                 // Not quite sure why append fragment here
@@ -111,12 +151,16 @@ class EBayBridge extends BridgeAbstract
                 $item['enclosures'] = [$imageUrl];
             }
 
+            // Build the final item's content to display and add the item onto the list.
             $item['content'] = <<<CONTENT
 <p>$sellerInfo $location</p>
-<p><strong>$price</strong>&nbsp;<em>$discountLine</em>
+<p><strong>$price</strong> $obo ($listingTypeDetails)
+    $discountLine
     <br /><small>$shippingFree $localDelivery $logisticsCost</small></p>
-<p>$subtitle</p>
+<p>{$subtitle}</p>
+<p><small><a target="_blank" href="{$this->getURI()}">View Search</a></small></p>
 CONTENT;
+
             $this->items[] = $item;
         }
     }
