@@ -159,7 +159,7 @@ class EBayBridge extends BridgeAbstract
 
             // Include the original search link, if specified.
             if ($this->getInput('includesSearchLink')) {
-                $searchLink = '<p><small><a target="_blank" href="' . $this->getURI() . '">View Search</a></small></p>';
+                $searchLink = '<p><small><a target="_blank" href="' . e($this->getURI()) . '">View Search</a></small></p>';
             }
 
             // Build the final item's content to display and add the item onto the list.
