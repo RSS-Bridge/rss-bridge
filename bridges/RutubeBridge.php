@@ -24,6 +24,13 @@ class RutubeBridge extends BridgeAbstract
                 'required' => true
             ],
         ],
+        'По результатам поиска' => [
+            's' => [
+                'name' => 'Запрос',
+                'exampleValue' => 'SUREN',
+                'required' => true,
+            ]
+        ]
     ];
 
     protected $title;
@@ -34,6 +41,8 @@ class RutubeBridge extends BridgeAbstract
             return self::URI . '/channel/' . strval($this->getInput('c')) . '/videos/';
         } elseif ($this->getInput('p')) {
             return self::URI . '/plst/' . strval($this->getInput('p')) . '/';
+        } elseif ($this->getInput('s')) {
+            return self::URI . '/search/?suggest=1&query=' . strval($this->getInput('s'));
         } else {
             return parent::getURI();
         }
@@ -60,7 +69,7 @@ class RutubeBridge extends BridgeAbstract
         return json_decode(str_replace('\x', '\\\x', $matches[1]));
     }
 
-    public function collectData()
+    private function getVideosFromReduxState()
     {
         $link = $this->getURI();
 
@@ -73,6 +82,26 @@ class RutubeBridge extends BridgeAbstract
         } elseif ($this->getInput('p')) {
             $videos = $reduxState->playlist->data->results;
             $this->title = $reduxState->playlist->title;
+        } elseif ($this->getInput('s')) {
+            $this->title = 'Поиск ' . $this->getInput('s');
+        }
+
+        return $videos;
+    }
+
+    private function getVideosFromSearchAPI()
+    {
+        $contents = getContents(self::URI . '/api/search/video/?suggest=1&client=wdp&query=' . $this->getInput('s'));
+        $json = json_decode($contents);
+        return $json->results;
+    }
+
+    public function collectData()
+    {
+        if ($this->getInput('c') || $this->getInput('p')) {
+            $videos = $this->getVideosFromReduxState();
+        } else {
+            $videos = $this->getVideosFromSearchAPI();
         }
 
         foreach ($videos as $video) {
