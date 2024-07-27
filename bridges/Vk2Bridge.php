@@ -168,6 +168,12 @@ class Vk2Bridge extends BridgeAbstract
                         $ret .= "* {$text}: {$votes} ({$rate}%)<br />";
                     }
                     $ret .= '</p>';
+                } elseif ($attachment['type'] == 'album') {
+                    $album = $attachment['album'];
+                    $url = "https://vk.com/album{$album['owner_id']}_{$album['id']}";
+                    $title = 'Альбом: ' . $album['title'];
+                    $photo = $this->getImageURLWithLargestWidth($album['thumb']['sizes']);
+                    $ret .= "<p><a href='{$url}'><img src='{$photo}' alt='{$title}'><br>{$title}</a></p>";
                 } elseif (!in_array($attachment['type'], ['video', 'audio', 'doc'])) {
                     $ret .= "<p>Unknown attachment type: {$attachment['type']}</p>";
                 }
