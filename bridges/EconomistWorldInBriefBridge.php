@@ -68,7 +68,9 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         };
         if ($this->getInput('agenda') == 1) {
             $articles = $html->find('._articles', 0);
-            $this->collectArticles($articles);
+            if ($articles != null) {
+                $this->collectArticles($articles);
+            }
         }
         if ($this->getInput('quote') == 1) {
             $quote = $html->find('._quote-container', 0);
