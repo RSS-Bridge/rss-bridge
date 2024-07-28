@@ -41,6 +41,9 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
         $data = json_decode($json);
 
         foreach ($data->records as $record) {
+            if (!isset($record->blocks)) {
+                continue;
+            }
             foreach ($record->blocks as $block) {
                 if (!property_exists($block, 'date')) {
                     continue;
