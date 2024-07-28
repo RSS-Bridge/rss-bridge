@@ -92,6 +92,8 @@ class NordbayernBridge extends BridgeAbstract
                 $content .= self::getUseFullContent($element);
             } elseif ($element->tag === 'picture') {
                 $content .= self::getValidImage($element);
+            } elseif ($element->tag === 'ul') {
+                $content .= $element;
             }
         }
         return $content;
