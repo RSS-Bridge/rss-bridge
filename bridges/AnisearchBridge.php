@@ -68,8 +68,9 @@ class AnisearchBridge extends BridgeAbstract
                 if (isset($trailerlink)) {
                     $trailersite = getSimpleHTMLDOM($baseurl . $trailerlink->href);
                     $trailer = $trailersite->find('div#player > iframe', 0);
+                    $trailer = $trailer->{'data-xsrc'};
                     $ytlink = <<<EOT
-                        <br /><iframe width="560" height="315" src="' . $trailer->{'data-xsrc'} . '" title="YouTube video player"
+                        <br /><iframe width="560" height="315" src="$trailer" title="YouTube video player"
                         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
                     EOT;
