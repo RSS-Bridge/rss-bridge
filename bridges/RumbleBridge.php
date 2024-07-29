@@ -77,8 +77,9 @@ class RumbleBridge extends BridgeAbstract
 
     public function getName()
     {
-        return $this->getInput('account')
-            ? ('Rumble.com - ' . $this->getInput('account'))
-            : self::NAME;
+        if ($this->getInput('account')) {
+            return 'Rumble.com - ' . $this->getInput('account');
+        }
+        return self::NAME;
     }
 }
