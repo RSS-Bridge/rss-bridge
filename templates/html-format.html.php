@@ -30,7 +30,7 @@
         </h1>
 
         <div class="buttons">
-            <a href="./#bridge-<?= $_GET['bridge'] ?>">
+            <a href="<?php if($bridge_name) { print('./#bridge-' . $bridge_name); } else { print('/'); } ?>">
                 <button class="backbutton">← back to rss-bridge</button>
             </a>
 
