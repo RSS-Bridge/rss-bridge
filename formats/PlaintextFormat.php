@@ -4,7 +4,7 @@ class PlaintextFormat extends FormatAbstract
 {
     const MIME_TYPE = 'text/plain';
 
-    public function stringify()
+    public function stringify(?Request $request)
     {
         $feed = $this->getFeed();
         foreach ($this->getItems() as $item) {

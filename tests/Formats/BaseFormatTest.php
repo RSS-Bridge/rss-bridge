@@ -64,6 +64,6 @@ abstract class BaseFormatTest extends TestCase
         $format->setFeed($sample->meta);
         $format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
-        return $format->stringify();
+        return $format->stringify(null);
     }
 }

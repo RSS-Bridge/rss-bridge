@@ -4,7 +4,7 @@ class HtmlFormat extends FormatAbstract
 {
     const MIME_TYPE = 'text/html';
 
-    public function stringify()
+    public function stringify(?Request $request)
     {
         // This query string is url encoded
         $queryString = $_SERVER['QUERY_STRING'];
@@ -13,6 +13,12 @@ class HtmlFormat extends FormatAbstract
         $formatFactory = new FormatFactory();
         $formats = [];
 
+        if (str_contains(strtolower($queryString), strtolower(UrlEncryptionService::PARAMETER_NAME . '='))) {
+            $encryptionToken = 'yes';
+        } else {
+            $encryptionToken = null;
+        }
+
         // Create all formats (except HTML)
         $formatNames = $formatFactory->getFormatNames();
         foreach ($formatNames as $formatName) {
@@ -20,7 +26,14 @@ class HtmlFormat extends FormatAbstract
                 continue;
             }
             // The format url is relative, but should be absolute in order to help feed readers.
-            $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $formatName, $queryString);
+            if (str_contains(strtolower($queryString), 'format=html')) {
+                $formatUrl = '?' . str_ireplace('format=Html', 'format=' . $formatName, $queryString);
+            } else {
+                // If we're viewing the HtmlFormat and the 'format' GET parameter isn't here, this is likely an
+                //   encrypted URL being viewed. Handle this by reconstructing the raw URL with the new format.
+                $formatUrl = '?' . http_build_query($request->toArray());
+                $formatUrl .= (strlen($formatUrl) > 1 ? '&' : '') . 'format=' . $formatName;
+            }
             $formatObject = $formatFactory->create($formatName);
             $formats[] = [
                 'url'       => $formatUrl,
@@ -48,12 +61,14 @@ class HtmlFormat extends FormatAbstract
         }
 
         $html = render_template(__DIR__ . '/../templates/html-format.html.php', [
-            'charset'       => $this->getCharset(),
-            'title'         => $feedArray['name'],
-            'formats'       => $formats,
-            'uri'           => $feedArray['uri'],
-            'items'         => $items,
-            'donation_uri'  => $donationUri,
+            'charset'          => $this->getCharset(),
+            'title'            => $feedArray['name'],
+            'formats'          => $formats,
+            'uri'              => $feedArray['uri'],
+            'items'            => $items,
+            'donation_uri'     => $donationUri,
+            'encryption_token' => $encryptionToken,
+            'bridge_name'      => $request->get('bridge'),
         ]);
         // Remove invalid characters
         ini_set('mbstring.substitute_character', 'none');

@@ -12,7 +12,7 @@ abstract class FormatAbstract
 
     protected array $feed = [];
 
-    abstract public function stringify();
+    abstract public function stringify(?Request $request);
 
     public function setFeed(array $feed)
     {

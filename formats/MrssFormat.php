@@ -32,7 +32,7 @@ class MrssFormat extends FormatAbstract
     protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
     protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
-    public function stringify()
+    public function stringify(?Request $request)
     {
         $document = new \DomDocument('1.0', $this->getCharset());
         $document->formatOutput = true;
