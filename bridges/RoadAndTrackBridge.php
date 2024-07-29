@@ -68,9 +68,4 @@ class RoadAndTrackBridge extends BridgeAbstract
         $item['content'] = $content;
         return $item;
     }
-
-    private function getArticleContent($article)
-    {
-        return getContents($article->contentUrl);
-    }
 }

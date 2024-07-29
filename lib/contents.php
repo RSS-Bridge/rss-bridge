@@ -5,8 +5,8 @@
  *
  * @param array $httpHeaders E.g. ['Content-type: text/plain']
  * @param array $curlOptions Associative array e.g. [CURLOPT_MAXREDIRS => 3]
- * @param bool $returnFull Whether to return an array: ['code' => int, 'headers' => array, 'content' => string]
- * @return string|array
+ * @param bool $returnFull Whether to return Response object
+ * @return string|Response
  */
 function getContents(
     string $url,
@@ -113,13 +113,7 @@ function getContents(
             throw $e;
     }
     if ($returnFull === true) {
-        // todo: return the actual response object
-        return [
-            'code'      => $response->getCode(),
-            'headers'   => $response->getHeaders(),
-            // For legacy reasons, use 'content' instead of 'body'
-            'content'   => $response->getBody(),
-        ];
+        return $response;
     }
     return $response->getBody();
 }

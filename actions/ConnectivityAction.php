@@ -54,8 +54,8 @@ class ConnectivityAction implements ActionInterface
         ];
         try {
             $response = getContents($bridge::URI, [], $curl_opts, true);
-            $result['http_code'] = $response['code'];
-            if (in_array($response['code'], [200])) {
+            $result['http_code'] = $response->getCode();
+            if (in_array($result['http_code'], [200])) {
                 $result['successful'] = true;
             }
         } catch (\Exception $e) {

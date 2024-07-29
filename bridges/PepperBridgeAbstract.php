@@ -191,15 +191,12 @@ HEREDOC;
         }
     }
 
-    /**
-     * Extract the cookies obtained from the URL
-     * @return array the array containing the cookies set by the URL
-     */
     private function getCookiesHeaderValue($url)
     {
         $response = getContents($url, [], [], true);
-        $setCookieHeaders = $response['headers']['set-cookie'] ?? [];
+        $setCookieHeaders = $response->getHeader('set-cookie', true);
         $cookies = array_map(fn($c): string => explode(';', $c)[0], $setCookieHeaders);
+
         return implode('; ', $cookies);
     }
 

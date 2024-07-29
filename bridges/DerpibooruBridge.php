@@ -78,13 +78,9 @@ class DerpibooruBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $queryJson = json_decode(getContents(
-            self::URI
-            . 'api/v1/json/search/images?filter_id='
-            . urlencode($this->getInput('f'))
-            . '&q='
-            . urlencode($this->getInput('q'))
-        ));
+        $url = self::URI . 'api/v1/json/search/images?filter_id=' . urlencode($this->getInput('f')) . '&q=' . urlencode($this->getInput('q'));
+
+        $queryJson = json_decode(getContents($url));
 
         foreach ($queryJson->images as $post) {
             $item = [];
