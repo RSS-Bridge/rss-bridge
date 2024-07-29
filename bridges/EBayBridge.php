@@ -100,7 +100,10 @@ class EBayBridge extends BridgeAbstract
             }
 
             // Get the listing's link and uid.
-            $item['uri'] = $listing->find('.s-item__link', 0)?->href ?? null;
+            $itemUri = $listing->find('.s-item__link', 0);
+            if ($itemUri) {
+                $item['uri'] = $itemUri->href;
+            }
             if (preg_match('/.*\/itm\/(\d+).*/i', $item['uri'], $matches)) {
                 $item['uid'] = $matches[1];
             }
