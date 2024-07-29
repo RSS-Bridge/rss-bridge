@@ -9,6 +9,12 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 3600; // 1 hour
     const DESCRIPTION = 'Returns stories from the World in Brief section';
 
+    const CONFIGURATION = [
+        'cookie' => [
+            'required' => false,
+        ]
+    ];
+
     const PARAMETERS = [
         '' => [
             'splitGobbets' => [
@@ -41,7 +47,19 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $headers = [];
+        if ($this->getOption('cookie')) {
+            $headers = [
+                'Authority: www.economist.com',
+                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-language: en-US,en;q=0.9',
+                'Cache-control: max-age=0',
+                'Cookie: ' . $this->getOption('cookie'),
+                'Upgrade-insecure-requests: 1',
+                'User-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+            ];
+        }
+        $html = getSimpleHTMLDOM(self::URI, $headers);
         $gobbets = $html->find('._gobbets', 0);
         if ($this->getInput('splitGobbets') == 1) {
             $this->splitGobbets($gobbets);
@@ -50,7 +68,9 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         };
         if ($this->getInput('agenda') == 1) {
             $articles = $html->find('._articles', 0);
-            $this->collectArticles($articles);
+            if ($articles != null) {
+                $this->collectArticles($articles);
+            }
         }
         if ($this->getInput('quote') == 1) {
             $quote = $html->find('._quote-container', 0);
