@@ -10,7 +10,13 @@ class ParameterValidator
         $errors = [];
 
         foreach ($input as $name => $value) {
+            if ($name === UrlEncryptionService::PARAMETER_NAME && UrlEncryptionService::enabled()) {
+                // Do not validate against encrypted URL tokens.
+                continue;
+            }
+
             $registered = false;
+
             foreach ($contexts as $contextName => $contextParameters) {
                 if (!array_key_exists($name, $contextParameters)) {
                     continue;
