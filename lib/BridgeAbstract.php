@@ -104,9 +104,27 @@ abstract class BridgeAbstract
     /**
      * A more correct method name would have been "getContexts"
      */
-    public function getParameters(): array
+    final public function getParameters(): array
     {
-        return static::PARAMETERS;
+        $parameters = static::PARAMETERS;
+
+        if (UrlEncryptionService::enabled()) {
+            // A parameter cannot be defined which collides with the special encryption parameter.
+            $illegalToken = array_key_exists(UrlEncryptionService::PARAMETER_NAME, $parameters);
+            foreach ($parameters as $k => $v) {
+                $illegalToken |= array_key_exists(UrlEncryptionService::PARAMETER_NAME, $v);
+            }
+
+            if ($illegalToken) {
+                throw new \Exception(
+                    'The parameter name "' . UrlEncryptionService::PARAMETER_NAME
+                    . '" is reserved for encrypted URLs. Remove this from the PARAMETERS definition in bridge "'
+                    . $this->getName() . '".'
+                );
+            }
+        }
+
+        return $parameters;
     }
 
     public function getItems()
