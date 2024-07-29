@@ -94,7 +94,7 @@ class EBayBridge extends BridgeAbstract
             // It appears there may be more than a single 'subtitle' subclass in the listing. Collate them.
             $subtitles = $listing->find('.s-item__subtitle');
             if (is_array($subtitles)) {
-                $subtitle = trim(implode(' ', array_map(function ($s) { return $s->plaintext; }, $subtitles)));
+                $subtitle = trim(implode(' ', array_column($subtitles, 'plaintext')));
             } else {
                 $subtitle = trim($subtitles->plaintext ?? '');
             }
