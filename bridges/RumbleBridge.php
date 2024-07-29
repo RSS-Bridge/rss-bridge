@@ -19,7 +19,6 @@ class RumbleBridge extends BridgeAbstract
             'type' => [
                 'name' => 'Account Type',
                 'type' => 'list',
-                'required' => true,
                 'title' => 'The type of profile to create a feed from.',
                 'values' => [
                     'Channel (All)' => 'channel',
