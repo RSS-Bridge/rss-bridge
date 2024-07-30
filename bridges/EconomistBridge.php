@@ -228,11 +228,11 @@ class EconomistBridge extends FeedExpander
             $a->parent->removeChild($a);
         }
         // Sections like "Leaders on day X"
-        foreach($elem->find('div[data-tracking-id=content-well-chapter-list]') as $div) {
+        foreach ($elem->find('div[data-tracking-id=content-well-chapter-list]') as $div) {
             $div->parent->removeChild($div);
         }
         // "Explore more" section
-        foreach($elem->find('h3[id=article-tags]') as $h3) {
+        foreach ($elem->find('h3[id=article-tags]') as $h3) {
             $div = $h3->parent;
             $div->parent->removeChild($div);
         }
