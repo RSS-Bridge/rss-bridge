@@ -1,4 +1,4 @@
-# EconomistWorldInBriefBridge
+# EconomistWorldInBriefBridge and EconomistBridge
 
 In May 2024, The Economist finally fixed its paywall, and it started requiring authorization. Which means you can't use this bridge unless you have an active subscription.
 
@@ -14,5 +14,8 @@ Once you've done this, add the cookie to your `config.ini.php`:
 
 ```
 [EconomistWorldInBriefBridge]
+cookie = "<value>"
+
+[EconomistBridge]
 cookie = "<value>"
 ```
