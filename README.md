@@ -418,7 +418,16 @@ See `formats/PlaintextFormat.php` for an example.
 
 These commands require that you have installed the dev dependencies in `composer.json`.
 
+Run all tests:
+
     ./vendor/bin/phpunit
+
+Run a single test class:
+
+    ./vendor/bin/phpunit --filter UrlTest
+
+Run linter:
+
     ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
 
 https://github.com/squizlabs/PHP_CodeSniffer/wiki

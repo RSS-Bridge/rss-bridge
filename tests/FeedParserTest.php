@@ -8,6 +8,13 @@ use PHPUnit\Framework\TestCase;
 
 class FeedParserTest extends TestCase
 {
+    private \FeedParser $sut;
+
+    public function setUp(): void
+    {
+        $this->sut = new \FeedParser();
+    }
+
     public function testRss1()
     {
         $xml = <<<XML
@@ -37,8 +44,7 @@ class FeedParserTest extends TestCase
         </rdf:RDF>
         XML;
 
-        $sut = new \FeedParser();
-        $feed = $sut->parseFeed($xml);
+        $feed = $this->sut->parseFeed($xml);
 
         $this->assertSame('hello feed', $feed['title']);
         $this->assertSame('http://meerkat.oreillynet.com', $feed['uri']);
@@ -74,8 +80,7 @@ class FeedParserTest extends TestCase
         </rss>
         XML;
 
-        $sut = new \FeedParser();
-        $feed = $sut->parseFeed($xml);
+        $feed = $this->sut->parseFeed($xml);
 
         $this->assertSame('hello feed', $feed['title']);
         $this->assertSame('https://example.com/', $feed['uri']);
@@ -111,8 +116,7 @@ class FeedParserTest extends TestCase
         </feed>
         XML;
 
-        $sut = new \FeedParser();
-        $feed = $sut->parseFeed($xml);
+        $feed = $this->sut->parseFeed($xml);
 
         $this->assertSame('hello feed', $feed['title']);
         $this->assertSame('https://example.com/1', $feed['uri']);
@@ -151,8 +155,7 @@ class FeedParserTest extends TestCase
         </rss>
         XML;
 
-        $sut = new \FeedParser();
-        $feed = $sut->parseFeed($xml);
+        $feed = $this->sut->parseFeed($xml);
         $expected = [
             'title' => '',
             'uri' => '',

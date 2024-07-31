@@ -167,8 +167,9 @@ final class FeedParser
         if (isset($namespaces['media'])) {
             $media = $feedItem->children($namespaces['media']);
         }
+
         foreach ($namespaces as $namespaceName => $namespaceUrl) {
-            if (in_array($namespaceName, ['', 'content', 'media'])) {
+            if (in_array($namespaceName, ['', 'media'])) {
                 continue;
             }
             $item[$namespaceName] = $this->parseModule($feedItem, $namespaceName, $namespaceUrl);
