@@ -26,7 +26,8 @@ class SubstackBridge extends FeedExpander
         ]
     ];
 
-    public function collectData() {
+    public function collectData()
+    {
         $headers = [];
         if ($this->getOption('sid')) {
             $url_parsed = parse_url($this->getInput('url'));
@@ -40,7 +41,7 @@ class SubstackBridge extends FeedExpander
             $headers = [
                 'Authority: ' . $authority,
                 'Cache-Control: max-age=0',
-                'User-Agent: ' . 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+                'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
                 'Cookie: ' . implode('; ', $cookies)
             ];
         }
