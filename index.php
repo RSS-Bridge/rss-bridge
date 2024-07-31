@@ -25,8 +25,10 @@ set_error_handler(function ($code, $message, $file, $line) {
         // Deprecation messages and other masked errors are typically ignored here
         return false;
     }
-    // In the future, uncomment this:
-    //throw new \ErrorException($message, 0, $code, $file, $line);
+    if (Debug::isEnabled()) {
+        // This might be annoying, but it's for the greater good
+        throw new \ErrorException($message, 0, $code, $file, $line);
+    }
     $text = sprintf(
         '%s at %s line %s',
         sanitize_root($message),
