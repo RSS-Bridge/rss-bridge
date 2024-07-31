@@ -24,7 +24,8 @@ class DemosBerlinBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = getContents('https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege/index.php/index/all.json');
+        $url = 'https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege/index.php/index/all.json';
+        $json = getContents($url);
         $jsonFile = json_decode($json, true);
 
         $daysInterval = DateInterval::createFromDateString($this->getInput('days') . ' day');

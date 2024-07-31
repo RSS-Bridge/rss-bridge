@@ -41,8 +41,7 @@ class GlowficBridge extends BridgeAbstract
             $first_page = 1;
         }
         for ($page_offset = $first_page; $page_offset <= $metadata['Last-Page']; $page_offset++) {
-            $jsonContents = getContents($url . '/replies?page=' . $page_offset) or
-                returnClientError('Could not retrieve replies for page ' . $page_offset . '.');
+            $jsonContents = getContents($url . '/replies?page=' . $page_offset);
             $replies = json_decode($jsonContents);
             foreach ($replies as $reply) {
                 $item = [];
@@ -75,8 +74,9 @@ class GlowficBridge extends BridgeAbstract
     private function getPost()
     {
         $url = $this->getAPIURI();
-        $jsonPost = getContents($url) or returnClientError('Could not retrieve post metadata.');
+        $jsonPost = getContents($url);
         $post = json_decode($jsonPost);
+
         return $post;
     }
 

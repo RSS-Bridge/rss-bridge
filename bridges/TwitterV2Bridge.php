@@ -598,7 +598,7 @@ EXTERNAL;
     private function makeApiCall($api, $authHeaders, $params)
     {
         $uri = self::API_URI . $api . '?' . http_build_query($params);
-        $result = getContents($uri, $authHeaders, [], false);
+        $result = getContents($uri, $authHeaders);
         $data = json_decode($result);
         return $data;
     }

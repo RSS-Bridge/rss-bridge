@@ -286,9 +286,9 @@ class SpotifyBridge extends BridgeAbstract
         } else {
             $basicAuth = base64_encode(sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret')));
             $json = getContents('https://accounts.spotify.com/api/token', [
-                "Authorization: Basic $basicAuth"
+                "Authorization: Basic $basicAuth",
             ], [
-                CURLOPT_POSTFIELDS => 'grant_type=client_credentials'
+                CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
             ]);
             $data = Json::decode($json);
             $this->token = $data['access_token'];

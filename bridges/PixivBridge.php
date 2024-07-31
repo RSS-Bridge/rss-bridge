@@ -332,21 +332,20 @@ class PixivBridge extends BridgeAbstract
         }
 
         if ($cache) {
-            $data = $this->loadCacheValue($url);
-            if (!$data) {
-                $data = getContents($url, $httpHeaders, $curlOptions, true);
-                $this->saveCacheValue($url, $data);
+            $response = $this->loadCacheValue($url);
+            if (!$response || is_array($response)) {
+                $response = getContents($url, $httpHeaders, $curlOptions, true);
+                $this->saveCacheValue($url, $response);
             }
         } else {
-            $data = getContents($url, $httpHeaders, $curlOptions, true);
+            $response = getContents($url, $httpHeaders, $curlOptions, true);
         }
 
-        $this->checkCookie($data['headers']);
+        $this->checkCookie($response->getHeaders());
 
         if ($getJSON) {
-            return json_decode($data['content'], true);
-        } else {
-            return $data['content'];
+            return json_decode($response->getBody(), true);
         }
+        return $response->getBody();
     }
 }
