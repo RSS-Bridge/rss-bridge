@@ -137,6 +137,8 @@ class EBayBridge extends BridgeAbstract
                     . trim($additionalPrice ?? '')
                     . '; ' . trim($discount ?? '')
                     . ')</em>';
+            } else {
+                $discountLine = '';
             }
 
             // Prepend the time-left info with a comma if the right details were found.
@@ -163,6 +165,8 @@ class EBayBridge extends BridgeAbstract
             // Include the original search link, if specified.
             if ($this->getInput('includesSearchLink')) {
                 $searchLink = '<p><small><a target="_blank" href="' . e($this->getURI()) . '">View Search</a></small></p>';
+            } else {
+                $searchLink = '';
             }
 
             // Build the final item's content to display and add the item onto the list.
