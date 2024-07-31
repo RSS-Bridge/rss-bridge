@@ -112,6 +112,15 @@ class DisplayAction implements ActionInterface
             $input = array_diff_key($requestArray, array_fill_keys($remove, ''));
             $bridge->setInput($input);
             $bridge->collectData();
+            $items = $bridge->getItems();
+            if (isset($items[0]) && is_array($items[0])) {
+                $feedItems = [];
+                foreach ($items as $item) {
+                    $feedItems[] = FeedItem::fromArray($item);
+                }
+                $items = $feedItems;
+            }
+            $feed = $bridge->getFeed();
         } catch (\Exception $e) {
             // Probably an exception inside a bridge
             if ($e instanceof HttpException) {
@@ -144,16 +153,6 @@ class DisplayAction implements ActionInterface
                 }
             }
         }
-
-        $items = $bridge->getItems();
-        if (isset($items[0]) && is_array($items[0])) {
-            $feedItems = [];
-            foreach ($items as $item) {
-                $feedItems[] = FeedItem::fromArray($item);
-            }
-            $items = $feedItems;
-        }
-        $feed = $bridge->getFeed();
 
         $formatFactory = new FormatFactory();
         $format = $formatFactory->create($format);

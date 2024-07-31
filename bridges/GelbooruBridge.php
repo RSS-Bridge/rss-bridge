@@ -33,7 +33,7 @@ class GelbooruBridge extends BridgeAbstract
         return $this->getURI()
         . 'index.php?&page=dapi&s=post&q=index&json=1&pid=' . $this->getInput('p')
         . '&limit=' . $this->getInput('l')
-        . '&tags=' . urlencode($this->getInput('t'));
+        . '&tags=' . urlencode($this->getInput('t') ?? '');
     }
 
     /*
@@ -76,18 +76,16 @@ class GelbooruBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $content = getContents($this->getFullURI());
-        // $content is empty string
+        $url = $this->getFullURI();
+        $content = getContents($url);
 
-        // Most other Gelbooru-based boorus put their content in the root of
-        // the JSON. This check is here for Bridges that inherit from this one
-        $posts = json_decode($content);
-        if (isset($posts->post)) {
-            $posts = $posts->post;
+        if ($content === '') {
+            return;
         }
 
-        if (is_null($posts)) {
-            returnServerError('No posts found.');
+        $posts = Json::decode($content, false);
+        if (isset($posts->post)) {
+            $posts = $posts->post;
         }
 
         foreach ($posts as $post) {
