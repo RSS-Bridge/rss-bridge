@@ -33,7 +33,7 @@ class GelbooruBridge extends BridgeAbstract
         return $this->getURI()
         . 'index.php?&page=dapi&s=post&q=index&json=1&pid=' . $this->getInput('p')
         . '&limit=' . $this->getInput('l')
-        . '&tags=' . urlencode($this->getInput('t'));
+        . '&tags=' . urlencode($this->getInput('t') ?? '');
     }
 
     /*
