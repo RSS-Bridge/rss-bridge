@@ -6,7 +6,7 @@ class SubstackBridge extends FeedExpander
     const NAME = 'Substack Bridge';
     const URI = 'https://substack.com/';
     const CACHE_TIMEOUT = 3600; //1hour
-    const DESCRIPTION = 'Full-content Substack feed. Requires active subscription.';
+    const DESCRIPTION = 'Access paywalled Substack using a session cookie with an active subscription.';
 
     const CONFIGURATION = [
         'sid' => [
