@@ -197,9 +197,6 @@ class FeedItem
             || $content instanceof simple_html_dom_node
         ) {
             $content = (string) $content;
-        } elseif (is_array($content)) {
-            // Assuming this is the rss2.0 content module
-            $content = $content['encoded'] ?? '';
         }
 
         if (is_string($content)) {
