@@ -167,6 +167,12 @@ final class FeedParser
         if (isset($namespaces['media'])) {
             $media = $feedItem->children($namespaces['media']);
         }
+        // xmlns:content="http://purl.org/rss/1.0/modules/content/"
+        if (isset($namespaces['content'])) {
+            $content = $feedItem->children($namespaces['content']);
+            // This string cast usually carves out the single "decoded" property
+            $item['content'] = (string) $content;
+        }
         foreach ($namespaces as $namespaceName => $namespaceUrl) {
             if (in_array($namespaceName, ['', 'content', 'media'])) {
                 continue;
