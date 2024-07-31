@@ -8,23 +8,24 @@
 
 ; Only these bridges are available for feed production
 ; How to enable all bridges: enabled_bridges[] = *
-enabled_bridges[] = CssSelectorBridge
-enabled_bridges[] = FeedMerge
-enabled_bridges[] = FeedReducerBridge
-enabled_bridges[] = Filter
-enabled_bridges[] = GettrBridge
-enabled_bridges[] = MastodonBridge
-enabled_bridges[] = Reddit
-enabled_bridges[] = RumbleBridge
-enabled_bridges[] = SoundcloudBridge
-enabled_bridges[] = Telegram
-enabled_bridges[] = ThePirateBay
-enabled_bridges[] = TikTokBridge
-enabled_bridges[] = Twitch
-enabled_bridges[] = Vk
-enabled_bridges[] = XPathBridge
-enabled_bridges[] = Youtube
-enabled_bridges[] = YouTubeCommunityTabBridge
+;enabled_bridges[] = CssSelectorBridge
+;enabled_bridges[] = FeedMerge
+;enabled_bridges[] = FeedReducerBridge
+;enabled_bridges[] = Filter
+;enabled_bridges[] = GettrBridge
+;enabled_bridges[] = MastodonBridge
+;enabled_bridges[] = Reddit
+;enabled_bridges[] = RumbleBridge
+;enabled_bridges[] = SoundcloudBridge
+;enabled_bridges[] = Telegram
+;enabled_bridges[] = ThePirateBay
+;enabled_bridges[] = TikTokBridge
+;enabled_bridges[] = Twitch
+;enabled_bridges[] = Vk
+;enabled_bridges[] = XPathBridge
+;enabled_bridges[] = Youtube
+;enabled_bridges[] = YouTubeCommunityTabBridge
+enabled_bridges[] = *
 
 ; Defines the timezone used by RSS-Bridge
 ; Find a list of supported timezones at
