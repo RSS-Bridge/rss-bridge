@@ -213,22 +213,33 @@ class DisplayAction implements ActionInterface
         return $report['count'];
     }
 
-    private static function createGithubIssueUrl($bridge, $e, string $message): string
+    private static function createGithubIssueUrl(BridgeAbstract $bridge, \Exception $e, string $message): string
     {
-        return sprintf('https://github.com/RSS-Bridge/rss-bridge/issues/new?%s', http_build_query([
-            'title' => sprintf('%s failed with error %s', $bridge->getName(), $e->getCode()),
+        $maintainer = $bridge->getMaintainer();
+        if (str_contains($maintainer, ',')) {
+            $maintainers = explode(',', $maintainer);
+        } else {
+            $maintainers = [$maintainer];
+        }
+        $maintainers = array_map('trim', $maintainers);
+
+        $query = [
+            'title' => $bridge->getName() . ' failed with: ' . $e->getMessage(),
             'body' => sprintf(
-                "```\n%s\n\n%s\n\nQuery string: %s\nVersion: %s\nOs: %s\nPHP version: %s\n```",
+                "```\n%s\n\n%s\n\nQuery string: %s\nVersion: %s\nOs: %s\nPHP version: %s\n```\nMaintainer: @%s",
                 $message,
                 implode("\n", trace_to_call_points(trace_from_exception($e))),
                 $_SERVER['QUERY_STRING'] ?? '',
                 Configuration::getVersion(),
                 PHP_OS_FAMILY,
-                phpversion() ?: 'Unknown'
+                phpversion() ?: 'Unknown',
+                implode(', @', $maintainers),
             ),
             'labels' => 'Bridge-Broken',
-            'assignee' => $bridge->getMaintainer(),
-        ]));
+            'assignee' => $maintainer[0],
+        ];
+
+        return 'https://github.com/RSS-Bridge/rss-bridge/issues/new?' . http_build_query($query);
     }
 
     private static function createGithubSearchUrl($bridge): string
