@@ -8,10 +8,6 @@ Updating an existing installation is very simple, depending on your type of inst
 
 This will update all core files to the latest version. Your custom configuration and bridges are left untouched. Keep in mind that changes to any core file of RSS-Bridge will be replaced.
 
-## Docker
-
-Simply get the latest Docker build via `:latest` or specific builds via `:<tag-name>`.
-
 ## Heroku
 
 ### If you didn't fork the repo before
