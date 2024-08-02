@@ -80,8 +80,10 @@ class RutubeBridge extends BridgeAbstract
             $videos = $reduxState->userChannel->videos->results;
             $this->title = $reduxState->userChannel->info->name;
         } elseif ($this->getInput('p')) {
-            $videos = $reduxState->playlist->data->results;
-            $this->title = $reduxState->playlist->title;
+            $playListVideosMethod = 'getPlaylistVideos(' . $this->getInput('p') . ')';
+            $videos = $reduxState->api->queries->$playListVideosMethod->data->results;
+            $playListMethod = 'getPlaylist(' . $this->getInput('p') . ')';
+            $this->title = $reduxState->api->queries->$playListMethod->data->title;
         } elseif ($this->getInput('s')) {
             $this->title = 'Поиск ' . $this->getInput('s');
         }
