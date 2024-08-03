@@ -41,32 +41,47 @@ class TldrTechBridge extends BridgeAbstract
     {
         $topic = $this->getInput('topic');
         $limit = $this->getInput('limit');
-        $url = self::URI . $topic . '/archives';
-        $html = getSimpleHTMLDOM($url);
-        $entries_root = $html->find('div.content-center.mt-5', 0);
-        $added = 0;
+
+        $latest_url = $this->processRedirect(self::URI . 'api/latest/' . $topic);
+        $this->extractItem($latest_url);
+
+        $archives_url = self::URI . $topic . '/archives';
+        $archives_html = getSimpleHTMLDOM($archives_url);
+        $entries_root = $archives_html->find('div.content-center.mt-5', 0);
         foreach ($entries_root->children() as $child) {
             if ($child->tag != 'a') {
                 continue;
             }
-            // Convert /<topic>/2023-01-01 to unix timestamp
-            $date_items = explode('/', $child->href);
-            $date = strtotime(end($date_items));
-            $item_url = self::URI . ltrim($child->href, '/');
-            try {
-                $this->items[] = [
-                    'uri'       => self::URI . $child->href,
-                    'title'     => $child->plaintext,
-                    'timestamp' => $date,
-                    'content'   => $this->extractContent($item_url),
-                ];
-            } catch (HttpException $e) {
-                continue;
-            }
-            $added++;
-            if ($added >= $limit) {
+            $this->extractItem(self::URI . $child->href);
+            if (count($this->items) >= $limit) {
                 break;
             }
+        }
+    }
+
+    private function processRedirect($url)
+    {
+        $headers = get_headers($url, true);
+        $loc = $headers['Location'];
+        return $loc;
+    }
+
+    private function extractItem($href)
+    {
+        $date_items = explode('/', $href);
+        $date = strtotime(end($date_items));
+        $item_url = ltrim($href, '/');
+        try {
+            [$content, $title] = $this->extractContent($item_url);
+            $this->items[] = [
+            'uri'       => $href,
+            'title'     => $title,
+            'timestamp' => $date,
+            'content'   => $content,
+            ];
+        } catch (HttpException $e) {
+            // archive occasionally returns broken URLs
+            return;
         }
     }
 
@@ -112,7 +127,7 @@ class TldrTechBridge extends BridgeAbstract
                 }
             }
         }
-
-        return $content->innertext;
+        $title = $content->find('h2', 0);
+        return [$content->innertext, $title->plaintext];
     }
 }
