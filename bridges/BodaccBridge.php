@@ -13,6 +13,7 @@ class BodaccBridge extends BridgeAbstract
                 'name' => 'Département',
                 'type' => 'list',
                 'values' => [
+                    'Tous' => null,
                     'Ain' => '01',
                     'Aisne' => '02',
                     'Allier' => '03',
@@ -128,6 +129,7 @@ class BodaccBridge extends BridgeAbstract
                 'name' => 'Famille',
                 'type' => 'list',
                 'values' => [
+                    'Toutes' => null,
                     'Annonces diverses' => 'divers',
                     'Créations' => 'creation',
                     'Dépôts des comptes' => 'dpc',
@@ -144,6 +146,7 @@ class BodaccBridge extends BridgeAbstract
                 'name' => 'Type',
                 'type' => 'list',
                 'values' => [
+                    'Tous' => null,
                     'Avis initial' => 'annonce',
                     'Avis d\'annulation' => 'annulation',
                     'Avis rectificatif' => 'rectificatif'
@@ -161,15 +164,15 @@ class BodaccBridge extends BridgeAbstract
         ];
 
         $where = [];
-        if ($this->getInput('departement') !== null) {
+        if (!empty($this->getInput('departement'))) {
             $where[] = 'numerodepartement="' . $this->getInput('departement') . '"';
         }
 
-        if ($this->getInput('famille') !== null) {
+        if (!empty($this->getInput('famille'))) {
             $where[] = 'familleavis="' . $this->getInput('famille') . '"';
         }
 
-        if ($this->getInput('type') !== null) {
+        if (!empty($this->getInput('type'))) {
             $where[] = 'typeavis="' . $this->getInput('type') . '"';
         }
 
@@ -179,7 +182,7 @@ class BodaccBridge extends BridgeAbstract
 
         $url = urljoin(static::URI, '/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?' . http_build_query($urlParts));
 
-        $results = json_decode(file_get_contents($url), false, 512, JSON_THROW_ON_ERROR);
+        $results = json_decode(getContents($url), false, 512, JSON_THROW_ON_ERROR);
         foreach ($results->results as $result) {
             if (!isset($result->id, $result->dateparution, $result->typeavis_lib, $result->familleavis_lib, $result->commercant, $result->ville, $result->cp)) {
                 continue;
