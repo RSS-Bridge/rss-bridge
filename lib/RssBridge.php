@@ -100,11 +100,8 @@ final class RssBridge
         $className = '\\' . $actionName;
         $actionObject = new $className();
 
-        $response = $actionObject->execute($request);
+        $response = $actionObject($request);
 
-        if (is_string($response)) {
-            $response = new Response($response);
-        }
         return $response;
     }
 

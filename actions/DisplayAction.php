@@ -11,7 +11,7 @@ class DisplayAction implements ActionInterface
         $this->logger = RssBridge::getLogger();
     }
 
-    public function execute(Request $request)
+    public function __invoke(Request $request): Response
     {
         $bridgeName = $request->get('bridge');
         $format = $request->get('format');

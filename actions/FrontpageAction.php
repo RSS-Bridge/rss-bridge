@@ -2,7 +2,7 @@
 
 final class FrontpageAction implements ActionInterface
 {
-    public function execute(Request $request)
+    public function __invoke(Request $request): Response
     {
         $messages = [];
         $activeBridges = 0;
@@ -26,13 +26,13 @@ final class FrontpageAction implements ActionInterface
         }
 
         // todo: cache this renderered template?
-        return render(__DIR__ . '/../templates/frontpage.html.php', [
+        return new Response(render(__DIR__ . '/../templates/frontpage.html.php', [
             'messages' => $messages,
             'admin_email' => Configuration::getConfig('admin', 'email'),
             'admin_telegram' => Configuration::getConfig('admin', 'telegram'),
             'bridges' => $body,
             'active_bridges' => $activeBridges,
             'total_bridges' => count($bridgeClassNames),
-        ]);
+        ]));
     }
 }
