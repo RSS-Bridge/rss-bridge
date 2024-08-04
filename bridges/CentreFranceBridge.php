@@ -12,7 +12,6 @@ class CentreFranceBridge extends BridgeAbstract
             'newspaper' => [
                 'name' => 'Newspaper',
                 'type' => 'list',
-                'required' => true,
                 'values' => [
                     'La Montagne' => 'lamontagne.fr',
                     'Le Populaire du Centre' => 'lepopulaire.fr',
@@ -63,6 +62,10 @@ class CentreFranceBridge extends BridgeAbstract
 
     public function collectData()
     {
+        if (empty($this->getInput('newspaper'))) {
+            return;
+        }
+        
         $localitySlug = $this->getInput('locality-slug') ?? '';
         $alreadyFoundArticlesURIs = [];
 
