@@ -65,7 +65,7 @@ class CentreFranceBridge extends BridgeAbstract
         if (empty($this->getInput('newspaper'))) {
             return;
         }
-        
+
         $localitySlug = $this->getInput('locality-slug') ?? '';
         $alreadyFoundArticlesURIs = [];
 
