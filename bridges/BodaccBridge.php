@@ -177,7 +177,7 @@ class BodaccBridge extends BridgeAbstract
         }
 
         if ($where !== []) {
-            $urlParts[] = 'where=' . implode(' and ', $where);
+            $urlParts['where'] = implode(' and ', $where);
         }
 
         $url = urljoin(static::URI, '/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?' . http_build_query($urlParts));
