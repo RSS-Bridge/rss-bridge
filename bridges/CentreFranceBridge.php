@@ -67,6 +67,28 @@ class CentreFranceBridge extends BridgeAbstract
         ];
     }
 
+    public function getName()
+    {
+        if (empty($this->getInput('newspaper'))) {
+            return static::NAME;
+        }
+
+        $newspaperNameByDomain = array_flip(self::PARAMETERS['global']['newspaper']['values']);
+        if (!isset($newspaperNameByDomain[$this->getInput('newspaper')])) {
+            return static::NAME;
+        }
+
+        $completeTitle = $newspaperNameByDomain[$this->getInput('newspaper')];
+
+        if (!empty($this->getInput('locality-slug'))) {
+            $localityName = explode('-', $this->getInput('locality-slug'));
+            array_pop($localityName);
+            $completeTitle .= ' ' . ucfirst(implode('-', $localityName));
+        }
+
+        return $completeTitle;
+    }
+
     public function getIcon()
     {
         if (empty($this->getInput('newspaper'))) {
