@@ -60,6 +60,15 @@ class CentreFranceBridge extends BridgeAbstract
         ];
     }
 
+    public function getIcon()
+    {
+        if (empty($this->getInput('newspaper'))) {
+            return static::URI . '/favicon.ico';
+        }
+
+        return 'https://www.' . $this->getInput('newspaper') . '/favicon.ico';
+    }
+
     public function collectData()
     {
         if (empty($this->getInput('newspaper'))) {
