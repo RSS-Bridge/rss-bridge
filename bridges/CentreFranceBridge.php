@@ -28,6 +28,13 @@ class CentreFranceBridge extends BridgeAbstract
                 'name' => 'Remove reserved for subscribers articles',
                 'type' => 'checkbox',
                 'title' => 'Filter out articles that are only available to subscribers'
+            ],
+            'limit' => [
+                'name' => 'Limit',
+                'type' => 'number',
+                'title' => 'How many articles to fetch. 0 to disable.',
+                'required' => true,
+                'defaultValue' => 15
             ]
         ],
         'Local news' => [
@@ -71,6 +78,8 @@ class CentreFranceBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $limit = is_numeric($this->getInput('limit')) && (int)$this->getInput('limit') >= 0 ? $this->getInput('limit') : static::PARAMETERS['global']['limit']['defaultValue'];
+
         if (empty($this->getInput('newspaper'))) {
             return;
         }
@@ -115,6 +124,10 @@ class CentreFranceBridge extends BridgeAbstract
             $articleTitleDOMElement = $articleLinkDOMElement->find('span[data-tb-title]', 0);
             if ($articleTitleDOMElement === null) {
                 continue;
+            }
+
+            if ($limit > 0 && count($this->items) === $limit) {
+                break;
             }
 
             $articleTitle .= $articleLinkDOMElement->find('span[data-tb-title]', 0)->innertext;
