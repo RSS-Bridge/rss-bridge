@@ -118,13 +118,97 @@ class CentreFranceBridge extends BridgeAbstract
             }
 
             $articleTitle .= $articleLinkDOMElement->find('span[data-tb-title]', 0)->innertext;
+            $articleFullURI = urljoin('https://www.' . $this->getInput('newspaper') . '/', $articleURI);
 
             $this->items[] = [
                 'title' => $articleTitle,
-                'uri' => urljoin('https://www.' . $this->getInput('newspaper') . '/', $articleURI)
+                'uri' => $articleFullURI,
+                ...$this->collectArticleData($articleFullURI)
             ];
 
             $alreadyFoundArticlesURIs[] = $articleURI;
         }
+    }
+
+    private function collectArticleData($uri): array
+    {
+        // Since articles are sometime shared between newspapers, we prefer relative URI for caching
+        $cacheKey = sha1(parse_url($uri, PHP_URL_PATH));
+
+        $cachedData = $this->loadCacheValue($cacheKey);
+        if ($cachedData !== null) {
+            return $cachedData;
+        }
+
+        // To be respectful to the server, we wait for 1 second between requests.
+        // When not article is cached, it might delay the response up to 15 seconds.
+        sleep(1);
+
+        $html = getSimpleHTMLDOM($uri);
+        if (!$html) {
+            return [];
+        }
+
+        $articleData = [
+            'enclosures' => []
+        ];
+
+        $articleInformations = $html->find('.c-article-informations p');
+        if (is_array($articleInformations) && count($articleInformations) === 2) {
+            $articleData['author'] = $articleInformations[1]->innertext;
+
+            $parsedDate = \DateTimeImmutable::createFromFormat('\P\u\b\l\i\é \l\e d/m/Y \à H\hi', $articleInformations[0]->innertext);
+            if ($parsedDate instanceof \DateTimeImmutable) {
+                $articleData['timestamp'] = $parsedDate->getTimestamp();
+            }
+        }
+
+        $articleContent = $html->find('.b-article .contenu > *');
+        if (is_array($articleContent)) {
+            $articleData['content'] = '';
+
+            foreach ($articleContent as $contentPart) {
+                if (in_array($contentPart->getAttribute('id'), [ 'cf-audio-player', 'poool-widget' ], true)) {
+                    continue;
+                }
+
+                $articleHiddenParts = $contentPart->find('.bloc, .p402_hide');
+                if (is_array($articleHiddenParts)) {
+                    foreach ($articleHiddenParts as $articleHiddenPart) {
+                        $contentPart->removeChild($articleHiddenPart);
+                    }
+                }
+
+                $articleData['content'] .= $contentPart->innertext;
+            }
+
+            $articleData['content'] = str_replace('<span class="p-premium">premium</span>', '🔒', $articleData['content']);
+            $articleData['content'] = trim($articleData['content']);
+        }
+
+        $articleIllustration  = $html->find('.photo-wrapper .photo-box img');
+        if (is_array($articleIllustration) && count($articleIllustration) === 1) {
+            $articleData['enclosures'][] = $articleIllustration[0]->getAttribute('src');
+        }
+
+        $articleAudio = $html->find('#cf-audio-player-container audio');
+        if (is_array($articleAudio) && count($articleAudio) === 1) {
+            $articleData['enclosures'][] = $articleAudio[0]->getAttribute('src');
+        }
+
+        $articleTags = $html->find('.c-tags a');
+        if (is_array($articleTags)) {
+            $articleData['categories'] = array_map(static fn ($articleTag) => $articleTag->innertext, $articleTags);
+        }
+
+        $uid = rtrim(array_reverse(explode('_', $uri))[0], '/');
+        if (is_numeric($uid)) {
+            $articleData['uid'] = $uid;
+        }
+
+        // Article data should be cached for 3 months
+        $this->saveCacheValue($cacheKey, $articleData, 7884000);
+
+        return $articleData;
     }
 }
