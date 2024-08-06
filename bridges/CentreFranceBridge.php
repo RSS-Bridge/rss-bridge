@@ -189,12 +189,37 @@ class CentreFranceBridge extends BridgeAbstract
         ];
 
         $articleInformations = $html->find('.c-article-informations p');
-        if (is_array($articleInformations) && count($articleInformations) === 2) {
-            $articleData['author'] = $articleInformations[1]->innertext;
+        if (is_array($articleInformations) && $articleInformations !== []) {
+            $authorPosition = 1;
 
-            $parsedDate = \DateTimeImmutable::createFromFormat('\P\u\b\l\i\é \l\e d/m/Y \à H\hi', $articleInformations[0]->innertext);
-            if ($parsedDate instanceof \DateTimeImmutable) {
-                $articleData['timestamp'] = $parsedDate->getTimestamp();
+            // Article publication date
+            if (preg_match('/(\d{2})\/(\d{2})\/(\d{4})( à (\d{2})h(\d{2}))?/', $articleInformations[0]->innertext, $articleDateParts) > 0) {
+                $articleDate = new \DateTime('midnight');
+                $articleDate->setDate($articleDateParts[3], $articleDateParts[2], $articleDateParts[1]);
+
+                if (count($articleDateParts) === 7) {
+                    $articleDate->setTime($articleDateParts[5], $articleDateParts[6]);
+                }
+
+                $articleData['timestamp'] = $articleDate->getTimestamp();
+            }
+
+            // Article update date
+            if (count($articleInformations) >= 2 && preg_match('/(\d{2})\/(\d{2})\/(\d{4})( à (\d{2})h(\d{2}))?/', $articleInformations[1]->innertext, $articleDateParts) > 0) {
+                $authorPosition = 2;
+
+                $articleDate = new \DateTime('midnight');
+                $articleDate->setDate($articleDateParts[3], $articleDateParts[2], $articleDateParts[1]);
+
+                if (count($articleDateParts) === 7) {
+                    $articleDate->setTime($articleDateParts[5], $articleDateParts[6]);
+                }
+
+                $articleData['timestamp'] = $articleDate->getTimestamp();
+            }
+
+            if (count($articleInformations) === ($authorPosition + 1)) {
+                $articleData['author'] = $articleInformations[$authorPosition]->innertext;
             }
         }
 
@@ -216,9 +241,6 @@ class CentreFranceBridge extends BridgeAbstract
 
                 $articleData['content'] .= $contentPart->innertext;
             }
-
-            $articleData['content'] = str_replace('<span class="p-premium">premium</span>', '🔒', $articleData['content']);
-            $articleData['content'] = trim($articleData['content']);
         }
 
         $articleIllustration  = $html->find('.photo-wrapper .photo-box img');
@@ -231,7 +253,7 @@ class CentreFranceBridge extends BridgeAbstract
             $articleData['enclosures'][] = $articleAudio[0]->getAttribute('src');
         }
 
-        $articleTags = $html->find('.c-tags a');
+        $articleTags = $html->find('.b-article > ul.c-tags > li > a.t-simple');
         if (is_array($articleTags)) {
             $articleData['categories'] = array_map(static fn ($articleTag) => $articleTag->innertext, $articleTags);
         }
@@ -240,6 +262,22 @@ class CentreFranceBridge extends BridgeAbstract
         if (is_numeric($uid)) {
             $articleData['uid'] = $uid;
         }
+
+        // If the article is a "grand format", we use another parsing strategy
+        if ($articleData['content'] === '' && $html->find('article') !== []) {
+            $articleContent = $html->find('article > section');
+            foreach ($articleContent as $contentPart) {
+                if ($contentPart->find('#journo') !== []) {
+                    $articleData['author'] = $contentPart->find('#journo')->innertext;
+                    continue;
+                }
+
+                $articleData['content'] .= $contentPart->innertext;
+            }
+        }
+
+        $articleData['content'] = str_replace('<span class="p-premium">premium</span>', '🔒', $articleData['content']);
+        $articleData['content'] = trim($articleData['content']);
 
         // Article data should be cached for 3 months
         $this->saveCacheValue($cacheKey, $articleData, 7884000);
