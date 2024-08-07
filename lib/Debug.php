@@ -16,6 +16,9 @@ class Debug
         return false;
     }
 
+    /**
+     * @deprecated Use $this->logger->debug()
+     */
     public static function log($message)
     {
         $e = new \Exception();

@@ -2,25 +2,31 @@
 
 if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
     http_response_code(500);
-    print 'RSS-Bridge requires minimum PHP version 7.4';
-    exit;
-}
-
-if (! is_readable(__DIR__ . '/lib/bootstrap.php')) {
-    http_response_code(500);
-    print 'Unable to read lib/bootstrap.php. Check file permissions.';
-    exit;
+    exit("RSS-Bridge requires minimum PHP version 7.4\n");
 }
 
 require_once __DIR__ . '/lib/bootstrap.php';
 
-set_exception_handler(function (\Throwable $e) {
+$config = [];
+if (file_exists(__DIR__ . '/config.ini.php')) {
+    $config = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
+    if (!$config) {
+        http_response_code(500);
+        exit("Error parsing config.ini.php\n");
+    }
+}
+Configuration::loadConfiguration($config, getenv());
+
+$logger = new SimpleLogger('rssbridge');
+
+set_exception_handler(function (\Throwable $e) use ($logger) {
     $response = new Response(render(__DIR__ . '/templates/exception.html.php', ['e' => $e]), 500);
     $response->send();
-    RssBridge::getLogger()->error('Uncaught Exception', ['e' => $e]);
+    $logger->error('Uncaught Exception', ['e' => $e]);
 });
 
-set_error_handler(function ($code, $message, $file, $line) {
+set_error_handler(function ($code, $message, $file, $line) use ($logger) {
+    // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
     if ((error_reporting() & $code) === 0) {
         // Deprecation messages and other masked errors are typically ignored here
         return false;
@@ -35,11 +41,12 @@ set_error_handler(function ($code, $message, $file, $line) {
         sanitize_root($file),
         $line
     );
-    RssBridge::getLogger()->warning($text);
+    $logger->warning($text);
+    // todo: return false to prevent default error handler from running?
 });
 
 // There might be some fatal errors which are not caught by set_error_handler() or \Throwable.
-register_shutdown_function(function () {
+register_shutdown_function(function () use ($logger) {
     $error = error_get_last();
     if ($error) {
         $message = sprintf(
@@ -49,33 +56,29 @@ register_shutdown_function(function () {
             sanitize_root($error['file']),
             $error['line']
         );
-        RssBridge::getLogger()->error($message);
-        if (Debug::isEnabled()) {
-            // This output can interfere with json output etc
-            // This output is written at the bottom
-            print sprintf("<pre>%s</pre>\n", e($message));
-        }
+        $logger->error($message);
     }
 });
 
-$errors = Configuration::checkInstallation();
-if ($errors) {
-    http_response_code(500);
-    print '<pre>' . implode("\n", $errors) . '</pre>';
-    exit;
+$cacheFactory = new CacheFactory($logger);
+if (Debug::isEnabled()) {
+    $logger->addHandler(new StreamHandler('php://stderr', Logger::DEBUG));
+    $cache = $cacheFactory->create('array');
+} else {
+    $logger->addHandler(new StreamHandler('php://stderr', Logger::INFO));
+    $cache = $cacheFactory->create();
 }
-
-// Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
+$httpClient = new CurlHttpClient();
 
 date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
 try {
-    $rssBridge = new RssBridge();
+    $rssBridge = new RssBridge($logger, $cache, $httpClient);
     $response = $rssBridge->main($argv ?? []);
     $response->send();
 } catch (\Throwable $e) {
     // Probably an exception inside an action
-    RssBridge::getLogger()->error('Exception in RssBridge::main()', ['e' => $e]);
-    http_response_code(500);
-    print render(__DIR__ . '/templates/exception.html.php', ['e' => $e]);
+    $logger->error('Exception in RssBridge::main()', ['e' => $e]);
+    $response = new Response(render(__DIR__ . '/templates/exception.html.php', ['e' => $e]), 500);
+    $response->send();
 }
