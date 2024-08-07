@@ -117,7 +117,7 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
     {
         $item = [];
         defaultLinkTo($article, self::URI);
-        $content = $article->find('article[id=article]', 0);
+
         $item['uri'] = $link;
 
         $author = $article->find('.article__author', 1);
