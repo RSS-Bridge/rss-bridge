@@ -5,7 +5,7 @@ class AnfrBridge extends BridgeAbstract
     const NAME = 'ANFR';
     const URI = 'https://data.anfr.fr/';
     const DESCRIPTION = 'Fetches data from the French administration "Agence Nationale des Fréquences".';
-    const CACHE_TIMEOUT = 604800;
+    const CACHE_TIMEOUT = 604800; // 7d
     const MAINTAINER = 'quent1';
     const PARAMETERS = [
         'Données sur les réseaux mobiles' => [
@@ -195,6 +195,7 @@ class AnfrBridge extends BridgeAbstract
         }
 
         if (!empty($this->getInput('operateur'))) {
+            // http_build_query() already does urlencoding so this call is redundant
             $urlParts['refine.adm_lb_nom'] = urlencode($this->getInput('operateur'));
         }
 
@@ -205,17 +206,25 @@ class AnfrBridge extends BridgeAbstract
         // API seems to not play well with urlencoded data
         $url = urljoin(static::URI, '/d4c/api/records/1.0/download/?' . urldecode(http_build_query($urlParts)));
 
-        $records = json_decode(getContents($url), false, 512, JSON_THROW_ON_ERROR)->records;
+        $json = getContents($url);
+        $data = Json::decode($json, false);
+        $records = $data->records;
         $frequenciesByStation = [];
         foreach ($records as $record) {
             if (!isset($frequenciesByStation[$record->fields->sta_nm_anfr])) {
+                $street = sprintf(
+                    '%s %s %s',
+                    $record->fields->adr_lb_add1 ?? '',
+                    $record->fields->adr_lb_add2 ?? '',
+                    $record->fields->adr_lb_add3 ?? ''
+                );
                 $frequenciesByStation[$record->fields->sta_nm_anfr] = [
                     'id' => $record->fields->sta_nm_anfr,
                     'operator' => $record->fields->adm_lb_nom,
                     'frequencies' => [],
                     'lastUpdate' => 0,
                     'address' => [
-                        'street' => trim(($record->fields->adr_lb_add1 ?? '') . ' ' . ($record->fields->adr_lb_add2 ?? '') . ' ' . ($record->fields->adr_lb_add3 ?? '')),
+                        'street' => trim($street),
                         'postCode' => $record->fields->adr_nm_cp,
                         'city' => $record->fields->adr_lb_lieu
                     ]
@@ -238,20 +247,31 @@ class AnfrBridge extends BridgeAbstract
         usort($frequenciesByStation, static fn ($a, $b) => $b['lastUpdate'] <=> $a['lastUpdate']);
 
         foreach ($frequenciesByStation as $station) {
+            $title = sprintf(
+                '[%s] Mise à jour de la station n°%s à %s (%s)',
+                $station['operator'],
+                $station['id'],
+                $station['address']['city'],
+                $station['address']['postCode']
+            );
+
+            $array_reduce = array_reduce($station['frequencies'], static function ($carry, $frequency) {
+                return sprintf('%s<li>%s : %s</li>', $carry, $frequency['frequency'], $frequency['status']);
+            }, '');
+
+            $content = sprintf(
+                '<h1>Adresse complète</h1><p>%s<br>%s<br>%s</p><h1>Fréquences</h1><p><ul>%s</ul></p>',
+                $station['address']['street'],
+                $station['address']['postCode'],
+                $station['address']['city'],
+                $array_reduce
+            );
+
             $this->items[] = [
-                'uid' => $station['id'],
+                'uid'       => $station['id'],
                 'timestamp' => $station['lastUpdate'],
-                'title' => '[' . $station['operator'] . '] Mise à jour de la station n°' . $station['id'] .
-                    ' à ' . $station['address']['city'] . ' (' . $station['address']['postCode'] . ')'
-                ,
-                'content' => '<h1>Adresse complète</h1><p>' .
-                    $station['address']['street'] . '<br>' . $station['address']['postCode'] . '<br>' . $station['address']['city'] .
-                    '</p><h1>Fréquences</h1><p><ul>' .
-                        array_reduce($station['frequencies'], static function ($carry, $frequency) {
-                            return $carry . '<li>' . $frequency['frequency'] . ' : ' . $frequency['status'] . '</li>';
-                        }, '') .
-                    '</ul></p>'
-                ,
+                'title'     => $title,
+                'content'   => $content,
             ];
         }
     }
