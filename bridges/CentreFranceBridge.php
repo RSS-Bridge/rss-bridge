@@ -5,7 +5,7 @@ class CentreFranceBridge extends BridgeAbstract
     const NAME = 'Centre France Newspapers';
     const URI = 'https://www.centrefrance.com/';
     const DESCRIPTION = 'Common bridge for all Centre France group newspapers.';
-    const CACHE_TIMEOUT = 7200;
+    const CACHE_TIMEOUT = 7200; // 2h
     const MAINTAINER = 'quent1';
     const PARAMETERS = [
         'global' => [
@@ -50,7 +50,12 @@ class CentreFranceBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $limit = is_numeric($this->getInput('limit')) && (int)$this->getInput('limit') >= 0 ? $this->getInput('limit') : static::PARAMETERS['global']['limit']['defaultValue'];
+        $value = $this->getInput('limit');
+        if (is_numeric($value) && (int)$value >= 0) {
+            $limit = $value;
+        } else {
+            $limit = static::PARAMETERS['global']['limit']['defaultValue'];
+        }
 
         if (empty($this->getInput('newspaper'))) {
             return;
@@ -59,7 +64,8 @@ class CentreFranceBridge extends BridgeAbstract
         $localitySlug = $this->getInput('locality-slug') ?? '';
         $alreadyFoundArticlesURIs = [];
 
-        $html = getSimpleHTMLDOM('https://www.' . $this->getInput('newspaper') . '/' . $localitySlug . '/');
+        $newspaperUrl = 'https://www.' . $this->getInput('newspaper') . '/' . $localitySlug . '/';
+        $html = getSimpleHTMLDOM($newspaperUrl);
 
         // Articles are detected through their titles
         foreach ($html->find('.c-titre') as $articleTitleDOMElement) {
@@ -105,11 +111,12 @@ class CentreFranceBridge extends BridgeAbstract
             $articleTitle .= $articleLinkDOMElement->find('span[data-tb-title]', 0)->innertext;
             $articleFullURI = urljoin('https://www.' . $this->getInput('newspaper') . '/', $articleURI);
 
-            $this->items[] = [
+            $item = [
                 'title' => $articleTitle,
                 'uri' => $articleFullURI,
                 ...$this->collectArticleData($articleFullURI)
             ];
+            $this->items[] = $item;
 
             $alreadyFoundArticlesURIs[] = $articleURI;
         }
@@ -117,25 +124,10 @@ class CentreFranceBridge extends BridgeAbstract
 
     private function collectArticleData($uri): array
     {
-        // Since articles are sometime shared between newspapers, we prefer relative URI for caching
-        $cacheKey = sha1(parse_url($uri, PHP_URL_PATH));
+        $html = getSimpleHTMLDOMCached($uri, 86400 * 90); // 90d
 
-        $cachedData = $this->loadCacheValue($cacheKey);
-        if ($cachedData !== null) {
-            return $cachedData;
-        }
-
-        // To be respectful to the server, we wait for 1 second between requests.
-        // When not article is cached, it might delay the response up to 15 seconds.
-        sleep(1);
-
-        $html = getSimpleHTMLDOM($uri);
-        if (!$html) {
-            return [];
-        }
-
-        $articleData = [
-            'enclosures' => []
+        $item = [
+            'enclosures' => [],
         ];
 
         $articleInformations = $html->find('.c-article-informations p');
@@ -151,7 +143,7 @@ class CentreFranceBridge extends BridgeAbstract
                     $articleDate->setTime($articleDateParts[5], $articleDateParts[6]);
                 }
 
-                $articleData['timestamp'] = $articleDate->getTimestamp();
+                $item['timestamp'] = $articleDate->getTimestamp();
             }
 
             // Article update date
@@ -165,20 +157,20 @@ class CentreFranceBridge extends BridgeAbstract
                     $articleDate->setTime($articleDateParts[5], $articleDateParts[6]);
                 }
 
-                $articleData['timestamp'] = $articleDate->getTimestamp();
+                $item['timestamp'] = $articleDate->getTimestamp();
             }
 
             if (count($articleInformations) === ($authorPosition + 1)) {
-                $articleData['author'] = $articleInformations[$authorPosition]->innertext;
+                $item['author'] = $articleInformations[$authorPosition]->innertext;
             }
         }
 
         $articleContent = $html->find('.b-article .contenu > *');
         if (is_array($articleContent)) {
-            $articleData['content'] = '';
+            $item['content'] = '';
 
             foreach ($articleContent as $contentPart) {
-                if (in_array($contentPart->getAttribute('id'), [ 'cf-audio-player', 'poool-widget' ], true)) {
+                if (in_array($contentPart->getAttribute('id'), ['cf-audio-player', 'poool-widget'], true)) {
                     continue;
                 }
 
@@ -189,50 +181,50 @@ class CentreFranceBridge extends BridgeAbstract
                     }
                 }
 
-                $articleData['content'] .= $contentPart->innertext;
+                $item['content'] .= $contentPart->innertext;
             }
         }
 
         $articleIllustration  = $html->find('.photo-wrapper .photo-box img');
         if (is_array($articleIllustration) && count($articleIllustration) === 1) {
-            $articleData['enclosures'][] = $articleIllustration[0]->getAttribute('src');
+            $item['enclosures'][] = $articleIllustration[0]->getAttribute('src');
         }
 
         $articleAudio = $html->find('#cf-audio-player-container audio');
         if (is_array($articleAudio) && count($articleAudio) === 1) {
-            $articleData['enclosures'][] = $articleAudio[0]->getAttribute('src');
+            $item['enclosures'][] = $articleAudio[0]->getAttribute('src');
         }
 
         $articleTags = $html->find('.b-article > ul.c-tags > li > a.t-simple');
         if (is_array($articleTags)) {
-            $articleData['categories'] = array_map(static fn ($articleTag) => $articleTag->innertext, $articleTags);
+            $item['categories'] = array_map(static fn ($articleTag) => $articleTag->innertext, $articleTags);
         }
 
-        $uid = rtrim(array_reverse(explode('_', $uri))[0], '/');
+        $explode = explode('_', $uri);
+        $array_reverse = array_reverse($explode);
+        $string = $array_reverse[0];
+        $uid = rtrim($string, '/');
         if (is_numeric($uid)) {
-            $articleData['uid'] = $uid;
+            $item['uid'] = $uid;
         }
 
         // If the article is a "grand format", we use another parsing strategy
-        if ($articleData['content'] === '' && $html->find('article') !== []) {
+        if ($item['content'] === '' && $html->find('article') !== []) {
             $articleContent = $html->find('article > section');
             foreach ($articleContent as $contentPart) {
                 if ($contentPart->find('#journo') !== []) {
-                    $articleData['author'] = $contentPart->find('#journo')->innertext;
+                    $item['author'] = $contentPart->find('#journo')->innertext;
                     continue;
                 }
 
-                $articleData['content'] .= $contentPart->innertext;
+                $item['content'] .= $contentPart->innertext;
             }
         }
 
-        $articleData['content'] = str_replace('<span class="p-premium">premium</span>', '🔒', $articleData['content']);
-        $articleData['content'] = trim($articleData['content']);
+        $item['content'] = str_replace('<span class="p-premium">premium</span>', '🔒', $item['content']);
+        $item['content'] = trim($item['content']);
 
-        // Article data should be cached for 3 months
-        $this->saveCacheValue($cacheKey, $articleData, 7884000);
-
-        return $articleData;
+        return $item;
     }
 
     public function getName()
