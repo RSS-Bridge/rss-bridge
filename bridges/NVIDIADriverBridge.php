@@ -40,7 +40,7 @@ class NVIDIADriverBridge extends FeedExpander
 
             $this->items[] = [
                 'timestamp' => $element->find('td.gridItem', 3)->plaintext,
-                'title' => 'NVIDIA Linux Driver '. $element->find('td.gridItem', 2)->plaintext,
+                'title' => 'NVIDIA Linux Driver ' . $element->find('td.gridItem', 2)->plaintext,
                 'uri' => 'https://www.nvidia.com/Download/driverResults.aspx/' . $id,
                 'content' => $dom->find('tr#tr_' . $id . ' span', 0)->innertext,
             ];
