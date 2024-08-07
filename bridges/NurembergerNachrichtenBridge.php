@@ -54,17 +54,82 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
         $this->handleNewsblock($listSite);
     }
 
-
-    private function getValidImage($picture)
+    private function handleNewsblock($listSite)
     {
-        $img = $picture->find('img', 0);
-        if ($img) {
-            $imgUrl = $img->src;
-            if (!preg_match('#/logo-.*\.png#', $imgUrl)) {
-                return '<br><img src="' . $imgUrl . '">';
+        $main = $listSite->find('main', 0);
+        foreach ($main->find('article') as $article) {
+            $url = $article->find('a', 0)->href;
+            $url = urljoin(self::URI, $url);
+
+            $articleContent = getSimpleHTMLDOM($url);
+
+            // exclude nn+ articles if desired
+            if (
+                $this->getInput('hideNNPlus') &&
+                str_contains($articleContent->find('article[id=article]', 0)
+                    ->find('header', 0), 'icon-nnplus')
+            ) {
+                continue;
             }
+
+            $item = $this->parseArticle($articleContent, $url);
+            $articleContent->clear();
+
+            $this->items[] = $item;
         }
-        return '';
+    }
+
+    private function parseArticle($article, $link)
+    {
+        $item = [];
+        defaultLinkTo($article, self::URI);
+
+        $item['uri'] = $link;
+
+        $author = $article->find('.article__author', 1);
+        if ($author !== null) {
+            $item['author'] = trim($author->plaintext);
+        }
+
+        $createdAt = $article->find('[class=article__release]', 0);
+        if ($createdAt) {
+            $item['timestamp'] = strtotime(str_replace('Uhr', '', $createdAt->plaintext));
+        }
+
+        if ($article->find('h2', 0) === null) {
+            $item['title'] = $article->find('h3', 0)->innertext;
+        } else {
+            $item['title'] = $article->find('h2', 0)->innertext;
+        }
+        $item['content'] = '';
+
+        if ($article->find('section[class*=article__richtext]', 0) === null) {
+            $content = $article->find('div[class*=modul__teaser]', 0)
+                ->find('p', 0);
+            $item['content'] .= $content;
+        } else {
+            $content = $article->find('article', 0);
+            // change order of article teaser in order to show it on top
+            // of the title image. If we didn't do this some rss programs
+            // would show the subtitle of the title image as teaser instead
+            // of the actuall article teaser.
+            $item['content'] .= $this->getTeaser($content);
+            $item['content'] .= $this->getUseFullContent($content);
+        }
+
+        return $item;
+    }
+
+    private function getTeaser($content)
+    {
+        $teaser = $content->find('p[class=article__teaser]', 0);
+        if ($teaser === null) {
+            return '';
+        }
+        $teaser = $teaser->plaintext;
+        $teaser = preg_replace('/[ ]{2,}/', ' ', $teaser);
+        $teaser = '<p class="article__teaser">' . $teaser . '</p>';
+        return $teaser;
     }
 
     private function getUseFullContent($rawContent)
@@ -101,81 +166,15 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
         return $content;
     }
 
-    private function getTeaser($content)
+    private function getValidImage($picture)
     {
-        $teaser = $content->find('p[class=article__teaser]', 0);
-        if ($teaser === null) {
-            return '';
-        }
-        $teaser = $teaser->plaintext;
-        $teaser = preg_replace('/[ ]{2,}/', ' ', $teaser);
-        $teaser = '<p class="article__teaser">' . $teaser . '</p>';
-        return $teaser;
-    }
-
-    private function parseArticle($article, $link)
-    {
-        $item = [];
-        defaultLinkTo($article, self::URI);
-
-        $item['uri'] = $link;
-
-        $author = $article->find('.article__author', 1);
-        if ($author !== null) {
-            $item['author'] = trim($author->plaintext);
-        }
-
-        $createdAt = $article->find('[class=article__release]', 0);
-        if ($createdAt) {
-            $item['timestamp'] = strtotime(str_replace('Uhr', '', $createdAt->plaintext));
-        }
-
-        if ($article->find('h2', 0) === null) {
-            $item['title'] = $article->find('h3', 0)->innertext;
-        } else {
-            $item['title'] = $article->find('h2', 0)->innertext;
-        }
-        $item['content'] = '';
-
-        if ($article->find('section[class*=article__richtext]', 0) === null) {
-            $content = $article->find('div[class*=modul__teaser]', 0)
-                           ->find('p', 0);
-            $item['content'] .= $content;
-        } else {
-            $content = $article->find('article', 0);
-            // change order of article teaser in order to show it on top
-            // of the title image. If we didn't do this some rss programs
-            // would show the subtitle of the title image as teaser instead
-            // of the actuall article teaser.
-            $item['content'] .= $this->getTeaser($content);
-            $item['content'] .= $this->getUseFullContent($content);
-        }
-
-        return $item;
-    }
-
-    private function handleNewsblock($listSite)
-    {
-        $main = $listSite->find('main', 0);
-        foreach ($main->find('article') as $article) {
-            $url = $article->find('a', 0)->href;
-            $url = urljoin(self::URI, $url);
-
-            $articleContent = getSimpleHTMLDOM($url);
-
-            // exclude nn+ articles if desired
-            if (
-                $this->getInput('hideNNPlus') &&
-                str_contains($articleContent->find('article[id=article]', 0)
-                    ->find('header', 0), 'icon-nnplus')
-            ) {
-                continue;
+        $img = $picture->find('img', 0);
+        if ($img) {
+            $imgUrl = $img->src;
+            if (!preg_match('#/logo-.*\.png#', $imgUrl)) {
+                return '<br><img src="' . $imgUrl . '">';
             }
-
-            $item = $this->parseArticle($articleContent, $url);
-            $articleContent->clear();
-
-            $this->items[] = $item;
         }
+        return '';
     }
 }
