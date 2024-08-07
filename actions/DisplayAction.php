@@ -145,7 +145,7 @@ class DisplayAction implements ActionInterface
             if ($errorCount >= $reportLimit) {
                 if ($errorOutput === 'feed') {
                     // Render the exception as a feed item
-                    $items[] = $this->createFeedItemFromException($e, $bridge);
+                    $items = [$this->createFeedItemFromException($e, $bridge)];
                 } elseif ($errorOutput === 'http') {
                     return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), 500);
                 } elseif ($errorOutput === 'none') {
