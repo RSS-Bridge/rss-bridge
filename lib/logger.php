@@ -83,10 +83,12 @@ final class SimpleLogger implements Logger
 
 final class StreamHandler
 {
+    private $stream;
     private int $level;
 
-    public function __construct(int $level = Logger::DEBUG)
+    public function __construct(string $stream, int $level = Logger::DEBUG)
     {
+        $this->stream = $stream;
         $this->level = $level;
     }
 
@@ -147,13 +149,8 @@ final class StreamHandler
             $record['message'],
             $context
         );
-        error_log($text);
-        if ($record['level'] < Logger::ERROR && Debug::isEnabled()) {
-            // The record level is INFO or WARNING here
-            // Not a good idea to print here because http headers might not have been sent
-            print sprintf("<pre>%s</pre>\n", e($text));
-        }
-        //$bytes = file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND | LOCK_EX);
+
+        $bytes = file_put_contents($this->stream, $text, FILE_APPEND | LOCK_EX);
     }
 }
 

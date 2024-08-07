@@ -198,6 +198,9 @@ final class Configuration
 
     public static function getConfig(string $section, string $key, $default = null)
     {
+        if (self::$config === []) {
+            throw new \Exception('Config has not been loaded');
+        }
         return self::$config[strtolower($section)][strtolower($key)] ?? $default;
     }
 

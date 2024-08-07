@@ -2,25 +2,18 @@
 
 final class RssBridge
 {
-    private static CacheInterface $cache;
     private static Logger $logger;
+    private static CacheInterface $cache;
     private static HttpClient $httpClient;
 
-    public function __construct()
-    {
-        self::$logger = new SimpleLogger('rssbridge');
-        if (Debug::isEnabled()) {
-            self::$logger->addHandler(new StreamHandler(Logger::DEBUG));
-        } else {
-            self::$logger->addHandler(new StreamHandler(Logger::INFO));
-        }
-        self::$httpClient = new CurlHttpClient();
-        $cacheFactory = new CacheFactory(self::$logger);
-        if (Debug::isEnabled()) {
-            self::$cache = $cacheFactory->create('array');
-        } else {
-            self::$cache = $cacheFactory->create();
-        }
+    public function __construct(
+        Logger $logger,
+        CacheInterface $cache,
+        HttpClient $httpClient
+    ) {
+        self::$logger = $logger;
+        self::$cache = $cache;
+        self::$httpClient = $httpClient;
     }
 
     public function main(array $argv = []): Response
@@ -105,14 +98,14 @@ final class RssBridge
         return $response;
     }
 
-    public static function getCache(): CacheInterface
-    {
-        return self::$cache;
-    }
-
     public static function getLogger(): Logger
     {
         return self::$logger;
+    }
+
+    public static function getCache(): CacheInterface
+    {
+        return self::$cache;
     }
 
     public static function getHttpClient(): HttpClient
