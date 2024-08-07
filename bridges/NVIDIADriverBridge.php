@@ -25,14 +25,14 @@ class NVIDIADriverBridge extends FeedExpander
     {
         $whql = $this->getInput('whql');
 
-        $params = [
-            'lid' => 1, // en-us
-            'psid' => 129, // GeForce
-            'osid' => 12, // Linux 64-bit
-            'whql' => $whql
+        $parameters = [
+            'lid'   => 1, // en-us
+            'psid'  => 129, // GeForce
+            'osid'  => 12, // Linux 64-bit
+            'whql'  => $whql,
         ];
 
-        $url = self::URI . '?' . http_build_query($params);
+        $url = 'https://www.nvidia.com/Download/processFind.aspx?' . http_build_query($parameters);
         $dom = getSimpleHTMLDOM($url);
 
         foreach ($dom->find('tr#driverList') as $element) {
@@ -40,9 +40,9 @@ class NVIDIADriverBridge extends FeedExpander
 
             $this->items[] = [
                 'timestamp' => $element->find('td.gridItem', 3)->plaintext,
-                'title' => 'NVIDIA Linux Driver ' . $element->find('td.gridItem', 2)->plaintext,
-                'uri' => 'https://www.nvidia.com/Download/driverResults.aspx/' . $id,
-                'content' => $dom->find('tr#tr_' . $id . ' span', 0)->innertext,
+                'title'     => sprintf('NVIDIA Linux Driver %s', $element->find('td.gridItem', 2)->plaintext),
+                'uri'       => 'https://www.nvidia.com/Download/driverResults.aspx/' . $id,
+                'content'   => $dom->find('tr#tr_' . $id . ' span', 0)->innertext,
             ];
         }
     }
