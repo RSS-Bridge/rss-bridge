@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 class TldrTechBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
     const NAME = 'TLDR Tech Newsletter Bridge';
     const URI = 'https://tldr.tech/';
-
-    const CACHE_TIMEOUT = 3600; // 1 hour
     const DESCRIPTION = 'Return newsletter articles from TLDR Tech';
 
     const PARAMETERS = [
@@ -42,8 +42,12 @@ class TldrTechBridge extends BridgeAbstract
         $topic = $this->getInput('topic');
         $limit = $this->getInput('limit');
 
-        $latest_url = $this->processRedirect(self::URI . 'api/latest/' . $topic);
-        $this->extractItem($latest_url);
+        $url = self::URI . 'api/latest/' . $topic;
+        $response = getContents($url, [], [], true);
+        $location = $response->getHeader('Location');
+        $locationUrl = Url::fromString($location);
+
+        $this->extractItem($locationUrl);
 
         $archives_url = self::URI . $topic . '/archives';
         $archives_html = getSimpleHTMLDOM($archives_url);
@@ -52,32 +56,25 @@ class TldrTechBridge extends BridgeAbstract
             if ($child->tag != 'a') {
                 continue;
             }
-            $this->extractItem(self::URI . $child->href);
+            $this->extractItem(Url::fromString(self::URI . $child->href));
             if (count($this->items) >= $limit) {
                 break;
             }
         }
     }
 
-    private function processRedirect($url)
+    private function extractItem(Url $url)
     {
-        $headers = get_headers($url, true);
-        $loc = $headers['Location'];
-        return $loc;
-    }
-
-    private function extractItem($href)
-    {
-        $date_items = explode('/', $href);
-        $date = strtotime(end($date_items));
-        $item_url = ltrim($href, '/');
+        $pathParts = explode('/', $url->getPath());
+        $date = strtotime(end($pathParts));
         try {
-            [$content, $title] = $this->extractContent($item_url);
+            [$content, $title] = $this->extractContent($url);
+
             $this->items[] = [
-            'uri'       => $href,
-            'title'     => $title,
-            'timestamp' => $date,
-            'content'   => $content,
+                'uri'       => (string) $url,
+                'title'     => $title,
+                'timestamp' => $date,
+                'content'   => $content,
             ];
         } catch (HttpException $e) {
             // archive occasionally returns broken URLs
@@ -87,10 +84,10 @@ class TldrTechBridge extends BridgeAbstract
 
     private function extractContent($url)
     {
-        $html = getSimpleHTMLDOM($url);
+        $html = getSimpleHTMLDOMCached($url);
         $content = $html->find('div.content-center.mt-5', 0);
         if (!$content) {
-            throw new HttpException('Could not find content', 500);
+            throw new \Exception('Could not find content');
         }
         $subscribe_form = $content->find('div.mt-5 > div > form', 0);
         if ($subscribe_form) {
