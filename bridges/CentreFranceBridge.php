@@ -48,56 +48,6 @@ class CentreFranceBridge extends BridgeAbstract
         ]
     ];
 
-    public function detectParameters($url)
-    {
-        $regex = '/^(https?:\/\/)?(www\.)?([a-z-]+\.fr)(\/)?([a-z-]+-[0-9]{5})?(\/)?$/';
-        $url = strtolower($url);
-
-        if (preg_match($regex, $url, $urlMatches) === 0) {
-            return null;
-        }
-
-        if (!in_array($urlMatches[3], self::PARAMETERS['global']['newspaper']['values'], true)) {
-            return null;
-        }
-
-        return [
-            'newspaper' => $urlMatches[3],
-            'locality-slug' => empty($urlMatches[5]) ? null : $urlMatches[5]
-        ];
-    }
-
-    public function getName()
-    {
-        if (empty($this->getInput('newspaper'))) {
-            return static::NAME;
-        }
-
-        $newspaperNameByDomain = array_flip(self::PARAMETERS['global']['newspaper']['values']);
-        if (!isset($newspaperNameByDomain[$this->getInput('newspaper')])) {
-            return static::NAME;
-        }
-
-        $completeTitle = $newspaperNameByDomain[$this->getInput('newspaper')];
-
-        if (!empty($this->getInput('locality-slug'))) {
-            $localityName = explode('-', $this->getInput('locality-slug'));
-            array_pop($localityName);
-            $completeTitle .= ' ' . ucfirst(implode('-', $localityName));
-        }
-
-        return $completeTitle;
-    }
-
-    public function getIcon()
-    {
-        if (empty($this->getInput('newspaper'))) {
-            return static::URI . '/favicon.ico';
-        }
-
-        return 'https://www.' . $this->getInput('newspaper') . '/favicon.ico';
-    }
-
     public function collectData()
     {
         $limit = is_numeric($this->getInput('limit')) && (int)$this->getInput('limit') >= 0 ? $this->getInput('limit') : static::PARAMETERS['global']['limit']['defaultValue'];
@@ -283,5 +233,55 @@ class CentreFranceBridge extends BridgeAbstract
         $this->saveCacheValue($cacheKey, $articleData, 7884000);
 
         return $articleData;
+    }
+
+    public function getName()
+    {
+        if (empty($this->getInput('newspaper'))) {
+            return static::NAME;
+        }
+
+        $newspaperNameByDomain = array_flip(self::PARAMETERS['global']['newspaper']['values']);
+        if (!isset($newspaperNameByDomain[$this->getInput('newspaper')])) {
+            return static::NAME;
+        }
+
+        $completeTitle = $newspaperNameByDomain[$this->getInput('newspaper')];
+
+        if (!empty($this->getInput('locality-slug'))) {
+            $localityName = explode('-', $this->getInput('locality-slug'));
+            array_pop($localityName);
+            $completeTitle .= ' ' . ucfirst(implode('-', $localityName));
+        }
+
+        return $completeTitle;
+    }
+
+    public function getIcon()
+    {
+        if (empty($this->getInput('newspaper'))) {
+            return static::URI . '/favicon.ico';
+        }
+
+        return 'https://www.' . $this->getInput('newspaper') . '/favicon.ico';
+    }
+
+    public function detectParameters($url)
+    {
+        $regex = '/^(https?:\/\/)?(www\.)?([a-z-]+\.fr)(\/)?([a-z-]+-[0-9]{5})?(\/)?$/';
+        $url = strtolower($url);
+
+        if (preg_match($regex, $url, $urlMatches) === 0) {
+            return null;
+        }
+
+        if (!in_array($urlMatches[3], self::PARAMETERS['global']['newspaper']['values'], true)) {
+            return null;
+        }
+
+        return [
+            'newspaper' => $urlMatches[3],
+            'locality-slug' => empty($urlMatches[5]) ? null : $urlMatches[5]
+        ];
     }
 }
