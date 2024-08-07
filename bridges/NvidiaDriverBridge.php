@@ -1,6 +1,6 @@
 <?php
 
-class NVIDIADriverBridge extends FeedExpander
+class NvidiaDriverBridge extends FeedExpander
 {
     const NAME = 'NVIDIA Linux Driver Releases';
     const URI = 'https://www.nvidia.com/Download/processFind.aspx';
