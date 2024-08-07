@@ -18,12 +18,12 @@ class KemonoBridge extends BridgeAbstract
                 'Boosty' => 'boosty',
                 'Gumroad' => 'gumroad',
                 'SubscribeStar' => 'subscribestar',
-                ]
-            ],
-            'user' => [
-                'name' => 'User ID/Name',
-                'exampleValue' => '9069743', # Thomas Joy
-                'required' => true,
+            ]
+        ],
+        'user' => [
+            'name' => 'User ID/Name',
+            'exampleValue' => '9069743', # Thomas Joy
+            'required' => true,
         ]
     ]];
 
@@ -34,11 +34,11 @@ class KemonoBridge extends BridgeAbstract
         $api = parent::getURI() . 'api/v1/';
         $url = $api . $this->getInput('service') . '/user/' . $this->getInput('user');
         $api_response = getContents($url);
-        $json = json_decode($api_response, true);
+        $json = Json::decode($api_response);
 
         $url .= '/profile';
         $api_response = getContents($url);
-        $profile = json_decode($api_response, true);
+        $profile = Json::decode($api_response);
         $this->title = ucfirst($profile['name']);
 
         foreach ($json as $element) {
@@ -54,7 +54,7 @@ class KemonoBridge extends BridgeAbstract
                 $tags = $element['tags'];
                 $tags = preg_replace('/^{"?/', '["', $tags);
                 $tags = preg_replace('/"?}$/', '"]', $tags);
-                $item['categories'] = json_decode($tags);
+                $item['categories'] = Json::decode($tags);
             }
 
             $item['enclosures'] = [];
@@ -83,8 +83,7 @@ class KemonoBridge extends BridgeAbstract
 
     public function getURI()
     {
-        $uri = parent::getURI() . $this->getInput('service') .
-            '/user/' . $this->getInput('user');
+        $uri = parent::getURI() . $this->getInput('service') . '/user/' . $this->getInput('user');
         return $uri;
     }
 }
