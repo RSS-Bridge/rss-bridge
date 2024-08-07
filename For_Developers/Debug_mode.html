@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Developers/index.html">For Developers</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Developers/Debug_mode.html">Debug mode</a></h1>
                 <span class="ModifiedDate">
-            August 1, 2024 at 2:36 PM        </span>
+            August 6, 2024 at 6:15 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/04_For_Developers/05_Debug_mode.md" target="_blank">
                 Edit on GitHub            </a>
@@ -109,7 +109,8 @@
 
     <div class="s-content">
         <h1 align="center">Warning!</h1>
-<p>Enabling debug mode on a public server may result in malicious clients retrieving sensitive data about your server and possibly gaining access to it. Do not enable debug mode on a public server, unless you understand the implications of your doing!</p>
+<p>Enabling debug mode on a public server may result in malicious clients retrieving sensitive data about your server and possibly gaining access to it.
+Do not enable debug mode on a public server, unless you understand the implications of your doing!</p>
 <hr />
 <p>Debug mode enables error reporting and prevents loading data from the cache (data is still written to the cache).
 To enable debug mode, set in <code>config.ini.php</code>:</p>
@@ -125,16 +126,6 @@ debug_mode_whitelist[] = 192.168.1.10
 <li>The bridge whitelist still applies! (debug mode does <strong>not</strong> enable all bridges)</li>
 </ul>
 <p>RSS-Bridge will give you a visual feedback when debug mode is enabled.</p>
-<p>While debug mode is active, RSS-Bridge will write additional data to your servers <code>error.log</code>.</p>
-<p>Debug mode is controlled by the static class <code>Debug</code>. It provides three core functions:</p>
-<ul>
-<li>
-<code>Debug::isEnabled()</code>: Returns <code>true</code> if debug mode is enabled.</li>
-<li>
-<code>Debug::log($message)</code>: Adds a message to <code>error.log</code>. It takes one parameter, which can be anything.</li>
-</ul>
-<p>Example: <code>Debug::log('Hello World!');</code></p>
-<p><strong>Notice</strong>: <code>Debug::log($message)</code> calls <code>Debug::isEnabled()</code> internally. You don’t have to do that manually.</p>
     </div>
 
         <nav>
