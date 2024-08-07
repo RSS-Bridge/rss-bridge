@@ -61,13 +61,12 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
             $url = $article->find('a', 0)->href;
             $url = urljoin(self::URI, $url);
 
-            $articleContent = getSimpleHTMLDOM($url);
+            $articleContent = getSimpleHTMLDOMCached($url, 86400 * 7);
 
             // exclude nn+ articles if desired
             if (
                 $this->getInput('hideNNPlus') &&
-                str_contains($articleContent->find('article[id=article]', 0)
-                    ->find('header', 0), 'icon-nnplus')
+                str_contains($articleContent->find('article[id=article]', 0)->find('header', 0), 'icon-nnplus')
             ) {
                 continue;
             }
@@ -104,8 +103,7 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
         $item['content'] = '';
 
         if ($article->find('section[class*=article__richtext]', 0) === null) {
-            $content = $article->find('div[class*=modul__teaser]', 0)
-                ->find('p', 0);
+            $content = $article->find('div[class*=modul__teaser]', 0)->find('p', 0);
             $item['content'] .= $content;
         } else {
             $content = $article->find('article', 0);
