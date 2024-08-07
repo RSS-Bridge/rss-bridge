@@ -157,10 +157,10 @@ class BodaccBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $urlParts = [
-            'select' => 'id,dateparution,typeavis_lib,familleavis_lib,commercant,ville,cp',
-            'order_by' => 'id desc',
-            'limit' => 50
+        $parameters = [
+            'select'    => 'id,dateparution,typeavis_lib,familleavis_lib,commercant,ville,cp',
+            'order_by'  => 'id desc',
+            'limit'     => 50,
         ];
 
         $where = [];
@@ -177,21 +177,41 @@ class BodaccBridge extends BridgeAbstract
         }
 
         if ($where !== []) {
-            $urlParts['where'] = implode(' and ', $where);
+            $parameters['where'] = implode(' and ', $where);
         }
 
-        $url = urljoin(static::URI, '/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?' . http_build_query($urlParts));
+        $url = urljoin(self::URI, '/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?' . http_build_query($parameters));
 
-        $results = json_decode(getContents($url), false, 512, JSON_THROW_ON_ERROR);
-        foreach ($results->results as $result) {
-            if (!isset($result->id, $result->dateparution, $result->typeavis_lib, $result->familleavis_lib, $result->commercant, $result->ville, $result->cp)) {
+        $data = Json::decode(getContents($url), false);
+
+        foreach ($data->results as $result) {
+            if (
+                !isset(
+                    $result->id,
+                    $result->dateparution,
+                    $result->typeavis_lib,
+                    $result->familleavis_lib,
+                    $result->commercant,
+                    $result->ville,
+                    $result->cp
+                )
+            ) {
                 continue;
             }
 
+            $title = sprintf(
+                '[%s] %s - %s à %s (%s)',
+                $result->typeavis_lib,
+                $result->familleavis_lib,
+                $result->commercant,
+                $result->ville,
+                $result->cp
+            );
+
             $this->items[] = [
-                'uid' => $result->id,
+                'uid'       => $result->id,
                 'timestamp' => strtotime($result->dateparution),
-                'title' => '[' . $result->typeavis_lib . '] ' . $result->familleavis_lib . ' - ' . $result->commercant . ' à ' . $result->ville . ' (' . $result->cp . ')'
+                'title'     => $title,
             ];
         }
     }
