@@ -61,11 +61,12 @@ register_shutdown_function(function () use ($logger) {
 });
 
 $cacheFactory = new CacheFactory($logger);
+
 if (Debug::isEnabled()) {
-    $logger->addHandler(new StreamHandler('php://stderr', Logger::DEBUG));
+    $logger->addHandler(new ErrorLogHandler(Logger::DEBUG));
     $cache = $cacheFactory->create('array');
 } else {
-    $logger->addHandler(new StreamHandler('php://stderr', Logger::INFO));
+    $logger->addHandler(new ErrorLogHandler(Logger::INFO));
     $cache = $cacheFactory->create();
 }
 $httpClient = new CurlHttpClient();
