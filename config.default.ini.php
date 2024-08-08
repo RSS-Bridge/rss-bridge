@@ -27,6 +27,16 @@
 ;enabled_bridges[] = YouTubeCommunityTabBridge
 enabled_bridges[] = *
 
+; Encrypted URL key. A random string between 16 and 64 characters long which is used to generate
+;   compressed and encrypted feed URLs, to keep private information secret.
+;
+; NEVER SHARE THIS KEY.
+; A password generator should be used to create this string. Whitespace is NOT ALLOWED.
+;
+; If this value is empty (default), then encrypted URLs cannot be used.
+;   Example key (DO NOT USE THIS): "b3c7@hsLqk)P(SJvjCBDUy]GMg6RamdHxEWV8K9nA4QN.p_5"
+enc_url_key = ""
+
 ; Defines the timezone used by RSS-Bridge
 ; Find a list of supported timezones at
 ; https://www.php.net/manual/en/timezones.php

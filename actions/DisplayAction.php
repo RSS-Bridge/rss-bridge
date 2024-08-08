@@ -160,7 +160,7 @@ class DisplayAction implements ActionInterface
             'last-modified' => gmdate('D, d M Y H:i:s ', $now) . 'GMT',
             'content-type'  => $format->getMimeType() . '; charset=' . $format->getCharset(),
         ];
-        return new Response($format->stringify(), 200, $headers);
+        return new Response($format->stringify($request), 200, $headers);
     }
 
     private function createFeedItemFromException($e, BridgeAbstract $bridge): array

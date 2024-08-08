@@ -228,6 +228,16 @@ final class Request
     {
         return $this->get;
     }
+
+    public function tryDecryptUrl(): void
+    {
+        $urlEncryptionService = UrlEncryptionService::fromRequest($this);
+        if (!$urlEncryptionService) {
+            throw new \Exception('The encrypted URL token is not valid.');
+        }
+
+        $this->get = $urlEncryptionService->toArray();
+    }
 }
 
 final class Response

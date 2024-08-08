@@ -18,26 +18,20 @@ final class RssBridge
 
     public function main(array $argv = []): Response
     {
-        if ($argv) {
-            parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
-            $request = Request::fromCli($cliArgs);
-        } else {
-            $request = Request::fromGlobals();
-        }
-
-        foreach ($request->toArray() as $key => $value) {
-            if (!is_string($value)) {
-                return new Response(render(__DIR__ . '/../templates/error.html.php', [
-                    'message' => "Query parameter \"$key\" is not a string.",
-                ]), 400);
-            }
-        }
-
+        // The check for maintenance mode should always occur first since it has no
+        //   dependencies, and nothing else needs to come before it for bootstrapping.
         if (Configuration::getConfig('system', 'enable_maintenance_mode')) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', [
                 'title'     => '503 Service Unavailable',
                 'message'   => 'RSS-Bridge is down for maintenance.',
             ]), 503);
+        }
+
+        if ($argv) {
+            parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
+            $request = Request::fromCli($cliArgs);
+        } else {
+            $request = Request::fromGlobals();
         }
 
         // HTTP Basic auth check
@@ -63,6 +57,33 @@ final class RssBridge
                 return new Response($html, 401, ['WWW-Authenticate' => 'Basic realm="RSS-Bridge"']);
             }
             // At this point the username and password was correct
+        }
+
+        // If the URL contains an encrypted token, then the rest of the current URL
+        //   parameters are discarded and the encrypted token is decrypted, decompressed,
+        //   and expanded into the Request object's 'get' container. The user should NEVER
+        //   be redirected to another URL that would expose what params that are in the
+        //   current page.
+        if (
+            $request->get(UrlEncryptionService::PARAMETER_NAME)
+            && UrlEncryptionService::enabled()
+        ) {
+            try {
+                $request->tryDecryptUrl();
+            } catch (\Exception $e) {
+                return new Response(
+                    render(__DIR__ . '/../templates/error.html.php', ['message' => $e->getMessage()]),
+                    401
+                );
+            }
+        }
+
+        foreach ($request->toArray() as $key => $value) {
+            if (!is_string($value)) {
+                return new Response(render(__DIR__ . '/../templates/error.html.php', [
+                    'message' => "Query parameter \"$key\" is not a string.",
+                ]), 400);
+            }
         }
 
         // Add token as attribute to request
