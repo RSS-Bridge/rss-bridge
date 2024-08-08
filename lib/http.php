@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Thrown by bridges
+ */
+final class RateLimitException extends \Exception
+{
+}
+
+/**
+ * @internal Do not use this class in bridges
+ */
 class HttpException extends \Exception
 {
     public ?Response $response;

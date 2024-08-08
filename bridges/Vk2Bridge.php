@@ -194,7 +194,7 @@ class Vk2Bridge extends BridgeAbstract
     public function collectData()
     {
         if ($this->cache->get($this->rateLimitCacheKey)) {
-            throw new HttpException('429 Too Many Requests', 429);
+            throw new RateLimitException();
         }
 
         $u = $this->getInput('u');

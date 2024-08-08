@@ -519,7 +519,7 @@ class VkBridge extends BridgeAbstract
             $uri = urljoin(self::URI, $headers['location'][0]);
 
             if (str_contains($uri, '/429.html')) {
-                returnServerError('VK responded "Too many requests"');
+                throw new RateLimitException();
             }
 
             if (!preg_match('#^https?://vk.com/#', $uri)) {
