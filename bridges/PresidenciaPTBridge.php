@@ -55,7 +55,6 @@ class PresidenciaPTBridge extends BridgeAbstract
         $contexts = $this->getParameters();
 
         foreach (array_keys($contexts['Section']) as $k) {
-            Debug::log('Key: ' . var_export($k, true));
             if ($this->getInput($k)) {
                 $html = getSimpleHTMLDOMCached($this->getURI() . $k);
 

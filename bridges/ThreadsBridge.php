@@ -70,9 +70,9 @@ class ThreadsBridge extends BridgeAbstract
     public function collectData()
     {
         $html = getSimpleHTMLDOMCached($this->getURI(), static::CACHE_TIMEOUT);
-        Debug::log(sprintf('Fetched: %s', $this->getURI()));
+
         $jsonBlobs = $html->find('script[type="application/json"]');
-        Debug::log(sprintf('%d JSON blobs found.', count($jsonBlobs)));
+
         $gatheredCodes = [];
         $limit = $this->getInput('limit');
         foreach ($jsonBlobs as $jsonBlob) {
@@ -87,7 +87,6 @@ class ThreadsBridge extends BridgeAbstract
                 }
             }
         }
-        Debug::log(sprintf('Candidate codes found in JSON in script tags: %s', print_r($gatheredCodes, true)));
 
         $this->feedName = html_entity_decode($html->find('meta[property=og:title]', 0)->content);
         // todo: meta[property=og:description] could populate the feed description

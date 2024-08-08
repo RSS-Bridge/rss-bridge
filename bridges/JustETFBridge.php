@@ -138,8 +138,6 @@ class JustETFBridge extends BridgeAbstract
 
         date_time_set($df, 0, 0);
 
-        // Debug::log(date_format($df, 'U'));
-
         return date_format($df, 'U');
     }
 
@@ -216,8 +214,6 @@ class JustETFBridge extends BridgeAbstract
         $element = $article->find('div.subheadline', 0)
             or returnServerError('Date not found!');
 
-        // Debug::log($element->plaintext);
-
         $date = trim(explode('|', $element->plaintext)[0]);
 
         return $this->fixDate($date);
@@ -229,8 +225,6 @@ class JustETFBridge extends BridgeAbstract
             or returnServerError('Description not found!');
 
         $element->find('a', 0)->onclick = '';
-
-        // Debug::log($element->innertext);
 
         return $element->innertext;
     }
@@ -299,8 +293,6 @@ class JustETFBridge extends BridgeAbstract
     {
         $element = $html->find('div.infobox div.vallabel', 0)
             or returnServerError('Date not found!');
-
-        // Debug::log($element->plaintext);
 
         $date = trim(explode("\r\n", $element->plaintext)[1]);
 

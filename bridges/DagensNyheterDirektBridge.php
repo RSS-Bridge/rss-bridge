@@ -27,11 +27,6 @@ class DagensNyheterDirektBridge extends BridgeAbstract
             $url = self::BASEURL . $link;
             $title = $element->find('h2', 0)->plaintext;
             $author = $element->find('div.ds-byline__titles', 0)->plaintext;
-            // Debug::log($link);
-            // Debug::log($datetime);
-            // Debug::log($title);
-            // Debug::log($url);
-            // Debug::log($author);
 
             $article_content = $element->find('div.direkt-post__content', 0);
             $article_html = '';

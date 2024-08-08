@@ -192,7 +192,7 @@ final class BridgeCard
     {
         $required = $entry['required'] ?? null;
         if ($required) {
-            Debug::log('The "required" attribute is not supported for lists.');
+            trigger_error('The required attribute is not supported for lists');
             unset($entry['required']);
         }
 
@@ -235,7 +235,7 @@ final class BridgeCard
     {
         $required = $entry['required'] ?? null;
         if ($required) {
-            Debug::log('The "required" attribute is not supported for checkboxes.');
+            trigger_error('The required attribute is not supported for checkboxes');
             unset($entry['required']);
         }
 

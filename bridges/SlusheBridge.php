@@ -118,13 +118,8 @@ class SlusheBridge extends BridgeAbstract
 
         $html = getSimpleHTMLDOM($uri, $headers);
 
-        //Debug::log($html);
-        //Debug::log($html->find('div.blog-item')[0]);
-
         //Loop on each entry
         foreach ($html->find('div.blog-item') as $element) {
-            //Debug::log($element);
-
             $title = $element->find('h3.title', 0)->first_child()->innertext;
             $article_uri = $element->find('h3.title', 0)->first_child()->href;
             $timestamp = $element->find('div.publication-date', 0)->innertext;
@@ -153,7 +148,6 @@ class SlusheBridge extends BridgeAbstract
                 // Add image thumbnail(s)
                 foreach ($media_uris->find('img') as $media_uri) {
                     $media_html .= '<a href="' . $article_uri . '">' . $media_uri . '</a>';
-                    //Debug::log('Adding to enclosures: ' . str_replace(' ', '%20', $media_uri->src));
                     $item['enclosures'][] = str_replace(' ', '%20', $media_uri->src);
                 }
             }
@@ -165,7 +159,7 @@ class SlusheBridge extends BridgeAbstract
                 foreach ($media_uris->find('img') as $media_uri) {
                     $media_html .= '<p>Video:</p><a href="' .
                         $article_uri . '">' . $media_uri . '</a>';
-                    //Debug::log('Adding to enclosures: ' . $media_uri->src);
+
                     $item['enclosures'][] = $media_uri->src;
                 }
             }
