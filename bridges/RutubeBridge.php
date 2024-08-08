@@ -107,10 +107,10 @@ class RutubeBridge extends BridgeAbstract
         }
 
         foreach ($videos as $video) {
-            $item = new FeedItem();
-            $item->setTitle($video->title);
-            $item->setURI($video->video_url);
-            $content = '<a href="' . $item->getURI() . '">';
+            $item = [];
+            $item['title'] = $video->title;
+            $item['uri'] = $video->video_url;
+            $content = '<a href="' . $video->video_url . '">';
             $content .= '<img src="' . $video->thumbnail_url . '" />';
             $content .= '</a><br/>';
             $content .= nl2br(
@@ -122,9 +122,10 @@ class RutubeBridge extends BridgeAbstract
                     $video->description . ' '
                 )
             );
-            $item->setTimestamp($video->created_ts);
-            $item->setAuthor($video->author->name);
-            $item->setContent($content);
+            $item['timestamp'] = $video->created_ts;
+            $item['author'] = $video->author->name;
+            $item['content'] = $content;
+
             $this->items[] = $item;
         }
     }

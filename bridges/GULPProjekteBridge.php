@@ -129,24 +129,24 @@ class GULPProjekteBridge extends WebDriverAbstract
             while (true) {
                 $items = $this->getDriver()->findElements(WebDriverBy::tagName('app-project-view'));
                 foreach ($items as $item) {
-                    $feedItem = new FeedItem();
+                    $feedItem = [];
 
                     $heading = $item->findElement(WebDriverBy::xpath('.//app-heading-tag/h1/a'));
-                    $feedItem->setTitle($heading->getText());
-                    $feedItem->setURI('https://www.gulp.de' . $heading->getAttribute('href'));
+                    $feedItem['title'] = $heading->getText();
+                    $feedItem['uri'] = 'https://www.gulp.de' . $heading->getAttribute('href');
                     $info = $item->findElement(WebDriverBy::tagName('app-icon-info-list'));
                     if ($logo = $this->getLogo($item)) {
-                        $feedItem->setEnclosures([$logo]);
+                        $feedItem['enclosures'] = [$logo];
                     }
                     if (str_contains($info->getText(), 'Projektanbieter:')) {
-                        $feedItem->setAuthor($info->findElement(WebDriverBy::xpath('.//li/span[2]/span'))->getText());
+                        $feedItem['author'] = $info->findElement(WebDriverBy::xpath('.//li/span[2]/span'))->getText();
                     } else {
                         // mostly "Direkt vom Auftraggeber" or "GULP Agentur"
-                        $feedItem->setAuthor($item->findElement(WebDriverBy::tagName('b'))->getText());
+                        $feedItem['author'] = $item->findElement(WebDriverBy::tagName('b'))->getText();
                     }
-                    $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText());
+                    $feedItem['content'] = $item->findElement(WebDriverBy::xpath('.//p[@class="description"]'))->getText();
                     $timeAgo = $item->findElement(WebDriverBy::xpath('.//small[contains(@class, "time-ago")]'))->getText();
-                    $feedItem->setTimestamp($this->getTimestamp($timeAgo));
+                    $feedItem['timestamp'] = $this->getTimestamp($timeAgo);
 
                     $this->items[] = $feedItem;
                 }

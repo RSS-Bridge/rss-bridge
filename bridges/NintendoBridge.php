@@ -477,7 +477,7 @@ class NintendoBridge extends XPathAbstract
         return $date->getTimestamp();
     }
 
-    protected function generateItemId(FeedItem $item)
+    protected function generateItemId(array $item)
     {
         return $this->getCurrentCategory() . '-' . $this->lastId;
     }

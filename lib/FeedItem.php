@@ -12,10 +12,6 @@ class FeedItem
     protected ?string $uid = null;
     protected array $misc = [];
 
-    public function __construct()
-    {
-    }
-
     public static function fromArray(array $itemArray): self
     {
         $item = new self();
@@ -23,6 +19,10 @@ class FeedItem
             $item->__set($key, $value);
         }
         return $item;
+    }
+
+    private function __construct()
+    {
     }
 
     public function __set($name, $value)
@@ -89,18 +89,6 @@ class FeedItem
         return $this->uri;
     }
 
-    /**
-     * Set URI to the full article.
-     *
-     * Use {@see FeedItem::getURI()} to get the URI.
-     *
-     * _Note_: Removes whitespace from the beginning and end of the URI.
-     *
-     * _Remarks_: Uses the attribute "href" or "src" if the provided URI is an
-     * object of simple_html_dom_node.
-     *
-     * @param simple_html_dom_node|object|string $uri URI to the full article.
-     */
     public function setURI($uri)
     {
         $this->uri = null; // Clear previous data
