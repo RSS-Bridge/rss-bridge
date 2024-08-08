@@ -2,12 +2,20 @@
 
 class NvidiaDriverBridge extends FeedExpander
 {
-    const NAME = 'NVIDIA Linux Driver Releases';
+    const NAME = 'NVIDIA Driver Releases';
     const URI = 'https://www.nvidia.com/Download/processFind.aspx';
-    const DESCRIPTION = 'Fetch the latest NVIDIA Linux driver updates';
+    const DESCRIPTION = 'Fetch the latest NVIDIA driver updates';
     const MAINTAINER = 'tillcash';
     const PARAMETERS = [
         [
+            'osid' => [
+                'name' => 'Version',
+                'type' => 'list',
+                'values' => [
+                        'Linux' => '12',
+                        // TODO 'Windows' => '',
+                ],
+            ],
             'whql' => [
                 'name' => 'Version',
                 'type' => 'list',
@@ -24,11 +32,12 @@ class NvidiaDriverBridge extends FeedExpander
     public function collectData()
     {
         $whql = $this->getInput('whql');
+        $osid = $this->getInput('osid');
 
         $parameters = [
             'lid'   => 1, // en-us
             'psid'  => 129, // GeForce
-            'osid'  => 12, // Linux 64-bit
+            'osid'  => $osid,
             'whql'  => $whql,
         ];
 
@@ -40,7 +49,7 @@ class NvidiaDriverBridge extends FeedExpander
 
             $this->items[] = [
                 'timestamp' => $element->find('td.gridItem', 3)->plaintext,
-                'title'     => sprintf('NVIDIA Linux Driver %s', $element->find('td.gridItem', 2)->plaintext),
+                'title'     => sprintf('NVIDIA Driver %s', $element->find('td.gridItem', 2)->plaintext),
                 'uri'       => 'https://www.nvidia.com/Download/driverResults.aspx/' . $id,
                 'content'   => $dom->find('tr#tr_' . $id . ' span', 0)->innertext,
             ];
@@ -54,7 +63,8 @@ class NvidiaDriverBridge extends FeedExpander
 
     public function getName()
     {
+        $os = $this->getKey('osid') ?? '';
         $version = $this->getKey('whql') ?? '';
-        return sprintf('NVIDIA %s Linux Driver Releases', $version);
+        return sprintf('NVIDIA %s %s Driver Releases', $os, $version);
     }
 }
