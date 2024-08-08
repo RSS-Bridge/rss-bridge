@@ -2,8 +2,5 @@
 
 interface ActionInterface
 {
-    /**
-     * @return string|Response
-     */
-    public function execute(Request $request);
+    public function __invoke(Request $request): Response;
 }

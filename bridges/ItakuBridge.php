@@ -669,11 +669,11 @@ class ItakuBridge extends BridgeAbstract
             if ($cache) {
                 $data = $this->loadCacheValue($url);
                 if (is_null($data)) {
-                    $data = getContents($url, $httpHeaders, $curlOptions) or returnServerError("Could not load $url");
+                    $data = getContents($url, $httpHeaders, $curlOptions);
                     $this->saveCacheValue($url, $data);
                 }
             } else {
-                $data = getContents($url, $httpHeaders, $curlOptions) or returnServerError("Could not load $url");
+                $data = getContents($url, $httpHeaders, $curlOptions);
             }
             return json_decode($data, true);
         } else { //get simpleHTMLDOM object

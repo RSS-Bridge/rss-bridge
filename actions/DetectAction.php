@@ -2,7 +2,7 @@
 
 class DetectAction implements ActionInterface
 {
-    public function execute(Request $request)
+    public function __invoke(Request $request): Response
     {
         $url = $request->get('url');
         $format = $request->get('format');

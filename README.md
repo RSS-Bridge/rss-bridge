@@ -53,9 +53,10 @@ Requires minimum PHP 7.4.
 
 ### How to install on traditional shared web hosting
 
-RSS-Bridge can basically be unzipped in a web folder. Should be working instantly.
+RSS-Bridge can basically be unzipped into a web folder. Should be working instantly.
 
-Latest zip as of Sep 2023: https://github.com/RSS-Bridge/rss-bridge/archive/refs/tags/2023-09-24.zip
+Latest zip:
+https://github.com/RSS-Bridge/rss-bridge/archive/refs/heads/master.zip (2MB)
 
 ### How to install on Debian 12 (nginx + php-fpm)
 
@@ -66,7 +67,7 @@ timedatectl set-timezone Europe/Oslo
 
 apt install git nginx php8.2-fpm php-mbstring php-simplexml php-curl php-intl
 
-# Create a new user account
+# Create a user account
 useradd --shell /bin/bash --create-home rss-bridge
 
 cd /var/www
@@ -101,7 +102,10 @@ Nginx config:
 
 server {
     listen 80;
+
+    # TODO: change to your own server name
     server_name example.com;
+
     access_log /var/log/nginx/rss-bridge.access.log;
     error_log /var/log/nginx/rss-bridge.error.log;
     log_not_found off;
@@ -150,8 +154,11 @@ listen = /run/php/rss-bridge.sock
 listen.owner = www-data
 listen.group = www-data
 
+# Create 10 workers standing by to serve requests
 pm = static
 pm.max_children = 10
+
+# Respawn worker after 500 requests (workaround for memory leaks etc.) 
 pm.max_requests = 500
 ```
 
@@ -179,7 +186,7 @@ Install the latest release.
 
 ```shell
 cd /var/www
-composer create-project -v --no-dev rss-bridge/rss-bridge
+composer create-project -v --no-dev --no-scripts rss-bridge/rss-bridge
 ```
 
 ### How to install with Caddy
@@ -192,8 +199,16 @@ Install by downloading the docker image from Docker Hub:
 
 ```bash
 # Create container
-docker create --name=rss-bridge --publish 3000:80 rssbridge/rss-bridge
+docker create --name=rss-bridge --publish 3000:80 --volume $(pwd)/config:/config rssbridge/rss-bridge
+```
 
+You can put custom `config.ini.php` and bridges into `./config`.
+
+**You must restart container for custom changes to take effect.**
+
+See `docker-entrypoint.sh` for details.
+
+```bash
 # Start container
 docker start rss-bridge
 ```
@@ -207,30 +222,29 @@ Browse http://localhost:3000/
 docker build -t rss-bridge .
 
 # Create container
-docker create --name rss-bridge --publish 3000:80 rss-bridge
+docker create --name rss-bridge --publish 3000:80 --volume $(pwd)/config:/config rss-bridge
+```
 
+You can put custom `config.ini.php` and bridges into `./config`.
+
+**You must restart container for custom changes to take effect.**
+
+See `docker-entrypoint.sh` for details.
+
+```bash
 # Start container
 docker start rss-bridge
 ```
 
 Browse http://localhost:3000/
 
-### Install with docker-compose
+### Install with docker-compose (using Docker Hub)
 
-Create a `docker-compose.yml` file locally with with the following content:
-```yml
-version: '2'
-services:
-  rss-bridge:
-    image: rssbridge/rss-bridge:latest
-    volumes:
-      - </local/custom/path>:/config
-    ports:
-      - 3000:80
-    restart: unless-stopped
-```
+You can put custom `config.ini.php` and bridges into `./config`.
 
-Then launch with `docker-compose`:
+**You must restart container for custom changes to take effect.**
+
+See `docker-entrypoint.sh` for details.
 
 ```bash
 docker-compose up
@@ -418,7 +432,16 @@ See `formats/PlaintextFormat.php` for an example.
 
 These commands require that you have installed the dev dependencies in `composer.json`.
 
+Run all tests:
+
     ./vendor/bin/phpunit
+
+Run a single test class:
+
+    ./vendor/bin/phpunit --filter UrlTest
+
+Run linter:
+
     ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
 
 https://github.com/squizlabs/PHP_CodeSniffer/wiki

@@ -118,11 +118,6 @@ function str_get_html(
         throw new \Exception('Refusing to parse too big input');
     }
 
-	if (empty($str) || strlen($str) > MAX_FILE_SIZE) {
-		$dom->clear();
-		return false;
-	}
-
 	return $dom->load($str, $lowercase, $stripRN);
 }
 

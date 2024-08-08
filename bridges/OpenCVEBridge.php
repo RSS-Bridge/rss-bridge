@@ -147,10 +147,9 @@ class OpenCVEBridge extends BridgeAbstract
             for ($i = 1; $i <= $this->getInput('pages'); $i++) {
                 $queryPaginated = array_merge($query, ['page' => $i]);
                 $url = $instance . '/api/cve?' . http_build_query($queryPaginated);
-                $response = getContents(
-                    $url,
-                    [$authHeader]
-                );
+
+                $response = getContents($url, [$authHeader]);
+
                 $titlePrefix = '';
                 if (count($queries) > 1) {
                     $titlePrefix = '[' . $queryName . '] ';
@@ -205,10 +204,8 @@ class OpenCVEBridge extends BridgeAbstract
     private function fetchContents($cveItem, $titlePrefix, $instance, $authHeader)
     {
         $url = $instance . '/api/cve/' . $cveItem->id;
-        $response = getContents(
-            $url,
-            [$authHeader]
-        );
+
+        $response = getContents($url, [$authHeader]);
         $datum = json_decode($response);
 
         $title = $this->getTitleFromDatum($datum, $titlePrefix);

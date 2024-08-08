@@ -19,7 +19,7 @@ class ConnectivityAction implements ActionInterface
         $this->bridgeFactory = new BridgeFactory();
     }
 
-    public function execute(Request $request)
+    public function __invoke(Request $request): Response
     {
         if (!Debug::isEnabled()) {
             return new Response('This action is only available in debug mode!', 403);
@@ -27,7 +27,7 @@ class ConnectivityAction implements ActionInterface
 
         $bridgeName = $request->get('bridge');
         if (!$bridgeName) {
-            return render_template('connectivity.html.php');
+            return new Response(render_template('connectivity.html.php'));
         }
         $bridgeClassName = $this->bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
@@ -54,8 +54,8 @@ class ConnectivityAction implements ActionInterface
         ];
         try {
             $response = getContents($bridge::URI, [], $curl_opts, true);
-            $result['http_code'] = $response['code'];
-            if (in_array($response['code'], [200])) {
+            $result['http_code'] = $response->getCode();
+            if (in_array($result['http_code'], [200])) {
                 $result['successful'] = true;
             }
         } catch (\Exception $e) {

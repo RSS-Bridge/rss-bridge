@@ -136,7 +136,7 @@ class FeedItem
     {
         $this->title = null;
         if (!is_string($title)) {
-            Debug::log('Title must be a string!');
+            trigger_error('Title must be a string: ' . print_r($title, true));
         } else {
             $this->title = truncate(trim($title));
         }
@@ -186,21 +186,23 @@ class FeedItem
     }
 
     /**
-     * @param string|object $content The item content as text or simple_html_dom object.
+     * @param string|array|\simple_html_dom|\simple_html_dom_node $content The item content
      */
     public function setContent($content)
     {
         $this->content = null;
+
         if (
             $content instanceof simple_html_dom
             || $content instanceof simple_html_dom_node
         ) {
             $content = (string) $content;
         }
+
         if (is_string($content)) {
             $this->content = $content;
         } else {
-            Debug::log(sprintf('Feed content must be a string but got %s', gettype($content)));
+            Debug::log(sprintf('Unable to convert feed content to string: %s', gettype($content)));
         }
     }
 

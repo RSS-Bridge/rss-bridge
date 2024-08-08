@@ -68,6 +68,16 @@ final class SimpleLogger implements Logger
 
     private function log(int $level, string $message, array $context = []): void
     {
+        $ignoredMessages = [
+            'Format name invalid',
+            'Unknown format given',
+            'Unable to find channel',
+        ];
+        foreach ($ignoredMessages as $ignoredMessage) {
+            if (str_starts_with($message, $ignoredMessage)) {
+                return;
+            }
+        }
         foreach ($this->handlers as $handler) {
             $handler([
                 'name'          => $this->name,
@@ -82,6 +92,55 @@ final class SimpleLogger implements Logger
 }
 
 final class StreamHandler
+{
+    private string $stream;
+    private int $level;
+
+    public function __construct(string $stream, int $level = Logger::DEBUG)
+    {
+        $this->stream = $stream;
+        $this->level = $level;
+    }
+
+    public function __invoke(array $record)
+    {
+        if ($record['level'] < $this->level) {
+            return;
+        }
+        if (isset($record['context']['e'])) {
+            /** @var \Throwable $e */
+            $e = $record['context']['e'];
+            unset($record['context']['e']);
+            $record['context']['type'] = get_class($e);
+            $record['context']['code'] = $e->getCode();
+            $record['context']['message'] = sanitize_root($e->getMessage());
+            $record['context']['file'] = sanitize_root($e->getFile());
+            $record['context']['line'] = $e->getLine();
+            $record['context']['url'] = get_current_url();
+            $record['context']['trace'] = trace_to_call_points(trace_from_exception($e));
+        }
+        $context = '';
+        if ($record['context']) {
+            try {
+                $context = Json::encode($record['context']);
+            } catch (\JsonException $e) {
+                $record['context']['message'] = null;
+                $context = Json::encode($record['context']);
+            }
+        }
+        $text = sprintf(
+            "[%s] %s.%s %s %s\n",
+            $record['created_at']->format('Y-m-d H:i:s'),
+            $record['name'],
+            $record['level_name'],
+            $record['message'],
+            $context
+        );
+        $bytes = file_put_contents($this->stream, $text, FILE_APPEND | LOCK_EX);
+    }
+}
+
+final class ErrorLogHandler
 {
     private int $level;
 
@@ -106,28 +165,6 @@ final class StreamHandler
             $record['context']['line'] = $e->getLine();
             $record['context']['url'] = get_current_url();
             $record['context']['trace'] = trace_to_call_points(trace_from_exception($e));
-
-            $ignoredExceptions = [
-                'You must specify a format',
-                'Format name invalid',
-                'Unknown format given',
-                'Bridge name invalid',
-                'Invalid action',
-                'twitter: No results for this query',
-                // telegram
-                'Unable to find channel. The channel is non-existing or non-public',
-                // fb
-                'This group is not public! RSS-Bridge only supports public groups!',
-                'You must be logged in to view this page',
-                'Unable to get the page id. You should consider getting the ID by hand',
-                // tiktok 404
-                'https://www.tiktok.com/@',
-            ];
-            foreach ($ignoredExceptions as $ignoredException) {
-                if (str_starts_with($e->getMessage(), $ignoredException)) {
-                    return;
-                }
-            }
         }
         $context = '';
         if ($record['context']) {
@@ -143,17 +180,10 @@ final class StreamHandler
             $record['created_at']->format('Y-m-d H:i:s'),
             $record['name'],
             $record['level_name'],
-            // Should probably sanitize message for output context
             $record['message'],
             $context
         );
         error_log($text);
-        if ($record['level'] < Logger::ERROR && Debug::isEnabled()) {
-            // The record level is INFO or WARNING here
-            // Not a good idea to print here because http headers might not have been sent
-            print sprintf("<pre>%s</pre>\n", e($text));
-        }
-        //$bytes = file_put_contents('/tmp/rss-bridge.log', $text, FILE_APPEND | LOCK_EX);
     }
 }
 

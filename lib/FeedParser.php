@@ -167,6 +167,12 @@ final class FeedParser
         if (isset($namespaces['media'])) {
             $media = $feedItem->children($namespaces['media']);
         }
+
+        if (isset($namespaces['content'])) {
+            $content = $feedItem->children($namespaces['content']);
+            $item['content'] = (string) $content;
+        }
+
         foreach ($namespaces as $namespaceName => $namespaceUrl) {
             if (in_array($namespaceName, ['', 'content', 'media'])) {
                 continue;

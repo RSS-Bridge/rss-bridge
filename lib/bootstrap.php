@@ -45,9 +45,3 @@ spl_autoload_register(function ($className) {
         }
     }
 });
-
-$customConfig = [];
-if (file_exists(__DIR__ . '/../config.ini.php')) {
-    $customConfig = parse_ini_file(__DIR__ . '/../config.ini.php', true, INI_SCANNER_TYPED);
-}
-Configuration::loadConfiguration($customConfig, getenv());
