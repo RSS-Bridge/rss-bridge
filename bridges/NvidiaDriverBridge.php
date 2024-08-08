@@ -2,9 +2,9 @@
 
 class NvidiaDriverBridge extends FeedExpander
 {
-    const NAME = 'Nvidia Linux Driver Releases';
+    const NAME = 'NVIDIA Linux Driver Releases';
     const URI = 'https://www.nvidia.com/Download/processFind.aspx';
-    const DESCRIPTION = 'Fetch the latest Nvidia Linux driver updates';
+    const DESCRIPTION = 'Fetch the latest NVIDIA Linux driver updates';
     const MAINTAINER = 'tillcash';
     const PARAMETERS = [
         [
@@ -40,7 +40,7 @@ class NvidiaDriverBridge extends FeedExpander
 
             $this->items[] = [
                 'timestamp' => $element->find('td.gridItem', 3)->plaintext,
-                'title'     => sprintf('Nvidia Linux Driver %s', $element->find('td.gridItem', 2)->plaintext),
+                'title'     => sprintf('NVIDIA Linux Driver %s', $element->find('td.gridItem', 2)->plaintext),
                 'uri'       => 'https://www.nvidia.com/Download/driverResults.aspx/' . $id,
                 'content'   => $dom->find('tr#tr_' . $id . ' span', 0)->innertext,
             ];
@@ -55,6 +55,6 @@ class NvidiaDriverBridge extends FeedExpander
     public function getName()
     {
         $version = $this->getKey('whql') ?? '';
-        return sprintf('Nvidia %s Linux Driver Releases', $version);
+        return sprintf('NVIDIA %s Linux Driver Releases', $version);
     }
 }
