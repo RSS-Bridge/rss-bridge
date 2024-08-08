@@ -2,35 +2,76 @@
 
 class NvidiaDriverBridge extends FeedExpander
 {
-    const NAME = 'NVIDIA Linux Driver Releases';
+    const NAME = 'NVIDIA Driver Releases';
     const URI = 'https://www.nvidia.com/Download/processFind.aspx';
-    const DESCRIPTION = 'Fetch the latest NVIDIA Linux driver updates';
+    const DESCRIPTION = 'Fetch the latest NVIDIA driver updates';
     const MAINTAINER = 'tillcash';
+
     const PARAMETERS = [
-        [
+        'Windows' => [
             'whql' => [
-                'name' => 'Version',
+                'name' => 'Driver Type',
                 'type' => 'list',
                 'values' => [
-                        'All' => '',
-                        'Beta' => '0',
-                        'New Feature Branch' => '5',
-                        'Recommended/Certified' => '1',
+                    'Certified' => '1',
                 ],
+                'defaultValue' => '1',
+            ],
+        ],
+        'Linux' => [
+            'whql' => [
+                'name' => 'Driver Type',
+                'type' => 'list',
+                'values' => [
+                    'All' => '',
+                    'Beta' => '0',
+                    'Branch' => '5',
+                    'Certified' => '1',
+                ],
+                'defaultValue' => '1',
+            ],
+        ],
+        'FreeBSD' => [
+            'whql' => [
+                'name' => 'Driver Type',
+                'type' => 'list',
+                'values' => [
+                    'All' => '',
+                    'Beta' => '0',
+                    'Branch' => '5',
+                    'Certified' => '1',
+                ],
+                'defaultValue' => '1',
             ],
         ],
     ];
 
+    private $operatingSystem = '';
+
     public function collectData()
     {
         $whql = $this->getInput('whql');
-
         $parameters = [
             'lid'   => 1, // en-us
             'psid'  => 129, // GeForce
-            'osid'  => 12, // Linux 64-bit
             'whql'  => $whql,
         ];
+
+        switch ($this->queriedContext) {
+            case 'Windows':
+                $parameters['osid'] = 57;
+                $parameters['dtcid'] = 1; // Windows Driver DCH
+                $this->operatingSystem = 'Windows';
+                break;
+            case 'Linux':
+                $parameters['osid'] = 12;
+                $this->operatingSystem = 'Linux';
+                break;
+            case 'FreeBSD':
+                $parameters['osid'] = 22;
+                $this->operatingSystem = 'FreeBSD';
+                break;
+        }
 
         $url = 'https://www.nvidia.com/Download/processFind.aspx?' . http_build_query($parameters);
         $dom = getSimpleHTMLDOM($url);
@@ -40,10 +81,21 @@ class NvidiaDriverBridge extends FeedExpander
 
             $this->items[] = [
                 'timestamp' => $element->find('td.gridItem', 3)->plaintext,
-                'title'     => sprintf('NVIDIA Linux Driver %s', $element->find('td.gridItem', 2)->plaintext),
+                'title'     => sprintf('NVIDIA Driver %s', $element->find('td.gridItem', 2)->plaintext),
                 'uri'       => 'https://www.nvidia.com/Download/driverResults.aspx/' . $id,
                 'content'   => $dom->find('tr#tr_' . $id . ' span', 0)->innertext,
             ];
         }
+    }
+
+    public function getIcon()
+    {
+        return 'https://www.nvidia.com/favicon.ico';
+    }
+
+    public function getName()
+    {
+        $version = $this->getKey('whql') ?? '';
+        return sprintf('NVIDIA %s %s Driver Releases', $this->operatingSystem, $version);
     }
 }
