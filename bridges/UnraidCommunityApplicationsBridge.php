@@ -14,14 +14,12 @@ class UnraidCommunityApplicationsBridge extends BridgeAbstract
 
     private function fetchApps()
     {
-        Debug::log('Fetching all applications/plugins');
         $this->apps = getContents(self::APPSURI);
         $this->apps = json_decode($this->apps, true)['applist'];
     }
 
     private function sortApps()
     {
-        Debug::log('Sorting applications/plugins');
         usort($this->apps, function ($app1, $app2) {
             return $app1['FirstSeen'] < $app2['FirstSeen'] ? 1 : -1;
         });

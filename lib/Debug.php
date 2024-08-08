@@ -15,20 +15,4 @@ class Debug
         }
         return false;
     }
-
-    /**
-     * @deprecated Use $this->logger->debug()
-     */
-    public static function log($message)
-    {
-        $e = new \Exception();
-        $trace = trace_from_exception($e);
-        // Drop the current frame
-        array_pop($trace);
-        $lastFrame = $trace[array_key_last($trace)];
-        $text = sprintf('%s(%s): %s', $lastFrame['file'], $lastFrame['line'], $message);
-
-        $logger = RssBridge::getLogger();
-        $logger->debug($text);
-    }
 }

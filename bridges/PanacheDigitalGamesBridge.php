@@ -38,7 +38,7 @@ class PanacheDigitalGamesBridge extends BridgeAbstract
             $image_html = $element->find('.news-item-thumbnail-image', 0);
             if ($image_html) {
                 $image_strings = explode('\'', $image_html);
-                /* Debug::log('S: ' . count($image_strings) . '||' . implode('_ _', $image_strings)); */
+
                 if (count($image_strings) == 4) {
                     $item['content'] = '<img src="' . $image_strings[1] . '" />';
                 }
