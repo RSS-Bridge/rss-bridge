@@ -93,12 +93,12 @@ class RedditBridge extends BridgeAbstract
     {
         $forbiddenKey = 'reddit_forbidden';
         if ($this->cache->get($forbiddenKey)) {
-            throw new HttpException('403 Forbidden', 403);
+            throw new RateLimitException();
         }
 
         $rateLimitKey = 'reddit_rate_limit';
         if ($this->cache->get($rateLimitKey)) {
-            throw new HttpException('429 Too Many Requests', 429);
+            throw new RateLimitException();
         }
 
         try {
@@ -108,8 +108,10 @@ class RedditBridge extends BridgeAbstract
                 // 403 Forbidden
                 // This can possibly mean that reddit has permanently blocked this server's ip address
                 $this->cache->set($forbiddenKey, true, 60 * 61);
+                throw new RateLimitException();
             } elseif ($e->getCode() === 429) {
                 $this->cache->set($rateLimitKey, true, 60 * 61);
+                throw new RateLimitException();
             }
             throw $e;
         }
