@@ -217,7 +217,7 @@ class DisplayAction implements ActionInterface
         return $report['count'];
     }
 
-    private static function createGithubIssueUrl(BridgeAbstract $bridge, \Exception $e, string $message): string
+    private static function createGithubIssueUrl(BridgeAbstract $bridge, \Throwable $e, string $message): string
     {
         $maintainer = $bridge->getMaintainer();
         if (str_contains($maintainer, ',')) {
