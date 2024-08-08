@@ -314,7 +314,7 @@ class PixivBridge extends BridgeAbstract
     {
         // checks if cookie is set, if not initialise it with the cookie from the config
         $value = $this->loadCacheValue('cookie');
-        if (!isset($value)) {
+        if (!$value) {
             $value = $this->getOption('cookie');
 
             // 30 days + 1 day to let cookie chance to renew
