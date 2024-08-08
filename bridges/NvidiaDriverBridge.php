@@ -13,7 +13,9 @@ class NvidiaDriverBridge extends FeedExpander
                 'name' => 'Driver Type',
                 'type' => 'list',
                 'values' => [
+                    'All' => '',
                     'Certified' => '1',
+                    'Studio' => '4',
                 ],
                 'defaultValue' => '1',
             ],
