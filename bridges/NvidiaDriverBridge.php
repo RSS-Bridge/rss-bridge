@@ -9,7 +9,7 @@ class NvidiaDriverBridge extends FeedExpander
 
     const PARAMETERS = [
         'Windows' => [
-            'whql' => [
+            'wwhql' => [
                 'name' => 'Driver Type',
                 'type' => 'list',
                 'values' => [
@@ -21,7 +21,7 @@ class NvidiaDriverBridge extends FeedExpander
             ],
         ],
         'Linux' => [
-            'whql' => [
+            'lwhql' => [
                 'name' => 'Driver Type',
                 'type' => 'list',
                 'values' => [
@@ -34,7 +34,7 @@ class NvidiaDriverBridge extends FeedExpander
             ],
         ],
         'FreeBSD' => [
-            'whql' => [
+            'fwhql' => [
                 'name' => 'Driver Type',
                 'type' => 'list',
                 'values' => [
@@ -52,25 +52,29 @@ class NvidiaDriverBridge extends FeedExpander
 
     public function collectData()
     {
-        $whql = $this->getInput('whql');
         $parameters = [
             'lid'   => 1, // en-us
             'psid'  => 129, // GeForce
-            'whql'  => $whql,
         ];
 
         switch ($this->queriedContext) {
             case 'Windows':
+                $whql = $this->getInput('wwhql');
                 $parameters['osid'] = 57;
                 $parameters['dtcid'] = 1; // Windows Driver DCH
+                $parameters['whql'] = $whql;
                 $this->operatingSystem = 'Windows';
                 break;
             case 'Linux':
+                $whql = $this->getInput('lwwhql');
                 $parameters['osid'] = 12;
+                $parameters['whql'] = $whql;
                 $this->operatingSystem = 'Linux';
                 break;
             case 'FreeBSD':
+                $whql = $this->getInput('fwwhql');
                 $parameters['osid'] = 22;
+                $parameters['whql'] = $whql;
                 $this->operatingSystem = 'FreeBSD';
                 break;
         }
