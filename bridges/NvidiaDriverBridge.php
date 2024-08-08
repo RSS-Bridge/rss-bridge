@@ -15,7 +15,6 @@ class NvidiaDriverBridge extends FeedExpander
                 'values' => [
                     'Certified' => '1',
                 ],
-                'defaultValue' => '1',
             ],
         ],
         'Linux' => [
@@ -28,7 +27,6 @@ class NvidiaDriverBridge extends FeedExpander
                     'Branch' => '5',
                     'Certified' => '1',
                 ],
-                'defaultValue' => '1',
             ],
         ],
         'FreeBSD' => [
@@ -41,7 +39,6 @@ class NvidiaDriverBridge extends FeedExpander
                     'Branch' => '5',
                     'Certified' => '1',
                 ],
-                'defaultValue' => '1',
             ],
         ],
     ];
