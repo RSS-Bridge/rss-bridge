@@ -9,12 +9,12 @@ class NvidiaDriverBridge extends FeedExpander
     const PARAMETERS = [
         [
             'osid' => [
-                'name' => 'Version',
+                'name' => 'Operating System',
                 'type' => 'list',
                 'values' => [
                         'FreeBSD' => '22',
                         'Linux' => '12',
-                        // TODO 'Windows' => '',
+                        // 'Windows' => '57', // TODO
                 ],
                 'defaultValue' => 'Linux',
             ],
@@ -67,6 +67,7 @@ class NvidiaDriverBridge extends FeedExpander
     {
         $os = $this->getKey('osid') ?? '';
         $version = $this->getKey('whql') ?? '';
+
         return sprintf('NVIDIA %s %s Driver Releases', $os, $version);
     }
 }
