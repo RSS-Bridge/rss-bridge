@@ -6,11 +6,11 @@ abstract class FormatAbstract
 
     const MIME_TYPE = 'text/plain';
 
-    protected string $charset = 'UTF-8';
-    protected array $items = [];
-    protected int $lastModified;
-
     protected array $feed = [];
+    protected array $items = [];
+    protected string $charset = 'UTF-8';
+
+    protected int $lastModified;
 
     abstract public function stringify();
 
@@ -30,12 +30,11 @@ abstract class FormatAbstract
         return $this->feed;
     }
 
-    /**
-     * @param FeedItem[] $items
-     */
     public function setItems(array $items): void
     {
-        $this->items = $items;
+        foreach ($items as $item) {
+            $this->items[] = FeedItem::fromArray($item);
+        }
     }
 
     /**

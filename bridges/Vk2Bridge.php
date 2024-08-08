@@ -255,7 +255,7 @@ class Vk2Bridge extends BridgeAbstract
             if (!$ownerId) {
                 $ownerId = $post['owner_id'];
             }
-            $item = new FeedItem();
+            $item = [];
             $content = $this->generateContentFromPost($post);
             if (isset($post['copy_history'])) {
                 if ($this->getInput('hide_reposts')) {
@@ -277,11 +277,11 @@ class Vk2Bridge extends BridgeAbstract
                 $content .= '):</p>';
                 $content .= $this->generateContentFromPost($originalPost);
             }
-            $item->setContent($content);
-            $item->setTimestamp($post['date']);
-            $item->setAuthor($this->ownerNames[$post['from_id']]);
-            $item->setTitle($this->getTitle(strip_tags($content)));
-            $item->setURI($this->getPostURI($post));
+            $item['content'] = $content;
+            $item['timestamp'] = $post['date'];
+            $item['author'] = $this->ownerNames[$post['from_id']];
+            $item['title'] = $this->getTitle(strip_tags($content));
+            $item['uri'] = $this->getPostURI($post);
 
             $this->items[] = $item;
         }

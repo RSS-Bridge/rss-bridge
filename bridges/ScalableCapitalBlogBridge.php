@@ -41,16 +41,20 @@ class ScalableCapitalBlogBridge extends WebDriverAbstract
 
             $items = $this->getDriver()->findElements(WebDriverBy::xpath('//div[contains(@class, "articles")]//div[@class="items"]//div[contains(@class, "item")]'));
             foreach ($items as $item) {
-                $feedItem = new FeedItem();
+                $feedItem = [];
 
-                $feedItem->setEnclosures(['https://de.scalable.capital' . $item->findElement(WebDriverBy::tagName('img'))->getAttribute('src')]);
+                $feedItem['enclosures'] = ['https://de.scalable.capital' . $item->findElement(WebDriverBy::tagName('img'))->getAttribute('src')];
+
                 $heading = $item->findElement(WebDriverBy::tagName('a'));
-                $feedItem->setTitle($heading->getText());
-                $feedItem->setURI('https://de.scalable.capital' . $heading->getAttribute('href'));
-                $feedItem->setContent($item->findElement(WebDriverBy::xpath('.//div[@class="summary"]'))->getText());
+                $feedItem['title'] = $heading->getText();
+
+                $feedItem['uri'] = 'https://de.scalable.capital' . $heading->getAttribute('href');
+                $feedItem['content'] = $item->findElement(WebDriverBy::xpath('.//div[@class="summary"]'))->getText();
+
                 $date = $item->findElement(WebDriverBy::xpath('.//div[@class="published-date"]'))->getText();
-                $feedItem->setTimestamp($this->formatItemTimestamp($date));
-                $feedItem->setAuthor($item->findElement(WebDriverBy::xpath('.//div[@class="author"]'))->getText());
+                $feedItem['timestamp'] = $this->formatItemTimestamp($date);
+
+                $feedItem['author'] = $item->findElement(WebDriverBy::xpath('.//div[@class="author"]'))->getText();
 
                 $this->items[] = $feedItem;
             }

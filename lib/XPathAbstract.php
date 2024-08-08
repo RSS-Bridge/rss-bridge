@@ -422,9 +422,18 @@ abstract class XPathAbstract extends BridgeAbstract
         }
 
         foreach ($entries as $entry) {
-            $item = new FeedItem();
-            foreach (['title', 'content', 'uri', 'author', 'timestamp', 'enclosures', 'categories'] as $param) {
-                $expression = $this->getParam($param);
+            $item = [];
+            $parameters = [
+                'title',
+                'content',
+                'uri',
+                'author',
+                'timestamp',
+                'enclosures',
+                'categories',
+            ];
+            foreach ($parameters as $parameter) {
+                $expression = $this->getParam($parameter);
                 if ('' === $expression) {
                     continue;
                 }
@@ -438,21 +447,21 @@ abstract class XPathAbstract extends BridgeAbstract
                     continue;
                 }
 
-                if ('categories' === $param && $typedResult instanceof \DOMNodeList) {
+                if ('categories' === $parameter && $typedResult instanceof \DOMNodeList) {
                     $value = [];
                     foreach ($typedResult as $domNode) {
                         $value[] = $this->getItemValueOrNodeValue($domNode, false);
                     }
                 } else {
-                    $value = $this->getItemValueOrNodeValue($typedResult, 'content' === $param);
+                    $value = $this->getItemValueOrNodeValue($typedResult, 'content' === $parameter);
                 }
 
-                $item->__set($param, $this->formatParamValue($param, $value));
+                $item[$parameter] = $this->formatParamValue($parameter, $value);
             }
 
             $itemId = $this->generateItemId($item);
             if (null !== $itemId) {
-                $item->setUid($itemId);
+                $item['uid'] = $itemId;
             }
 
             $this->items[] = $item;
@@ -646,10 +655,9 @@ abstract class XPathAbstract extends BridgeAbstract
     /**
      * Allows overriding default mechanism determining items Uid's
      *
-     * @param FeedItem $item
      * @return string|null
      */
-    protected function generateItemId(FeedItem $item)
+    protected function generateItemId(array $item)
     {
         return null;
     }
