@@ -12,9 +12,11 @@ class NvidiaDriverBridge extends FeedExpander
                 'name' => 'Version',
                 'type' => 'list',
                 'values' => [
+                        'FreeBSD' => '22',
                         'Linux' => '12',
                         // TODO 'Windows' => '',
                 ],
+                'defaultValue' => 'Linux',
             ],
             'whql' => [
                 'name' => 'Version',
