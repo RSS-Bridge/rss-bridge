@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></h1>
                 <span class="ModifiedDate">
-            August 6, 2024 at 6:15 PM        </span>
+            August 8, 2024 at 8:47 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/02_BridgeAbstract.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,7 +108,8 @@
             </div>
 
     <div class="s-content">
-        <p><code>BridgeAbstract</code> is a base class for standard bridges. It implements the most common functions to simplify the process of adding new bridges.</p>
+        <p><code>BridgeAbstract</code> is a base class for standard bridges.
+It implements the most common functions to simplify the process of adding new bridges.</p>
 <hr />
 <h1><a id="creating-a-new-bridge" href="#creating-a-new-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Creating a new bridge</h1>
 <p>You need four basic steps in order to create a new bridge:</p>
@@ -116,18 +117,26 @@
 <a href="#step-2---add-a-class-extending-bridgeabstract"><strong>Step 2</strong></a> - Add a class, extending <code>BridgeAbstract</code>
 <a href="#step-3---add-general-constants-to-the-class"><strong>Step 3</strong></a> - Add general constants to the class
 <a href="#step-4---implement-a-function-to-collect-feed-data"><strong>Step 4</strong></a> - Implement a function to collect feed data</p>
-<p>These steps are described in more detail below. At the end of this document you’ll find a complete <a href="#template">template</a> based on these instructions. The pictures below show an example based on these instructions:</p>
+<p>These steps are described in more detail below.
+At the end of this document you’ll find a complete <a href="#template">template</a> based on these instructions.
+The pictures below show an example based on these instructions:</p>
 <details><summary>Show pictures</summary><div>
 <p><img src="../images/screenshot_bridgeabstract_example_card.png" alt="example card" /></p>
 <hr />
 <p><img src="../images/screenshot_bridgeabstract_example_atom.png" alt="example atom" /></p>
 </div></details><br>
-<p>Make sure to read these instructions carefully. Please don’t hesitate to open an <a href="https://github.com/RSS-Bridge/rss-bridge/issues" class="Link--external" rel="noopener noreferrer">Issue</a> if you have further questions (or suggestions). Once your bridge is finished, please open a <a href="https://github.com/RSS-Bridge/rss-bridge/pulls" class="Link--external" rel="noopener noreferrer">Pull Request</a>, in order to get your bridge merge into RSS-Bridge.</p>
+<p>Make sure to read these instructions carefully.
+Please don’t hesitate to open an
+<a href="https://github.com/RSS-Bridge/rss-bridge/issues" class="Link--external" rel="noopener noreferrer">Issue</a>
+if you have further questions (or suggestions).
+Once your bridge is finished, please open a <a href="https://github.com/RSS-Bridge/rss-bridge/pulls" class="Link--external" rel="noopener noreferrer">Pull Request</a>,
+in order to get your bridge merge into RSS-Bridge.</p>
 <hr />
 <h2><a id="step-1-create-a-new-file" href="#step-1-create-a-new-file" class="Permalink" aria-hidden="true" title="Permalink">#</a>Step 1 - Create a new file</h2>
 <p>Please read <a href="How_to_create_a_new_bridge.html">these instructions</a> on how to create a new file for RSS-Bridge.</p>
 <h2><a id="step-2-add-a-class-extending-bridgeabstract" href="#step-2-add-a-class-extending-bridgeabstract" class="Permalink" aria-hidden="true" title="Permalink">#</a>Step 2 - Add a class, extending <code>BridgeAbstract</code></h2>
-<p>Your bridge needs to be a class, which extends <code>BridgeAbstract</code>. The class name must <strong>exactly</strong> match the name of the file, without the file extension.</p>
+<p>Your bridge needs to be a class, which extends <code>BridgeAbstract</code>.
+The class name must <strong>exactly</strong> match the name of the file, without the file extension.</p>
 <p>For example: <code>MyBridge.php</code> =&gt; <code>MyBridge</code></p>
 <details><summary>Show example</summary><div>
 <pre><code class="language-PHP">&lt;?PHP
@@ -147,69 +156,78 @@ const PARAMETERS    // (optional) Definition of additional parameters (default: 
 const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in seconds (default: 3600)
 </code></pre>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">&lt;?PHP
+<pre><code class="language-PHP">&lt;?php
+
 class MyBridge extends BridgeAbstract {
 	const NAME        = 'My Bridge';
 	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns &quot;Hello World!&quot;';
 	const MAINTAINER  = 'ghost';
 }
-// This line is empty (just imagine it!)
 </code></pre>
 </div></details><br>
-<p><strong>Notice</strong>: <code>const PARAMETERS</code> can be used to request information from the user. Refer to <a href="#parameters">these instructions</a> for more information.</p>
+<p><strong>Notice</strong>: <code>const PARAMETERS</code> can be used to request information from the user.
+Refer to <a href="#parameters">these instructions</a> for more information.</p>
 <h2><a id="step-4-implement-a-function-to-collect-feed-data" href="#step-4-implement-a-function-to-collect-feed-data" class="Permalink" aria-hidden="true" title="Permalink">#</a>Step 4 - Implement a function to collect feed data</h2>
-<p>In order for RSS-Bridge to collect data, you must implement the <strong>public</strong> function <code>collectData</code>. This function takes no arguments and returns nothing. It generates a list of feed elements, which must be placed into the variable <code>$this-&gt;items</code>.</p>
+<p>In order for RSS-Bridge to collect data, you must implement the <strong>public</strong> function <code>collectData</code>.
+This function takes no arguments and returns nothing.
+It generates a list of feed elements, which must be placed into the variable <code>$this-&gt;items</code>.</p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">&lt;?PHP
-class MyBridge extends BridgeAbstract {
-	const NAME        = 'My Bridge';
-	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
-	const DESCRIPTION = 'Returns &quot;Hello World!&quot;';
-	const MAINTAINER  = 'ghost';
+<pre><code class="language-PHP">&lt;?php
 
-	public function collectData() {
-		$item = []; // Create an empty item
+class MyBridge extends BridgeAbstract
+{
+    const NAME        = 'My Bridge';
+    const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
+    const DESCRIPTION = 'Returns &quot;Hello World!&quot;';
+    const MAINTAINER  = 'ghost';
 
-		$item['title'] = 'Hello World!';
-
-		$this-&gt;items[] = $item; // Add item to the list
-	}
+    public function collectData()
+    {
+        $item = [];
+        $item['title'] = 'Hello World!';
+        $this-&gt;items[] = $item;
+    }
 }
-// This line is empty (just imagine it!)
 </code></pre>
 </div></details><br>
 <p>For more details on the <code>collectData</code> function refer to <a href="#collectdata">these instructions</a>.</p>
 <hr />
 <h1><a id="template" href="#template" class="Permalink" aria-hidden="true" title="Permalink">#</a>Template</h1>
-<p>Use this template to create your own bridge. Please remove any unnecessary comments and parameters.</p>
+<p>Use this template to create your own bridge.
+Please remove any unnecessary comments and parameters.</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyBridge</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BridgeAbstract</span> </span>{
-	<span class="hljs-keyword">const</span> NAME = <span class="hljs-string">'Unnamed bridge'</span>;
-	<span class="hljs-keyword">const</span> URI = <span class="hljs-string">''</span>;
-	<span class="hljs-keyword">const</span> DESCRIPTION = <span class="hljs-string">'No description provided'</span>;
-	<span class="hljs-keyword">const</span> MAINTAINER = <span class="hljs-string">'No maintainer'</span>;
-	<span class="hljs-keyword">const</span> PARAMETERS = []; <span class="hljs-comment">// Can be omitted!</span>
-	<span class="hljs-keyword">const</span> CACHE_TIMEOUT = <span class="hljs-number">3600</span>; <span class="hljs-comment">// Can be omitted!</span>
 
-	<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span> </span>{
-		$item = []; <span class="hljs-comment">// Create an empty item</span>
-
-		$item[<span class="hljs-string">'title'</span>] = <span class="hljs-string">'Hello World!'</span>;
-
-		<span class="hljs-keyword">$this</span>-&gt;items[] = $item; <span class="hljs-comment">// Add item to the list</span>
-	}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyBridge</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BridgeAbstract</span>
+</span>{
+    <span class="hljs-keyword">const</span> NAME = <span class="hljs-string">'Unnamed bridge'</span>;
+    <span class="hljs-keyword">const</span> URI = <span class="hljs-string">''</span>;
+    <span class="hljs-keyword">const</span> DESCRIPTION = <span class="hljs-string">'No description provided'</span>;
+    <span class="hljs-keyword">const</span> MAINTAINER = <span class="hljs-string">'No maintainer'</span>;
+    <span class="hljs-keyword">const</span> PARAMETERS = []; <span class="hljs-comment">// Can be omitted!</span>
+    <span class="hljs-keyword">const</span> CACHE_TIMEOUT = <span class="hljs-number">3600</span>; <span class="hljs-comment">// Can be omitted!</span>
+    
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
+    </span>{
+        $item = []; <span class="hljs-comment">// Create an empty item</span>
+    
+        $item[<span class="hljs-string">'title'</span>] = <span class="hljs-string">'Hello World!'</span>;
+    
+        <span class="hljs-keyword">$this</span>-&gt;items[] = $item; <span class="hljs-comment">// Add item to the list</span>
+    }
 }
-<span class="hljs-comment">// This line is empty (just imagine it!)</span>
 </code></pre>
 <h1><a id="parameters" href="#parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>PARAMETERS</h1>
-<p>You can specify additional parameters in order to customize the bridge (i.e. to specify how many items to return). This document explains how to specify those parameters and which options are available to you.</p>
+<p>You can specify additional parameters in order to customize the bridge (i.e. to specify how many items to return).
+This document explains how to specify those parameters and which options are available to you.</p>
 <p>For information on how to read parameter values during execution, please refer to the <a href="../Helper_functions/index.html#getinput">getInput</a> function.</p>
 <hr />
 <h2><a id="adding-parameters-to-a-bridge" href="#adding-parameters-to-a-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Adding parameters to a bridge</h2>
-<p>Parameters are specified as part of the bridge class. An empty list of parameters is defined as <code>const PARAMETERS = [];</code></p>
+<p>Parameters are specified as part of the bridge class.
+An empty list of parameters is defined as <code>const PARAMETERS = [];</code></p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">&lt;?PHP
+<pre><code class="language-PHP">&lt;?php
+
 class MyBridge extends BridgeAbstract {
 	/* ... */
 	const PARAMETERS = []; // Empty list of parameters (can be omitted)
@@ -221,7 +239,8 @@ class MyBridge extends BridgeAbstract {
 <p><a href="##level-1---context"><strong>Level 1</strong></a> - Context
 <a href="##level-2---parameter"><strong>Level 2</strong></a> - Parameter</p>
 <h2><a id="level-1-context" href="#level-1-context" class="Permalink" aria-hidden="true" title="Permalink">#</a>Level 1 - Context</h2>
-<p>A context is defined as a associative array of parameters. The name of a context is displayed by RSS-Bridge.</p>
+<p>A context is defined as a associative array of parameters.
+The name of a context is displayed by RSS-Bridge.</p>
 <details><summary>Show example</summary><div>
 <pre><code class="language-PHP">const PARAMETERS = [
 	'My Context 1' =&gt; [],
@@ -238,7 +257,8 @@ class MyBridge extends BridgeAbstract {
 ];
 </code></pre>
 </div></details><br>
-<p>You can also define a set of parameters that will be applied to every possible context of your bridge. To do this, specify a context named <code>global</code>.</p>
+<p>You can also define a set of parameters that will be applied to every possible context of your bridge.
+To do this, specify a context named <code>global</code>.</p>
 <details><summary>Show example</summary><div>
 <pre><code class="language-PHP">const PARAMETERS = [
 	'global' =&gt; [] // Applies to all contexts!
@@ -252,25 +272,25 @@ Each parameter is defined by it’s internal input name, a definition in the for
 where <code>n</code> is the name with which the bridge can access the parameter during execution.</p>
 <details><summary>Show example</summary><div>
 <pre><code class="language-PHP">const PARAMETERS = [
-	'My Context' =&gt; [
-		'n' =&gt; []
-	]
+    'My Context' =&gt; [
+        'n' =&gt; [],
+    ]
 ];
 </code></pre>
 </div></details><br>
 <p>The parameter specification consists of various fields, listed in the table below.</p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">const PARAMETERS = array(
-	'My Context' =&gt; array(
-		'n' =&gt; array(
+<pre><code class="language-PHP">const PARAMETERS = [
+	'My Context' =&gt; [
+		'n' =&gt; [
 			'name' =&gt; 'Limit',
 			'type' =&gt; 'number',
 			'required' =&gt; false,
 			'title' =&gt; 'Maximum number of items to return',
-			'defaultValue' =&gt; 10
-		)
-	)
-);
+			'defaultValue' =&gt; 10,
+		]
+	]
+];
 </code></pre>
 <p><strong>Output</strong></p>
 <p><img src="../images/context_parameter_example.png" alt="context parameter" /></p>
@@ -349,27 +369,27 @@ where <code>n</code> is the name with which the bridge can access the parameter 
 <p>List values are defined in an associative array where keys are the string displayed in the combo list of the <strong>RSS-Bridge</strong> web interface, and values are the content of the &lt;option&gt; HTML tag value attribute.</p>
 <pre><code class="language-PHP">...
     'type' =&gt; 'list',
-    'values' =&gt; array(
+    'values' =&gt; [
         'Item A' =&gt; 'itemA'
         'Item B' =&gt; 'itemB'
-     )
+     ]
 ...
 </code></pre>
 <p>If a more complex organization is required to display the values, the above key/value can be used to set a title as a key and another array as a value:</p>
 <pre><code class="language-PHP">...
     'type' =&gt; 'list',
-    'values' =&gt; array(
+    'values' =&gt; [
         'Item A' =&gt; 'itemA',
-        'List 1' =&gt; array(
+        'List 1' =&gt; [
             'Item C' =&gt; 'itemC',
             'Item D' =&gt; 'itemD'
-        ),
-        'List 2' =&gt; array(
+        ],
+        'List 2' =&gt; [
             'Item E' =&gt; 'itemE',
             'Item F' =&gt; 'itemF'
-        ),
+        ],
         'Item B' =&gt; 'itemB'
-    )
+    ]
 ...
 </code></pre>
 <h4><a id="defaultvalue" href="#defaultvalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>defaultValue</h4>
@@ -389,19 +409,17 @@ where <code>n</code> is the name with which the bridge can access the parameter 
 <p>The queried context is defined via <code>PARAMETERS</code> and can be accessed via <code>$this-&gt;queriedContext</code>.
 It provides a way to identify which context the bridge is called with.</p>
 <p>Example:</p>
-<pre><code class="language-PHP">...
-	const PARAMETERS = array(
-		'By user name' =&gt; array(
-			'u' =&gt; array('name' =&gt; 'Username')
-		),
-		'By user ID' =&gt; array(
-			'id' =&gt; array('name' =&gt; 'User ID')
-		)
-	);
-
-...
+<pre><code class="language-PHP">const PARAMETERS = [
+    'By user name' =&gt; [
+        'u' =&gt; ['name' =&gt; 'Username']
+    ],
+    'By user ID' =&gt; [
+        'id' =&gt; ['name' =&gt; 'User ID']
+    ]
+];
 </code></pre>
-<p>In this example <code>$this-&gt;queriedContext</code> will either return <strong>By user name</strong> or <strong>By user ID</strong>. The queried context might return no value, so the best way to handle it is by using a case-structure:</p>
+<p>In this example <code>$this-&gt;queriedContext</code> will either return <strong>By user name</strong> or <strong>By user ID</strong>.
+The queried context might return no value, so the best way to handle it is by using a case-structure:</p>
 <pre><code class="language-PHP">switch($this-&gt;queriedContext){
 	case 'By user name':
 		break;
@@ -411,23 +429,25 @@ It provides a way to identify which context the bridge is called with.</p>
 }
 </code></pre>
 <h1><a id="collectdata" href="#collectdata" class="Permalink" aria-hidden="true" title="Permalink">#</a>collectData</h1>
-<p>The <code>collectData</code> function is responsible for collecting data and adding items to generate feeds from. If you are unsure how to solve a specific problem, please don’t hesitate to open an <a href="https://github.com/RSS-Bridge/rss-bridge/issues" class="Link--external" rel="noopener noreferrer">Issue</a> on GitHub. Existing bridges are also a good source to learn implementing your own bridge.</p>
+<p>The <code>collectData</code> function is responsible for collecting data and adding items to generate feeds from.
+If you are unsure how to solve a specific problem, please don’t hesitate to open an <a href="https://github.com/RSS-Bridge/rss-bridge/issues" class="Link--external" rel="noopener noreferrer">Issue</a> on GitHub.
+Existing bridges are also a good source to learn implementing your own bridge.</p>
 <h2><a id="implementing-the-collectdata-function" href="#implementing-the-collectdata-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>Implementing the <code>collectData</code> function</h2>
-<p>Implementation for the <code>collectData</code> function is specific to each bridge. However, there are certain reoccurring elements, described below. RSS-Bridge also provides functions to simplify the process of collecting and parsing HTML data (see “Helper Functions” on the sidebar)</p>
-<p>Elements collected by this function must be stored in <code>$this-&gt;items</code>. The <code>items</code> variable is an array of item elements, each of which is an associative array that may contain arbitrary keys. RSS-Bridge specifies common keys which are used to generate most common feed formats.</p>
+<p>Implementation for the <code>collectData</code> function is specific to each bridge.
+However, there are certain reoccurring elements, described below. RSS-Bridge also provides functions to simplify the process of collecting and parsing HTML data (see “Helper Functions” on the sidebar)</p>
+<p>Elements collected by this function must be stored in <code>$this-&gt;items</code>.
+The <code>items</code> variable is an array of item elements, each of which is an associative array that may contain arbitrary keys.
+RSS-Bridge specifies common keys which are used to generate most common feed formats.</p>
 <details><summary>Show example</summary><div>
-<pre><code class="language-PHP">
-$item = []; // Create a new item
-
+<pre><code class="language-PHP">$item = [];
 $item['title'] = 'Hello World!';
-
-$this-&gt;items[] = $item; // Add item to the list
-
+$this-&gt;items[] = $item;
 </code></pre>
 </div></details><br>
-Additional keys may be added for custom APIs (ignored by RSS-Bridge).
+<p>Additional keys may be added for custom APIs (ignored by RSS-Bridge).</p>
 <h2><a id="item-parameters" href="#item-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Item parameters</h2>
-<p>The item array should provide as much information as possible for RSS-Bridge to generate feature rich feeds. Find below list of keys supported by RSS-Bridge.</p>
+<p>The item array should provide as much information as possible for RSS-Bridge to generate feature rich feeds.
+Find below list of keys supported by RSS-Bridge.</p>
 <pre><code class="language-PHP">$item['uri']        // URI to reach the subject (&quot;https://...&quot;)
 $item['title']      // Title of the item
 $item['timestamp']  // Timestamp of the item in numeric or text format (compatible for strtotime())
@@ -440,118 +460,107 @@ $item['uid']        // A unique ID to identify the current item
 <p>All formats support these parameters. The formats <code>Plaintext</code> and <code>JSON</code> also support custom parameters.</p>
 <h1><a id="getdescription" href="#getdescription" class="Permalink" aria-hidden="true" title="Permalink">#</a>getDescription</h1>
 <p>The <code>getDescription</code> function returns the description for a bridge.</p>
-<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns the contents of <code>const DESCRIPTION</code>, so you only have to implement this function if you require different behavior!</p>
-<pre><code class="language-PHP">	public function getDescription(){
-		return self::DESCRIPTION;
-	}
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns the contents of <code>const DESCRIPTION</code>,
+so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">public function getDescription()
+{
+    return self::DESCRIPTION;
+}
 </code></pre>
 <h1><a id="getmaintainer" href="#getmaintainer" class="Permalink" aria-hidden="true" title="Permalink">#</a>getMaintainer</h1>
 <p>The <code>getMaintainer</code> function returns the name of the maintainer for a bridge.</p>
-<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const MAINTAINER</code>, so you only have to implement this function if you require different behavior!</p>
-<pre><code class="language-PHP">	public function getMaintainer(){
-		return self::MAINTAINER;
-	}
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const MAINTAINER</code>,
+so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">public function getMaintainer()
+{
+    return self::MAINTAINER;
+}
 </code></pre>
 <h1><a id="getname" href="#getname" class="Permalink" aria-hidden="true" title="Permalink">#</a>getName</h1>
 <p>The <code>getName</code> function returns the name of a bridge.</p>
-<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const NAME</code>, so you only have to implement this function if you require different behavior!</p>
-<pre><code class="language-PHP">	public function getName(){
-		return self::NAME;
-	}
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const NAME</code>,
+so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">public function getName()
+{
+    return self::NAME;
+}
 </code></pre>
 <h1><a id="geturi" href="#geturi" class="Permalink" aria-hidden="true" title="Permalink">#</a>getURI</h1>
 <p>The <code>getURI</code> function returns the base URI for a bridge.</p>
-<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const URI</code>, so you only have to implement this function if you require different behavior!</p>
-<pre><code class="language-PHP">	public function getURI(){
-		return self::URI;
-	}
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const URI</code>,
+so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">public function getURI()
+{
+    return self::URI;
+}
 </code></pre>
 <h1><a id="geticon" href="#geticon" class="Permalink" aria-hidden="true" title="Permalink">#</a>getIcon</h1>
 <p>The <code>getIcon</code> function returns the URI for an icon, used as favicon in feeds.</p>
-<p>If no icon is specified by the bridge, RSS-Bridge will use a default location: <code>static::URI . '/favicon.ico'</code> (i.e. “https://github.com/favicon.ico”) which may or may not exist.</p>
-<pre><code class="language-PHP">	public function getIcon(){
-		return static::URI . '/favicon.ico';
-	}
+<p>If no icon is specified by the bridge,
+RSS-Bridge will use a default location: <code>static::URI . '/favicon.ico'</code> (i.e. “https://github.com/favicon.ico”) which may or may not exist.</p>
+<pre><code class="language-PHP">public function getIcon()
+{
+    return static::URI . '/favicon.ico';
+}
 </code></pre>
 <h1><a id="detectparameters" href="#detectparameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>detectParameters</h1>
 <p>The <code>detectParameters</code> function takes a URL and attempts to extract a valid set of parameters for the current bridge.</p>
 <p>If the passed URL is valid for this bridge, the function should return an array of parameter -&gt; value pairs that can be used by this bridge, including context if available, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge, the function should return <code>null</code>.</p>
 <p><strong>Notice:</strong> Implementing this function is optional. By default, <strong>RSS-Bridge</strong> tries to match the supplied URL to the <code>URI</code> constant defined in the bridge, which may be enough for bridges without any parameters defined.</p>
-<pre><code class="language-PHP">public function detectParameters($url){
-	$regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
-	if(empty(static::PARAMETERS)
-	&amp;&amp; preg_match($regex, $url, $urlMatches) &gt; 0
-	&amp;&amp; preg_match($regex, static::URI, $bridgeUriMatches) &gt; 0
-	&amp;&amp; $urlMatches[3] === $bridgeUriMatches[3]) {
-		return [];
-	} else {
-		return null;
-	}
+<pre><code class="language-PHP">public function detectParameters($url)
+{
+    $regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
+    if (empty(static::PARAMETERS)
+        &amp;&amp; preg_match($regex, $url, $urlMatches) &gt; 0
+        &amp;&amp; preg_match($regex, static::URI, $bridgeUriMatches) &gt; 0
+        &amp;&amp; $urlMatches[3] === $bridgeUriMatches[3]
+    ) {
+        return [];
+    } else {
+        return null;
+    }
 }
 </code></pre>
-<p><strong>Notice:</strong> This function is also used by the <a href="../For_Developers/Actions.html#findfeed">findFeed</a> action. This action allows an user to get a list of all feeds corresponding to an URL.</p>
+<p><strong>Notice:</strong> This function is also used by the <a href="../For_Developers/Actions.html#findfeed">findFeed</a> action.
+This action allows an user to get a list of all feeds corresponding to an URL.</p>
 <p>You can implement automated tests for the <code>detectParameters</code> function by adding the <code>TEST_DETECT_PARAMETERS</code> constant to your bridge class constant.</p>
 <p><code>TEST_DETECT_PARAMETERS</code> is an array, with as key the URL passed to the <code>detectParameters</code>function and as value, the array of parameters returned by <code>detectParameters</code></p>
-<pre><code class="language-PHP">    const TEST_DETECT_PARAMETERS = [
-        'https://www.instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
-        'https://instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
-        'http://www.instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
-    ];
+<pre><code class="language-PHP">const TEST_DETECT_PARAMETERS = [
+    'https://www.instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
+    'https://instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
+    'http://www.instagram.com/metaverse' =&gt; ['context' =&gt; 'Username', 'u' =&gt; 'metaverse'],
+];
 </code></pre>
 <p><strong>Notice:</strong> Adding this constant is optional. If the constant is not present, no automated test will be executed.</p>
 <hr />
 <h1><a id="helper-methods" href="#helper-methods" class="Permalink" aria-hidden="true" title="Permalink">#</a>Helper Methods</h1>
-<p><code>BridgeAbstract</code> implements helper methods to make it easier for bridge maintainers to create bridges. Use these methods whenever possible instead of writing your own.</p>
-<ul>
-<li>
-<a href="#savecachevalue">saveCacheValue</a>
-</li>
-<li>
-<a href="#loadcachevalue">loadCacheValue</a>
-</li>
-</ul>
+<p><code>BridgeAbstract</code> implements helper methods to make it easier for bridge maintainers to create bridges.
+Use these methods whenever possible instead of writing your own.</p>
 <h2><a id="savecachevalue" href="#savecachevalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>saveCacheValue</h2>
-<p>Within the context of the current bridge, stores a value by key in the cache. The value can later be retrieved with <a href="#loadcachevalue">loadCacheValue</a>.</p>
-<pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">saveCacheValue</span><span class="hljs-params">($key, $value)</span>
+<p>Within the context of the current bridge, stores a value by key in the cache.
+The value can later be retrieved with <a href="#loadcachevalue">loadCacheValue</a>.</p>
+<pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">saveCacheValue</span><span class="hljs-params">($key, $value, $ttl = null)</span>
 </span></code></pre>
-<ul>
-<li>
-<code>$key</code> - the name under which the value is stored in the cache.</li>
-<li>
-<code>$value</code> - the value to store in the cache.</li>
-</ul>
-<p>Usage example:</p>
-<pre><code class="hljs php"><span class="hljs-keyword">const</span> MY_KEY = <span class="hljs-string">'MyKey'</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
+<p>Example:</p>
+<pre><code class="hljs php"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
 </span>{
-    $value = <span class="hljs-string">'my value'</span>;
-    <span class="hljs-keyword">$this</span>-&gt;saveCacheValue(MY_KEY, $value);
+    <span class="hljs-keyword">$this</span>-&gt;saveCacheValue(<span class="hljs-string">'my_key'</span>, <span class="hljs-string">'my_value'</span>, <span class="hljs-number">3600</span>); <span class="hljs-comment">// 1h</span>
 }
 </code></pre>
 <h2><a id="loadcachevalue" href="#loadcachevalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>loadCacheValue</h2>
-<p>Within the context of the current bridge, loads a value by key from cache. Optionally specifies the cache duration for the key. Returns <code>null</code> if the key doesn’t exist or the value is expired.</p>
-<pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadCacheValue</span><span class="hljs-params">($key, $duration = null)</span>
+<p>Within the context of the current bridge, loads a value by key from cache.
+Optionally specifies the cache duration for the key.
+Returns <code>null</code> if the key doesn’t exist or the value is expired.</p>
+<pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadCacheValue</span><span class="hljs-params">($key, $default = null)</span>
 </span></code></pre>
-<ul>
-<li>
-<code>$key</code> - the name under which the value is stored in the cache.</li>
-<li>
-<code>$duration</code> - the maximum time in seconds after which the value expires.</li>
-</ul>
-<p>Usage example:</p>
-<pre><code class="hljs php"><span class="hljs-keyword">const</span> MY_KEY = <span class="hljs-string">'MyKey'</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
+<p>Example:</p>
+<pre><code class="hljs php"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
 </span>{
-  $value = <span class="hljs-keyword">$this</span>-&gt;loadCacheValue(MY_KEY, <span class="hljs-number">1800</span> <span class="hljs-comment">/* 30 minutes */</span>);
+    $value = <span class="hljs-keyword">$this</span>-&gt;loadCacheValue(<span class="hljs-string">'my_key'</span>);
 
-  <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">isset</span>($value)){
-      <span class="hljs-comment">// load value</span>
-      <span class="hljs-keyword">$this</span>-&gt;saveCacheValue(MY_KEY, $value);
-  }
-
-  <span class="hljs-comment">// ...</span>
+    <span class="hljs-keyword">if</span> (! $value) {
+        <span class="hljs-keyword">$this</span>-&gt;saveCacheValue(<span class="hljs-string">'my_key'</span>, <span class="hljs-string">'foobar'</span>);
+    }
 }
 </code></pre>
     </div>
