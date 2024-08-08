@@ -100,7 +100,8 @@ final class RssBridge
 
     public static function getLogger(): Logger
     {
-        return self::$logger;
+        // null logger is only for the tests not to fail
+        return self::$logger ?? new NullLogger();
     }
 
     public static function getCache(): CacheInterface

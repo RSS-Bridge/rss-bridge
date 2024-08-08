@@ -120,7 +120,6 @@ class SlusheBridge extends BridgeAbstract
 
         //Loop on each entry
         foreach ($html->find('div.blog-item') as $element) {
-
             $title = $element->find('h3.title', 0)->first_child()->innertext;
             $article_uri = $element->find('h3.title', 0)->first_child()->href;
             $timestamp = $element->find('div.publication-date', 0)->innertext;

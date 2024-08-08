@@ -547,7 +547,6 @@ QUOTE;
 
             // Add External Link HTML, if relevant
             if (isset($extURL) && !$this->getInput('noexternallink')) {
-
                 $ext_html = <<<EXTERNAL
 <div style="display: table; border-style: solid; border-width: 1px; border-radius: 5px; padding: 5px;">
     $ext_media_html<br>
