@@ -105,7 +105,7 @@ class MastodonBridge extends BridgeAbstract
                         break;
                     }
                     $rtUser = $this->loadCacheValue($rtContent['attributedTo']);
-                    if (!isset($rtUser)) {
+                    if (!$rtUser) {
                         // We fetch the author, since we cannot always assume the format of the URL.
                         $user = $this->fetchAP($rtContent['attributedTo']);
                         preg_match('/https?:\/\/([a-z0-9-\.]{0,})\//', $rtContent['attributedTo'], $matches);

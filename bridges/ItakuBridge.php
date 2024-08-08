@@ -667,7 +667,7 @@ class ItakuBridge extends BridgeAbstract
         if ($getJSON) { //get JSON object
             if ($cache) {
                 $data = $this->loadCacheValue($url);
-                if (is_null($data)) {
+                if (!$data) {
                     $data = getContents($url, $httpHeaders, $curlOptions);
                     $this->saveCacheValue($url, $data);
                 }

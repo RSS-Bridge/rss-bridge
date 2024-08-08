@@ -118,7 +118,7 @@ The default URI shows the Madara demo page.';
     {
         $url_cache = 'TitleInfo_' . preg_replace('/[^\w]/', '.', rtrim($url, '/'));
         $cache = $this->loadCacheValue($url_cache);
-        if (isset($cache)) {
+        if ($cache) {
             return $cache;
         }
 
