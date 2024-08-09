@@ -73,7 +73,7 @@ class TarnkappeBridge extends FeedExpander
         if (isset($affiliate)) {
             $affiliate->remove();
         }
-        
+
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 
