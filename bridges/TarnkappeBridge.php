@@ -65,13 +65,9 @@ class TarnkappeBridge extends FeedExpander
 
         // remove unwanted stuff
         foreach (
-            $article->find('section, div.menu') as $element
+            $article->find('section, div.menu, p[style]') as $element
         ) {
             $element->remove();
-        }
-        $affiliate = $article->find('p[style]', 0);
-        if (isset($affiliate)) {
-            $affiliate->remove();
         }
 
         // reload html, as remove() is buggy
