@@ -132,9 +132,16 @@ class ModifyBridge extends FeedExpander
             foreach ($item['enclosures'] as $key => $val) {
                 $res = preg_replace($pattern, $replacement, $val);
                 if ($res !== null) {
-                    unset($item['enclosure']);
                     $item['enclosures'][$key] = $res;
                 }
+            }
+        }
+        if (array_key_exists('enclosure', $item)) {
+            $pattern = $this->buildPattern($this->getInput('enclosure_pattern'));
+            $replacement = $this->getInput('enclosure_replacement');
+            $res = preg_replace($pattern, $replacement, $item['enclosure']['url']);
+            if ($res !== null) {
+                $item['enclosure']['url'] = $res;
             }
         }
 
