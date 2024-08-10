@@ -55,9 +55,10 @@ class KemonoBridge extends BridgeAbstract
                 if (is_array($tags)) {
                     $item['categories'] = $tags;
                 } else {
-                    $tags = preg_replace('/^{"?/', '["', $tags);
-                    $tags = preg_replace('/"?}$/', '"]', $tags);
-                    $item['categories'] = Json::decode($tags);
+                    $tags = preg_replace('/^{/', '', $tags);
+                    $tags = preg_replace('/}$/', '', $tags);
+                    $tags = preg_replace('/"/', '', $tags);
+                    $item['categories'] = explode(',', $tags);
                 }
             }
 
