@@ -24,15 +24,15 @@ class ActivisionResearchBridge extends BridgeAbstract
             $title = htmlspecialchars_decode($article->find('div[class="title"]', 0)->plaintext);
             $author = htmlspecialchars_decode($article->find('div[class="author]', 0)->plaintext);
             $date = $article->find('div[class="pubdate"]', 0)->plaintext;
-            
+
             $entry = getSimpleHTMLDOMCached($a->href, static::CACHE_TIMEOUT * 7 * 4);
             $entry = defaultLinkTo($entry, $this->getURI());
 
             $content = $entry->find('div[class="blog-body"]', 0);
             $tagsremove = ['script', 'iframe', 'input', 'form'];
             $content = sanitize($content, $tagsremove);
-            $content = '<img src="' . static::URI . $blogimg. '" alt="">' . $content;
-            
+            $content = '<img src="' . static::URI . $blogimg . '" alt="">' . $content;
+
             $this->items[] = [
                 'title' => $title,
                 'author' => $author,
