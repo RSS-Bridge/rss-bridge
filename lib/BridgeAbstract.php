@@ -2,8 +2,8 @@
 
 abstract class BridgeAbstract
 {
-    const NAME = 'Unnamed bridge';
-    const URI = '';
+    const NAME = null;
+    const URI = null;
     const DONATION_URI = '';
     const DESCRIPTION = 'No description provided';
 
@@ -61,7 +61,7 @@ abstract class BridgeAbstract
 
     public function getName()
     {
-        return static::NAME;
+        return static::NAME ?? $this->getShortName();
     }
 
     public function getURI()
