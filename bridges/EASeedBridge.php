@@ -23,12 +23,12 @@ class EASeedBridge extends BridgeAbstract
             $author = $article->find('div', 0)->plaintext;
 
             $entry = getSimpleHTMLDOMCached($a->href, static::CACHE_TIMEOUT * 7 * 4);
-            
+
             $content = $entry->find('main', 0);
 
             // remove header and links to other posts
-            $content->find('ea-header', 0)->outertext = "";
-            $content->find('ea-section', -1)->outertext = "";
+            $content->find('ea-header', 0)->outertext = '';
+            $content->find('ea-section', -1)->outertext = '';
 
             $this->items[] = [
                 'title' => $title,
