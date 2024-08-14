@@ -86,8 +86,8 @@ telegram = ""
 donations = true
 
 [proxy]
-
-; Sets the proxy url (i.e. "tcp://192.168.0.0:32")
+; The HTTP proxy to tunnel requests through
+; https://curl.se/libcurl/c/CURLOPT_PROXY.html
 ; ""    = Proxy disabled (default)
 url = ""
 
