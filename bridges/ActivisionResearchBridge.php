@@ -43,3 +43,5 @@ class ActivisionResearchBridge extends BridgeAbstract
         }
     }
 }
+
+?>
