@@ -113,6 +113,7 @@ final class CurlHttpClient implements HttpClient
         if ($config['proxy']) {
             curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
         }
+
         if (curl_setopt_array($ch, $config['curl_options']) === false) {
             throw new \Exception('Tried to set an illegal curl option');
         }
