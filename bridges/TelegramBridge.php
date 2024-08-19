@@ -70,8 +70,14 @@ class TelegramBridge extends BridgeAbstract
     {
         $message = '';
 
+        $notSupported = $messageDiv->find('div.message_media_not_supported_wrap', 0);
+        if ($notSupported) {
+            // For unknown reasons, the telegram preview page omits the content of this post
+            $message = 'RSS-Bridge was unable to find the content of this post.<br><br>' . $notSupported->innertext;
+        }
+
         if ($messageDiv->find('div.tgme_widget_message_forwarded_from', 0)) {
-            $message = $messageDiv->find('div.tgme_widget_message_forwarded_from', 0)->innertext . '<br><br>';
+            $message .= $messageDiv->find('div.tgme_widget_message_forwarded_from', 0)->innertext . '<br><br>';
         }
 
         if ($messageDiv->find('a.tgme_widget_message_reply', 0)) {

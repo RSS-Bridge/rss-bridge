@@ -2,8 +2,8 @@
 
 abstract class BridgeAbstract
 {
-    const NAME = 'Unnamed bridge';
-    const URI = '';
+    const NAME = null;
+    const URI = null;
     const DONATION_URI = '';
     const DESCRIPTION = 'No description provided';
 
@@ -61,7 +61,7 @@ abstract class BridgeAbstract
 
     public function getName()
     {
-        return static::NAME;
+        return static::NAME ?? $this->getShortName();
     }
 
     public function getURI()
@@ -322,16 +322,14 @@ abstract class BridgeAbstract
         return null;
     }
 
-    protected function loadCacheValue(string $key)
+    protected function loadCacheValue(string $key, $default = null)
     {
-        $cacheKey = $this->getShortName() . '_' . $key;
-        return $this->cache->get($cacheKey);
+        return $this->cache->get($this->getShortName() . '_' . $key, $default);
     }
 
-    protected function saveCacheValue(string $key, $value, $ttl = 86400)
+    protected function saveCacheValue(string $key, $value, int $ttl = null)
     {
-        $cacheKey = $this->getShortName() . '_' . $key;
-        $this->cache->set($cacheKey, $value, $ttl);
+        $this->cache->set($this->getShortName() . '_' . $key, $value, $ttl);
     }
 
     public function getShortName(): string

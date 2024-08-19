@@ -62,6 +62,9 @@ register_shutdown_function(function () use ($logger) {
 
 $cacheFactory = new CacheFactory($logger);
 
+// Uncomment this for debug logging
+// $logger->addHandler(new StreamHandler('/tmp/rss-bridge.txt', Logger::DEBUG));
+
 if (Debug::isEnabled()) {
     $logger->addHandler(new ErrorLogHandler(Logger::DEBUG));
     $cache = $cacheFactory->create('array');

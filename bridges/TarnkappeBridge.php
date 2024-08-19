@@ -65,10 +65,11 @@ class TarnkappeBridge extends FeedExpander
 
         // remove unwanted stuff
         foreach (
-            $article->find('em, section, div.menu') as $element
+            $article->find('section, div.menu, p[style]') as $element
         ) {
             $element->remove();
         }
+
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 
