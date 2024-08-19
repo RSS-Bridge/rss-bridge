@@ -103,8 +103,12 @@ class MaalaimalarBridge extends BridgeAbstract
     {
         $content = '';
         $imageElement = $article->find('div.ignore-autoplay img', 0);
-        if ($imageElement) {
-            $content .= '<p><img src="' . $imageElement->{'data-src'} . '"></p>';
+        if ($imageElement && isset($imageElement->{'data-src'})) {
+            $url = str_replace('500x300_', '', $imageElement->{'data-src'});
+
+            if (filter_var($url, FILTER_VALIDATE_URL)) {
+                $content = sprintf('<p><img src="%s"></p>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8'));
+            }
         }
 
         $storyElement = $article->find('div.story-content', 0);
