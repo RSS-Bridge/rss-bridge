@@ -66,13 +66,13 @@ class NvidiaDriverBridge extends FeedExpander
                 $this->operatingSystem = 'Windows';
                 break;
             case 'Linux':
-                $whql = $this->getInput('lwwhql');
+                $whql = $this->getInput('lwhql');
                 $parameters['osid'] = 12;
                 $parameters['whql'] = $whql;
                 $this->operatingSystem = 'Linux';
                 break;
             case 'FreeBSD':
-                $whql = $this->getInput('fwwhql');
+                $whql = $this->getInput('fwhql');
                 $parameters['osid'] = 22;
                 $parameters['whql'] = $whql;
                 $this->operatingSystem = 'FreeBSD';
