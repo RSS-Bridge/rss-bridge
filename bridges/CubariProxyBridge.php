@@ -34,12 +34,15 @@ class CubariProxyBridge extends BridgeAbstract
                 'Enclosure' => 'e'
             ]
         ],
+        'limit' => self::LIMIT
     ]];
 
     private $title;
 
     public function collectData()
     {
+        $limit = $this->getInput('limit') ?? 10;
+
         $url = parent::getURI() . '/read/api/' . $this->getInput('service') . '/series/' . $this->getInput('series');
         $json = Json::decode(getContents($url));
         $this->title = $json['title'];
@@ -47,6 +50,7 @@ class CubariProxyBridge extends BridgeAbstract
         $chapters = $json['chapters'];
         krsort($chapters);
 
+        $count = 0;
         foreach ($chapters as $number => $element) {
             $item = [];
             $item['uri'] = $this->getURI() . '/' . $number;
@@ -58,7 +62,7 @@ class CubariProxyBridge extends BridgeAbstract
             }
 
             $group = '1';
-            if (array_key_exists('release_date', $element)) {
+            if (isset($element['release_date'])) {
                 $dates = $element['release_date'];
                 $date = max($dates);
                 $item['timestamp'] = $date;
@@ -90,6 +94,10 @@ class CubariProxyBridge extends BridgeAbstract
                         $item['content'] .= '<img src="' . $img . '"/>';
                     }
                 }
+            }
+
+            if ($count++ == $limit) {
+                break;
             }
 
             $this->items[] = $item;
