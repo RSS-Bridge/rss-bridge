@@ -21,12 +21,13 @@ class DisplayAction implements ActionInterface
         /** @var Response $cachedResponse */
         $cachedResponse = $this->cache->get($cacheKey);
         if ($cachedResponse) {
-            $ifModifiedSince = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? null;
+            $ifModifiedSince = $request->server('HTTP_IF_MODIFIED_SINCE');
             $lastModified = $cachedResponse->getHeader('last-modified');
             if ($ifModifiedSince && $lastModified) {
                 $lastModified = new \DateTimeImmutable($lastModified);
                 $lastModifiedTimestamp = $lastModified->getTimestamp();
                 $modifiedSince = strtotime($ifModifiedSince);
+                // TODO: \DateTimeImmutable can be compared directly
                 if ($lastModifiedTimestamp <= $modifiedSince) {
                     $modificationTimeGMT = gmdate('D, d M Y H:i:s ', $lastModifiedTimestamp);
                     return new Response('', 304, ['last-modified' => $modificationTimeGMT . 'GMT']);
@@ -182,7 +183,7 @@ class DisplayAction implements ActionInterface
         $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
             'error' => render_template(__DIR__ . '/../templates/exception.html.php', ['e' => $e]),
             'searchUrl' => self::createGithubSearchUrl($bridge),
-            'issueUrl' => self::createGithubIssueUrl($bridge, $e, create_sane_exception_message($e)),
+            'issueUrl' => self::createGithubIssueUrl($bridge, $e),
             'maintainer' => $bridge->getMaintainer(),
         ]);
         $item['content'] = $content;
@@ -211,7 +212,7 @@ class DisplayAction implements ActionInterface
         return $report['count'];
     }
 
-    private static function createGithubIssueUrl(BridgeAbstract $bridge, \Throwable $e, string $message): string
+    private static function createGithubIssueUrl(BridgeAbstract $bridge, \Throwable $e): string
     {
         $maintainer = $bridge->getMaintainer();
         if (str_contains($maintainer, ',')) {
@@ -221,13 +222,14 @@ class DisplayAction implements ActionInterface
         }
         $maintainers = array_map('trim', $maintainers);
 
+        $queryString = $_SERVER['QUERY_STRING'] ?? '';
         $query = [
             'title' => $bridge->getName() . ' failed with: ' . $e->getMessage(),
             'body' => sprintf(
                 "```\n%s\n\n%s\n\nQuery string: %s\nVersion: %s\nOs: %s\nPHP version: %s\n```\nMaintainer: @%s",
-                $message,
+                create_sane_exception_message($e),
                 implode("\n", trace_to_call_points(trace_from_exception($e))),
-                $_SERVER['QUERY_STRING'] ?? '',
+                $queryString,
                 Configuration::getVersion(),
                 PHP_OS_FAMILY,
                 phpversion() ?: 'Unknown',

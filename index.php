@@ -76,9 +76,17 @@ $httpClient = new CurlHttpClient();
 
 date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
+$argv = $argv ?? null;
+if ($argv) {
+    parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
+    $request = Request::fromCli($cliArgs);
+} else {
+    $request = Request::fromGlobals();
+}
+
 try {
     $rssBridge = new RssBridge($logger, $cache, $httpClient);
-    $response = $rssBridge->main($argv ?? []);
+    $response = $rssBridge->main($request);
     $response->send();
 } catch (\Throwable $e) {
     // Probably an exception inside an action
