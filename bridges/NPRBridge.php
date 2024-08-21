@@ -192,9 +192,9 @@ class NPRBridge extends FeedExpander
 
         // get tags, program/series names
         $item['categories'] = [];
-        $tags = '.tag, .program-block > a, .branding__title';
+        $tags = '.tag, .program-block > a, .branding__title, article h3.slug';
         foreach ($html->find($tags) as $tag) {
-            $item['categories'][] = $tag->innertext;
+            $item['categories'][] = $tag->plaintext;
         }
         $item['categories'] = array_unique($item['categories']);
 
