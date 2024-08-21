@@ -182,22 +182,19 @@ class NPRBridge extends FeedExpander
         $item['comments'] = preg_replace('/www/', 'text', $item['uri']);
 
         // clean up related articles, duplicate image credit and enlarged versions
-        $ads = ['aside.ad-wrap', 'span.credit', '.bucket.img'];
-        $enlarge = ['.enlarge-options', '.enlarge_measure', '.enlarge_html'];
-        foreach (array_merge($ads, $enlarge) as $sel) {
-            foreach ($text->find($sel) as $ad) {
-                $ad->remove();
-            }
+        $ads = 'aside.ad-wrap, span.credit, .bucket.img';
+        $enlarge = '.enlarge-options, .enlarge_measure, .enlarge_html';
+        foreach ($text->find("$ads, $enlarge") as $ad) {
+            $ad->remove();
         }
+
         $item['content'] = preg_replace('/(hide|toggle) caption/', '', $text);
 
         // get tags, program/series names
         $item['categories'] = [];
-        $tags = ['.tag', '.program-block > a', '.branding__title'];
-        foreach ($tags as $sel) {
-            foreach ($html->find($sel) as $tag) {
-                $item['categories'][] = $tag->innertext;
-            }
+        $tags = '.tag, .program-block > a, .branding__title';
+        foreach ($html->find($tags) as $tag) {
+            $item['categories'][] = $tag->innertext;
         }
         $item['categories'] = array_unique($item['categories']);
 
