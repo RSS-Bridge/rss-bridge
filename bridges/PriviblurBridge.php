@@ -36,11 +36,13 @@ class PriviblurBridge extends BridgeAbstract
             $item['uid'] = $item['comments']; // tumblr url is canonical
             $item['uri'] = $element->find('.interaction-buttons > a', 0)->href;
 
-            $tags = html_entity_decode($element->find('.post-tags', 0)->plaintext);
-            $tags = explode('#', $tags);
-            $tags = array_map('trim', $tags);
-            array_shift($tags);
-            $item['categories'] = $tags;
+            if ($element->find('.post-tags', 0)) {
+                $tags = html_entity_decode($element->find('.post-tags', 0)->plaintext);
+                $tags = explode('#', $tags);
+                $tags = array_map('trim', $tags);
+                array_shift($tags);
+                $item['categories'] = $tags;
+            }
 
             $heading = $element->find('h1', 0);
             if ($heading) {
