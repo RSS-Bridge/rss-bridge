@@ -16,15 +16,8 @@ final class RssBridge
         self::$httpClient = $httpClient;
     }
 
-    public function main(array $argv = []): Response
+    public function main(Request $request): Response
     {
-        if ($argv) {
-            parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
-            $request = Request::fromCli($cliArgs);
-        } else {
-            $request = Request::fromGlobals();
-        }
-
         foreach ($request->toArray() as $key => $value) {
             if (!is_string($value)) {
                 return new Response(render(__DIR__ . '/../templates/error.html.php', [

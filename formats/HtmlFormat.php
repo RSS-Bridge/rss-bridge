@@ -9,6 +9,9 @@ class HtmlFormat extends FormatAbstract
         // This query string is url encoded
         $queryString = $_SERVER['QUERY_STRING'];
 
+        // TODO: this should be the proper bridge short name and not user provided string
+        $bridgeName = $_GET['bridge'];
+
         $feedArray = $this->getFeed();
         $formatFactory = new FormatFactory();
         $formats = [];
@@ -48,6 +51,7 @@ class HtmlFormat extends FormatAbstract
         }
 
         $html = render_template(__DIR__ . '/../templates/html-format.html.php', [
+            'bridge_name'   => $bridgeName,
             'charset'       => $this->getCharset(),
             'title'         => $feedArray['name'],
             'formats'       => $formats,
