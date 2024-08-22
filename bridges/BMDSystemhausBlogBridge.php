@@ -8,6 +8,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     const URI = 'https://www.bmd.com';
     const DONATION_URI = 'https://paypal.me/cntools';
     const DESCRIPTION = 'BMD Systemhaus - We make business easy';
+    const BMD_FAV_ICON = 'https://www.bmd.com/favicon.ico';
 
     const ITEMSTYLE = [
         'ilcr' => '<table width="100%"><tr><td style="vertical-align: top;">{data_img}</td><td style="vertical-align: top;">{data_content}</td></tr></table>',
@@ -148,18 +149,58 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
             return null;
         }
 
-        if ($parsedUrl->getHost() != 'www.bmd.com') {
+        if (!in_array($parsedUrl->getHost(), ['www.bmd.com', 'bmd.com'])) {
             return null;
         }
 
-        $path = explode('/', $parsedUrl->getPath());
+        $lang = '';
 
-        if ($this->getURIbyCountry($path[1]) == '') {
-            return null;
+        // extract language from url
+        $path = explode('/', $parsedUrl->getPath());
+        if (count($path) > 1) {
+            $lang = $path[1];
+
+            // validate data
+            if ($this->getURIbyCountry($lang) == '') {
+                $lang = '';
+            }
+        }
+
+        // if no country available, find language by browser
+        if ($lang == '') {
+            $srvLanguages = explode(';', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            if (count($srvLanguages) > 0) {
+                $languages = explode(',', $srvLanguages[0]);
+                if (count($languages) > 0) {
+                    for ($i = 0; $i < count($languages); $i++) {
+                        $langDetails = explode('-', $languages[$i]);
+                        if (count($langDetails) > 1) {
+                            $lang = $langDetails[1];
+                        } else {
+                            $lang = substr($srvLanguages[0], 0, 2);
+                        }
+
+                        // validate data
+                        if ($this->getURIbyCountry($lang) == '') {
+                            $lang = '';
+                        }
+
+                        if ($lang != '') {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // if no URL found by language, use AT as default
+        if ($this->getURIbyCountry($lang) == '') {
+            $lang = 'at';
         }
 
         $params = [];
-        $params['country'] = $path[1];
+        $params['country'] = strtolower($lang);
+
         return $params;
     }
 
@@ -173,7 +214,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     //-----------------------------------------------------
     public function getIcon()
     {
-        return 'https://www.bmd.com/favicon.ico';
+        return self::BMD_FAV_ICON;
     }
 
     //-----------------------------------------------------
@@ -192,7 +233,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     //-----------------------------------------------------
     private function getURIbyCountry($country)
     {
-        switch ($country) {
+        switch (strtolower($country)) {
             case 'at':
                 return 'https://www.bmd.com/at/ueber-bmd/blog-ohne-filter.html';
             case 'de':
