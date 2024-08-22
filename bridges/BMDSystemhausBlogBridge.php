@@ -149,35 +149,29 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
             return null;
         }
 
-        if (($parsedUrl->getHost() != 'www.bmd.com') && ($parsedUrl->getHost() != 'bmd.com')) {
-            return null;
-        }
-
-        Debug::log(var_export($parsedUrl, true));
+        if (!in_array($parsedUrl->getHost(), ['www.bmd.com', 'bmd.com'])) {
+             return null;
+         }
 
         $lang = '';
 
         // extract language from url
         $path = explode('/', $parsedUrl->getPath());
-        Debug::log('path: ' . var_export($path, true));
         if (count($path) > 1) {
             $lang = $path[1];
 
             // validate data
             if ($this->getURIbyCountry($lang) == '') {
-                Debug::log('language by url not valid: ' . $lang);
                 $lang = '';
             }
         }
 
         // if no country available, find language by browser
         if ($lang == '') {
-            Debug::log('HTTP_ACCEPT_LANGUAGE: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE']);
             $srvLanguages = explode(';', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
             if (count($srvLanguages) > 0) {
                 $languages = explode(',', $srvLanguages[0]);
                 if (count($languages) > 0) {
-                    Debug::log('languages of server: ' . var_export($languages, true));
                     for ($i = 0; $i < count($languages); $i++) {
                         $langDetails = explode('-', $languages[$i]);
                         if (count($langDetails) > 1) {
@@ -186,7 +180,6 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
                             $lang = substr($srvLanguages[0], 0, 2);
                         }
 
-                        Debug::log('check language ' . $i . ': ' . $lang);
                         // validate data
                         if ($this->getURIbyCountry($lang) == '') {
                             $lang = '';
@@ -198,19 +191,15 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
                     }
                 }
             }
-            Debug::log('language by browser: ' . $lang);
         }
 
         // if no URL found by language, use AT as default
         if ($this->getURIbyCountry($lang) == '') {
             $lang = 'at';
-            Debug::log('language by fallback: ' . $lang);
         }
 
         $params = [];
         $params['country'] = strtolower($lang);
-
-        Debug::log(var_export($params, true));
 
         return $params;
     }
