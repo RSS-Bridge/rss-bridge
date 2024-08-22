@@ -150,8 +150,8 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
         }
 
         if (!in_array($parsedUrl->getHost(), ['www.bmd.com', 'bmd.com'])) {
-             return null;
-         }
+            return null;
+        }
 
         $lang = '';
 
