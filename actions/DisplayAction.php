@@ -160,9 +160,15 @@ class DisplayAction implements ActionInterface
         $format->setLastModified($now);
         $headers = [
             'last-modified' => gmdate('D, d M Y H:i:s ', $now) . 'GMT',
-            'content-type'  => $format->getMimeType() . '; charset=' . $format->getCharset(),
+            'content-type'  => $format->getMimeType() . '; charset=UTF-8',
         ];
-        return new Response($format->stringify(), 200, $headers);
+        $body = $format->render();
+
+        // This is supposed to remove non-utf8 byte sequences, but I'm unsure if it works
+        ini_set('mbstring.substitute_character', 'none');
+        $body = mb_convert_encoding($body, 'UTF-8', 'UTF-8');
+
+        return new Response($body, 200, $headers);
     }
 
     private function createFeedItemFromException($e, BridgeAbstract $bridge): array

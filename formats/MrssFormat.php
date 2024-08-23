@@ -32,9 +32,9 @@ class MrssFormat extends FormatAbstract
     protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
     protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
-    public function stringify()
+    public function render(): string
     {
-        $document = new \DomDocument('1.0', $this->getCharset());
+        $document = new \DomDocument('1.0', 'UTF-8');
         $document->formatOutput = true;
 
         $feed = $document->createElement('rss');
@@ -198,9 +198,6 @@ class MrssFormat extends FormatAbstract
         }
 
         $xml = $document->saveXML();
-        // Remove invalid non-UTF8 characters
-        ini_set('mbstring.substitute_character', 'none');
-        $xml = mb_convert_encoding($xml, $this->getCharset(), 'UTF-8');
         return $xml;
     }
 }

@@ -58,7 +58,7 @@ class FormatTest extends TestCase
 
 class TestFormat extends \FormatAbstract
 {
-    public function stringify()
+    public function render(): string
     {
     }
 }
