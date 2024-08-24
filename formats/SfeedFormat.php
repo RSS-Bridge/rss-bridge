@@ -4,7 +4,7 @@ class SfeedFormat extends FormatAbstract
 {
     const MIME_TYPE = 'text/plain';
 
-    public function stringify()
+    public function render(): string
     {
         $text = '';
         foreach ($this->getItems() as $item) {
@@ -26,13 +26,6 @@ class SfeedFormat extends FormatAbstract
             );
         }
 
-        // Remove invalid non-UTF8 characters
-        ini_set('mbstring.substitute_character', 'none');
-        $text = mb_convert_encoding(
-            $text,
-            $this->getCharset(),
-            'UTF-8'
-        );
         return $text;
     }
 

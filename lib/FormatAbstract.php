@@ -8,11 +8,10 @@ abstract class FormatAbstract
 
     protected array $feed = [];
     protected array $items = [];
-    protected string $charset = 'UTF-8';
 
     protected int $lastModified;
 
-    abstract public function stringify();
+    abstract public function render(): string;
 
     public function setFeed(array $feed)
     {
@@ -48,16 +47,6 @@ abstract class FormatAbstract
     public function getMimeType(): string
     {
         return static::MIME_TYPE;
-    }
-
-    public function setCharset(string $charset)
-    {
-        $this->charset = $charset;
-    }
-
-    public function getCharset(): string
-    {
-        return $this->charset;
     }
 
     public function setLastModified(int $lastModified)
