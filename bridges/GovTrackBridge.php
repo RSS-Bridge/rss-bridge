@@ -10,6 +10,7 @@ class GovTrackBridge extends BridgeAbstract
         'feed' => [
             'name' => 'Feed to track',
             'type' => 'list',
+            'defaultValue' => 'posts',
             'values' => [
                 'All Legislative Activity' => 'bill-activity',
                 'Bill Summaries' => 'bill-summaries',
