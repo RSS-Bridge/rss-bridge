@@ -60,7 +60,7 @@ class CeskaTelevizeBridge extends BridgeAbstract
         foreach ($html->find('#episodeListSection a[data-testid=card]') as $element) {
             $itemTitle = $element->find('h3', 0);
             $itemContent = $element->find('p[class^=content-]', 0);
-            $itemDate = $element->find('div[class^=playTime-] span', 0);
+            $itemDate = $element->find('div[class^=playTime-] span, [data-testid=episode-item-broadcast] span', 0);
             $itemThumbnail = $element->find('img', 0);
             $itemUri = self::URI . $element->getAttribute('href');
 
