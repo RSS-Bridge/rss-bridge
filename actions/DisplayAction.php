@@ -125,17 +125,16 @@ class DisplayAction implements ActionInterface
                 return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), 429);
             }
             if ($e instanceof HttpException) {
-                // Reproduce (and log) these responses regardless of error output and report limit
-                if ($e->getCode() === 429) {
-                    $this->logger->info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
-                    return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), 429);
+                if (in_array($e->getCode(), [429, 503])) {
+                    // Log with debug, immediately reproduce and return
+                    $this->logger->debug(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
+                    return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), $e->getCode());
                 }
-                if ($e->getCode() === 503) {
-                    $this->logger->info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
-                    return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), 503);
-                }
+                // Some other status code which we let fail normally (but don't log it)
+            } else {
+                // Log error if it's not an HttpException
+                $this->logger->error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
             }
-            $this->logger->error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
             $errorOutput = Configuration::getConfig('error', 'output');
             $reportLimit = Configuration::getConfig('error', 'report_limit');
             $errorCount = 1;
