@@ -12,7 +12,8 @@ class Container implements \ArrayAccess
         $this->values[$offset] = $value;
     }
 
-    #[ReturnTypeWillChange] public function offsetGet($offset)
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
     {
         if (!isset($this->values[$offset])) {
             throw new \Exception(sprintf('Unknown container key: "%s"', $offset));
@@ -23,7 +24,8 @@ class Container implements \ArrayAccess
         return $this->resolved[$offset];
     }
 
-    #[ReturnTypeWillChange] public function offsetExists($offset)
+    #[\ReturnTypeWillChange]
+    public function offsetExists($offset)
     {
     }
 
