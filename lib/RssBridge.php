@@ -2,18 +2,12 @@
 
 final class RssBridge
 {
-    private static Logger $logger;
-    private static CacheInterface $cache;
-    private static HttpClient $httpClient;
+    private static Container $container;
 
     public function __construct(
-        Logger $logger,
-        CacheInterface $cache,
-        HttpClient $httpClient
+        Container $container
     ) {
-        self::$logger = $logger;
-        self::$cache = $cache;
-        self::$httpClient = $httpClient;
+        self::$container = $container;
     }
 
     public function main(Request $request): Response
@@ -83,10 +77,9 @@ final class RssBridge
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Invalid action']), 400);
         }
 
-        $className = '\\' . $actionName;
-        $actionObject = new $className();
+        $controller = self::$container[$actionName];
 
-        $response = $actionObject($request);
+        $response = $controller($request);
 
         return $response;
     }
@@ -94,16 +87,16 @@ final class RssBridge
     public static function getLogger(): Logger
     {
         // null logger is only for the tests not to fail
-        return self::$logger ?? new NullLogger();
+        return self::$container['logger'] ?? new NullLogger();
     }
 
     public static function getCache(): CacheInterface
     {
-        return self::$cache;
+        return self::$container['cache'];
     }
 
     public static function getHttpClient(): HttpClient
     {
-        return self::$httpClient;
+        return self::$container['http_client'];
     }
 }

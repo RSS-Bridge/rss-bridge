@@ -14,9 +14,10 @@ class ConnectivityAction implements ActionInterface
 {
     private BridgeFactory $bridgeFactory;
 
-    public function __construct()
-    {
-        $this->bridgeFactory = new BridgeFactory();
+    public function __construct(
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->bridgeFactory = $bridgeFactory;
     }
 
     public function __invoke(Request $request): Response

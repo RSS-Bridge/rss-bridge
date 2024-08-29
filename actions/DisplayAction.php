@@ -4,11 +4,16 @@ class DisplayAction implements ActionInterface
 {
     private CacheInterface $cache;
     private Logger $logger;
+    private BridgeFactory $bridgeFactory;
 
-    public function __construct()
-    {
-        $this->cache = RssBridge::getCache();
-        $this->logger = RssBridge::getLogger();
+    public function __construct(
+        CacheInterface $cache,
+        Logger $logger,
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->cache = $cache;
+        $this->logger = $logger;
+        $this->bridgeFactory = $bridgeFactory;
     }
 
     public function __invoke(Request $request): Response
@@ -39,8 +44,7 @@ class DisplayAction implements ActionInterface
         if (!$bridgeName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Missing bridge parameter']), 400);
         }
-        $bridgeFactory = new BridgeFactory();
-        $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
+        $bridgeClassName = $this->bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Bridge not found']), 404);
         }
@@ -48,7 +52,7 @@ class DisplayAction implements ActionInterface
         if (!$format) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'You must specify a format']), 400);
         }
-        if (!$bridgeFactory->isEnabled($bridgeClassName)) {
+        if (!$this->bridgeFactory->isEnabled($bridgeClassName)) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'This bridge is not whitelisted']), 400);
         }
 
@@ -62,7 +66,7 @@ class DisplayAction implements ActionInterface
             define('NOPROXY', true);
         }
 
-        $bridge = $bridgeFactory->create($bridgeClassName);
+        $bridge = $this->bridgeFactory->create($bridgeClassName);
 
         $response = $this->createResponse($request, $bridge, $format);
 
