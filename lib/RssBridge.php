@@ -26,7 +26,7 @@ final class RssBridge
             new SecurityMiddleware(),
             new MaintenanceMiddleware(),
             new BasicAuthMiddleware(),
-            new TokenAuthentication(),
+            new TokenAuthenticationMiddleware(),
         ];
         $action = function ($req) use ($handler) {
             return $handler($req);

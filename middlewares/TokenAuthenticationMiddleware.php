@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class TokenAuthentication implements Middleware
+class TokenAuthenticationMiddleware implements Middleware
 {
     public function __invoke(Request $request, $next): Response
     {
