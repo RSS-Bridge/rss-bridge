@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Add log records to all three levels (for testing purposes)
+ */
+
+require __DIR__ . '/../lib/bootstrap.php';
+
+$config = [];
+if (file_exists(__DIR__ . '/../config.ini.php')) {
+    $config = parse_ini_file(__DIR__ . '/../config.ini.php', true, INI_SCANNER_TYPED);
+    if (!$config) {
+        http_response_code(500);
+        exit("Error parsing config.ini.php\n");
+    }
+}
+Configuration::loadConfiguration($config, getenv());
+
+$container = require __DIR__ . '/../lib/dependencies.php';
+
+/** @var Logger $logger */
+$logger = $container['logger'];
+
+$logger->debug('This is a test debug message');
+
+$logger->info('This is a test info message');
+
+$logger->error('This is a test error message');
