@@ -37,6 +37,7 @@ spl_autoload_register(function ($className) {
         __DIR__ . '/../caches/',
         __DIR__ . '/../formats/',
         __DIR__ . '/../lib/',
+        __DIR__ . '/../middlewares/',
     ];
     foreach ($folders as $folder) {
         $file = $folder . $className . '.php';
