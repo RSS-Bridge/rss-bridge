@@ -175,8 +175,9 @@ final class ErrorLogHandler
                 $context = Json::encode($record['context']);
             }
         }
+        // Intentionally omitting newline
         $text = sprintf(
-            "[%s] %s.%s %s %s\n",
+            '[%s] %s.%s %s %s',
             $record['created_at']->format('Y-m-d H:i:s'),
             $record['name'],
             $record['level_name'],

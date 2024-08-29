@@ -99,7 +99,7 @@ EOD;
         $user = $data->user;
         if ($user->videos === null) {
             // twitch regularly does this for unknown reasons
-            //$this->logger->info('Twitch returned empty set of videos', ['data' => $data]);
+            $this->debug->info('Twitch returned empty set of videos', ['data' => $data]);
             return;
         }
 

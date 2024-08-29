@@ -17,11 +17,8 @@ if (file_exists(__DIR__ . '/../config.ini.php')) {
 }
 Configuration::loadConfiguration($config, getenv());
 
-$logger = new SimpleLogger('rssbridge');
+$container = require __DIR__ . '/../lib/dependencies.php';
 
-$logger->addHandler(new StreamHandler('php://stderr', Logger::INFO));
-
-$cacheFactory = new CacheFactory($logger);
-$cache = $cacheFactory->create();
+$cache = $container['cache'];
 
 $cache->prune();

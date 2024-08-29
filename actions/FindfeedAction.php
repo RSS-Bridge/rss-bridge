@@ -7,6 +7,14 @@
  */
 class FindfeedAction implements ActionInterface
 {
+    private BridgeFactory $bridgeFactory;
+
+    public function __construct(
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->bridgeFactory = $bridgeFactory;
+    }
+
     public function __invoke(Request $request): Response
     {
         $url = $request->get('url');
@@ -19,15 +27,13 @@ class FindfeedAction implements ActionInterface
             return new Response('You must specify a format', 400);
         }
 
-        $bridgeFactory = new BridgeFactory();
-
         $results = [];
-        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
-            if (!$bridgeFactory->isEnabled($bridgeClassName)) {
+        foreach ($this->bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            if (!$this->bridgeFactory->isEnabled($bridgeClassName)) {
                 continue;
             }
 
-            $bridge = $bridgeFactory->create($bridgeClassName);
+            $bridge = $this->bridgeFactory->create($bridgeClassName);
 
             $bridgeParams = $bridge->detectParameters($url);
 

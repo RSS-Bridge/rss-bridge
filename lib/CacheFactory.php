@@ -14,10 +14,6 @@ class CacheFactory
 
     public function create(string $name = null): CacheInterface
     {
-        $name ??= Configuration::getConfig('cache', 'type');
-        if (!$name) {
-            throw new \Exception('No cache type configured');
-        }
         $cacheNames = [];
         foreach (scandir(PATH_LIB_CACHES) as $file) {
             if (preg_match('/^([^.]+)Cache\.php$/U', $file, $m)) {

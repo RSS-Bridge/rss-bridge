@@ -2,6 +2,14 @@
 
 final class FrontpageAction implements ActionInterface
 {
+    private BridgeFactory $bridgeFactory;
+
+    public function __construct(
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->bridgeFactory = $bridgeFactory;
+    }
+
     public function __invoke(Request $request): Response
     {
         $token = $request->attribute('token');
@@ -9,10 +17,9 @@ final class FrontpageAction implements ActionInterface
         $messages = [];
         $activeBridges = 0;
 
-        $bridgeFactory = new BridgeFactory();
-        $bridgeClassNames = $bridgeFactory->getBridgeClassNames();
+        $bridgeClassNames = $this->bridgeFactory->getBridgeClassNames();
 
-        foreach ($bridgeFactory->getMissingEnabledBridges() as $missingEnabledBridge) {
+        foreach ($this->bridgeFactory->getMissingEnabledBridges() as $missingEnabledBridge) {
             $messages[] = [
                 'body' => sprintf('Warning : Bridge "%s" not found', $missingEnabledBridge),
                 'level' => 'warning'
@@ -21,8 +28,8 @@ final class FrontpageAction implements ActionInterface
 
         $body = '';
         foreach ($bridgeClassNames as $bridgeClassName) {
-            if ($bridgeFactory->isEnabled($bridgeClassName)) {
-                $body .= BridgeCard::render($bridgeClassName, $token);
+            if ($this->bridgeFactory->isEnabled($bridgeClassName)) {
+                $body .= BridgeCard::render($this->bridgeFactory, $bridgeClassName, $token);
                 $activeBridges++;
             }
         }
