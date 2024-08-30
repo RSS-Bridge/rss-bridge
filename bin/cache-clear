@@ -10,6 +10,7 @@ require __DIR__ . '/../lib/config.php';
 
 $container = require __DIR__ . '/../lib/dependencies.php';
 
+/** @var CacheInterface $cache */
 $cache = $container['cache'];
 
 $cache->clear();
