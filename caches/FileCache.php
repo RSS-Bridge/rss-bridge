@@ -97,8 +97,10 @@ class FileCache implements CacheInterface
             }
             $expiration = $item['expiration'] ?? time();
             if ($expiration === 0 || $expiration > time()) {
+                // Cached forever, or not expired yet
                 continue;
             }
+            // Expired, so delete file
             unlink($cacheFile);
         }
     }

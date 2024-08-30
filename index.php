@@ -5,17 +5,8 @@ if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
     exit("RSS-Bridge requires minimum PHP version 7.4\n");
 }
 
-require_once __DIR__ . '/lib/bootstrap.php';
-
-$config = [];
-if (file_exists(__DIR__ . '/config.ini.php')) {
-    $config = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
-    if (!$config) {
-        http_response_code(500);
-        exit("Error parsing config.ini.php\n");
-    }
-}
-Configuration::loadConfiguration($config, getenv());
+require __DIR__ . '/lib/bootstrap.php';
+require __DIR__ . '/lib/config.php';
 
 $container = require __DIR__ . '/lib/dependencies.php';
 
