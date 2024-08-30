@@ -27,4 +27,5 @@ The file must start with the PHP tags and end with an empty line. The closing ta
 // This line is empty (just imagine it!)
 ```
 
-The next step is to extend one of the base classes. Refer to one of an base classes listed on the [Bridge API](../05_Bridge_API/index.md) page.
+The next step is to extend one of the base classes.
+Refer to one of an base classes listed on the [Bridge API](../05_Bridge_API/index.md) page.
