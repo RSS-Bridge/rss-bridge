@@ -2,12 +2,12 @@
 
 final class RssBridge
 {
-    private static Container $container;
+    private Container $container;
 
     public function __construct(
         Container $container
     ) {
-        self::$container = $container;
+        $this->container = $container;
     }
 
     public function main(Request $request): Response
@@ -20,7 +20,7 @@ final class RssBridge
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Invalid action']), 400);
         }
 
-        $handler = self::$container[$actionName];
+        $handler = $this->container[$actionName];
 
         $middlewares = [
             new SecurityMiddleware(),
@@ -35,21 +35,5 @@ final class RssBridge
             $action = fn ($req) => $middleware($req, $action);
         }
         return $action($request);
-    }
-
-    public static function getLogger(): Logger
-    {
-        // null logger is only for the tests not to fail
-        return self::$container['logger'] ?? new NullLogger();
-    }
-
-    public static function getCache(): CacheInterface
-    {
-        return self::$container['cache'];
-    }
-
-    public static function getHttpClient(): HttpClient
-    {
-        return self::$container['http_client'];
     }
 }

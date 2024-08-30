@@ -14,8 +14,13 @@ function getContents(
     array $curlOptions = [],
     bool $returnFull = false
 ) {
-    $httpClient = RssBridge::getHttpClient();
-    $cache = RssBridge::getCache();
+    global $container;
+
+    /** @var HttpClient $httpClient */
+    $httpClient = $container['http_client'];
+
+    /** @var CacheInterface $cache */
+    $cache = $container['cache'];
 
     // TODO: consider url validation at this point
 
@@ -212,7 +217,11 @@ function getSimpleHTMLDOMCached(
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
 ) {
-    $cache = RssBridge::getCache();
+    global $container;
+
+    /** @var CacheInterface $cache */
+    $cache = $container['cache'];
+
     $cacheKey = 'pages_' . $url;
     $content = $cache->get($cacheKey);
     if (!$content) {
