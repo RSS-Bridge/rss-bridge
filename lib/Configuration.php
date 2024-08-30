@@ -15,43 +15,6 @@ final class Configuration
     {
     }
 
-    public static function checkInstallation(): array
-    {
-        $errors = [];
-
-        // OpenSSL: https://www.php.net/manual/en/book.openssl.php
-        if (!extension_loaded('openssl')) {
-            $errors[] = 'openssl extension not loaded';
-        }
-
-        // libxml: https://www.php.net/manual/en/book.libxml.php
-        if (!extension_loaded('libxml')) {
-            $errors[] = 'libxml extension not loaded';
-        }
-
-        // Multibyte String (mbstring): https://www.php.net/manual/en/book.mbstring.php
-        if (!extension_loaded('mbstring')) {
-            $errors[] = 'mbstring extension not loaded';
-        }
-
-        // SimpleXML: https://www.php.net/manual/en/book.simplexml.php
-        if (!extension_loaded('simplexml')) {
-            $errors[] = 'simplexml extension not loaded';
-        }
-
-        // Client URL Library (curl): https://www.php.net/manual/en/book.curl.php
-        // Allow RSS-Bridge to run without curl module in CLI mode without root certificates
-        if (!extension_loaded('curl') && !(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo')))) {
-            $errors[] = 'curl extension not loaded';
-        }
-
-        // JavaScript Object Notation (json): https://www.php.net/manual/en/book.json.php
-        if (!extension_loaded('json')) {
-            $errors[] = 'json extension not loaded';
-        }
-        return $errors;
-    }
-
     public static function loadConfiguration(array $customConfig = [], array $env = [])
     {
         if (!file_exists(__DIR__ . '/../config.default.ini.php')) {
@@ -204,7 +167,10 @@ final class Configuration
         return self::$config[strtolower($section)][strtolower($key)] ?? $default;
     }
 
-    private static function setConfig(string $section, string $key, $value): void
+    /**
+     * @internal Please avoid usage
+     */
+    public static function setConfig(string $section, string $key, $value): void
     {
         self::$config[strtolower($section)][strtolower($key)] = $value;
     }

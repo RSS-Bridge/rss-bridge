@@ -89,7 +89,9 @@ class DisplayAction implements ActionInterface
             $this->cache->set($cacheKey, $response, 60 * 15);
         }
 
-        if (rand(1, 100) === 2) {
+        // For 1% of requests, prune cache
+        if (rand(1, 100) === 1) {
+            // This might be resource intensive!
             $this->cache->prune();
         }
 
