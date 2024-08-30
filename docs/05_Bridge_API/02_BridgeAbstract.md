@@ -50,10 +50,10 @@ For example: `MyBridge.php` => `MyBridge`
 
 ```PHP
 <?PHP
-class MyBridge extends BridgeAbstract {
+class MyBridge extends BridgeAbstract
+{
 
 }
-// This line is empty (just imagine it!)
 ```
 
 </div></details>
@@ -76,7 +76,8 @@ const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in 
 ```PHP
 <?php
 
-class MyBridge extends BridgeAbstract {
+class MyBridge extends BridgeAbstract
+{
 	const NAME        = 'My Bridge';
 	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns "Hello World!"';
