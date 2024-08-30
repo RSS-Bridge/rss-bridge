@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Technical_recommendations/index.html">Technical recommendations</a></h1>
                 <span class="ModifiedDate">
-            August 8, 2024 at 8:47 AM        </span>
+            August 29, 2024 at 7:22 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/09_Technical_recommendations/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -109,25 +109,27 @@
 
     <div class="s-content">
         <h2><a id="general-recommendations" href="#general-recommendations" class="Permalink" aria-hidden="true" title="Permalink">#</a>General recommendations</h2>
-<ul>
-<li>Use <a href="https://en.wikipedia.org/wiki/HTTPS" class="Link--external" rel="noopener noreferrer">HTTPS</a> (<code>https://...</code>) over <a href="https://en.wikipedia.org/wiki/HTTPS" class="Link--external" rel="noopener noreferrer">HTTP</a> (<code>http://...</code>) whenever possible</li>
-</ul>
 <h2><a id="test-a-site-before-building-a-bridge" href="#test-a-site-before-building-a-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Test a site before building a bridge</h2>
-<p>Some sites make use of anti-bot mechanisms (e.g.: by using JavaScript) in which case they work fine in regular browsers, but not in the PHP environment. To check if a site works with RSS-Bridge, create a new bridge using the <a href="../Bridge_API/BridgeAbstract.html#template">template</a> and load a valid URL (not the base URL!).</p>
+<p>Some sites make use of anti-bot mechanisms (e.g.: by using JavaScript) in which case they work fine in regular browsers,
+but not in the PHP environment.</p>
+<p>To check if a site works with RSS-Bridge, create a new bridge using the
+<a href="../Bridge_API/BridgeAbstract.html#template">template</a>
+and load a valid URL (not the base URL!).</p>
 <p><strong>Example (using github.com)</strong></p>
 <pre><code class="language-PHP">&lt;?php
-class TestBridge extends BridgeAbstract {
-	const NAME = 'Unnamed bridge';
-	const URI = '';
-	const DESCRIPTION = 'No description provided';
-	const MAINTAINER = 'No maintainer';
-	const PARAMETERS = [];
-	const CACHE_TIMEOUT = 3600;
+class TestBridge extends BridgeAbstract
+{
+    const NAME = 'Unnamed bridge';
+    const URI = '';
+    const DESCRIPTION = 'No description provided';
+    const MAINTAINER = 'No maintainer';
+    const PARAMETERS = [];
+    const CACHE_TIMEOUT = 3600;
 
-	public function collectData(){
-		$html = getSimpleHTMLDOM('https://github.com/rss-bridge/rss-bridge')
-			or returnServerError('No contents received!');
-	}
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM('https://github.com/rss-bridge/rss-bridge');
+    }
 }
 </code></pre>
 <p>This bridge should return an empty page (HTML format)</p>
