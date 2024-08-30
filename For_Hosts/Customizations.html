@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Hosts/index.html">For Hosts</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Hosts/Customizations.html">Customizations</a></h1>
                 <span class="ModifiedDate">
-            August 29, 2024 at 7:22 PM        </span>
+            August 29, 2024 at 7:37 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/03_For_Hosts/07_Customizations.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,11 +108,17 @@
             </div>
 
     <div class="s-content">
-        <p>RSS-Bridge ships a few options the host may or may not activate. All options are listed in the <a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/config.default.ini.php" class="Link--external" rel="noopener noreferrer">config.default.ini.php</a> file, see <a href="Custom_Configuration.html">Custom Configuration</a> section for more information.</p>
+        <p>RSS-Bridge ships a few options the host may or may not activate.
+All options are listed in the <a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/config.default.ini.php" class="Link--external" rel="noopener noreferrer">config.default.ini.php</a> file,
+see <a href="Custom_Configuration.html">Custom Configuration</a> section for more information.</p>
 <h2><a id="customizable-cache-timeout" href="#customizable-cache-timeout" class="Permalink" aria-hidden="true" title="Permalink">#</a>Customizable cache timeout</h2>
-<p>Sometimes it is necessary to specify custom timeouts to update contents more frequently than the bridge maintainer intended. In these cases the client may specify a custom cache timeout to prevent loading contents from cache earlier (or later).</p>
-<p>This option can be activated by setting the <a href="Custom_Configuration.html#custom_timeout"><code>cache.custom_timeout</code></a> option to <code>true</code>. When enabled each bridge receives an additional parameter <code>Cache timeout in seconds</code> that can be set to any value between 1 and 86400 (24 hours). If the value is not within the limits the default settings apply (as specified by the bridge maintainer).</p>
-<p>The cache timeout is send to RSS-Bridge using the <code>_cache_timeout</code> parameter. RSS-Bridge will return an error message if the parameter is received and the option is disabled.</p>
+<p>Sometimes it is necessary to specify custom timeouts to update contents more frequently
+than the bridge maintainer intended.
+In these cases the client may specify a custom cache timeout to prevent loading contents
+from cache earlier (or later).</p>
+<p>This option can be activated by setting the <a href="Custom_Configuration.html#custom_timeout"><code>cache.custom_timeout</code></a> option to <code>true</code>.
+When enabled each bridge receives an additional parameter <code>Cache timeout in seconds</code>
+that can be set to any value.</p>
     </div>
 
         <nav>

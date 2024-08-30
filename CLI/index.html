@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../CLI/index.html">CLI</a></h1>
                 <span class="ModifiedDate">
-            August 29, 2024 at 7:22 PM        </span>
+            August 29, 2024 at 7:37 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/02_CLI/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,10 +108,12 @@
             </div>
 
     <div class="s-content">
-        <p>RSS-Bridge supports calls via CLI. You can use the same parameters as you would normally use via the URI. Example:</p>
+        <p>RSS-Bridge supports calls via CLI.
+You can use the same parameters as you would normally use via the URI. Example:</p>
 <p><code>php index.php action=display bridge=DansTonChat format=Json</code></p>
 <h2><a id="required-parameters" href="#required-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Required parameters</h2>
-<p>RSS-Bridge requires a few parameters that must be specified on every call. Omitting these parameters will result in error messages:</p>
+<p>RSS-Bridge requires a few parameters that must be specified on every call.
+Omitting these parameters will result in error messages:</p>
 <h3><a id="action" href="#action" class="Permalink" aria-hidden="true" title="Permalink">#</a>action</h3>
 <p>Defines how RSS-Bridge responds to the request.</p>
 <table>
@@ -133,15 +135,21 @@
 </tbody>
 </table>
 <h3><a id="bridge" href="#bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>bridge</h3>
-<p>This parameter specifies the name of the bridge RSS-Bridge should return feeds from. The name of the bridge equals the class name of the bridges in the ./bridges/ folder without the ‘Bridge’ prefix. For example: DansTonChatBridge =&gt; DansTonChat.</p>
+<p>This parameter specifies the name of the bridge RSS-Bridge should return feeds from.
+The name of the bridge equals the class name of the bridges in the ./bridges/ folder without the ‘Bridge’ prefix.
+For example: DansTonChatBridge =&gt; DansTonChat.</p>
 <h3><a id="format" href="#format" class="Permalink" aria-hidden="true" title="Permalink">#</a>format</h3>
-<p>This parameter specifies the format in which RSS-Bridge returns the contents. RSS-Bridge currently supports five formats: <code>Atom</code>, <code>Html</code>, <code>Json</code>, <code>Mrss</code>and <code>Plaintext</code>.</p>
+<p>This parameter specifies the format in which RSS-Bridge returns the contents.</p>
 <h2><a id="optional-parameters" href="#optional-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Optional parameters</h2>
-<p>RSS-Bridge supports optional parameters. These parameters are only valid if the options have been enabled in the index.php script.</p>
+<p>RSS-Bridge supports optional parameters.
+These parameters are only valid if the options have been enabled in the index.php script.</p>
 <h3><a id="noproxy" href="#noproxy" class="Permalink" aria-hidden="true" title="Permalink">#</a>_noproxy</h3>
-<p>This parameter is only available if a proxy server has been specified via <code>proxy.url</code> and <code>proxy.by_bridge</code> has been enabled. This is a Boolean parameter that can be set to <code>true</code> or <code>false</code>.</p>
+<p>This parameter is only available if a proxy server has been specified via <code>proxy.url</code> and <code>proxy.by_bridge</code>
+has been enabled. This is a Boolean parameter that can be set to <code>true</code> or <code>false</code>.</p>
 <h2><a id="bridge-parameters" href="#bridge-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Bridge parameters</h2>
-<p>Each bridge can specify its own set of parameters. As in the example above, some bridges don’t specify any parameters or only optional parameters that can be neglected. For more details read the <code>PARAMETERS</code> definition for your bridge.</p>
+<p>Each bridge can specify its own set of parameters.
+As in the example above, some bridges don’t specify any parameters or only optional parameters that can be neglected.
+For more details read the <code>PARAMETERS</code> definition for your bridge.</p>
     </div>
 
         <nav>

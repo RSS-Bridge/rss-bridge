@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../General/Project_goals.html">General</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../General/FAQ.html">FAQ</a></h1>
                 <span class="ModifiedDate">
-            August 29, 2024 at 7:22 PM        </span>
+            August 29, 2024 at 7:37 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/01_General/05_FAQ.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,31 +108,26 @@
             </div>
 
     <div class="s-content">
-        <p>This page provides a collection of frequently asked questions and their answers. Please check this page before opening a new Issue :revolving_hearts:</p>
-<ul>
-<li>
-<a href="#why-doesnt-my-bridge-show-new-contents">Why doesn’t my bridge show new contents?</a>
-</li>
-<li>
-<a href="#how-can-i-make-a-bridge-update-more-frequently">How can I make a bridge update more frequently?</a>
-</li>
-<li>
-<a href="#firefox-doesnt-show-feeds-anymore-what-can-i-do">Firefox doesn’t show feeds anymore, what can I do?</a>
-</li>
-</ul>
-<h2><a id="why-doesn-t-my-bridge-show-new-contents" href="#why-doesn-t-my-bridge-show-new-contents" class="Permalink" aria-hidden="true" title="Permalink">#</a>Why doesn’t my bridge show new contents?</h2>
-<p>RSS-Bridge creates a cached version of your feed in order to reduce traffic and respond faster. The cached version is created on the first request and served for all subsequent requests. On every request RSS-Bridge checks if the cache timeout has elapsed. If the timeout has elapsed, it loads new contents and updates the cached version.</p>
-<p><em>Notice</em>: RSS-Bridge only updates feeds if you actively request it, for example by pressing F5 in your browser or using a feed reader.</p>
-<p>The cache duration is bridge specific and can last anywhere between five minutes and 24 hours. You can specify a custom cache timeout for each bridge if <a href="#how-can-i-make-a-bridge-update-more-frequently">this option</a> has been enabled on the server.</p>
+        <h2><a id="why-doesn-t-my-bridge-show-new-contents" href="#why-doesn-t-my-bridge-show-new-contents" class="Permalink" aria-hidden="true" title="Permalink">#</a>Why doesn’t my bridge show new contents?</h2>
+<p>RSS-Bridge creates a cached version of your feed in order to reduce traffic and respond faster.
+The cached version is created on the first request and served for all subsequent requests.
+On every request RSS-Bridge checks if the cache timeout has elapsed.
+If the timeout has elapsed, it loads new contents and updates the cached version.</p>
+<p><em>Notice</em>: RSS-Bridge only updates feeds if you actively request it,
+for example by pressing F5 in your browser or using a feed reader.</p>
+<p>The cache duration is bridge specific (usually <code>1h</code>)
+You can specify a custom cache timeout for each bridge if
+<a href="#how-can-i-make-a-bridge-update-more-frequently">this option</a> has been enabled on the server.</p>
 <h2><a id="how-can-i-make-a-bridge-update-more-frequently" href="#how-can-i-make-a-bridge-update-more-frequently" class="Permalink" aria-hidden="true" title="Permalink">#</a>How can I make a bridge update more frequently?</h2>
 <p>You can only do that if you are hosting the RSS-Bridge instance:</p>
 <ul>
+<li>Lower the bridge ttl: <code>CACHE_TIMEOUT</code> constant</li>
 <li>Enable <a href="../For_Hosts/Custom_Configuration.html#customtimeout"><code>custom_timeout</code></a>
 </li>
-<li>Alternatively, change the default timeout for your bridge by modifying the <code>CACHE_TIMEOUT</code> constant in the relevant bridge file (e.g <a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/bridges/FilterBridge.php#L7" class="Link--external" rel="noopener noreferrer">here</a> for the Filter Bridge).</li>
 </ul>
 <h2><a id="firefox-doesn-t-show-feeds-anymore-what-can-i-do" href="#firefox-doesn-t-show-feeds-anymore-what-can-i-do" class="Permalink" aria-hidden="true" title="Permalink">#</a>Firefox doesn’t show feeds anymore, what can I do?</h2>
-<p>As of version 64, Firefox removed support for viewing Atom and RSS feeds in the browser. This results in the browser downloading the pages instead of showing contents.</p>
+<p>As of version 64, Firefox removed support for viewing Atom and RSS feeds in the browser.
+This results in the browser downloading the pages instead of showing contents.</p>
 <p>Further reading:</p>
 <ul>
 <li>
@@ -142,7 +137,8 @@
 <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1477667" class="Link--external" rel="noopener noreferrer">https://bugzilla.mozilla.org/show_bug.cgi?id=1477667</a>
 </li>
 </ul>
-<p>To restore the original behavior in Firefox 64 or higher you can use following Add-on which attempts to recreate the original behavior (with some sugar on top):</p>
+<p>To restore the original behavior in Firefox 64 or higher you can use following Add-on
+which attempts to recreate the original behavior (with some sugar on top):</p>
 <ul>
 <li>
 <a href="https://addons.mozilla.org/en-US/firefox/addon/rsspreview/" class="Link--external" rel="noopener noreferrer">https://addons.mozilla.org/en-US/firefox/addon/rsspreview/</a>

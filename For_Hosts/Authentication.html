@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Hosts/index.html">For Hosts</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Hosts/Authentication.html">Authentication</a></h1>
                 <span class="ModifiedDate">
-            August 29, 2024 at 7:22 PM        </span>
+            August 29, 2024 at 7:37 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/03_For_Hosts/06_Authentication.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,91 +108,12 @@
             </div>
 
     <div class="s-content">
-        <p>Depending on your servers abilities you can choose between two types of authentication:</p>
-<ul>
-<li>
-<a href="#htaccess">.htaccess</a>
-</li>
-<li>
-<a href="#rss-bridge-authentication">RSS-Bridge Authentication</a>
-</li>
+        <ul>
+<li>http basic auth</li>
+<li>token</li>
+<li>Access control via webserver (see nginx/caddy/apache docs)</li>
 </ul>
-<p><strong>General advice</strong>:</p>
-<ul>
-<li>Make sure to use a strong password, no matter which solution you choose!</li>
-<li>Enable HTTPS on your server to ensure your connection is encrypted and secure!</li>
-</ul>
-<h2><a id="htaccess" href="#htaccess" class="Permalink" aria-hidden="true" title="Permalink">#</a>.htaccess</h2>
-<p>.htaccess files are commonly used to restrict access to files on a web server. One of the features of .htaccess files is the ability to password protect specific (or all) directories. If setup correctly, a password is required to access the files.</p>
-<p>The usage of .htaccess files requires three basic steps:</p>
-<ol>
-<li>
-<a href="#enable-htaccess">Enable .htaccess</a>
-</li>
-<li>
-<a href="#create-a-htpasswd-file">Create a .htpasswd file</a>
-</li>
-<li>
-<a href="#create-a-htaccess-file">Create a .htaccess file</a>
-</li>
-</ol>
-<h3><a id="enable-htaccess" href="#enable-htaccess" class="Permalink" aria-hidden="true" title="Permalink">#</a>Enable .htaccess</h3>
-<p>This process depends on the server you are using. Some providers may require you to change some settings, or place/change some file. Here are some helpful links for your server (please add your own if missing :sparkling_heart:)</p>
-<ul>
-<li>Apache: <a href="http://ask.xmodulo.com/enable-htaccess-apache.html" class="Link--external" rel="noopener noreferrer">http://ask.xmodulo.com/enable-htaccess-apache.html</a>
-</li>
-</ul>
-<h3><a id="create-a-htpasswd-file" href="#create-a-htpasswd-file" class="Permalink" aria-hidden="true" title="Permalink">#</a>Create a .htpasswd file</h3>
-<p>The <code>.htpasswd</code> file contains the user name and password used for login to your web server. Please notice that the password is stored in encrypted form, which requires you to encrypt your password before creating the <code>.htpasswd</code> file!</p>
-<p>Here are three ways of creating your own <code>.htpasswd</code> file:</p>
-<p><strong>1) Example file</strong></p>
-<p>Example <code>.htpasswd</code> file (user name: “test”, password: “test”):</p>
-<pre><code class="language-.htpasswd">test:$apr1$a52u9ILP$XTNG8qMJiEXSm1zD0lQcR0
-</code></pre>
-<p>Just copy and paste the contents to your <code>.htpasswd</code> file.</p>
-<p><strong>2) Online generator (read warning!)</strong></p>
-<p>You can create your own <code>.htpasswd</code> file online using a <code>.htpasswd</code> generator like this: <a href="https://www.htaccesstools.com/htpasswd-generator/" class="Link--external" rel="noopener noreferrer">https://www.htaccesstools.com/htpasswd-generator/</a></p>
-<p><strong>WARNING!</strong></p>
-<ul>
-<li>Never insert real passwords to an online generator!</li>
-</ul>
-<p><strong>3) Generate your own password</strong></p>
-<p>Another way to create your own <code>.htpasswd</code> file is to run this script on your server (it’ll output the data for you, you just have to paste it int a <code>.htpasswd</code> file):</p>
-<pre><code class="language-PHP">&lt;?php
-// Password to be encrypted for a .htpasswd file
-$clearTextPassword = 'some password';
-
-// Encrypt password
-$password = crypt($clearTextPassword, base64_encode($clearTextPassword));
-
-// Print encrypted password
-echo $password;
-?&gt;
-</code></pre>
-<blockquote>
-<p>source: <a href="https://www.htaccesstools.com/articles/create-password-for-htpasswd-file-using-php/" class="Link--external" rel="noopener noreferrer">https://www.htaccesstools.com/articles/create-password-for-htpasswd-file-using-php/</a></p>
-</blockquote>
-<h3><a id="create-a-htaccess-file" href="#create-a-htaccess-file" class="Permalink" aria-hidden="true" title="Permalink">#</a>Create a .htaccess file</h3>
-<p>The <code>.htaccess</code> file is used to specify which directories are password protected. For that purpose you should place the file in whatever directory you want to restrict access. If you want to restrict access to RSS-Bridge in general, you should place the file in the root directory (where <code>index.php</code> is located).</p>
-<p>Two parameters must be specified in the <code>.htaccess</code> file:</p>
-<ul>
-<li>AuthName</li>
-<li>AuthUserFile</li>
-</ul>
-<p><code>AuthName</code> specifies the name of the authentication (i.e. “RSS-Bridge”). <code>AuthUserFile</code> defines the <strong>absolute</strong> path to a <code>.htpasswd</code> file.</p>
-<p>Here are two ways of creating your own <code>.htaccess</code> file:</p>
-<p><strong>1) Example file</strong></p>
-<pre><code class="language-.htaccess">AuthType Basic
-AuthName &quot;My Protected Area&quot;
-AuthUserFile /path/to/.htpasswd
-Require valid-user
-</code></pre>
-<p>Notice: You must change the <code>AuthUserFile</code> location to fit your own server (i.e. <code>/var/www/html/rss-bridge/.htpasswd</code>)</p>
-<p><strong>2) Online generator</strong></p>
-<p>You can use an online generator to create the file for you and copy-paste it to your <code>.htaccess</code> file: <a href="https://www.htaccesstools.com/htaccess-authentication/" class="Link--external" rel="noopener noreferrer">https://www.htaccesstools.com/htaccess-authentication/</a></p>
-<h2><a id="rss-bridge-authentication" href="#rss-bridge-authentication" class="Permalink" aria-hidden="true" title="Permalink">#</a>RSS-Bridge Authentication</h2>
-<p>RSS-Bridge ships with an authentication module designed for single user environments. You can enable authentication and specify the username &amp; password in the <a href="Custom_Configuration.html#authentication">configuration file</a>.</p>
-<p>Please notice that the password is stored in plain text and thus is readable to anyone who can access the file. Make sure to restrict access to the file, so that it cannot be read remotely!</p>
+<p><a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/README.md" class="Link--external" rel="noopener noreferrer">https://github.com/RSS-Bridge/rss-bridge/blob/master/README.md</a></p>
     </div>
 
         <nav>
