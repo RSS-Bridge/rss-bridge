@@ -2,10 +2,11 @@
 
 final class BridgeCard
 {
-    public static function render(string $bridgeClassName, ?string $token): string
-    {
-        $bridgeFactory = new BridgeFactory();
-
+    public static function render(
+        BridgeFactory $bridgeFactory,
+        string $bridgeClassName,
+        ?string $token
+    ): string {
         $bridge = $bridgeFactory->create($bridgeClassName);
 
         $uri = $bridge->getURI();

@@ -4,11 +4,16 @@ class DisplayAction implements ActionInterface
 {
     private CacheInterface $cache;
     private Logger $logger;
+    private BridgeFactory $bridgeFactory;
 
-    public function __construct()
-    {
-        $this->cache = RssBridge::getCache();
-        $this->logger = RssBridge::getLogger();
+    public function __construct(
+        CacheInterface $cache,
+        Logger $logger,
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->cache = $cache;
+        $this->logger = $logger;
+        $this->bridgeFactory = $bridgeFactory;
     }
 
     public function __invoke(Request $request): Response
@@ -39,8 +44,7 @@ class DisplayAction implements ActionInterface
         if (!$bridgeName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Missing bridge parameter']), 400);
         }
-        $bridgeFactory = new BridgeFactory();
-        $bridgeClassName = $bridgeFactory->createBridgeClassName($bridgeName);
+        $bridgeClassName = $this->bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Bridge not found']), 404);
         }
@@ -48,7 +52,7 @@ class DisplayAction implements ActionInterface
         if (!$format) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'You must specify a format']), 400);
         }
-        if (!$bridgeFactory->isEnabled($bridgeClassName)) {
+        if (!$this->bridgeFactory->isEnabled($bridgeClassName)) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'This bridge is not whitelisted']), 400);
         }
 
@@ -62,7 +66,7 @@ class DisplayAction implements ActionInterface
             define('NOPROXY', true);
         }
 
-        $bridge = $bridgeFactory->create($bridgeClassName);
+        $bridge = $this->bridgeFactory->create($bridgeClassName);
 
         $response = $this->createResponse($request, $bridge, $format);
 
@@ -85,7 +89,9 @@ class DisplayAction implements ActionInterface
             $this->cache->set($cacheKey, $response, 60 * 15);
         }
 
-        if (rand(1, 100) === 2) {
+        // For 1% of requests, prune cache
+        if (rand(1, 100) === 1) {
+            // This might be resource intensive!
             $this->cache->prune();
         }
 
@@ -121,17 +127,16 @@ class DisplayAction implements ActionInterface
                 return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), 429);
             }
             if ($e instanceof HttpException) {
-                // Reproduce (and log) these responses regardless of error output and report limit
-                if ($e->getCode() === 429) {
-                    $this->logger->info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
-                    return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), 429);
+                if (in_array($e->getCode(), [429, 503])) {
+                    // Log with debug, immediately reproduce and return
+                    $this->logger->debug(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
+                    return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), $e->getCode());
                 }
-                if ($e->getCode() === 503) {
-                    $this->logger->info(sprintf('Exception in DisplayAction(%s): %s', $bridge->getShortName(), create_sane_exception_message($e)));
-                    return new Response(render(__DIR__ . '/../templates/exception.html.php', ['e' => $e]), 503);
-                }
+                // Some other status code which we let fail normally (but don't log it)
+            } else {
+                // Log error if it's not an HttpException
+                $this->logger->error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
             }
-            $this->logger->error(sprintf('Exception in DisplayAction(%s)', $bridge->getShortName()), ['e' => $e]);
             $errorOutput = Configuration::getConfig('error', 'output');
             $reportLimit = Configuration::getConfig('error', 'report_limit');
             $errorCount = 1;

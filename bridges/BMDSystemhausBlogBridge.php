@@ -54,7 +54,7 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     public function collectData()
     {
         // get website content
-        $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('No contents received!');
+        $html = getSimpleHTMLDOM($this->getURI());
 
         // Convert relative links in HTML into absolute links
         $html = defaultLinkTo($html, self::URI);
@@ -207,7 +207,8 @@ class BMDSystemhausBlogBridge extends BridgeAbstract
     //-----------------------------------------------------
     public function getURI()
     {
-        $lURI = $this->getURIbyCountry($this->getInput('country'));
+        $country = $this->getInput('country') ?? '';
+        $lURI = $this->getURIbyCountry($country);
         return $lURI != '' ? $lURI : parent::getURI();
     }
 

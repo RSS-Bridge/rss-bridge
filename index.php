@@ -5,19 +5,12 @@ if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
     exit("RSS-Bridge requires minimum PHP version 7.4\n");
 }
 
-require_once __DIR__ . '/lib/bootstrap.php';
+require __DIR__ . '/lib/bootstrap.php';
+require __DIR__ . '/lib/config.php';
 
-$config = [];
-if (file_exists(__DIR__ . '/config.ini.php')) {
-    $config = parse_ini_file(__DIR__ . '/config.ini.php', true, INI_SCANNER_TYPED);
-    if (!$config) {
-        http_response_code(500);
-        exit("Error parsing config.ini.php\n");
-    }
-}
-Configuration::loadConfiguration($config, getenv());
+$container = require __DIR__ . '/lib/dependencies.php';
 
-$logger = new SimpleLogger('rssbridge');
+$logger = $container['logger'];
 
 set_exception_handler(function (\Throwable $e) use ($logger) {
     $response = new Response(render(__DIR__ . '/templates/exception.html.php', ['e' => $e]), 500);
@@ -60,23 +53,6 @@ register_shutdown_function(function () use ($logger) {
     }
 });
 
-$cacheFactory = new CacheFactory($logger);
-
-// Uncomment this for info logging to fs
-// $logger->addHandler(new StreamHandler('/tmp/rss-bridge.txt', Logger::INFO));
-
-// Uncomment this for debug logging to fs
-// $logger->addHandler(new StreamHandler('/tmp/rss-bridge-debug.txt', Logger::DEBUG));
-
-if (Debug::isEnabled()) {
-    $logger->addHandler(new ErrorLogHandler(Logger::DEBUG));
-    $cache = $cacheFactory->create('array');
-} else {
-    $logger->addHandler(new ErrorLogHandler(Logger::INFO));
-    $cache = $cacheFactory->create();
-}
-$httpClient = new CurlHttpClient();
-
 date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
 $argv = $argv ?? null;
@@ -88,7 +64,7 @@ if ($argv) {
 }
 
 try {
-    $rssBridge = new RssBridge($logger, $cache, $httpClient);
+    $rssBridge = new RssBridge($container);
     $response = $rssBridge->main($request);
     $response->send();
 } catch (\Throwable $e) {

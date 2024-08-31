@@ -25,7 +25,10 @@ class FeedItem
 
     private function __construct()
     {
-        $this->logger = RssBridge::getLogger();
+        global $container;
+
+        // The default NullLogger is for when running the unit tests
+        $this->logger = $container['logger'] ?? new NullLogger();
     }
 
     public function __set($name, $value)

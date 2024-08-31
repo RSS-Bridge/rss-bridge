@@ -4,6 +4,7 @@ class HinduTamilBridge extends FeedExpander
 {
     const NAME = 'HinduTamil';
     const URI = 'https://www.hindutamil.in';
+    const FEED_BASE_URL = 'https://feeds.feedburner.com/Hindu_Tamil_';
     const DESCRIPTION = 'Retrieve full articles from hindutamil.in feeds';
     const MAINTAINER = 'tillcash';
     const PARAMETERS = [
@@ -45,8 +46,6 @@ class HinduTamilBridge extends FeedExpander
         ],
     ];
 
-    const FEED_BASE_URL = 'https://feeds.feedburner.com/Hindu_Tamil_';
-
     public function getName()
     {
         $topic = $this->getKey('topic');
@@ -69,34 +68,30 @@ class HinduTamilBridge extends FeedExpander
             return $item;
         }
 
-        $date = $dom->find('p span.date', 1);
-        if ($date) {
-            $item['timestamp'] = $this->toRFC3339($date->plaintext);
-        }
-
-        $image = $dom->find('#LoadArticle figure', 0) ?? '';
-        $item['content'] = $image . $this->cleanContent($content);
+        $item['timestamp'] = $this->getTimestamp($dom) ?? $item['timestamp'];
+        $item['content'] = $this->getImage($dom) . $this->cleanContent($content);
 
         return $item;
     }
 
-    private function cleanContent($content)
+    private function cleanContent($content): string
     {
-        foreach ($content->find('div[align="center"], script') as $remove) {
+        foreach ($content->find('div[align="center"], script, .adsplacement') as $remove) {
             $remove->outertext = '';
         }
 
-        return $content;
+        return $content->innertext;
     }
 
-    private function toRFC3339($dateString)
+    private function getTimestamp($dom): ?string
     {
-        $timestamp = strtotime(trim($dateString));
+        $date = $dom->find('meta[property="article:published_time"]', 0);
+        return $date ? $date->getAttribute('content') : null;
+    }
 
-        if ($timestamp === false) {
-            return null;
-        }
-
-        return date('Y-m-d\TH:i:s', $timestamp) . '+05:30';
+    private function getImage($dom): string
+    {
+        $image = $dom->find('meta[property="og:image"]', 0);
+        return $image ? sprintf('<p><img src="%s"></p>', $image->getAttribute('content')) : '';
     }
 }

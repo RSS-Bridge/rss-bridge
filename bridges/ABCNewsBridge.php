@@ -31,17 +31,17 @@ class ABCNewsBridge extends BridgeAbstract
     {
         $url = sprintf('https://www.abc.net.au/news/%s', $this->getInput('topic'));
         $dom = getSimpleHTMLDOM($url);
-        $dom = $dom->find('div[data-component="CardList"]', 0);
+        $dom = $dom->find('div[data-component="PaginationList"]', 0);
         if (!$dom) {
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-        foreach ($dom->find('div[data-component="GenericCard"]') as $article) {
+        foreach ($dom->find('article[data-component="DetailCard"]') as $article) {
             $a = $article->find('a', 0);
             $this->items[] = [
                 'title' => $a->plaintext,
                 'uri' => $a->href,
-                'content' => $article->find('[data-component="CardDescription"]', 0)->plaintext,
+                'content' => $article->find('p', 0)->plaintext,
                 'timestamp' => strtotime($article->find('time', 0)->datetime),
             ];
         }

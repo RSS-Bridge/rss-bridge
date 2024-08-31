@@ -68,12 +68,13 @@ class AO3Bridge extends BridgeAbstract
      */
     private function collectList($url)
     {
-        $httpClient = RssBridge::getHttpClient();
         $version = 'v0.0.1';
-        $agent = ['useragent' => "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"];
+        $headers = [
+            "useragent: rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"
+        ];
+        $response = getContents($url, $headers);
 
-        $response = $httpClient->request($url, $agent);
-        $html = \str_get_html($response->getBody());
+        $html = \str_get_html($response);
         $html = defaultLinkTo($html, self::URI);
 
         // Get list title. Will include page range + count in some cases
@@ -128,14 +129,15 @@ class AO3Bridge extends BridgeAbstract
                     case ('last'):
                         // only way to get this is using the navigate page unfortunately
                         $url .= '/navigate';
-                        $response = $httpClient->request($url, $agent);
-                        $html = \str_get_html($response->getBody());
+                        $response = getContents($url, $headers);
+                        $html = \str_get_html($response);
                         $html = defaultLinkTo($html, self::URI);
                         $url = $html->find('ol.index.group > li > a', -1)->href;
                         break;
                 }
-                $response = $httpClient->request($url, $agent);
-                $html = \str_get_html($response->getBody());
+                $response = getContents($url, $headers);
+
+                $html = \str_get_html($response);
                 $html = defaultLinkTo($html, self::URI);
                 // remove duplicate fic summary
                 if ($ficsum = $html->find('#workskin > .preface > .summary', 0)) {
@@ -159,16 +161,18 @@ class AO3Bridge extends BridgeAbstract
      */
     private function collectWork($url)
     {
-        $httpClient = RssBridge::getHttpClient();
         $version = 'v0.0.1';
-        $agent = ['useragent' => "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"];
+        $headers = [
+            "useragent: rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"
+        ];
+        $response = getContents($url . '/navigate', $headers);
 
-        $response = $httpClient->request($url . '/navigate', $agent);
-        $html = \str_get_html($response->getBody());
+        $html = \str_get_html($response);
         $html = defaultLinkTo($html, self::URI);
 
-        $response = $httpClient->request($url . '?view_full_work=true', $agent);
-        $workhtml = \str_get_html($response->getBody());
+        $response = getContents($url . '?view_full_work=true', $headers);
+
+        $workhtml = \str_get_html($response);
         $workhtml = defaultLinkTo($workhtml, self::URI);
 
         $this->title = $html->find('h2 a', 0)->plaintext;

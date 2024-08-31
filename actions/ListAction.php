@@ -2,19 +2,25 @@
 
 class ListAction implements ActionInterface
 {
+    private BridgeFactory $bridgeFactory;
+
+    public function __construct(
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->bridgeFactory = $bridgeFactory;
+    }
+
     public function __invoke(Request $request): Response
     {
         $list = new \stdClass();
         $list->bridges = [];
         $list->total = 0;
 
-        $bridgeFactory = new BridgeFactory();
-
-        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
-            $bridge = $bridgeFactory->create($bridgeClassName);
+        foreach ($this->bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            $bridge = $this->bridgeFactory->create($bridgeClassName);
 
             $list->bridges[$bridgeClassName] = [
-                'status'        => $bridgeFactory->isEnabled($bridgeClassName) ? 'active' : 'inactive',
+                'status'        => $this->bridgeFactory->isEnabled($bridgeClassName) ? 'active' : 'inactive',
                 'uri'           => $bridge->getURI(),
                 'donationUri'   => $bridge->getDonationURI(),
                 'name'          => $bridge->getName(),
