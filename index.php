@@ -63,13 +63,8 @@ if ($argv) {
     $request = Request::fromGlobals();
 }
 
-try {
-    $rssBridge = new RssBridge($container);
-    $response = $rssBridge->main($request);
-    $response->send();
-} catch (\Throwable $e) {
-    // Probably an exception inside an action
-    $logger->error('Exception in RssBridge::main()', ['e' => $e]);
-    $response = new Response(render(__DIR__ . '/templates/exception.html.php', ['e' => $e]), 500);
-    $response->send();
-}
+$rssBridge = new RssBridge($container);
+
+$response = $rssBridge->main($request);
+
+$response->send();

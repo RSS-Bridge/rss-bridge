@@ -56,22 +56,14 @@ $container['logger'] = function () {
     // $logger->addHandler(new StreamHandler('/tmp/rss-bridge.txt', Logger::INFO));
 
     // Uncomment this for debug logging to fs
-    //$logger->addHandler(new StreamHandler('/tmp/rss-bridge-debug.txt', Logger::DEBUG));
+    // $logger->addHandler(new StreamHandler('/tmp/rss-bridge-debug.txt', Logger::DEBUG));
     return $logger;
 };
 
 $container['cache'] = function ($c) {
     /** @var CacheFactory $cacheFactory */
     $cacheFactory = $c['cache_factory'];
-    $type = Configuration::getConfig('cache', 'type');
-    if (!$type) {
-        throw new \Exception('No cache type configured');
-    }
-    if (Debug::isEnabled()) {
-        $cache = $cacheFactory->create('array');
-    } else {
-        $cache = $cacheFactory->create($type);
-    }
+    $cache = $cacheFactory->create(Configuration::getConfig('cache', 'type'));
     return $cache;
 };
 

@@ -23,6 +23,8 @@ final class RssBridge
         $handler = $this->container[$actionName];
 
         $middlewares = [
+            new CacheMiddleware($this->container['cache']),
+            new ExceptionMiddleware($this->container['logger']),
             new SecurityMiddleware(),
             new MaintenanceMiddleware(),
             new BasicAuthMiddleware(),
@@ -34,6 +36,6 @@ final class RssBridge
         foreach (array_reverse($middlewares) as $middleware) {
             $action = fn ($req) => $middleware($req, $action);
         }
-        return $action($request);
+        return $action($request->withAttribute('action', $actionName));
     }
 }

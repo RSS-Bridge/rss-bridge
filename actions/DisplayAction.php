@@ -22,25 +22,6 @@ class DisplayAction implements ActionInterface
         $format = $request->get('format');
         $noproxy = $request->get('_noproxy');
 
-        $cacheKey = 'http_' . json_encode($request->toArray());
-        /** @var Response $cachedResponse */
-        $cachedResponse = $this->cache->get($cacheKey);
-        if ($cachedResponse) {
-            $ifModifiedSince = $request->server('HTTP_IF_MODIFIED_SINCE');
-            $lastModified = $cachedResponse->getHeader('last-modified');
-            if ($ifModifiedSince && $lastModified) {
-                $lastModified = new \DateTimeImmutable($lastModified);
-                $lastModifiedTimestamp = $lastModified->getTimestamp();
-                $modifiedSince = strtotime($ifModifiedSince);
-                // TODO: \DateTimeImmutable can be compared directly
-                if ($lastModifiedTimestamp <= $modifiedSince) {
-                    $modificationTimeGMT = gmdate('D, d M Y H:i:s ', $lastModifiedTimestamp);
-                    return new Response('', 304, ['last-modified' => $modificationTimeGMT . 'GMT']);
-                }
-            }
-            return $cachedResponse->withHeader('rss-bridge', 'This is a cached response');
-        }
-
         if (!$bridgeName) {
             return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Missing bridge parameter']), 400);
         }
@@ -66,6 +47,8 @@ class DisplayAction implements ActionInterface
             define('NOPROXY', true);
         }
 
+        $cacheKey = 'http_' . json_encode($request->toArray());
+
         $bridge = $this->bridgeFactory->create($bridgeClassName);
 
         $response = $this->createResponse($request, $bridge, $format);
@@ -78,21 +61,6 @@ class DisplayAction implements ActionInterface
                 $ttl = $bridge->getCacheTimeout();
             }
             $this->cache->set($cacheKey, $response, $ttl);
-        }
-
-        if (in_array($response->getCode(), [403, 429, 503])) {
-            // Cache these responses for about ~20 mins on average
-            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10));
-        }
-
-        if ($response->getCode() === 500) {
-            $this->cache->set($cacheKey, $response, 60 * 15);
-        }
-
-        // For 1% of requests, prune cache
-        if (rand(1, 100) === 1) {
-            // This might be resource intensive!
-            $this->cache->prune();
         }
 
         return $response;
