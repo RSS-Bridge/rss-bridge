@@ -82,6 +82,10 @@ final class Configuration
             }
         }
 
+        if (Debug::isEnabled()) {
+            self::setConfig('cache', 'type', 'array');
+        }
+
         if (!is_array(self::getConfig('system', 'enabled_bridges'))) {
             self::throwConfigError('system', 'enabled_bridges', 'Is not an array');
         }
