@@ -34,17 +34,18 @@ class GovTrackBridge extends BridgeAbstract
 
         $html = defaultLinkTo($html, parent::getURI());
         $limit = $this->getInput('limit') ?? 10;
-        $count = 0;
         foreach ($html->find('section') as $element) {
-            $item = [];
-
-            $item['title'] = $element->find('a', 0)->innertext;
-            $item['uri'] = $element->find('a', 0)->href;
-            $item['content'] = $element->find('p', 1);
+            if (--$limit == 0) {
+                break;
+            }
 
             $info = explode(' ', $element->find('p', 0)->innertext);
-            $item['timestamp'] = strtotime(implode(' ', array_slice($info, 0, 3)));
-            $item['categories'][] = implode(' ', array_slice($info, 4));
+            $item = [
+                'categories' => [implode(' ', array_slice($info, 4))],
+                'timestamp' => strtotime(implode(' ', array_slice($info, 0, 3))),
+                'title' => $element->find('a', 0)->innertext,
+                'uri' => $element->find('a', 0)->href,
+            ];
 
             $html = getSimpleHTMLDOMCached($item['uri']);
             $html = defaultLinkTo($html, parent::getURI());
@@ -55,10 +56,6 @@ class GovTrackBridge extends BridgeAbstract
 
             $item['author'] = implode(' ', array_slice($info, 1));
             $item['content'] = $content->innertext;
-
-            if ($count++ == $limit) {
-                break;
-            }
 
             $this->items[] = $item;
         }
@@ -84,24 +81,25 @@ class GovTrackBridge extends BridgeAbstract
         $html = defaultLinkTo(str_get_html($html), parent::getURI());
 
         foreach ($html->find('.tracked_event') as $event) {
-            $item = [];
-
             $bill = $event->find('.event_title a, .event_body a', 0);
-            preg_match('/Sponsor:(.*)\n/', $event->plaintext, $opt);
             $date = explode(' ', $event->find('.event_date', 0)->plaintext);
+            preg_match('/Sponsor:(.*)\n/', $event->plaintext, $opt);
 
-            $item['author'] = $opt[1] ?? '';
-            $item['content'] = $event->find('td', 1)->innertext;
-            $item['enclosures'][] = $event->find('img', 0)->src;
-            $item['timestamp'] = strtotime(implode(' ', array_slice($date, 2)));
-            $item['title'] = explode(': ', $bill->innertext)[0];
-            $item['uri'] = $bill->href;
+            $item = [
+                'author' => $opt[1] ?? '',
+                'content' => $event->find('td', 1)->innertext,
+                'enclosures' => [$event->find('img', 0)->src],
+                'timestamp' => strtotime(implode(' ', array_slice($date, 2))),
+                'title' => explode(': ', $bill->innertext)[0],
+                'uri' => $bill->href,
+            ];
 
             foreach ($event->find('.event_title, .event_type span') as $tag) {
                 if (!$tag->find('a', 0)) {
                     $item['categories'][] = $tag->plaintext;
                 }
             }
+
             $this->items[] = $item;
         }
     }
