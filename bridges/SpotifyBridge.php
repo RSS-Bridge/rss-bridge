@@ -37,7 +37,10 @@ class SpotifyBridge extends BridgeAbstract
                 'name' => 'Spotify URIs',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ [,spotify:playlist:37i9dQZF1DXcBWIGoYBM5M,spotify:show:6ShFMYxeDNMo15COLObDvC]',
+
+                // spotify:playlist:37i9dQZF1DXcBWIGoYBM5M
+                // spotify:show:6ShFMYxeDNMo15COLObDvC
+                'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ',
             ],
             'albumtype' => [
                 'name' => 'Album type',
@@ -94,6 +97,25 @@ class SpotifyBridge extends BridgeAbstract
 
     public function collectData()
     {
+        /**
+         * https://developer.spotify.com/documentation/web-api/concepts/rate-limits
+         */
+        $cacheKey = 'spotify_rate_limit';
+
+        try {
+            $this->collectDataInternal();
+        } catch (HttpException $e) {
+            if ($e->getCode() === 429) {
+                $retryAfter = $e->response->getHeader('Retry-After') ?? (60 * 5);
+                $this->cache->set($cacheKey, true, $retryAfter);
+                throw new RateLimitException(sprintf('Rate limited by spotify, try again in %s seconds', $retryAfter));
+            }
+            throw $e;
+        }
+    }
+
+    private function collectDataInternal()
+    {
         $this->fetchAccessToken();
 
         if ($this->queriedContext === 'By Spotify URIs') {
@@ -122,6 +144,27 @@ class SpotifyBridge extends BridgeAbstract
             if ($this->getInput('limit') > 0 && count($this->items) >= $this->getInput('limit')) {
                 break;
             }
+        }
+    }
+
+    private function fetchAccessToken()
+    {
+        $cacheKey = sprintf('SpotifyBridge:%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
+
+        $token = $this->cache->get($cacheKey);
+        if ($token) {
+            $this->token = $token;
+        } else {
+            $basicAuth = base64_encode(sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret')));
+            $json = getContents('https://accounts.spotify.com/api/token', [
+                "Authorization: Basic $basicAuth",
+            ], [
+                CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
+            ]);
+            $data = Json::decode($json);
+            $this->token = $data['access_token'];
+
+            $this->cache->set($cacheKey, $this->token, 3600);
         }
     }
 
@@ -274,27 +317,6 @@ class SpotifyBridge extends BridgeAbstract
         }
 
         return DateTime::createFromFormat('Y-m-d', $date)->getTimestamp();
-    }
-
-    private function fetchAccessToken()
-    {
-        $cacheKey = sprintf('SpotifyBridge:%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
-
-        $token = $this->cache->get($cacheKey);
-        if ($token) {
-            $this->token = $token;
-        } else {
-            $basicAuth = base64_encode(sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret')));
-            $json = getContents('https://accounts.spotify.com/api/token', [
-                "Authorization: Basic $basicAuth",
-            ], [
-                CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
-            ]);
-            $data = Json::decode($json);
-            $this->token = $data['access_token'];
-
-            $this->cache->set($cacheKey, $this->token, 3600);
-        }
     }
 
     public function getURI()

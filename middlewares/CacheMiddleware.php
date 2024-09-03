@@ -44,8 +44,8 @@ class CacheMiddleware implements Middleware
         $response = $next($request);
 
         if (in_array($response->getCode(), [403, 429, 500, 503])) {
-            // Cache these responses for about ~20 mins on average
-            $this->cache->set($cacheKey, $response, 60 * 15 + rand(1, 60 * 10));
+            // Cache these responses for about ~10 mins on average
+            $this->cache->set($cacheKey, $response, 60 * 5 + rand(1, 60 * 10));
         }
 
         // For 1% of requests, prune cache
