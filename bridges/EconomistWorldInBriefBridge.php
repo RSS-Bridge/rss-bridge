@@ -60,20 +60,21 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             ];
         }
         $html = getSimpleHTMLDOM(self::URI, $headers);
-        $gobbets = $html->find('._gobbets', 0);
+        $gobbets = $html->find('p[data-component="the-world-in-brief-paragraph"]');
         if ($this->getInput('splitGobbets') == 1) {
             $this->splitGobbets($gobbets);
         } else {
             $this->mergeGobbets($gobbets);
         };
         if ($this->getInput('agenda') == 1) {
-            $articles = $html->find('._articles', 0);
+            $articles = $html->find('div[data-test-id="chunks"] > div > div', 0);
+
             if ($articles != null) {
                 $this->collectArticles($articles);
             }
         }
         if ($this->getInput('quote') == 1) {
-            $quote = $html->find('._quote-container', 0);
+            $quote = $html->find('blockquote[data-test-id="inspirational-quote"]', 0);
             $this->addQuote($quote);
         }
     }
@@ -83,7 +84,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         $today = new Datetime();
         $today->setTime(0, 0, 0, 0);
         $limit = $this->getInput('limit');
-        foreach ($gobbets->find('._gobbet') as $gobbet) {
+        foreach ($gobbets as $gobbet) {
             $title = $gobbet->plaintext;
             $match = preg_match('/[\.,]/', $title, $matches, PREG_OFFSET_CAPTURE);
             if ($match > 0) {
@@ -109,7 +110,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         $today = new Datetime();
         $today->setTime(0, 0, 0, 0);
         $contents = '';
-        foreach ($gobbets->find('._gobbet') as $gobbet) {
+        foreach ($gobbets as $gobbet) {
             $contents .= "<p>{$gobbet->innertext}";
         }
         $this->items[] = [
@@ -126,10 +127,14 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         $i = 0;
         $today = new Datetime();
         $today->setTime(0, 0, 0, 0);
-        foreach ($articles->find('._article') as $article) {
-            $title = $article->find('._headline', 0)->plaintext;
-            $image = $article->find('._main-image', 0);
-            $content = $article->find('._content', 0);
+        foreach ($articles->children() as $element) {
+            if ($element->tag != 'div') {
+                continue;
+            }
+            $image = $element->find('figure', 0);
+            $title = $element->find('h3', 0)->plaintext;
+            $content = $element->find('h3', 0)->parent();
+            $content->find('h3', 0)->outertext = '';
 
             $res_content = '';
             if ($image != null && $this->getInput('agendaPictures') == 1) {
