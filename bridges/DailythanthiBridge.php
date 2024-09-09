@@ -3,7 +3,7 @@
 class DailythanthiBridge extends BridgeAbstract
 {
     const NAME = 'Dailythanthi';
-    const URI = 'https://www.dailythanthi.com/';
+    const URI = 'https://www.dailythanthi.com';
     const DESCRIPTION = 'Retrieve news from dailythanthi.com';
     const MAINTAINER = 'tillcash';
     const PARAMETERS = [
@@ -46,7 +46,7 @@ class DailythanthiBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $dom = getSimpleHTMLDOM(self::URI . $this->getInput('topic'));
+        $dom = getSimpleHTMLDOM(self::URI . '/' . $this->getInput('topic'));
 
         foreach ($dom->find('div.ListingNewsWithMEDImage') as $element) {
             $slug = $element->find('a', 1);
