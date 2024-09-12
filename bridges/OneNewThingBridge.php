@@ -25,10 +25,10 @@ class OneNewThingBridge extends BridgeAbstract
         $contentArray[] = "<h3>Overview</h3><p>$data->overview</p>";
         $contentArray[] = "<h3>Importance</h3><p>$data->importance</p>";
         $contentArray[] = "<h3>Historical Context</h3><p>$data->historicalContext</p>";
-        $contentArray[] = "<h3>Use Cases</h3><ul><li>" . implode("</li><li>", $data->useCases) . "</li></ul>";
-        $contentArray[] = "<h3>Pros</h3><ul><li>" . implode("</li><li>", $data->pros) . "</li></ul>";
-        $contentArray[] = "<h3>Cons</h3><ul><li>" . implode("</li><li>", $data->cons) . "</li></ul>";
-        $contentArray[] = "<h3>Key Takeaways</h3><ul><li>" . implode("</li><li>", $data->keyTakeaways) . "</li></ul>";
+        $contentArray[] = '<h3>Use Cases</h3><ul><li>' . implode('</li><li>', $data->useCases) . '</li></ul>';
+        $contentArray[] = '<h3>Pros</h3><ul><li>' . implode('</li><li>', $data->pros) . '</li></ul>';
+        $contentArray[] = '<h3>Cons</h3><ul><li>' . implode('</li><li>', $data->cons) . '</li></ul>';
+        $contentArray[] = '<h3>Key Takeaways</h3><ul><li>' . implode('</li><li>', $data->keyTakeaways) . '</li></ul>';
 
         // Concatenate array elements into a single string
         $content = implode('', $contentArray);
