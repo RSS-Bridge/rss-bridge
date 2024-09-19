@@ -1,0 +1,20 @@
+<?php
+
+class MyBridge extends BridgeAbstract
+{
+    const NAME = 'Unnamed bridge';
+    const URI = '';
+    const DESCRIPTION = 'No description provided';
+    const MAINTAINER = 'No maintainer';
+    const PARAMETERS = []; // Can be omitted!
+    const CACHE_TIMEOUT = 3600; // Can be omitted!
+    
+    public function collectData()
+    {
+        $item = []; // Create an empty item
+    
+        $item['title'] = 'Hello World!';
+    
+        $this->items[] = $item; // Add item to the list
+    }
+}
