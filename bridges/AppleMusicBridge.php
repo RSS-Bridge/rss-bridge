@@ -18,9 +18,9 @@ class AppleMusicBridge extends BridgeAbstract
             'required' => true,
         ],
     ]];
-    const CACHE_TIMEOUT = 21600; // 6 hours
+    const CACHE_TIMEOUT = 60 * 60 * 6; // 6 hours
 
-    public function collectData()
+    private function getBasics()
     {
         # Limit the amount of releases to 50
         if ($this->getInput('limit') > 50) {
@@ -29,29 +29,92 @@ class AppleMusicBridge extends BridgeAbstract
             $limit = $this->getInput('limit');
         }
 
-        $url = 'https://itunes.apple.com/lookup?id='
-            . $this->getInput('artist')
-            . '&entity=album&limit='
-            . $limit .
-            '&sort=recent';
+        $url = 'https://itunes.apple.com/lookup?id=' . $this->getInput('artist') . '&entity=album&limit=' . $limit . '&sort=recent';
         $html = getSimpleHTMLDOM($url);
 
         $json = json_decode($html);
+        $result = $json->results;
 
-        foreach ($json->results as $obj) {
+        if (!is_array($result) || count($result) == 0) {
+            returnServerError('There is no artist with id "' . $this->getInput('artist') . '".');
+        }
+
+        return $result;
+    }
+
+    private function getArtist($json)
+    {
+        $nameArray = array_filter($json, function ($obj) {
+            return $obj->wrapperType == 'artist';
+        });
+
+        if (count($nameArray) === 1) {
+            return $nameArray[0];
+        }
+
+        return parent::getName();
+    }
+
+    public function getName()
+    {
+        if (empty($this->getInput('artist'))) {
+            return parent::getName();
+        }
+
+        $json = $this->getBasics();
+
+        return $this->getArtist($json)->artistName;
+    }
+
+    public function getIcon()
+    {
+        if (empty($this->getInput('artist'))) {
+            return parent::getIcon();
+        }
+
+        // it isn't necessary to set the correct artist name into the url
+        $url = 'https://music.apple.com/us/artist/jon-bellion/' . $this->getInput('artist');
+        $html = getSimpleHTMLDOMCached($url);
+        $image = $html->find('meta[property="og:image"]', 0)->content;
+
+        $imageHighResolution = preg_replace('/\/\d*x\d*cw/i', '/144x144-999', $image);
+
+        return $imageHighResolution;
+    }
+
+    public function collectData()
+    {
+        $json = $this->getBasics();
+        $artist = $this->getArtist($json);
+
+        foreach ($json as $obj) {
             if ($obj->wrapperType === 'collection') {
                 $copyright = $obj->copyright ?? '';
+                $artworkUrl500 = str_replace('/100x100', '/500x500', $obj->artworkUrl100);
+                $artworkUrl2000 = str_replace('/100x100', '/2000x2000', $obj->artworkUrl100);
 
                 $this->items[] = [
-                    'title' => $obj->artistName . ' - ' . $obj->collectionName,
+                    'title' => $obj->collectionName,
                     'uri' => $obj->collectionViewUrl,
                     'timestamp' => $obj->releaseDate,
-                    'enclosures' => $obj->artworkUrl100,
-                    'content' => '<a href=' . $obj->collectionViewUrl
-                    . '><img src="' . $obj->artworkUrl100 . '" /></a><br><br>'
-                    . $obj->artistName . ' - ' . $obj->collectionName
-                    . '<br>'
-                    . $copyright,
+                    'enclosures' => $artworkUrl500,
+                    'author' => $obj->artistName,
+                    'content' => '<figure>'
+                        . '<img'
+                        . ' srcset="'
+                        . $obj->artworkUrl60 . ' 60w'
+                        . ', ' . $obj->artworkUrl100 . ' 100w'
+                        . ', ' . $artworkUrl500 . ' 500w'
+                        . ', ' . $artworkUrl2000 . ' 2000w"'
+                        . ' sizes="100%"'
+                        . ' src="' . $artworkUrl2000 . '"'
+                        . ' alt="Cover of ' . str_replace("\"", "\\\"", $obj->collectionName) . '"'
+                        . ' style="display: block; margin: 0 auto;" />'
+                        . '<figcaption>'
+                        . 'from <a href="' . $artist->artistLinkUrl . '">' . $obj->artistName . '</a><br />'
+                        . $copyright
+                        . '</figcaption>'
+                        . '</figure>',
                 ];
             }
         }
