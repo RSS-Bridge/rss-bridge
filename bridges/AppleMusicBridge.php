@@ -20,6 +20,44 @@ class AppleMusicBridge extends BridgeAbstract
     ]];
     const CACHE_TIMEOUT = 60 * 60 * 6; // 6 hours
 
+    public function collectData()
+    {
+        $json = $this->getBasics();
+        $artist = $this->getArtist($json);
+
+        foreach ($json as $obj) {
+            if ($obj->wrapperType === 'collection') {
+                $copyright = $obj->copyright ?? '';
+                $artworkUrl500 = str_replace('/100x100', '/500x500', $obj->artworkUrl100);
+                $artworkUrl2000 = str_replace('/100x100', '/2000x2000', $obj->artworkUrl100);
+
+                $this->items[] = [
+                    'title' => $obj->collectionName,
+                    'uri' => $obj->collectionViewUrl,
+                    'timestamp' => $obj->releaseDate,
+                    'enclosures' => $artworkUrl500,
+                    'author' => $obj->artistName,
+                    'content' => '<figure>'
+                        . '<img'
+                        . ' srcset="'
+                        . $obj->artworkUrl60 . ' 60w'
+                        . ', ' . $obj->artworkUrl100 . ' 100w'
+                        . ', ' . $artworkUrl500 . ' 500w'
+                        . ', ' . $artworkUrl2000 . ' 2000w"'
+                        . ' sizes="100%"'
+                        . ' src="' . $artworkUrl2000 . '"'
+                        . ' alt="Cover of ' . str_replace("\"", "\\\"", $obj->collectionName) . '"'
+                        . ' style="display: block; margin: 0 auto;" />'
+                        . '<figcaption>'
+                        . 'from <a href="' . $artist->artistLinkUrl . '">' . $obj->artistName . '</a><br />'
+                        . $copyright
+                        . '</figcaption>'
+                        . '</figure>',
+                ];
+            }
+        }
+    }
+
     private function getBasics()
     {
         # Limit the amount of releases to 50
@@ -80,43 +118,5 @@ class AppleMusicBridge extends BridgeAbstract
         $imageHighResolution = preg_replace('/\/\d*x\d*cw/i', '/144x144-999', $image);
 
         return $imageHighResolution;
-    }
-
-    public function collectData()
-    {
-        $json = $this->getBasics();
-        $artist = $this->getArtist($json);
-
-        foreach ($json as $obj) {
-            if ($obj->wrapperType === 'collection') {
-                $copyright = $obj->copyright ?? '';
-                $artworkUrl500 = str_replace('/100x100', '/500x500', $obj->artworkUrl100);
-                $artworkUrl2000 = str_replace('/100x100', '/2000x2000', $obj->artworkUrl100);
-
-                $this->items[] = [
-                    'title' => $obj->collectionName,
-                    'uri' => $obj->collectionViewUrl,
-                    'timestamp' => $obj->releaseDate,
-                    'enclosures' => $artworkUrl500,
-                    'author' => $obj->artistName,
-                    'content' => '<figure>'
-                        . '<img'
-                        . ' srcset="'
-                        . $obj->artworkUrl60 . ' 60w'
-                        . ', ' . $obj->artworkUrl100 . ' 100w'
-                        . ', ' . $artworkUrl500 . ' 500w'
-                        . ', ' . $artworkUrl2000 . ' 2000w"'
-                        . ' sizes="100%"'
-                        . ' src="' . $artworkUrl2000 . '"'
-                        . ' alt="Cover of ' . str_replace("\"", "\\\"", $obj->collectionName) . '"'
-                        . ' style="display: block; margin: 0 auto;" />'
-                        . '<figcaption>'
-                        . 'from <a href="' . $artist->artistLinkUrl . '">' . $obj->artistName . '</a><br />'
-                        . $copyright
-                        . '</figcaption>'
-                        . '</figure>',
-                ];
-            }
-        }
     }
 }
