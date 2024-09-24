@@ -24,9 +24,8 @@ class AppleMusicBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = $this->getJson();
-        $items = $this->getFeedItems($json);
-        $artist = $this->getArtist($json);
+        $items = $this->getJson();
+        $artist = $this->getArtist($items);
 
         $this->title = $artist->artistName;
 
@@ -45,7 +44,7 @@ class AppleMusicBridge extends BridgeAbstract
                     'content' => '<figure>'
                         . '<img'
                         . ' srcset="'
-                        . $$item->artworkUrl60 . ' 60w'
+                        . $item->artworkUrl60 . ' 60w'
                         . ', ' . $item->artworkUrl100 . ' 100w'
                         . ', ' . $artworkUrl500 . ' 500w'
                         . ', ' . $artworkUrl2000 . ' 2000w"'
@@ -75,12 +74,6 @@ class AppleMusicBridge extends BridgeAbstract
         $url = 'https://itunes.apple.com/lookup?id=' . $this->getInput('artist') . '&entity=album&limit=' . $limit . '&sort=recent';
         $html = getSimpleHTMLDOM($url);
         $json = json_decode($html);
-
-        return $json;
-    }
-
-    private function getFeedItems($json)
-    {
         $result = $json->results;
 
         if (!is_array($result) || count($result) == 0) {
