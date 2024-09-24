@@ -20,36 +20,41 @@ class AppleMusicBridge extends BridgeAbstract
     ]];
     const CACHE_TIMEOUT = 60 * 60 * 6; // 6 hours
 
+    private $title;
+
     public function collectData()
     {
-        $json = $this->getBasics();
+        $json = $this->getJson();
+        $items = $this->getFeedItems($json);
         $artist = $this->getArtist($json);
 
-        foreach ($json as $obj) {
-            if ($obj->wrapperType === 'collection') {
-                $copyright = $obj->copyright ?? '';
-                $artworkUrl500 = str_replace('/100x100', '/500x500', $obj->artworkUrl100);
-                $artworkUrl2000 = str_replace('/100x100', '/2000x2000', $obj->artworkUrl100);
+        $this->title = $artist->artistName;
+
+        foreach ($items as $item) {
+            if ($item->wrapperType === 'collection') {
+                $copyright = $item->copyright ?? '';
+                $artworkUrl500 = str_replace('/100x100', '/500x500', $item->artworkUrl100);
+                $artworkUrl2000 = str_replace('/100x100', '/2000x2000', $item->artworkUrl100);
 
                 $this->items[] = [
-                    'title' => $obj->collectionName,
-                    'uri' => $obj->collectionViewUrl,
-                    'timestamp' => $obj->releaseDate,
+                    'title' => $item->collectionName,
+                    'uri' => $item->collectionViewUrl,
+                    'timestamp' => $item->releaseDate,
                     'enclosures' => $artworkUrl500,
-                    'author' => $obj->artistName,
+                    'author' => $item->artistName,
                     'content' => '<figure>'
                         . '<img'
                         . ' srcset="'
-                        . $obj->artworkUrl60 . ' 60w'
-                        . ', ' . $obj->artworkUrl100 . ' 100w'
+                        . $$item->artworkUrl60 . ' 60w'
+                        . ', ' . $item->artworkUrl100 . ' 100w'
                         . ', ' . $artworkUrl500 . ' 500w'
                         . ', ' . $artworkUrl2000 . ' 2000w"'
                         . ' sizes="100%"'
                         . ' src="' . $artworkUrl2000 . '"'
-                        . ' alt="Cover of ' . str_replace("\"", "\\\"", $obj->collectionName) . '"'
+                        . ' alt="Cover of ' . str_replace("\"", "\\\"", $item->collectionName) . '"'
                         . ' style="display: block; margin: 0 auto;" />'
                         . '<figcaption>'
-                        . 'from <a href="' . $artist->artistLinkUrl . '">' . $obj->artistName . '</a><br />'
+                        . 'from <a href="' . $artist->artistLinkUrl . '">' . $item->artistName . '</a><br />'
                         . $copyright
                         . '</figcaption>'
                         . '</figure>',
@@ -58,7 +63,7 @@ class AppleMusicBridge extends BridgeAbstract
         }
     }
 
-    private function getBasics()
+    private function getJson()
     {
         # Limit the amount of releases to 50
         if ($this->getInput('limit') > 50) {
@@ -69,8 +74,13 @@ class AppleMusicBridge extends BridgeAbstract
 
         $url = 'https://itunes.apple.com/lookup?id=' . $this->getInput('artist') . '&entity=album&limit=' . $limit . '&sort=recent';
         $html = getSimpleHTMLDOM($url);
-
         $json = json_decode($html);
+
+        return $json;
+    }
+
+    private function getFeedItems($json)
+    {
         $result = $json->results;
 
         if (!is_array($result) || count($result) == 0) {
@@ -95,13 +105,11 @@ class AppleMusicBridge extends BridgeAbstract
 
     public function getName()
     {
-        if (empty($this->getInput('artist'))) {
-            return parent::getName();
+        if (isset($this->title)) {
+            return $this->title;
         }
 
-        $json = $this->getBasics();
-
-        return $this->getArtist($json)->artistName;
+        return parent::getName();
     }
 
     public function getIcon()
@@ -115,8 +123,8 @@ class AppleMusicBridge extends BridgeAbstract
         $html = getSimpleHTMLDOMCached($url);
         $image = $html->find('meta[property="og:image"]', 0)->content;
 
-        $imageHighResolution = preg_replace('/\/\d*x\d*cw/i', '/144x144-999', $image);
+        $imageUpdatedSize = preg_replace('/\/\d*x\d*cw/i', '/144x144-999', $image);
 
-        return $imageHighResolution;
+        return $imageUpdatedSize;
     }
 }
