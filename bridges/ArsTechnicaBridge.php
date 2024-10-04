@@ -67,20 +67,20 @@ class ArsTechnicaBridge extends FeedExpander
 
         // Some lightboxes are nested in figures. I'd guess that's a
         // bug in the website
-        foreach($item['content']->find('figure div div.ars-lightbox') as $weird_lightbox) {
+        foreach ($item['content']->find('figure div div.ars-lightbox') as $weird_lightbox) {
             $weird_lightbox->parent->parent->outertext = $weird_lightbox;
         }
 
         // It's easier to reconstruct the whole thing than remove
         // duplicate reactive tags
-        foreach($item['content']->find('.ars-lightbox') as $lightbox) {
+        foreach ($item['content']->find('.ars-lightbox') as $lightbox) {
             $lightbox_content = '';
-            foreach($lightbox->find('.ars-lightbox-item') as $lightbox_item) {
+            foreach ($lightbox->find('.ars-lightbox-item') as $lightbox_item) {
                 $img = $lightbox_item->find('img', 0);
                 if ($img != null) {
                     $lightbox_content .= '<figure>' . $img;
                     $caption = $lightbox_item->find('div.pswp-caption-content', 0);
-                    if ($caption != null){
+                    if ($caption != null) {
                         $credit = $lightbox_item->find('div.ars-gallery-caption-credit', 0);
                         if ($credit != null) {
                             $credit->innertext = 'Credit: ' . $credit->innertext;
