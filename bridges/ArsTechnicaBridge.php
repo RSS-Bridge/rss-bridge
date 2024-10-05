@@ -64,6 +64,7 @@ class ArsTechnicaBridge extends FeedExpander
         $parsely = $item_html->find('[name="parsely-page"]', 0);
         $parsely_json = json_decode(html_entity_decode($parsely->content), true);
         $item['categories'] = $parsely_json['tags'];
+        $item['uid'] = $parsely_json['post_id'];
 
         // Some lightboxes are nested in figures. I'd guess that's a
         // bug in the website
