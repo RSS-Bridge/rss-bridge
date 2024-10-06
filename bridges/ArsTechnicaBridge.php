@@ -97,6 +97,9 @@ class ArsTechnicaBridge extends FeedExpander
         foreach ($item['content']->find('.ars-interlude-container') as $ad) {
             $ad->remove();
         }
+        foreach ($item['content']->find('.toc-container') as $toc) {
+            $toc->remove();
+        }
 
         // Mostly YouTube videos
         $iframes = $item['content']->find('iframe');
