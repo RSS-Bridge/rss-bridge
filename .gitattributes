@@ -47,8 +47,6 @@ phpcs.xml                               export-ignore
 phpcompatibility.xml                    export-ignore
 tests/                                  export-ignore
 cache/.gitkeep                          export-ignore
-bridges/DemoBridge.php                  export-ignore
-bridges/FeedExpanderExampleBridge.php   export-ignore
 
 ## Composer
 #
