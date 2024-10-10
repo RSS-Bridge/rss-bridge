@@ -18,14 +18,14 @@ class Instance:
     name = ''
     url = ''
 
-def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: bool, title: str, output_file: str):
+def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: bool, termpad_instance: str, title: str, output_file: str):
     start_date = datetime.now()
     table_rows = []
     for instance in instances:
-        page = requests.get(instance.url) # Use python requests to grab the rss-bridge main page
+        page = requests.get(url=instance.url, timeout=10) # Use python requests to grab the rss-bridge main page
         soup = BeautifulSoup(page.content, "html.parser") # use bs4 to turn the page into soup
         bridge_cards = soup.select('.bridge-card') # get a soup-formatted list of all bridges on the rss-bridge page
-        table_rows += testBridges(instance, bridge_cards, with_upload, with_reduced_upload) # run the main scraping code with the list of bridges
+        table_rows += testBridges(instance, bridge_cards, with_upload, with_reduced_upload, termpad_instance) # run the main scraping code with the list of bridges
     with open(file=output_file, mode='w+', encoding='utf-8') as file:
         table_rows_value = '\n'.join(sorted(table_rows))
         file.write(f'''
@@ -37,7 +37,7 @@ def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: 
 *last change: {start_date.strftime("%A %Y-%m-%d %H:%M:%S")}*
         '''.strip())
 
-def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool) -> Iterable:
+def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool, termpad_instance: str) -> Iterable:
     instance_suffix = ''
     if instance.name:
         instance_suffix = f' ({instance.name})'
@@ -116,7 +116,7 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                     'format': 'Html',
                 })
                 request_url = f'{instance.url}/?{urllib.parse.urlencode(context_parameters)}'
-                response = requests.get(request_url)
+                response = requests.get(url=request_url, timeout=60)
                 page_text = response.text.replace('<head>','<head><base href="https://rss-bridge.org/bridge01/" target="_blank">')
                 page_text = page_text.encode("utf_8")
                 soup = BeautifulSoup(page_text, "html.parser")
@@ -140,16 +140,20 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                 if status_is_ok:
                     status = '✔️'
                 if with_upload and (not with_reduced_upload or not status_is_ok):
-                    termpad = requests.post(url="https://termpad.com/", data=page_text)
-                    termpad_url = termpad.text.strip()
-                    termpad_url = termpad_url.replace('termpad.com/','termpad.com/raw/')
+                    try:
+                        termpad_base_url = termpad_instance.rstrip("/") + '/'
+                        termpad_response = requests.post(url=termpad_base_url, data=page_text, timeout=10)
+                        termpad_url = termpad_response.text.strip()
+                        termpad_url = termpad_url.replace(termpad_base_url, termpad_base_url + 'raw/')
+                    except Exception as ex:
+                        print("[ERROR] failed to upload preview:", ex)
             table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({termpad_url}) | {status} |')
             form_number += 1
     return table_rows
 
 def getFirstLine(value: str) -> str:
      # trim whitespace and remove text that can break the table or is simply unnecessary
-    clean_value = re.sub('^\[[^\]]+\]\s*rssbridge\.|[\|`]', '', value.strip())
+    clean_value = re.sub(r'^\[[^\]]+\]\s*rssbridge\.|[\|`]', '', value.strip())
     first_line = next(iter(clean_value.splitlines()), '')
     max_length = 250
     if (len(first_line) > max_length):
@@ -161,6 +165,7 @@ if __name__ == '__main__':
     parser.add_argument('--instances', nargs='+')
     parser.add_argument('--no-upload', action='store_true')
     parser.add_argument('--reduced-upload', action='store_true')
+    parser.add_argument('--termpad-instance', default='https://termpad.com')
     parser.add_argument('--title', default='Pull request artifacts')
     parser.add_argument('--output-file', default=os.getcwd() + '/comment.txt')
     args = parser.parse_args()
@@ -185,6 +190,7 @@ if __name__ == '__main__':
         instances=instances,
         with_upload=not args.no_upload,
         with_reduced_upload=args.reduced_upload and not args.no_upload,
+        termpad_instance=args.termpad_instance,
         title=args.title,
         output_file=args.output_file
     );
