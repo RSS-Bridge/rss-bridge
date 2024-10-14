@@ -33,7 +33,7 @@ jobs:
           docker build -t prbuild .;
           docker run -d -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG -p 3001:80 prbuild
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.7'
           cache: 'pip'
@@ -59,7 +59,7 @@ jobs:
           path: '*.html'
       - name: Find Comment
         if: ${{ steps.testrun.outputs.bodylength > 130 }}
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -67,7 +67,7 @@ jobs:
           body-includes: Pull request artifacts
       - name: Create or update comment
         if: ${{ steps.testrun.outputs.bodylength > 130 }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
