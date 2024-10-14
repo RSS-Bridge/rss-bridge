@@ -88,6 +88,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "<>"
+          git config --unset-all http.https://github.com/.extraheader
   
       - name: Download generated template
         uses: actions/download-artifact@v4
@@ -99,7 +100,7 @@ jobs:
           cd prs
           mkdir ${{github.event.number}}
           cd ${{github.event.number}}
-          cp $GITHUB_WORKSPACE/*.html .
+          mv $GITHUB_WORKSPACE/*.html .
           
       - name: Commit and push generated template
         run: |
