@@ -141,7 +141,7 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                 if status_is_ok:
                     status = '✔️'
                 if with_upload and (not with_reduced_upload or not status_is_ok):
-                    filename = os.getcwd() + '/' + {instance.name} + '_' + {form_number} + '.html'
+                    filename = {instance.name} + '_' + {form_number} + '.html'
                     with open(file=filename, mode='w+', encoding='utf-8') as file:
                         file.write(page_text)
             table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({tester_url}) | {status} |')
