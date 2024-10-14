@@ -82,7 +82,7 @@ jobs:
         with:
           repository: 'Bockiii/bockiii.github.io'
           ref: 'main'
-          token:  ${{ secrets.GITHUB_TOKEN }}
+          token:  ${{ secrets.RSSTESTER_ACTION }}
   
       - name: Setup git config
         run: |
