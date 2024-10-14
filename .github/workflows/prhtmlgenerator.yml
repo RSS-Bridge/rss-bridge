@@ -51,9 +51,9 @@ jobs:
           body="${body//$'\n'/'%0A'}";
           body="${body//$'\r'/'%0D'}";
           echo "bodylength=${#body}" >> $GITHUB_OUTPUT
-      - name: Upload generated template
+      - name: Upload generated tests
         uses: actions/upload-artifact@v4
-        id: upload-generated-template
+        id: upload-generated-tests
         with:
           name: tests
           path: '*.html'
