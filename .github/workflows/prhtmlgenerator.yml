@@ -97,9 +97,9 @@ jobs:
       - name: Move tests
         run: |
           cd prs
-          mkdir ${{github.event.number}}
+          mkdir -p ${{github.event.number}}
           cd ${{github.event.number}}
-          mv $GITHUB_WORKSPACE/*.html .
+          mv -f $GITHUB_WORKSPACE/*.html .
           
       - name: Commit and push generated template
         run: |
