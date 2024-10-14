@@ -51,6 +51,12 @@ jobs:
           body="${body//$'\n'/'%0A'}";
           body="${body//$'\r'/'%0D'}";
           echo "bodylength=${#body}" >> $GITHUB_OUTPUT
+      - name: Upload generated template
+        uses: actions/upload-artifact@v4
+        id: upload-generated-template
+        with:
+          name: tests
+          path: '*.html'
       - name: Find Comment
         if: ${{ steps.testrun.outputs.bodylength > 130 }}
         uses: peter-evans/find-comment@v2
@@ -67,3 +73,37 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body-file: comment.txt
           edit-mode: replace
+  upload_tests:
+    name: Upload tests
+    runs-on: ubuntu-latest
+    needs: test-pr
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: 'Bockiii/bockiii.github.io'
+          ref: 'main'
+          token:  ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Setup git config
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "<>"
+  
+      - name: Download generated template
+        uses: actions/download-artifact@v4
+        with:
+          name: tests
+
+      - name: Move tests
+        run: |
+          cd prs
+          mkdir ${{github.event.number}}
+          cd ${{github.event.number}}
+          cp $GITHUB_WORKSPACE/*.html .
+          
+      - name: Commit and push generated template
+        run: |
+          export COMMIT_MESSAGE="Added tests for PR ${{github.event.number}}"
+          git add .
+          git commit -m "$COMMIT_MESSAGE"
+          git push
