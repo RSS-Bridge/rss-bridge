@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: 'Bockiii/bockiii.github.io'
+          repository: 'RSS-Bridge/rss-bridge-tests'
           ref: 'main'
           token:  ${{ secrets.RSSTESTER_ACTION }}
   
@@ -91,7 +91,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "<>"
   
-      - name: Download generated template
+      - name: Download tests
         uses: actions/download-artifact@v4
         with:
           name: tests
@@ -103,7 +103,7 @@ jobs:
           cd ${{github.event.number}}
           mv -f $GITHUB_WORKSPACE/*.html .
           
-      - name: Commit and push generated template
+      - name: Commit and push generated tests
         run: |
           export COMMIT_MESSAGE="Added tests for PR ${{github.event.number}}"
           git add .
