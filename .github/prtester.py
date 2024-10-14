@@ -40,7 +40,7 @@ def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: 
 
 def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool) -> Iterable:
     instance_suffix = ''
-    prid = os.environ.get["PR"]
+    prid = os.getenv("PR")
     tester_url = f'https://bockiii.github.io/prs/{prid}/'
     if instance.name:
         instance_suffix = f' ({instance.name})'
