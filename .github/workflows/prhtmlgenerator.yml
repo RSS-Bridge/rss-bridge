@@ -13,7 +13,7 @@ jobs:
     # Needs additional permissions https://github.com/actions/first-interaction/issues/10#issuecomment-1041402989
     steps:
       - name: Check out self
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
