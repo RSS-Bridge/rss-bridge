@@ -40,7 +40,7 @@ def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: 
 
 def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool) -> Iterable:
     instance_suffix = ''
-    prid = os.environ.get("PR")
+    prid = os.environ.get["PR"]
     tester_url = f'https://bockiii.github.io/prs/{prid}/'
     if instance.name:
         instance_suffix = f' ({instance.name})'
@@ -146,7 +146,7 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                     filename = f'{os.getcwd()}/{instance.name}_{form_number}.html'
                     with open(file=filename, mode='wb') as file:
                         file.write(page_text)
-            table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({tester_url}/{filename}) | {status} |')
+            table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({tester_url}/{instance.name}_{form_number}.html) | {status} |')
             form_number += 1
     return table_rows
 
