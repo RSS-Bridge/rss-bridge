@@ -19,7 +19,7 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Check out rss-bridge
         run: |
-          export PR=${{github.event.number}};
+          PR=${{github.event.number}};
           wget -O requirements.txt https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester-requirements.txt;
           wget https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester.py;
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
@@ -51,6 +51,8 @@ jobs:
           body="${body//$'\n'/'%0A'}";
           body="${body//$'\r'/'%0D'}";
           echo "bodylength=${#body}" >> $GITHUB_OUTPUT
+        env:
+          PR: ${{ github.event.number }}
       - name: Upload generated tests
         uses: actions/upload-artifact@v4
         id: upload-generated-tests
