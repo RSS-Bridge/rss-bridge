@@ -86,7 +86,6 @@ jobs:
   
       - name: Setup git config
         run: |
-          git config --unset-all http.https://github.com/.extraheader
           git config --global user.name "GitHub Actions"
           git config --global user.email "<>"
   
