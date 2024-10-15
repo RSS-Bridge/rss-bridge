@@ -1,16 +1,16 @@
 <?php
 
-class RaceDepartmentBridge extends FeedExpander
+class OvertakeBridge extends FeedExpander
 {
-    const NAME = 'RaceDepartment News';
-    const URI = 'https://racedepartment.com/';
-    const DESCRIPTION = 'Get the latest (sim)racing news from RaceDepartment.';
+    const NAME = 'Overtake News';
+    const URI = 'https://www.overtake.gg/';
+    const DESCRIPTION = 'Get the latest (sim)racing news from Overtake.';
     const MAINTAINER = 't0stiman';
     const DONATION_URI = 'https://ko-fi.com/tostiman';
 
     public function collectData()
     {
-        $this->collectExpandableDatas('https://www.racedepartment.com/ams/index.rss', 10);
+        $this->collectExpandableDatas('https://www.overtake.gg/ams/index.rss', 10);
     }
 
     protected function parseItem(array $item)
