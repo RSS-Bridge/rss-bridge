@@ -66,7 +66,15 @@ class RutubeBridge extends BridgeAbstract
     {
         $jsonDataRegex = '/window.reduxState = (.*);/';
         preg_match($jsonDataRegex, $html, $matches) or returnServerError('Could not find reduxState');
-        return json_decode(str_replace('\x', '\\\x', $matches[1]));
+        $map = [
+            '\x26' => '&',
+            '\x3c' => '<',
+            '\x3d' => '=',
+            '\x3e' => '>',
+            '\x3f' => '?',
+        ];
+        $jsonString = str_replace(array_keys($map), array_values($map), $matches[1]);
+        return json_decode($jsonString, false);
     }
 
     private function getVideosFromReduxState()
@@ -77,8 +85,10 @@ class RutubeBridge extends BridgeAbstract
         $reduxState = $this->getJSONData($html);
         $videos = [];
         if ($this->getInput('c')) {
-            $videos = $reduxState->userChannel->videos->results;
-            $this->title = $reduxState->userChannel->info->name;
+            $videosMethod = 'videos(' . $this->getInput('c') . ')';
+            $channelInfoMethod = 'channelInfo({"userChannelId":' . $this->getInput('c') . '})';
+            $videos = $reduxState->api->queries->$videosMethod->data->results;
+            $this->title = $reduxState->api->queries->$channelInfoMethod->data->name;
         } elseif ($this->getInput('p')) {
             $playListVideosMethod = 'getPlaylistVideos(' . $this->getInput('p') . ')';
             $videos = $reduxState->api->queries->$playListVideosMethod->data->results;
