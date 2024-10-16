@@ -4,7 +4,7 @@ import re
 from bs4 import BeautifulSoup
 from datetime import datetime
 from typing import Iterable
-import os.path
+import os
 import urllib
 
 # This script is specifically written to be used in automation for https://github.com/RSS-Bridge/rss-bridge
@@ -39,6 +39,8 @@ def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: 
 
 def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool) -> Iterable:
     instance_suffix = ''
+    prid = os.getenv("PR")
+    tester_url = f'https://rss-bridge.github.io/rss-bridge-tests/prs/{prid}'
     if instance.name:
         instance_suffix = f' ({instance.name})'
     table_rows = []
@@ -140,10 +142,10 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                 if status_is_ok:
                     status = '✔️'
                 if with_upload and (not with_reduced_upload or not status_is_ok):
-                    termpad = requests.post(url="https://termpad.com/", data=page_text)
-                    termpad_url = termpad.text.strip()
-                    termpad_url = termpad_url.replace('termpad.com/','termpad.com/raw/')
-            table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({termpad_url}) | {status} |')
+                    filename = f'{os.getcwd()}/{instance.name}_{form_number}.html'
+                    with open(file=filename, mode='wb') as file:
+                        file.write(page_text)
+            table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({tester_url}/{instance.name}_{form_number}.html) | {status} |')
             form_number += 1
     return table_rows
 
