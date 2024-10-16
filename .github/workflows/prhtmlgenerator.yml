@@ -8,6 +8,8 @@ jobs:
   check-bridges:
     name: Check if bridges were changed
     runs-on: ubuntu-latest
+    outputs:
+      BRIDGES: ${{ steps.check1.outputs.BRIDGES }}
     steps:
       - name: Check number of bridges
         id: check1
@@ -15,14 +17,12 @@ jobs:
           PR=${{github.event.number}};
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
           bridgeamount=$(cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq | wc -l);
-          cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq | wc -l;
-          echo $bridgeamount;
           echo "BRIDGES=$bridgeamount" >> "$GITHUB_OUTPUT"
   test-pr:
     name: Generate HTML
     runs-on: ubuntu-latest
     needs: check-bridges
-    if: needs.check-bridges.check1.outputs.BRIDGES >= 1
+    if: needs.check-bridges.outputs.BRIDGES > 0
     env:
       PYTHONUNBUFFERED: 1
     # Needs additional permissions https://github.com/actions/first-interaction/issues/10#issuecomment-1041402989
