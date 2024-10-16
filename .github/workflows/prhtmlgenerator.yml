@@ -15,7 +15,7 @@ jobs:
           PR=${{github.event.number}};
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
           bridgeamount=$(cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq | wc -l)
-          ::set-output name=bridges::$bridgeamount
+          echo ::set-output name=bridges::$bridgeamount
   test-pr:
     name: Generate HTML
     runs-on: ubuntu-latest
