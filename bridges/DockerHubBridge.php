@@ -90,7 +90,7 @@ class DockerHubBridge extends BridgeAbstract
             $item['content'] = <<<EOD
 <Strong>Tag</strong><br>
 <p>{$result->name}</p>
-<Strong>Last pushed</strong><br>
+<Strong> Last pushed</strong><br>
 <p>{$lastPushed}</p>
 <Strong>Images</strong><br>
 {$this->getImagesTable($result)}
