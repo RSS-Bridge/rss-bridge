@@ -41,7 +41,6 @@ class HarvardBusinessReviewBridge extends BridgeAbstract
                 }
 
                 $item = [];
-                
                 $linkElement = $data->find('a', 0);
                 $titleElement = $data->find('h3.hed a', 0);
                 $authorElement = $data->find('ul.byline-list li', 0);
