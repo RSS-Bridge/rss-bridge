@@ -117,6 +117,14 @@ class ZeitBridge extends FeedExpander
             }, $authors));
         }
 
+        $item['content'] = '';
+
+        // summary
+        $summary = $article->find('.summary');
+        if ($summary) {
+            $item['content'] .= implode('', $summary);
+        }
+
         // header image
         $headerimg = $article->find('*[data-ct-row="headerimage"]', 0) ?? $article->find('.article-header', 0) ?? $article->find('header', 0);
         if ($headerimg) {
