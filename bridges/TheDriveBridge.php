@@ -2,7 +2,7 @@
 
 class TheDriveBridge extends FeedExpander
 {
-    const NAME = 'The Drive Bridge';
+    const NAME = 'The Drive';
     const URI = 'https://www.thedrive.com/';
     const DESCRIPTION = 'Car news from thedrive.com';
     const MAINTAINER = 't0stiman';
