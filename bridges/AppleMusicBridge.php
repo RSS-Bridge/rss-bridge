@@ -34,7 +34,7 @@ class AppleMusicBridge extends BridgeAbstract
                 $copyright = $item->copyright ?? '';
                 $artworkUrl500 = str_replace('/100x100', '/500x500', $item->artworkUrl100);
                 $artworkUrl2000 = str_replace('/100x100', '/2000x2000', $item->artworkUrl100);
-                $escapedCollectioName = htmlspecialchars($item->collectionName);
+                $escapedCollectionName = htmlspecialchars($item->collectionName);
 
                 $this->items[] = [
                     'title' => $item->collectionName,
@@ -43,7 +43,7 @@ class AppleMusicBridge extends BridgeAbstract
                     'enclosures' => $artworkUrl500,
                     'author' => $item->artistName,
                     'content' => "<figure>
-    <img srcset=\"$item->artworkUrl60 60w, $item->artworkUrl100 100w, $artworkUrl500 500w, $artworkUrl2000 2000w\" sizes=\"100%\" src=\"$artworkUrl2000\" alt=\"Cover of $escapedCollectioName\" style=\"display: block; margin: 0 auto;\" />
+    <img srcset=\"$item->artworkUrl60 60w, $item->artworkUrl100 100w, $artworkUrl500 500w, $artworkUrl2000 2000w\" sizes=\"100%\" src=\"$artworkUrl2000\" alt=\"Cover of $escapedCollectionName\" style=\"display: block; margin: 0 auto;\" />
     <figcaption>
         from <a href=\"$artist->artistLinkUrl\">$item->artistName</a><br />$copyright
     </figcaption>
