@@ -40,7 +40,7 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract
             $item['author'] = $author;
             $item['title'] = $title;
             $item['timestamp'] = $element->find('span[class*="age"]', 0)->find('a', 0)->innertext;
-            $item['content'] = $element->find('span[class*="commtext"]', 0)->innertext;
+            $item['content'] = $element->find('div[class*="commtext"]', 0)->innertext;
 
             $this->items[] = $item;
         }
