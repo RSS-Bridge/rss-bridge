@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from typing import Iterable
 import os
+import glob
 import urllib
 
 # This script is specifically written to be used in automation for https://github.com/RSS-Bridge/rss-bridge
@@ -14,18 +15,33 @@ import urllib
 # It also add a <base> tag with the url of em's public instance, so viewing
 # the HTML file locally will actually work as designed.
 
+ARTIFACT_FILE_EXTENSION = '.html'
+
 class Instance:
     name = ''
     url = ''
 
 def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: bool, title: str, output_file: str):
     start_date = datetime.now()
+
+    prid = os.getenv('PR')
+    artifact_base_url = f'https://rss-bridge.github.io/rss-bridge-tests/prs/{prid}'
+    artifact_directory = os.getcwd()
+    for file in glob.glob(f'*{ARTIFACT_FILE_EXTENSION}', root_dir=artifact_directory):
+        os.remove(file)
+
     table_rows = []
     for instance in instances:
         page = requests.get(instance.url) # Use python requests to grab the rss-bridge main page
         soup = BeautifulSoup(page.content, "html.parser") # use bs4 to turn the page into soup
         bridge_cards = soup.select('.bridge-card') # get a soup-formatted list of all bridges on the rss-bridge page
-        table_rows += testBridges(instance, bridge_cards, with_upload, with_reduced_upload) # run the main scraping code with the list of bridges
+        table_rows += testBridges(
+            instance=instance,
+            bridge_cards=bridge_cards,
+            with_upload=with_upload,
+            with_reduced_upload=with_reduced_upload,
+            artifact_directory=artifact_directory,
+            artifact_base_url=artifact_base_url) # run the main scraping code with the list of bridges
     with open(file=output_file, mode='w+', encoding='utf-8') as file:
         table_rows_value = '\n'.join(sorted(table_rows))
         file.write(f'''
@@ -37,10 +53,8 @@ def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: 
 *last change: {start_date.strftime("%A %Y-%m-%d %H:%M:%S")}*
         '''.strip())
 
-def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool) -> Iterable:
+def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool, artifact_directory: str, artifact_base_url: str) -> Iterable:
     instance_suffix = ''
-    prid = os.getenv("PR")
-    tester_url = f'https://rss-bridge.github.io/rss-bridge-tests/prs/{prid}'
     if instance.name:
         instance_suffix = f' ({instance.name})'
     table_rows = []
@@ -105,13 +119,13 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                             selectionvalue = selectionentry.get('value')
                             break
                 context_parameters[listname] = selectionvalue
-            termpad_url = 'about:blank'
+            artifact_url = 'about:blank'
             if error_messages:
                 status = '<br>'.join(map(lambda m: f'❌ `{m}`', error_messages))
             else:
                 # if all example/default values are present, form the full request url, run the request, add a <base> tag with
                 # the url of em's public instance to the response text (so that relative paths work, e.g. to the static css file) and
-                # then upload it to termpad.com, a pastebin-like-site.
+                # then save it to a html file.
                 context_parameters.update({
                     'action': 'display',
                     'bridge': bridgeid,
@@ -142,16 +156,18 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                 if status_is_ok:
                     status = '✔️'
                 if with_upload and (not with_reduced_upload or not status_is_ok):
-                    filename = f'{os.getcwd()}/{instance.name}_{form_number}.html'
-                    with open(file=filename, mode='wb') as file:
+                    filename = f'{bridge_name} {form_number}{instance_suffix}{ARTIFACT_FILE_EXTENSION}'
+                    filename = re.sub(r'[^a-z0-9 \_\-\.]', '', filename, flags=re.I).replace(' ', '_')
+                    with open(file=f'{artifact_directory}/{filename}', mode='wb') as file:
                         file.write(page_text)
-            table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({tester_url}/{instance.name}_{form_number}.html) | {status} |')
+                    artifact_url = f'{artifact_base_url}/{filename}'
+            table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({artifact_url}) | {status} |')
             form_number += 1
     return table_rows
 
 def getFirstLine(value: str) -> str:
      # trim whitespace and remove text that can break the table or is simply unnecessary
-    clean_value = re.sub('^\[[^\]]+\]\s*rssbridge\.|[\|`]', '', value.strip())
+    clean_value = re.sub(r'^\[[^\]]+\]\s*rssbridge\.|[\|`]', '', value.strip())
     first_line = next(iter(clean_value.splitlines()), '')
     max_length = 250
     if (len(first_line) > max_length):
