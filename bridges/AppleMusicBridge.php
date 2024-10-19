@@ -43,7 +43,10 @@ class AppleMusicBridge extends BridgeAbstract
                     'enclosures' => $artworkUrl500,
                     'author' => $item->artistName,
                     'content' => "<figure>
-    <img srcset=\"$item->artworkUrl60 60w, $item->artworkUrl100 100w, $artworkUrl500 500w, $artworkUrl2000 2000w\" sizes=\"100%\" src=\"$artworkUrl2000\" alt=\"Cover of $escapedCollectionName\" style=\"display: block; margin: 0 auto;\" />
+    <img srcset=\"$item->artworkUrl60 60w, $item->artworkUrl100 100w, $artworkUrl500 500w, $artworkUrl2000 2000w\"
+         sizes=\"100%\" src=\"$artworkUrl2000\"
+         alt=\"Cover of $escapedCollectionName\"
+         style=\"display: block; margin: 0 auto;\" />
     <figcaption>
         from <a href=\"$artist->artistLinkUrl\">$item->artistName</a><br />$copyright
     </figcaption>
