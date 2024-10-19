@@ -31,12 +31,20 @@ class TestFaktaBridge extends BridgeAbstract
         ];
 
         // Replace Swedish month names with English
-        $dateString = preg_replace_callback('/\b(' . implode('|', array_keys($months)) . ')\b/', function ($matches) use ($months) {
-            return $months[$matches[0]];
-        }, $dateString);
+        $dateString = preg_replace_callback(
+            '/\b(' . implode('|', array_keys($months)) . ')\b/',
+            function ($matches) use ($months) {
+                return $months[$matches[0]];
+            },
+            $dateString
+        );
 
         // Create DateTime object
-        $dateValue = DateTime::createFromFormat('d M, Y', trim($dateString), new DateTimeZone('Europe/Stockholm'));
+        $dateValue = DateTime::createFromFormat(
+            'd M, Y',
+            trim($dateString),
+            new DateTimeZone('Europe/Stockholm')
+        );
         if ($dateValue) {
             $dateValue->setTime(0, 0); // Set time to 00:00
             return $dateValue->getTimestamp();
@@ -69,16 +77,16 @@ class TestFaktaBridge extends BridgeAbstract
             $author = trim($article_html->find('span.name', 0)->plaintext);
             $published = $this->parseSwedishDates(
                 str_replace(
-                    "Publicerad: ",
-                    "",
+                    'Publicerad: ',
+                    '',
                     trim($article_html->find('span.created', 0)->plaintext)
                 )
             );
 
-            $content = $figure . '<br/>' .
-                '<b>' . strtoupper($category) . '</b>  ' . $requestor . '<br/><br/>' .
-                '<b><i>' . $preamble . '</i></b><br/><br/>' .
-                $article_text;
+            $content = $figure . '<br/>';
+            $content .= '<b>' . strtoupper($category) . '</b>  ' . $requestor . '<br/><br/>';
+            $content .= '<b><i>' . $preamble . '</i></b><br/><br/>';
+            $content .= $article_text;
 
             $this->items[] = [
                 'uri' => $url,
