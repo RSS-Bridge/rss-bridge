@@ -85,12 +85,11 @@ class DacksnackBridge extends BridgeAbstract
                 $author = $matches[1]; // This will contain 'Jonna Jansson'
             }
 
-            $content = '<figure>';
+            $content = '<b> [' . $category . '] <i>' . $preamble . '</i></b><br/><br/>';
+            $content .= '<figure>';
             $content .= '<img src=' . $figure . '>';
             $content .= '<figcaption>' . $figure_caption . '</figcaption>';
             $content .= '</figure>';
-
-            $content .= '<b> [' . $category . '] <i>' . $preamble . '</i></b><br/><br/>';
             $content .= $article_text;
 
             $this->items[] = [
