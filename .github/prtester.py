@@ -21,13 +21,10 @@ class Instance:
     name = ''
     url = ''
 
-def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: bool, title: str, output_file: str):
+def main(instances: Iterable[Instance], with_artifacts: bool, with_reduced_artifacts: bool, artifacts_directory: str, artifacts_base_url: str, title: str, output_file: str):
     start_date = datetime.now()
 
-    prid = os.getenv('PR')
-    artifact_base_url = f'https://rss-bridge.github.io/rss-bridge-tests/prs/{prid}'
-    artifact_directory = os.getcwd()
-    for file in glob.glob(f'*{ARTIFACT_FILE_EXTENSION}', root_dir=artifact_directory):
+    for file in glob.glob(f'*{ARTIFACT_FILE_EXTENSION}', root_dir=artifacts_directory):
         os.remove(file)
 
     table_rows = []
@@ -38,10 +35,10 @@ def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: 
         table_rows += testBridges(
             instance=instance,
             bridge_cards=bridge_cards,
-            with_upload=with_upload,
-            with_reduced_upload=with_reduced_upload,
-            artifact_directory=artifact_directory,
-            artifact_base_url=artifact_base_url) # run the main scraping code with the list of bridges
+            with_artifacts=with_artifacts,
+            with_reduced_artifacts=with_reduced_artifacts,
+            artifacts_directory=artifacts_directory,
+            artifacts_base_url=artifacts_base_url) # run the main scraping code with the list of bridges
     with open(file=output_file, mode='w+', encoding='utf-8') as file:
         table_rows_value = '\n'.join(sorted(table_rows))
         file.write(f'''
@@ -53,7 +50,7 @@ def main(instances: Iterable[Instance], with_upload: bool, with_reduced_upload: 
 *last change: {start_date.strftime("%A %Y-%m-%d %H:%M:%S")}*
         '''.strip())
 
-def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, with_reduced_upload: bool, artifact_directory: str, artifact_base_url: str) -> Iterable:
+def testBridges(instance: Instance, bridge_cards: Iterable, with_artifacts: bool, with_reduced_artifacts: bool, artifacts_directory: str, artifacts_base_url: str) -> Iterable:
     instance_suffix = ''
     if instance.name:
         instance_suffix = f' ({instance.name})'
@@ -155,12 +152,12 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_upload: bool, w
                 status_is_ok = status == '';
                 if status_is_ok:
                     status = '✔️'
-                if with_upload and (not with_reduced_upload or not status_is_ok):
+                if with_artifacts and (not with_reduced_artifacts or not status_is_ok):
                     filename = f'{bridge_name} {form_number}{instance_suffix}{ARTIFACT_FILE_EXTENSION}'
                     filename = re.sub(r'[^a-z0-9 \_\-\.]', '', filename, flags=re.I).replace(' ', '_')
-                    with open(file=f'{artifact_directory}/{filename}', mode='wb') as file:
+                    with open(file=f'{artifacts_directory}/{filename}', mode='wb') as file:
                         file.write(page_text)
-                    artifact_url = f'{artifact_base_url}/{filename}'
+                    artifact_url = f'{artifacts_base_url}/{filename}'
             table_rows.append(f'| {bridge_name} | [{form_number} {context_name}{instance_suffix}]({artifact_url}) | {status} |')
             form_number += 1
     return table_rows
@@ -177,8 +174,10 @@ def getFirstLine(value: str) -> str:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--instances', nargs='+')
-    parser.add_argument('--no-upload', action='store_true')
-    parser.add_argument('--reduced-upload', action='store_true')
+    parser.add_argument('--no-artifacts', action='store_true')
+    parser.add_argument('--reduced-artifacts', action='store_true')
+    parser.add_argument('--artifacts-directory', default=os.getcwd())
+    parser.add_argument('--artifacts-base-url', default='')
     parser.add_argument('--title', default='Pull request artifacts')
     parser.add_argument('--output-file', default=os.getcwd() + '/comment.txt')
     args = parser.parse_args()
@@ -201,8 +200,10 @@ if __name__ == '__main__':
         instances.append(instance)
     main(
         instances=instances,
-        with_upload=not args.no_upload,
-        with_reduced_upload=args.reduced_upload and not args.no_upload,
+        with_artifacts=not args.no_artifacts,
+        with_reduced_artifacts=args.reduced_artifacts and not args.no_artifacts,
+        artifacts_directory=args.artifacts_directory,
+        artifacts_base_url=args.artifacts_base_url,
         title=args.title,
         output_file=args.output_file
     );
