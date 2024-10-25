@@ -5,7 +5,7 @@ class DuvarOrgBridge extends BridgeAbstract
     const NAME = 'Duvar.org - Haberler';
     const MAINTAINER = 'yourname';
     const URI = 'https://duvar.org';
-    const DESCRIPTION = 'Returns the latest articles from Duvar.org - News from Turkey and the world'; 
+    const DESCRIPTION = 'Returns the latest articles from Duvar.org - News from Turkey and the world';
     const CACHE_TIMEOUT = 3600; // 60min
 
     const PARAMETERS = [[
@@ -19,7 +19,6 @@ class DuvarOrgBridge extends BridgeAbstract
         'urlsuffix' => [
             'name' => 'URL Suffix',
             'type' => 'list',
-            'required' => true,
             'title' => 'Suffix for the URL to scrape a specific section',
             'defaultValue' => '',
             'values' => [
