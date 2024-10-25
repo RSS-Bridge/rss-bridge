@@ -20,7 +20,7 @@ class DuvarOrgBridge extends BridgeAbstract
             'name' => 'URL Suffix',
             'type' => 'list',
             'title' => 'Suffix for the URL to scrape a specific section',
-            'defaultValue' => '',
+            'defaultValue' => 'Main',
             'values' => [
                 'Main' => '',
                 'Balanced' => '/uyumlu',
