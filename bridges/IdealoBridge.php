@@ -152,7 +152,11 @@ class IdealoBridge extends BridgeAbstract
             $PriceNew = $FirstButton->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyNEW, $PriceNew);
+        } else if ($FirstButton === null) {
+            // In case there is no actual New Price delete the previous value in the cache
+             $this->cache->delete($this->getShortName() . '_' . $KeyNEW);
         }
+
 
         // Second Button contains the used product price
         $SecondButton = $html->find('.oopStage-conditionButton-wrapper-text', 1);
@@ -160,6 +164,9 @@ class IdealoBridge extends BridgeAbstract
             $PriceUsed = $SecondButton->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyUSED, $PriceUsed);
+        } else if ($SecondButton === null) {
+            // In case there is no actual Used Price delete the previous value in the cache
+             $this->cache->delete($this->getShortName() . '_' . $KeyUSED);
         }
 
         // Only continue if a price has changed
