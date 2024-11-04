@@ -7,12 +7,12 @@ class HuntShowdownNewsBridge extends BridgeAbstract
     const URI = 'https://www.huntshowdown.com';
     const DESCRIPTION = 'Returns the latest news from HuntShowdown.com/news';
     const BASE_URI = 'https://www.huntshowdown.com/';
-  
+
     public function collectData()
     {
         $html = getSimpleHTMLDOM('https://www.huntshowdown.com/news/tagged/news');
         $articles = defaultLinkTo($html, self::URI)->find('.col');
-        
+
         // Removing first element because it's a "load more" button
         array_shift($articles);
         foreach ($articles as $article) {
@@ -32,7 +32,7 @@ class HuntShowdownNewsBridge extends BridgeAbstract
             $item['title'] = $article_title;
             $item['content'] = $article_content;
             $item['enclosures'] = [$article_cover];
-            $item['timestamp'] =  $article->find('span', 0)->plaintext;
+            $item['timestamp'] = $article->find('span', 0)->plaintext;
 
             $this->items[] = $item;
         }
