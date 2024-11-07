@@ -49,7 +49,7 @@ class IdealoBridge extends BridgeAbstract
         $cacheDuration = 604800;
         $link = $this->getInput('Link');
         $keyTITLE = $link . 'TITLE';
-        $product = $this->loadCacheValue($keyTITLE, $cacheDuration);
+        $product = $this->loadCacheValue($keyTITLE);
 
         // The cache does not contain the title of the bridge, we must get it and save it in the cache
         if ($product === null) {
@@ -147,30 +147,32 @@ class IdealoBridge extends BridgeAbstract
         $OldPriceUsed = $this->loadCacheValue($KeyUSED);
 
         // First button contains the new price. Found at oopStage-conditionButton-wrapper-text class (.)
-        $FirstButton = $html->find('.oopStage-conditionButton-wrapper-text', 0);
-        if ($FirstButton) {
-            $PriceNew = $FirstButton->find('strong', 0)->plaintext;
+        $ActualNewPrice = $html->find('div[id=oopStage-conditionButton-new]', 0);
+        // Second Button contains the used product price
+        $ActualUsedPrice = $html->find('div[id=oopStage-conditionButton-used]', 0);
+
+        if ($ActualNewPrice) {
+            $PriceNew = $ActualNewPrice->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyNEW, $PriceNew);
-        } else if ($FirstButton === null) {
-            // In case there is no actual New Price delete the previous value in the cache
+        } else if ($ActualNewPrice === null && $ActualUsedPrice !== null) {
+            // In case there is no actual New Price and a Ured Price exists, then delete the previous value in the cache
              $this->cache->delete($this->getShortName() . '_' . $KeyNEW);
         }
 
 
         // Second Button contains the used product price
-        $SecondButton = $html->find('.oopStage-conditionButton-wrapper-text', 1);
-        if ($SecondButton) {
-            $PriceUsed = $SecondButton->find('strong', 0)->plaintext;
+        if ($ActualUsedPrice) {
+            $PriceUsed = $ActualUsedPrice->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyUSED, $PriceUsed);
-        } else if ($SecondButton === null) {
-            // In case there is no actual Used Price delete the previous value in the cache
+        } else if ($ActualUsedPrice === null && $ActualNewPrice !== null) {
+            // In case there is no actual Used Price and a New Price exists, then delete the previous value in the cache
              $this->cache->delete($this->getShortName() . '_' . $KeyUSED);
         }
 
-        // Only continue if a price has changed
-        if ($PriceNew != $OldPriceNew || $PriceUsed != $OldPriceUsed) {
+        // Only continue if a price has changed and there exists a New or Used price (sometimes no new Price _and_ Used Price are shown)
+        if (!($ActualNewPrice === null && $ActualUsedPrice === null ) && ($PriceNew != $OldPriceNew || $PriceUsed != $OldPriceUsed)) {
             // Get Product Image
             $image = $html->find('.datasheet-cover-image', 0)->src;
 
@@ -198,9 +200,9 @@ class IdealoBridge extends BridgeAbstract
             $content .= "<img src=$image>";
 
 
-            $now = date('d.m.j H:m');
+            $now = date('d/m/Y H:i');
 
-            $Pricealarm = 'Pricealarm %s: %s %s %s';
+            $Pricealarm = 'Pricealarm %s: %s %s - %s';
 
             // Currently under Max new price
             if ($this->getInput('MaxPriceNew') != '') {
@@ -247,7 +249,7 @@ class IdealoBridge extends BridgeAbstract
                         $title .= 'USED' . $this->getPriceTrend($PriceUsed, $OldPriceUsed) . ' ';
                     }
                     $title .= $Productname;
-                    $title .= ' ';
+                    $title .= ' - ';
                     $title .= $now;
 
                     $item = [
@@ -273,6 +275,20 @@ class IdealoBridge extends BridgeAbstract
                 return $this->getFeedTitle();
             default:
                 return parent::getName();
+        }
+    }
+
+    /**
+     * Returns the RSS Feed URL according to the parameters
+     * @return string the RSS feed URL
+     */
+    public function getURI()
+    {
+        switch ($this->queriedContext) {
+            case '0':
+                return $this->getInput('Link');
+            default:
+                return parent::getURI();
         }
     }
 }
