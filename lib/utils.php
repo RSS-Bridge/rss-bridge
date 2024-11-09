@@ -148,6 +148,14 @@ function is_html(string $text): bool
 }
 
 /**
+ * Returns an array of strings, each of which is a substring of string formed by splitting it on boundaries formed by line breaks.
+ */
+function explode_lines(string $text): array
+{
+    return array_map('trim', preg_split('/(\s*(\r\n|\n|\r)\s*)+/', $text));
+}
+
+/**
  * Determines the MIME type from a URL/Path file extension.
  *
  * _Remarks_:
