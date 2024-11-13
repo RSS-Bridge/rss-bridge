@@ -17,6 +17,7 @@ class PriviblurBridge extends BridgeAbstract
     ];
 
     private $title;
+    private $favicon = 'https://www.tumblr.com/favicon.ico';
 
     public function collectData()
     {
@@ -24,6 +25,11 @@ class PriviblurBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, $url);
         $this->title = $html->find('head title', 0)->innertext;
+
+        if ($html->find('#blog-header img.avatar', 0)) {
+            $icon = $html->find('#blog-header img.avatar', 0)->src;
+            $this->favicon = str_replace('pnj', 'png', $icon);
+        }
 
         $elements = $html->find('.post');
         foreach ($elements as $element) {
@@ -64,6 +70,11 @@ class PriviblurBridge extends BridgeAbstract
 
     public function getURI()
     {
-        return $this->getInput('url') ? $this->getInput('url') : parent::getURI();
+        return $this->getInput('url') ?? parent::getURI();
+    }
+
+    public function getIcon()
+    {
+        return $this->favicon;
     }
 }
