@@ -27,6 +27,7 @@ class AO3Bridge extends BridgeAbstract
                     'Entire work' => 'all',
                 ],
             ],
+            'limit' => self::LIMIT,
         ],
         'Bookmarks' => [
             'user' => [
@@ -84,6 +85,8 @@ class AO3Bridge extends BridgeAbstract
         }
         $this->title = $heading->plaintext;
 
+        $limit = $this->getInput('limit') ?? 3;
+        $count = 0;
         foreach ($html->find('.index.group > li') as $element) {
             $item = [];
 
@@ -118,7 +121,7 @@ class AO3Bridge extends BridgeAbstract
             $item['uid'] = $item['uri'] . "/$strdate/$chapters";
 
             // Fetch workskin of desired chapter(s) in list
-            if ($this->getInput('range')) {
+            if ($this->getInput('range') && ($limit == 0 || $count++ < $limit)) {
                 $url = $item['uri'];
                 switch ($this->getInput('range')) {
                     case ('all'):
