@@ -28,7 +28,9 @@ class OglafBridge extends FeedExpander
     {
         $html = getSimpleHTMLDOMCached($item['uri']);
         $comicImage = $html->find('img[id="strip"]', 0);
-        $item['content'] = $comicImage;
+        $alt = $comicImage->getAttribute("alt");
+        $title = $comicImage->getAttribute("title");
+        $item['content'] = $comicImage . "<h3>Alt: {$alt}</h3><h3>Title: {$title}</h3>";
 
         return $item;
     }
