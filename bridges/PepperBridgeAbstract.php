@@ -58,7 +58,6 @@ class PepperBridgeAbstract extends BridgeAbstract
         $noresult = $html->find('div[id=content-list]', 0)->find('h2', 0);
         if ($noresult !== null) {
             $this->items = [];
-            // Save the value in the cache for the next 15 days
         } else {
             foreach ($list as $deal) {
                 // Get the JSON Data stored as vue
