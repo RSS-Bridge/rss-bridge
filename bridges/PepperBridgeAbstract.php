@@ -267,16 +267,15 @@ HEREDOC;
         $cacheKey = $this->getInput('url') . 'TITLE';
         $title = $this->loadCacheValue($cacheKey);
         // The cache does not contain the title of the bridge, we must get it and save it in the cache
-        if($title === null)
-        {
+        if ($title === null) {
             $html = getSimpleHTMLDOMCached($this->getInput('url'));
             $title = $html->find('title', 0)->plaintext;
             // Save the value in the cache for the next 15 days
-            $this->saveCacheValue($cacheKey, $title, 86400*15);
+            $this->saveCacheValue($cacheKey, $title, 86400 * 15);
         }
         return $title;
     }
-    
+
     /**
      * Get the Title from a Group if it exists
      * @return string String of the Talk title
@@ -286,14 +285,13 @@ HEREDOC;
         $cacheKey = $this->getInput('group') . 'TITLE';
         $title = $this->loadCacheValue($cacheKey);
         // The cache does not contain the title of the bridge, we must get it and save it in the cache
-        if($title == null)
-        {
+        if ($title == null) {
             $html = getSimpleHTMLDOMCached($this->getGroupURI());
             // Search the title in the javascript mess
-            preg_match('/threadGroupName":"([^"]*)","threadGroupUrlName":"'. $this->getInput('group') .'"/m', $html, $matches);
+            preg_match('/threadGroupName":"([^"]*)","threadGroupUrlName":"' . $this->getInput('group') . '"/m', $html, $matches);
             $title = $matches[1];
             // Save the value in the cache for the next 15 days
-            $this->saveCacheValue($cacheKey, $title, 86400*15);
+            $this->saveCacheValue($cacheKey, $title, 86400 * 15);
         }
 
         $order = $this->getKey('order');
@@ -527,14 +525,11 @@ HEREDOC;
     {
         $group = $this->getInput('group');
         $order = $this->getInput('order');
-        
+
         // This permit to keep the existing Feed to work
-        if($order == $this->i8n('context-hot'))
-        {
+        if ($order == $this->i8n('context-hot')) {
             $sortBy = 'temp';
-        }
-        elseif($order == $this->i8n('context-new'))
-        {
+        } else if ($order == $this->i8n('context-new')) {
             $sortBy = 'new';
         }
 
