@@ -41,6 +41,7 @@ class DealabsBridge extends PepperBridgeAbstract
             'group' => [
                 'name' => 'Groupe',
                 'type' => 'text',
+                'exampleValue' => 'abonnements-internet',
                 'title' => 'Nom du groupe dans l\'URL : Il faut entrer le nom du groupe qui est présent après "https://www.dealabs.com/groupe/" et avant tout éventuel "?"
 Exemple : Si l\'URL du groupe affichées dans le navigateur est :
 https://www.dealabs.com/groupe/abonnements-internet?sortBy=lowest_price

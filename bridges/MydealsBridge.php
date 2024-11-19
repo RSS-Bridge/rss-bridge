@@ -41,6 +41,7 @@ class MydealsBridge extends PepperBridgeAbstract
             'group' => [
                 'name' => 'Gruppen',
                 'type' => 'text',
+                'exampleValue' => 'dsl',
                 'title' => 'Gruppenname in der URL: Der einzugebende Gruppenname steht nach "https://www.mydealz.de/gruppe/" und vor einem "?".
 Beispiel: Wenn die URL der Gruppe, die im Browser angezeigt wird, :
 https://www.mydealz.de/gruppe/dsl?sortBy=temp

@@ -41,6 +41,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract
             'group' => [
                 'name' => 'Group',
                 'type' => 'text',
+                'exampleValue' => 'broadband',
                 'title' => 'Group name in the URL : The group name that must be entered is present after "https://www.hotukdeals.com/tag/" and before any "?".
 Example: If the URL of the group displayed in the browser is :
 https://www.hotukdeals.com/tag/broadband?sortBy=temp
