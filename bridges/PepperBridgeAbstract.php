@@ -58,6 +58,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         $noresult = $html->find('div[id=content-list]', 0)->find('h2', 0);
         if ($noresult !== null) {
             $this->items = [];
+            // Save the value in the cache for the next 15 days
         } else {
             foreach ($list as $deal) {
                 // Get the JSON Data stored as vue
@@ -263,9 +264,40 @@ HEREDOC;
      */
     private function getTalkTitle()
     {
-        $html = getSimpleHTMLDOMCached($this->getInput('url'));
-        $title = $html->find('title', 0)->plaintext;
+        $cacheKey = $this->getInput('url') . 'TITLE';
+        $title = $this->loadCacheValue($cacheKey);
+        // The cache does not contain the title of the bridge, we must get it and save it in the cache
+        if($title === null)
+        {
+            $html = getSimpleHTMLDOMCached($this->getInput('url'));
+            $title = $html->find('title', 0)->plaintext;
+            // Save the value in the cache for the next 15 days
+            $this->saveCacheValue($cacheKey, $title, 86400*15);
+        }
         return $title;
+    }
+    
+    /**
+     * Get the Title from a Group if it exists
+     * @return string String of the Talk title
+     */
+    private function getGroupTitle()
+    {
+        $cacheKey = $this->getInput('group') . 'TITLE';
+        $title = $this->loadCacheValue($cacheKey);
+        // The cache does not contain the title of the bridge, we must get it and save it in the cache
+        if($title == null)
+        {
+            $html = getSimpleHTMLDOMCached($this->getGroupURI());
+            // Search the title in the javascript mess
+            preg_match('/threadGroupName":"([^"]*)","threadGroupUrlName":"'. $this->getInput('group') .'"/m', $html, $matches);
+            $title = $matches[1];
+            // Save the value in the cache for the next 15 days
+            $this->saveCacheValue($cacheKey, $title, 86400*15);
+        }
+
+        $order = $this->getKey('order');
+        return $title . ' - ' . $order;
     }
 
     /**
@@ -429,7 +461,7 @@ HEREDOC;
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-keyword') . ' : ' . $this->getInput('q');
                 break;
             case $this->i8n('context-group'):
-                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $this->getKey('group');
+                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $this->getGroupTitle();
                 break;
             case $this->i8n('context-talk'):
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-talk') . ' : ' . $this->getTalkTitle();
@@ -495,9 +527,19 @@ HEREDOC;
     {
         $group = $this->getInput('group');
         $order = $this->getInput('order');
+        
+        // This permit to keep the existing Feed to work
+        if($order == $this->i8n('context-hot'))
+        {
+            $sortBy = 'temp';
+        }
+        elseif($order == $this->i8n('context-new'))
+        {
+            $sortBy = 'new';
+        }
 
         $url = $this->i8n('bridge-uri')
-            . $this->i8n('uri-group') . $group . $order;
+            . $this->i8n('uri-group') . $group . '?sortBy=' . $sortBy;
         return $url;
     }
 
