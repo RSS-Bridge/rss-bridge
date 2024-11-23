@@ -136,7 +136,7 @@ final class StreamHandler
             $record['message'],
             $context
         );
-        $bytes = file_put_contents($this->stream, $text, FILE_APPEND | LOCK_EX);
+        $bytes = file_put_contents($this->stream, $text, FILE_APPEND);
     }
 }
 

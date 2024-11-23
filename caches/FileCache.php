@@ -53,7 +53,7 @@ class FileCache implements CacheInterface
             'value'         => $value,
         ];
         $cacheFile = $this->createCacheFile($key);
-        $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
+        $bytes = file_put_contents($cacheFile, serialize($item));
         // todo: Consider tightening the permissions of the created file. It usually allow others to read, depending on umask
         if ($bytes === false) {
             // Consider just logging the error here
