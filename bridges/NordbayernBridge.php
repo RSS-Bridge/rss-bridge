@@ -163,6 +163,13 @@ class NordbayernBridge extends BridgeAbstract
             $item['content'] .= $this->getUseFullContent($content);
         }
 
+        $categories = $article->find('[class=themen]', 0);
+        if ($categories) {
+            $item['categories'] = [];
+            foreach ($categories->find('a') as $category) {
+                $item['categories'][] = $category->innertext;
+            }
+        }
 
         $article->clear();
         return $item;
