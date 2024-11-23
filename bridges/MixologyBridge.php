@@ -26,10 +26,10 @@ class MixologyBridge extends BridgeAbstract
         $result['enclosures'] = [];
         $result['enclosures'][] = $teaser->find('img', 0)->src;
         $result['uid'] = $teaser->id;
-        $result['tags'] = [];
+        $result['categories'] = [];
 
         foreach($teaser->find('.edgtf-post-info-category > a') as $tag) {
-            $result['tags'][] = $tag->plaintext;
+            $result['categories'][] = $tag->plaintext;
         }
 
         return $result;
