@@ -1,72 +1,49 @@
 <?php
 
-class MixologyBridge extends BridgeAbstract
+class MixologyBridge extends FeedExpander
 {
     const MAINTAINER = 'swofl';
     const NAME = 'Mixology';
     const URI = 'https://mixology.eu';
-    const CACHE_TIMEOUT = 2 * 60 * 60; // 2h
+    const CACHE_TIMEOUT = 6 * 60 * 60; // 6h
     const DESCRIPTION = 'Get latest blog posts from Mixology';
     const PARAMETERS = [ [
-        'qLimit' => [
-            'name' => 'Query Limit',
-            'title' => 'Amount of articles to query',
-            'type' => 'number',
-            'defaultValue' => 8,
-        ],
+        'limit' => self::LIMIT,
     ] ];
-
-    protected function parseTeaser($teaser)
-    {
-        $result = [];
-
-        $header = $teaser->find('h3 > a', 0);
-        $result['title'] = $header->plaintext;
-        $result['uri'] = $header->href;
-        $result['enclosures'] = [];
-        $result['enclosures'][] = $teaser->find('img', 0)->src;
-        $result['uid'] = $teaser->id;
-        $result['categories'] = [];
-
-        foreach($teaser->find('.edgtf-post-info-category > a') as $tag) {
-            $result['categories'][] = $tag->plaintext;
-        }
-
-        return $result;
-    }
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . '?lang=de');
+        $feed_url = self::URI . '/feed';
+        $limit = $this->getInput('limit') ?? 10;
+        $this->collectExpandableDatas($feed_url, $limit);
+    }
 
-        $queryLimit = (int) $this->getInput('qLimit');
-        if ($queryLimit > 12) {
-            $queryLimit = 12;
+    protected function parseItem(array $item)
+    {
+        $article = getSimpleHTMLDOMCached($item['uri']);
+
+        $content = '';
+
+        $headerImage = $article->find('div.edgtf-full-width img.wp-post-image', 0);
+
+        if (is_object($headerImage)) {
+            $item['enclosures'] = [];
+            $item['enclosures'][] = $headerImage->src;
+            $content .= '<img src="' . $headerImage->src . '"/>';
         }
 
-        $teasers = [];
-
-        $teaserElements = $html->find('article');
-
-        for ($i = 0; $i < $queryLimit; $i++) {
-            array_push($teasers, $this->parseTeaser($teaserElements[$i]));
+        foreach ($article->find('article .wpb_content_element > .wpb_wrapper') as $element) {
+            $content .= $element->innertext;
         }
 
-        foreach ($teasers as $article) {
-            $articleHtml = getSimpleHTMLDOMCached($article['uri'], static::CACHE_TIMEOUT * 6);
-            $content = $articleHtml->find('article[id=article]', 0);
+        $item['content'] = $content;
 
-            $content = '';
+        $item['categories'] = [];
 
-            foreach ($articleHtml->find('.wpb_content_element > .wpb_wrapper') as $element) {
-                $content .= $element->innertext;
-            }
-
-            $article['content'] = '<img src="' . $article['enclosures'][0] . '"/>' . $content;
-            $article['author'] = $articleHtml->find('.edgtf-post-info-author-link', 0)->innertext;
-            $article['timestamp'] = strtotime($articleHtml->find('.edgtf-post-info-date > a', 0)->innertext);
-
-            $this->items[] = $article;
+        foreach($article->find('.edgtf-tags > a') as $tag) {
+            $item['categories'][] = $tag->plaintext;
         }
+
+        return $item;
     }
 }
