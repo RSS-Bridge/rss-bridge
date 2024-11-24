@@ -150,29 +150,34 @@ class IdealoBridge extends BridgeAbstract
         $ActualNewPrice = $html->find('div[id=oopStage-conditionButton-new]', 0);
         // Second Button contains the used product price
         $ActualUsedPrice = $html->find('div[id=oopStage-conditionButton-used]', 0);
+        // Get the first item of the offers list to have an option if there is no New/Used Button available
+        $altPrice = $html->find('.productOffers-listItemOfferPrice', 0);
 
         if ($ActualNewPrice) {
             $PriceNew = $ActualNewPrice->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyNEW, $PriceNew);
-        } else if ($ActualNewPrice === null && $ActualUsedPrice !== null) {
-            // In case there is no actual New Price and a Ured Price exists, then delete the previous value in the cache
-             $this->cache->delete($this->getShortName() . '_' . $KeyNEW);
+        } else if ($altPrice) {
+            // Get price from first List item if no New/used Buttons available
+            $PriceNew = trim($altPrice->plaintext);
+            $this->saveCacheValue($KeyNEW, $PriceNew);
+        } else if (($ActualNewPrice === null || $altPrice === null) && $ActualUsedPrice !== null) {
+            // In case there is no actual New Price and a Used Price exists, then delete the previous value in the cache
+            $this->cache->delete($this->getShortName() . '_' . $KeyNEW);
         }
-
 
         // Second Button contains the used product price
         if ($ActualUsedPrice) {
             $PriceUsed = $ActualUsedPrice->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyUSED, $PriceUsed);
-        } else if ($ActualUsedPrice === null && $ActualNewPrice !== null) {
+        } else if ($ActualUsedPrice === null && ($ActualNewPrice !== null || $altPrice !== null)) {
             // In case there is no actual Used Price and a New Price exists, then delete the previous value in the cache
-             $this->cache->delete($this->getShortName() . '_' . $KeyUSED);
+            $this->cache->delete($this->getShortName() . '_' . $KeyUSED);
         }
 
-        // Only continue if a price has changed and there exists a New or Used price (sometimes no new Price _and_ Used Price are shown)
-        if (!($ActualNewPrice === null && $ActualUsedPrice === null ) && ($PriceNew != $OldPriceNew || $PriceUsed != $OldPriceUsed)) {
+        // Only continue if a price has changed and there exists a New, Used or Alternative price (sometimes no new Price _and_ Used Price are shown)
+        if (!($ActualNewPrice === null && $ActualUsedPrice === null && $altPrice === null) && ($PriceNew != $OldPriceNew || $PriceUsed != $OldPriceUsed)) {
             // Get Product Image
             $image = $html->find('.datasheet-cover-image', 0)->src;
 
