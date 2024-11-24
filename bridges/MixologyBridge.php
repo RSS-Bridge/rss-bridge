@@ -40,7 +40,7 @@ class MixologyBridge extends FeedExpander
 
         $item['categories'] = [];
 
-        foreach($article->find('.edgtf-tags > a') as $tag) {
+        foreach ($article->find('.edgtf-tags > a') as $tag) {
             $item['categories'][] = $tag->plaintext;
         }
 
