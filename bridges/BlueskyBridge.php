@@ -1,33 +1,42 @@
 <?php
 
-class BlueskyProfileBridge extends BridgeAbstract {
-    const NAME = 'Bluesky Profile Posts';
+class BlueskyBridge extends BridgeAbstract {
+    const NAME = 'Bluesky';
     const URI = 'https://bsky.app';
-    const DESCRIPTION = 'Fetches posts from a Bluesky profile';
+    const DESCRIPTION = 'Fetches posts from Bluesky';
     const MAINTAINER = 'Code modified from rsshub (TonyRL https://github.com/TonyRL) and expanded';
-    const PARAMETERS = [
-        [
-            'handle' => [
-                'name' => 'User Handle',
-                'type' => 'text',
-                'required' => true,
-                'exampleValue' => 'jackdodo.bsky.social',
-                'title' => 'Handle found in URL'
-            ],
-            'filter' => [
-                'name' => 'Filter',
-                'type' => 'list',
-                'defaultValue' => 'posts_and_author_threads',
-                'values' => [
-                    'posts_and_author_threads' => 'posts_and_author_threads',
-                    'posts_with_replies' => 'posts_with_replies',
-                    'posts_no_replies' => 'posts_no_replies',
-                    'posts_with_media' => 'posts_with_media',
-                ],
-                'title' => 'Combinations of post/repost types to include in response.'
-            ]
-        ]
-    ];
+	const PARAMETERS = [
+		[
+			'data_source' => [
+				'name' => 'Bluesky Data Source',
+				'type' => 'list',
+				'defaultValue' => 'Profile',
+				'values' => [
+					'Profile' => 'getAuthorFeed', 
+				],
+				'title' => 'Select the type of data source to fetch from Bluesky.'
+			],
+			'handle' => [
+				'name' => 'User Handle',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'jackdodo.bsky.social',
+				'title' => 'Handle found in URL'
+			],
+			'filter' => [
+				'name' => 'Filter',
+				'type' => 'list',
+				'defaultValue' => 'posts_and_author_threads',
+				'values' => [
+					'posts_and_author_threads' => 'posts_and_author_threads',
+					'posts_with_replies' => 'posts_with_replies',
+					'posts_no_replies' => 'posts_no_replies',
+					'posts_with_media' => 'posts_with_media',
+				],
+				'title' => 'Combinations of post/repost types to include in response.'
+			]
+		]
+	];
 
     private $profile;
 
@@ -105,7 +114,7 @@ class BlueskyProfileBridge extends BridgeAbstract {
             $item['author'] = $this->profile['displayName'];
 
             $description = $this->textToDescription($post['post']['record']['text']);
-            
+
             // Retrieve DID for constructing image URLs
             $authorDid = $post['post']['author']['did'];
 
@@ -116,7 +125,7 @@ class BlueskyProfileBridge extends BridgeAbstract {
             if (isset($post['post']['record']['embed']['$type']) && $post['post']['record']['embed']['$type'] === 'app.bsky.embed.video') {
                 $thumbnail = $post['post']['embed']['thumbnail'] ?? null;
                 if ($thumbnail) {
-				    $itemUri = self::URI . '/profile/' . $post['post']['author']['handle'] . '/post/' . explode('app.bsky.feed.post/', $post['post']['uri'])[1];
+                                    $itemUri = self::URI . '/profile/' . $post['post']['author']['handle'] . '/post/' . explode('app.bsky.feed.post/', $post['post']['uri'])[1];
                     $description .= "<p><a href=\"$itemUri\"><img src=\"$thumbnail\" alt=\"Video Thumbnail\" /></a></p>";
                 }
             }
@@ -149,8 +158,8 @@ class BlueskyProfileBridge extends BridgeAbstract {
 
                 if ($quotedAuthor && isset($quotedRecord['uri'])) {
                     $parts = explode('/', $quotedRecord['uri']);
-		    $quotedPostId = end($parts);
-	            $quotedPostUri = self::URI . '/profile/' . $quotedAuthor . '/post/' . $quotedPostId;
+                    $quotedPostId = end($parts);
+                    $quotedPostUri = self::URI . '/profile/' . $quotedAuthor . '/post/' . $quotedPostId;
                 }
 
                 if ($quotedText) {
