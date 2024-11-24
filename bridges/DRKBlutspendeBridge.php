@@ -50,10 +50,10 @@ class DRKBlutspendeBridge extends FeedExpander
         $detailsElement = $html->find('.details', 0);
 
         $dateElement = $detailsElement->find('.datum', 0);
-        $dateLines = explode_lines($dateElement->plaintext);
+        $dateLines = self::explodeLines($dateElement->plaintext);
 
         $addressElement = $detailsElement->find('.adresse', 0);
-        $addressLines = explode_lines($addressElement->plaintext);
+        $addressLines = self::explodeLines($addressElement->plaintext);
 
         $infoElement = $detailsElement->find('.angebote > h4 + p', 0);
         $info = $infoElement ? $infoElement->innertext : '';
@@ -95,5 +95,13 @@ class DRKBlutspendeBridge extends FeedExpander
         $limitDays = intval($this->getInput('limit_days'));
         $dateTo = $limitDays > 0 ? date('Y-m-d', time() + (60 * 60 * 24 * $limitDays)) : '';
         return self::BASE_URI . '/blutspendetermine/termine.rss?date_to=' . $dateTo . '&radius=' . $radius . '&term=' . $term;
+    }
+
+    /**
+     * Returns an array of strings, each of which is a substring of string formed by splitting it on boundaries formed by line breaks.
+     */
+    private function explodeLines(string $text): array
+    {
+        return array_map('trim', preg_split('/(\s*(\r\n|\n|\r)\s*)+/', $text));
     }
 }
