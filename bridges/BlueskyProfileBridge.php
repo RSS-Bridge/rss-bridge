@@ -148,8 +148,9 @@ class BlueskyProfileBridge extends BridgeAbstract {
                 $quotedText = $post['post']['embed']['record']['value']['text'] ?? null;
 
                 if ($quotedAuthor && isset($quotedRecord['uri'])) {
-                    $quotedPostId = end(explode('/', $quotedRecord['uri']));
-                    $quotedPostUri = self::URI . '/profile/' . $quotedAuthor . '/post/' . $quotedPostId;
+                    $parts = explode('/', $quotedRecord['uri']);
+		    $quotedPostId = end($parts);
+	            $quotedPostUri = self::URI . '/profile/' . $quotedAuthor . '/post/' . $quotedPostId;
                 }
 
                 if ($quotedText) {
