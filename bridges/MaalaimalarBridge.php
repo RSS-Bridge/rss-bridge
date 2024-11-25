@@ -5,6 +5,7 @@ class MaalaimalarBridge extends BridgeAbstract
     const NAME = 'Maalaimalar';
     const URI = 'https://www.maalaimalar.com';
     const DESCRIPTION = 'Retrieve news from maalaimalar.com';
+    const CACHE_TIMEOUT = 60 * 5; // 5 minutes
     const MAINTAINER = 'tillcash';
     const PARAMETERS = [
         [
@@ -13,7 +14,7 @@ class MaalaimalarBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'news' => [
-                        'tamilnadu' => '/news/state',
+                        'tamilnadu' => '/news/tamilnadu',
                         'puducherry' => '/news/puducherry',
                         'india' => '/news/national',
                         'world' => '/news/world',
