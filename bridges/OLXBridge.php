@@ -103,20 +103,15 @@ EOF;
                 continue;
             }
 
-            $shippingOffered = $post->find('.css-1c0ed4l svg', 0)->outertext ?? false;
-            if ($this->getInput('shippingOfferedOnly') && !$shippingOffered) {
-                continue;
-            }
-
             $negotiable = $post->find('p[data-testid="ad-price"] span.css-e2218f', 0)->plaintext ?? false;
             if ($negotiable) {
                 $price = trim(str_replace($negotiable, '', $price));
                 $negotiable = '(' . $negotiable . ')';
             }
 
-            if ($post->find('h6', 0)->plaintext != '') {
+            if ($post->find('h4', 0)->plaintext != '') {
                 $item['uri'] = $post->find('a', 0)->href;
-                $item['title'] = $post->find('h6', 0)->plaintext;
+                $item['title'] = $post->find('h4', 0)->plaintext;
             }
 
             # ignore the date component, as it is too convoluted — use the deep-crawled one; see below
@@ -128,6 +123,12 @@ EOF;
             # Given that, do deep-crawl *all* the results, which allows to aso obtain the ID, the simplified location
             # and date strings, as well as the detailed description.
             $articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
+            $articleHTMLContent = defaultLinkTo($articleHTMLContent, $this->getHostname());
+
+            $shippingOffered = $articleHTMLContent->find('img[alt="Safety Badge"]', 0)->src ?? false;
+            if ($this->getInput('shippingOfferedOnly') && !$shippingOffered) {
+                continue;
+            }
 
             # Extract a clean ID without resorting to the convoluted CSS class or sibling selectors. Should be always present.
             $refreshLink = $articleHTMLContent->find('a[data-testid=refresh-link]', 0)->href ?? false;
@@ -195,7 +196,7 @@ EOF;
       <tr>
         <td>
           <p>$location</p>
-          <p><span style="font-weight:bold">$price</span> $negotiable <span>$shippingOffered</span></p>
+          <p><span style="font-weight:bold">$price</span> $negotiable <span><img src="$shippingOffered"</img></span></p>
         </td>
       </tr>
       <tr>
