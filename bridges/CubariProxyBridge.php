@@ -121,4 +121,9 @@ class CubariProxyBridge extends BridgeAbstract
         }
         return $uri;
     }
+
+    public function getFavicon()
+    {
+        return parent::getURI() . '/static/favicon.ico';
+    }
 }
