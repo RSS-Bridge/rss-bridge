@@ -29,6 +29,7 @@ class TikTokBridge extends BridgeAbstract
         $html = getSimpleHTMLDOMCached('https://www.tiktok.com/embed/' . $this->processUsername());
 
         $author = $html->find('span[data-e2e=creator-profile-userInfo-TUXText]', 0)->plaintext ?? self::NAME;
+        $authorProfilePicture = $html->find('img[data-e2e=creator-profile-userInfo-Avatar]', 0)->src ?? '';
 
         $videos = $html->find('div[data-e2e=common-videoList-VideoContainer]');
 
@@ -44,7 +45,7 @@ class TikTokBridge extends BridgeAbstract
             $image = $video->find('video', 0)->poster;
             $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
 
-            $enclosures = [$image];
+            $enclosures = [$image, $authorProfilePicture];
 
             $item['uri'] = $url;
             $item['title'] = 'Video';
