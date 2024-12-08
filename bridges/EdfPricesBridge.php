@@ -45,14 +45,14 @@ class EdfPricesBridge extends BridgeAbstract
         }
 
         // colors
-        $ulDom = $html->find('#tarif-de-l-offre-edf-tempo-current-date-html-year', 0)->nextSibling()->nextSibling()->nextSibling();
+        $ulDom = $html->find('#tarif-de-l-offre-tempo-edf-template-date-now-y', 0)->nextSibling()->nextSibling()->nextSibling();
         $elementsDom = $ulDom->find('li');
         if ($elementsDom && count($elementsDom) === 3) {
             foreach ($elementsDom as $elementDom) {
                 $item = [];
 
                 $matches = [];
-                preg_match_all('/Jour (.*) : Heures (.*) : (.*) € \/ Heures (.*) : (.*) €/um', $elementDom->innertext, $matches, PREG_SET_ORDER, 0);
+                preg_match_all('/Jour (.*) : Heures (.*) : (.*)&nbsp;€ \/ Heures (.*) : (.*)&nbsp;€/um', $elementDom->innertext, $matches, PREG_SET_ORDER, 0);
 
                 if ($matches && count($matches[0]) === 6) {
                     for ($i = 0; $i < 2; $i++) {
