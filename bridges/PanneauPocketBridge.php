@@ -9,7 +9,7 @@ class PanneauPocketBridge extends BridgeAbstract
     <a target="_blank" href="https://cors-anywhere.herokuapp.com/corsdemo">here</a>
     <br><br>Or use your own proxy and change the proxy value in RSS-Bridge config.ini.php';
     const MAINTAINER = 'floviolleau';
-    const CACHE_TIMEOUT = 0;//7200; // 2h
+    const CACHE_TIMEOUT = 7200; // 2h
     const PARAMETERS = [[
         'city' => [
             'name' => 'Choisir une ville',
