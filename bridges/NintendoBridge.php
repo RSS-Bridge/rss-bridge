@@ -4,7 +4,6 @@ class NintendoBridge extends XPathAbstract
 {
     const NAME = 'Nintendo Software Updates';
     const URI = 'https://www.nintendo.co.uk/Support/Welcome-to-Nintendo-Support-11593.html';
-    const DONATION_URI = '';
     const DESCRIPTION = self::NAME;
     const MAINTAINER = 'Niehztog';
     const PARAMETERS = [
@@ -365,7 +364,11 @@ class NintendoBridge extends XPathAbstract
     public function getURI()
     {
         $category = $this->getInput('category');
-        return 'all' === $category ? self::URI : $this->getSourceUrl();
+        if ('all' === $category) {
+            return self::URI;
+        } else {
+            return $this->getSourceUrl();
+        }
     }
 
     protected function provideFeedTitle(\DOMXPath $xpath)
@@ -377,7 +380,7 @@ class NintendoBridge extends XPathAbstract
 
     protected function getSourceUrl()
     {
-        $country = $this->getInput('country');
+        $country = $this->getInput('country') ?? '';
         $category = $this->getCurrentCategory();
         return str_replace(self::PARAMETERS['']['country']['defaultValue'], $country, self::FEED_SOURCE_URL[$category]);
     }
@@ -474,7 +477,7 @@ class NintendoBridge extends XPathAbstract
         return $date->getTimestamp();
     }
 
-    protected function generateItemId(FeedItem $item)
+    protected function generateItemId(array $item)
     {
         return $this->getCurrentCategory() . '-' . $this->lastId;
     }

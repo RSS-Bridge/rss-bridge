@@ -24,6 +24,13 @@ class RutubeBridge extends BridgeAbstract
                 'required' => true
             ],
         ],
+        'По результатам поиска' => [
+            's' => [
+                'name' => 'Запрос',
+                'exampleValue' => 'SUREN',
+                'required' => true,
+            ]
+        ]
     ];
 
     protected $title;
@@ -34,6 +41,8 @@ class RutubeBridge extends BridgeAbstract
             return self::URI . '/channel/' . strval($this->getInput('c')) . '/videos/';
         } elseif ($this->getInput('p')) {
             return self::URI . '/plst/' . strval($this->getInput('p')) . '/';
+        } elseif ($this->getInput('s')) {
+            return self::URI . '/search/?suggest=1&query=' . strval($this->getInput('s'));
         } else {
             return parent::getURI();
         }
@@ -57,10 +66,18 @@ class RutubeBridge extends BridgeAbstract
     {
         $jsonDataRegex = '/window.reduxState = (.*);/';
         preg_match($jsonDataRegex, $html, $matches) or returnServerError('Could not find reduxState');
-        return json_decode(str_replace('\x', '\\\x', $matches[1]));
+        $map = [
+            '\x26' => '&',
+            '\x3c' => '<',
+            '\x3d' => '=',
+            '\x3e' => '>',
+            '\x3f' => '?',
+        ];
+        $jsonString = str_replace(array_keys($map), array_values($map), $matches[1]);
+        return json_decode($jsonString, false);
     }
 
-    public function collectData()
+    private function getVideosFromReduxState()
     {
         $link = $this->getURI();
 
@@ -68,18 +85,42 @@ class RutubeBridge extends BridgeAbstract
         $reduxState = $this->getJSONData($html);
         $videos = [];
         if ($this->getInput('c')) {
-            $videos = $reduxState->userChannel->videos->results;
-            $this->title = $reduxState->userChannel->info->name;
+            $videosMethod = 'videos(' . $this->getInput('c') . ')';
+            $channelInfoMethod = 'channelInfo({"userChannelId":' . $this->getInput('c') . '})';
+            $videos = $reduxState->api->queries->$videosMethod->data->results;
+            $this->title = $reduxState->api->queries->$channelInfoMethod->data->name;
         } elseif ($this->getInput('p')) {
-            $videos = $reduxState->playlist->data->results;
-            $this->title = $reduxState->playlist->title;
+            $playListVideosMethod = 'getPlaylistVideos(' . $this->getInput('p') . ')';
+            $videos = $reduxState->api->queries->$playListVideosMethod->data->results;
+            $playListMethod = 'getPlaylist(' . $this->getInput('p') . ')';
+            $this->title = $reduxState->api->queries->$playListMethod->data->title;
+        } elseif ($this->getInput('s')) {
+            $this->title = 'Поиск ' . $this->getInput('s');
+        }
+
+        return $videos;
+    }
+
+    private function getVideosFromSearchAPI()
+    {
+        $contents = getContents(self::URI . '/api/search/video/?suggest=1&client=wdp&query=' . $this->getInput('s'));
+        $json = json_decode($contents);
+        return $json->results;
+    }
+
+    public function collectData()
+    {
+        if ($this->getInput('c') || $this->getInput('p')) {
+            $videos = $this->getVideosFromReduxState();
+        } else {
+            $videos = $this->getVideosFromSearchAPI();
         }
 
         foreach ($videos as $video) {
-            $item = new FeedItem();
-            $item->setTitle($video->title);
-            $item->setURI($video->video_url);
-            $content = '<a href="' . $item->getURI() . '">';
+            $item = [];
+            $item['title'] = $video->title;
+            $item['uri'] = $video->video_url;
+            $content = '<a href="' . $video->video_url . '">';
             $content .= '<img src="' . $video->thumbnail_url . '" />';
             $content .= '</a><br/>';
             $content .= nl2br(
@@ -91,9 +132,10 @@ class RutubeBridge extends BridgeAbstract
                     $video->description . ' '
                 )
             );
-            $item->setTimestamp($video->created_ts);
-            $item->setAuthor($video->author->name);
-            $item->setContent($content);
+            $item['timestamp'] = $video->created_ts;
+            $item['author'] = $video->author->name;
+            $item['content'] = $content;
+
             $this->items[] = $item;
         }
     }

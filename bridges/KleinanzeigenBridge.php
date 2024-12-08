@@ -6,7 +6,7 @@ class KleinanzeigenBridge extends BridgeAbstract
     const NAME = 'Kleinanzeigen Bridge';
     const URI = 'https://www.kleinanzeigen.de';
     const CACHE_TIMEOUT = 3600; // 1h
-    const DESCRIPTION = 'ebay Kleinanzeigen';
+    const DESCRIPTION = '(ebay) Kleinanzeigen';
 
     const PARAMETERS = [
         'By search' => [
@@ -14,6 +14,11 @@ class KleinanzeigenBridge extends BridgeAbstract
                 'name' => 'query',
                 'required' => false,
                 'title' => 'query term',
+            ],
+            'category' => [
+                'name' => 'category',
+                'required' => false,
+                'title' => 'search category, e.g. "Damenschuhe" or "Notebooks"'
             ],
             'location' => [
                 'name' => 'location',
@@ -24,8 +29,20 @@ class KleinanzeigenBridge extends BridgeAbstract
                 'name' => 'radius',
                 'required' => false,
                 'type' => 'number',
-                'title' => 'search radius in kilometers',
+                'title' => 'location radius in kilometers',
                 'defaultValue' => 10,
+            ],
+            'minprice' => [
+                'name' => 'minimum price',
+                'required' => false,
+                'type' => 'number',
+                'title' => 'in euros'
+            ],
+            'maxprice' => [
+                'name' => 'maximum price',
+                'required' => false,
+                'type' => 'number',
+                'title' => 'in euros'
             ],
             'pages' => [
                 'name' => 'pages',
@@ -63,7 +80,7 @@ class KleinanzeigenBridge extends BridgeAbstract
             case 'By profile':
                 return 'Kleinanzeigen Profil';
             case 'By search':
-                return 'Kleinanzeigen ' . $this->getInput('query') . ' / ' . $this->getInput('location');
+                return 'Kleinanzeigen ' . $this->getInput('query') . ' ' . $this->getInput('category') . ' ' . $this->getInput('location');
             default:
                 return parent::getName();
         }
@@ -87,31 +104,24 @@ class KleinanzeigenBridge extends BridgeAbstract
         }
 
         if ($this->queriedContext === 'By search') {
-            $locationID = '';
-            if ($this->getInput('location')) {
-                $json = getContents(self::URI . '/s-ort-empfehlungen.json?' . http_build_query(['query' => $this->getInput('location')]));
-                $jsonFile = json_decode($json, true);
-                $locationID = str_replace('_', '', array_key_first($jsonFile));
-            }
-            for ($i = 1; $i <= $this->getInput('pages'); $i++) {
-                $searchUrl = self::URI . '/s-walled-garden/';
-                if ($i != 1) {
-                    $searchUrl .= 'seite:' . $i . '/';
-                }
-                if ($this->getInput('query')) {
-                    $searchUrl .= urlencode($this->getInput('query')) . '/k0';
-                }
-                if ($locationID) {
-                    $searchUrl .= 'l' . $locationID;
-                }
-                if ($this->getInput('radius')) {
-                    $searchUrl .= 'r' . $this->getInput('radius');
-                }
+            $categoryId = $this->findCategoryId();
+            for ($page = 1; $page <= $this->getInput('pages'); $page++) {
+                $searchUrl = self::URI . '/s-suchanfrage.html?' . http_build_query([
+                    'keywords' => $this->getInput('query'),
+                    'locationStr' => $this->getInput('location'),
+                    'locationId' => '',
+                    'radius' => $this->getInput('radius') || '0',
+                    'sortingField' => 'SORTING_DATE',
+                    'categoryId' => $categoryId,
+                    'pageNum' => $page,
+                    'maxPrice' => $this->getInput('maxprice'),
+                    'minPrice' => $this->getInput('minprice')
+                ]);
 
                 $html = getSimpleHTMLDOM($searchUrl);
 
                 // end of list if returned page is not the expected one
-                if ($html->find('.pagination-current', 0)->plaintext != $i) {
+                if ($html->find('.pagination-current', 0)->plaintext != $page) {
                     break;
                 }
 
@@ -146,5 +156,20 @@ class KleinanzeigenBridge extends BridgeAbstract
         $textContainer->outertext;
 
         $this->items[] = $item;
+    }
+
+    private function findCategoryId()
+    {
+        if ($this->getInput('category')) {
+            $html = getSimpleHTMLDOM(self::URI . '/s-kategorie-baum.html');
+            foreach ($html->find('a[data-val]') as $element) {
+                $catId = (int)$element->getAttribute('data-val');
+                $catName = $element->plaintext;
+                if (str_contains(strtolower($catName), strtolower($this->getInput('category')))) {
+                    return $catId;
+                }
+            }
+        }
+        return 0;
     }
 }

@@ -1,0 +1,24 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Remove all expired items from the cache
+ */
+
+require __DIR__ . '/../lib/bootstrap.php';
+require __DIR__ . '/../lib/config.php';
+
+$container = require __DIR__ . '/../lib/dependencies.php';
+
+if (
+    Configuration::getConfig('cache', 'type') === 'file'
+    && !Configuration::getConfig('FileCache', 'enable_purge')
+) {
+    // Override enable_purge for this particular execution
+    Configuration::setConfig('FileCache', 'enable_purge', true);
+}
+
+/** @var CacheInterface $cache */
+$cache = $container['cache'];
+
+$cache->prune();

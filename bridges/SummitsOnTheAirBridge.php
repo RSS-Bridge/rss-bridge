@@ -20,8 +20,12 @@ class SummitsOnTheAirBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $header = ['Content-type:application/json'];
-        $opts = [CURLOPT_HTTPGET => 1];
+        $header = [
+            'Content-type:application/json',
+        ];
+        $opts = [
+            CURLOPT_HTTPGET => 1,
+        ];
         $json = getContents($this->getURI() . $this->getInput('c'), $header, $opts);
 
         $spots = json_decode($json, true);

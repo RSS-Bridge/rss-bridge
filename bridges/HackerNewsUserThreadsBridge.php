@@ -21,8 +21,6 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract
     {
         $url = 'https://news.ycombinator.com/threads?id=' . $this->getInput('user');
         $html = getSimpleHTMLDOM($url);
-        Debug::log('queried ' . $url);
-        Debug::log('found ' . $html);
 
         $item = [];
         $articles = $html->find('tr[class*="comtr"]');

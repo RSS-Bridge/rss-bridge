@@ -586,16 +586,18 @@ class GithubTrendingBridge extends BridgeAbstract
                     'Monthly' => 'monthly',
                 ],
                 'defaultValue' => 'today'
+            ],
+            'spokenLanguage' => [
+                'name' => 'Spoken Language Code',
+                'type' => 'text',
+                'exampleValue' => 'en',
             ]
         ]
-
     ];
 
     public function collectData()
     {
-        $params = ['since' => urlencode($this->getInput('date_range'))];
-        $url = self::URI . '/' . $this->getInput('language') . '?' . http_build_query($params);
-
+        $url = $this->constructUrl();
         $html = getSimpleHTMLDOM($url);
 
         $this->items = [];
@@ -629,5 +631,33 @@ class GithubTrendingBridge extends BridgeAbstract
         }
 
         return parent::getName();
+    }
+
+    private function constructUrl()
+    {
+        $url = self::URI;
+        $language = $this->getInput('language');
+        $dateRange = $this->getInput('date_range');
+        $spokenLanguage = $this->getInput('spokenLanguage');
+
+        if (!empty($language)) {
+            $url .= '/' . $language;
+        }
+
+        $queryParams = [];
+
+        if (!empty($dateRange)) {
+            $queryParams['since'] = $dateRange;
+        }
+
+        if (!empty($spokenLanguage)) {
+            $queryParams['spoken_language_code'] = trim($spokenLanguage);
+        }
+
+        if (!empty($queryParams)) {
+            $url .= '?' . http_build_query($queryParams);
+        }
+
+        return $url;
     }
 }

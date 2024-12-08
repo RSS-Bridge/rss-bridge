@@ -57,7 +57,7 @@ class SensCritiqueBridge extends BridgeAbstract
                 }
                 $html = getSimpleHTMLDOM($uri);
                 // This selector name looks like it's automatically generated
-                $list = $html->find('div.Universes__WrapperProducts-sc-1qa2w66-0.eVdcAv', 0);
+                $list = $html->find('div[data-testid="row"]', 0);
 
                 $this->extractDataFromList($list);
             }
@@ -69,11 +69,19 @@ class SensCritiqueBridge extends BridgeAbstract
         if ($list === null) {
             returnClientError('Cannot extract data from list');
         }
+
         foreach ($list->find('div[data-testid="product-list-item"]') as $movie) {
+            $synopsis = $movie->find('p[data-testid="synopsis"]', 0);
+
             $item = [];
             $item['title'] = $movie->find('h2 a', 0)->plaintext;
-            // todo: fix image
-            $item['content'] = $movie->innertext;
+            $item['content'] = sprintf(
+                '<img src="%s"/><p>%s</p><p>%s</p>%s',
+                $movie->find('span[data-testid="poster-img-wrapper"]', 0)->{'data-srcname'},
+                $movie->find('p[data-testid="other-infos"]', 0)->innertext,
+                $movie->find('p[data-testid="creators"]', 0)->innertext,
+                $synopsis ? sprintf('<p>%s</p>', $synopsis->innertext) : ''
+            );
             $item['id'] = $this->getURI() . ltrim($movie->find('a', 0)->href, '/');
             $item['uri'] = $this->getURI() . ltrim($movie->find('a', 0)->href, '/');
             $this->items[] = $item;

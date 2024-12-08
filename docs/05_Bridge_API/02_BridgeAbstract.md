@@ -1,4 +1,5 @@
-`BridgeAbstract` is a base class for standard bridges. It implements the most common functions to simplify the process of adding new bridges.
+`BridgeAbstract` is a base class for standard bridges.
+It implements the most common functions to simplify the process of adding new bridges.
 
 ***
 
@@ -11,7 +12,9 @@ You need four basic steps in order to create a new bridge:
 [**Step 3**](#step-3---add-general-constants-to-the-class) - Add general constants to the class
 [**Step 4**](#step-4---implement-a-function-to-collect-feed-data) - Implement a function to collect feed data
 
-These steps are described in more detail below. At the end of this document you'll find a complete [template](#template) based on these instructions. The pictures below show an example based on these instructions:
+These steps are described in more detail below.
+At the end of this document you'll find a complete [template](#template) based on these instructions.
+The pictures below show an example based on these instructions:
 
 <details><summary>Show pictures</summary><div>
 
@@ -23,7 +26,12 @@ These steps are described in more detail below. At the end of this document you'
 
 </div></details><br>
 
-Make sure to read these instructions carefully. Please don't hesitate to open an [Issue](https://github.com/RSS-Bridge/rss-bridge/issues) if you have further questions (or suggestions). Once your bridge is finished, please open a [Pull Request](https://github.com/RSS-Bridge/rss-bridge/pulls), in order to get your bridge merge into RSS-Bridge.
+Make sure to read these instructions carefully.
+Please don't hesitate to open an 
+[Issue](https://github.com/RSS-Bridge/rss-bridge/issues)
+if you have further questions (or suggestions).
+Once your bridge is finished, please open a [Pull Request](https://github.com/RSS-Bridge/rss-bridge/pulls),
+in order to get your bridge merge into RSS-Bridge.
 
 ***
 
@@ -33,7 +41,8 @@ Please read [these instructions](./01_How_to_create_a_new_bridge.md) on how to c
 
 ## Step 2 - Add a class, extending `BridgeAbstract`
 
-Your bridge needs to be a class, which extends `BridgeAbstract`. The class name must **exactly** match the name of the file, without the file extension.
+Your bridge needs to be a class, which extends `BridgeAbstract`.
+The class name must **exactly** match the name of the file, without the file extension.
 
 For example: `MyBridge.php` => `MyBridge`
 
@@ -41,10 +50,10 @@ For example: `MyBridge.php` => `MyBridge`
 
 ```PHP
 <?PHP
-class MyBridge extends BridgeAbstract {
+class MyBridge extends BridgeAbstract
+{
 
 }
-// This line is empty (just imagine it!)
 ```
 
 </div></details>
@@ -65,43 +74,47 @@ const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in 
 <details><summary>Show example</summary><div>
 
 ```PHP
-<?PHP
-class MyBridge extends BridgeAbstract {
+<?php
+
+class MyBridge extends BridgeAbstract
+{
 	const NAME        = 'My Bridge';
 	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns "Hello World!"';
 	const MAINTAINER  = 'ghost';
 }
-// This line is empty (just imagine it!)
 ```
 
 </div></details><br>
 
-**Notice**: `const PARAMETERS` can be used to request information from the user. Refer to [these instructions](#parameters) for more information.
+**Notice**: `const PARAMETERS` can be used to request information from the user.
+Refer to [these instructions](#parameters) for more information.
 
 ## Step 4 - Implement a function to collect feed data
 
-In order for RSS-Bridge to collect data, you must implement the **public** function `collectData`. This function takes no arguments and returns nothing. It generates a list of feed elements, which must be placed into the variable `$this->items`.
+In order for RSS-Bridge to collect data, you must implement the **public** function `collectData`.
+This function takes no arguments and returns nothing.
+It generates a list of feed elements, which must be placed into the variable `$this->items`.
 
 <details><summary>Show example</summary><div>
 
 ```PHP
-<?PHP
-class MyBridge extends BridgeAbstract {
-	const NAME        = 'My Bridge';
-	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
-	const DESCRIPTION = 'Returns "Hello World!"';
-	const MAINTAINER  = 'ghost';
+<?php
 
-	public function collectData() {
-		$item = []; // Create an empty item
+class MyBridge extends BridgeAbstract
+{
+    const NAME        = 'My Bridge';
+    const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
+    const DESCRIPTION = 'Returns "Hello World!"';
+    const MAINTAINER  = 'ghost';
 
-		$item['title'] = 'Hello World!';
-
-		$this->items[] = $item; // Add item to the list
-	}
+    public function collectData()
+    {
+        $item = [];
+        $item['title'] = 'Hello World!';
+        $this->items[] = $item;
+    }
 }
-// This line is empty (just imagine it!)
 ```
 
 </div></details><br>
@@ -112,32 +125,36 @@ For more details on the `collectData` function refer to [these instructions](#co
 
 # Template
 
-Use this template to create your own bridge. Please remove any unnecessary comments and parameters.
+Use this template to create your own bridge.
+Please remove any unnecessary comments and parameters.
 
 ```php
 <?php
-class MyBridge extends BridgeAbstract {
-	const NAME = 'Unnamed bridge';
-	const URI = '';
-	const DESCRIPTION = 'No description provided';
-	const MAINTAINER = 'No maintainer';
-	const PARAMETERS = []; // Can be omitted!
-	const CACHE_TIMEOUT = 3600; // Can be omitted!
 
-	public function collectData() {
-		$item = []; // Create an empty item
-
-		$item['title'] = 'Hello World!';
-
-		$this->items[] = $item; // Add item to the list
-	}
+class MyBridge extends BridgeAbstract
+{
+    const NAME = 'Unnamed bridge';
+    const URI = '';
+    const DESCRIPTION = 'No description provided';
+    const MAINTAINER = 'No maintainer';
+    const PARAMETERS = []; // Can be omitted!
+    const CACHE_TIMEOUT = 3600; // Can be omitted!
+    
+    public function collectData()
+    {
+        $item = []; // Create an empty item
+    
+        $item['title'] = 'Hello World!';
+    
+        $this->items[] = $item; // Add item to the list
+    }
 }
-// This line is empty (just imagine it!)
 ```
 
 # PARAMETERS
 
-You can specify additional parameters in order to customize the bridge (i.e. to specify how many items to return). This document explains how to specify those parameters and which options are available to you.
+You can specify additional parameters in order to customize the bridge (i.e. to specify how many items to return).
+This document explains how to specify those parameters and which options are available to you.
 
 For information on how to read parameter values during execution, please refer to the [getInput](../06_Helper_functions/index.md#getinput) function.
 
@@ -145,12 +162,14 @@ For information on how to read parameter values during execution, please refer t
 
 ## Adding parameters to a bridge
 
-Parameters are specified as part of the bridge class. An empty list of parameters is defined as `const PARAMETERS = [];`
+Parameters are specified as part of the bridge class.
+An empty list of parameters is defined as `const PARAMETERS = [];`
 
 <details><summary>Show example</summary><div>
 
 ```PHP
-<?PHP
+<?php
+
 class MyBridge extends BridgeAbstract {
 	/* ... */
 	const PARAMETERS = []; // Empty list of parameters (can be omitted)
@@ -167,7 +186,8 @@ Parameters are organized in two levels:
 
 ## Level 1 - Context
 
-A context is defined as a associative array of parameters. The name of a context is displayed by RSS-Bridge.
+A context is defined as a associative array of parameters.
+The name of a context is displayed by RSS-Bridge.
 
 <details><summary>Show example</summary><div>
 
@@ -196,7 +216,8 @@ const PARAMETERS = [
 
 </div></details><br>
 
-You can also define a set of parameters that will be applied to every possible context of your bridge. To do this, specify a context named `global`.
+You can also define a set of parameters that will be applied to every possible context of your bridge.
+To do this, specify a context named `global`.
 
 <details><summary>Show example</summary><div>
 
@@ -219,9 +240,9 @@ where `n` is the name with which the bridge can access the parameter during exec
 
 ```PHP
 const PARAMETERS = [
-	'My Context' => [
-		'n' => []
-	]
+    'My Context' => [
+        'n' => [],
+    ]
 ];
 ```
 
@@ -232,17 +253,17 @@ The parameter specification consists of various fields, listed in the table belo
 <details><summary>Show example</summary><div>
 
 ```PHP
-const PARAMETERS = array(
-	'My Context' => array(
-		'n' => array(
+const PARAMETERS = [
+	'My Context' => [
+		'n' => [
 			'name' => 'Limit',
 			'type' => 'number',
 			'required' => false,
 			'title' => 'Maximum number of items to return',
-			'defaultValue' => 10
-		)
-	)
-);
+			'defaultValue' => 10,
+		]
+	]
+];
 ```
 
 **Output**
@@ -271,29 +292,30 @@ List values are defined in an associative array where keys are the string displa
 ```PHP
 ...
     'type' => 'list',
-    'values' => array(
+    'values' => [
         'Item A' => 'itemA'
         'Item B' => 'itemB'
-     )
+     ]
 ...
 ```
 
 If a more complex organization is required to display the values, the above key/value can be used to set a title as a key and another array as a value:
+
 ```PHP
 ...
     'type' => 'list',
-    'values' => array(
+    'values' => [
         'Item A' => 'itemA',
-        'List 1' => array(
+        'List 1' => [
             'Item C' => 'itemC',
             'Item D' => 'itemD'
-        ),
-        'List 2' => array(
+        ],
+        'List 2' => [
             'Item E' => 'itemE',
             'Item F' => 'itemF'
-        ),
+        ],
         'Item B' => 'itemB'
-    )
+    ]
 ...
 ```
 
@@ -316,20 +338,18 @@ It provides a way to identify which context the bridge is called with.
 Example:
 
 ```PHP
-...
-	const PARAMETERS = array(
-		'By user name' => array(
-			'u' => array('name' => 'Username')
-		),
-		'By user ID' => array(
-			'id' => array('name' => 'User ID')
-		)
-	);
-
-...
+const PARAMETERS = [
+    'By user name' => [
+        'u' => ['name' => 'Username']
+    ],
+    'By user ID' => [
+        'id' => ['name' => 'User ID']
+    ]
+];
 ```
 
-In this example `$this->queriedContext` will either return **By user name** or **By user ID**. The queried context might return no value, so the best way to handle it is by using a case-structure:
+In this example `$this->queriedContext` will either return **By user name** or **By user ID**.
+The queried context might return no value, so the best way to handle it is by using a case-structure:
 
 ```PHP
 switch($this->queriedContext){
@@ -342,32 +362,36 @@ switch($this->queriedContext){
 ```
 
 # collectData
-The `collectData` function is responsible for collecting data and adding items to generate feeds from. If you are unsure how to solve a specific problem, please don't hesitate to open an [Issue](https://github.com/RSS-Bridge/rss-bridge/issues) on GitHub. Existing bridges are also a good source to learn implementing your own bridge.
+
+The `collectData` function is responsible for collecting data and adding items to generate feeds from.
+If you are unsure how to solve a specific problem, please don't hesitate to open an [Issue](https://github.com/RSS-Bridge/rss-bridge/issues) on GitHub.
+Existing bridges are also a good source to learn implementing your own bridge.
 
 ## Implementing the `collectData` function
 
-Implementation for the `collectData` function is specific to each bridge. However, there are certain reoccurring elements, described below. RSS-Bridge also provides functions to simplify the process of collecting and parsing HTML data (see "Helper Functions" on the sidebar)
+Implementation for the `collectData` function is specific to each bridge.
+However, there are certain reoccurring elements, described below. RSS-Bridge also provides functions to simplify the process of collecting and parsing HTML data (see "Helper Functions" on the sidebar)
 
-Elements collected by this function must be stored in `$this->items`. The `items` variable is an array of item elements, each of which is an associative array that may contain arbitrary keys. RSS-Bridge specifies common keys which are used to generate most common feed formats.
+Elements collected by this function must be stored in `$this->items`.
+The `items` variable is an array of item elements, each of which is an associative array that may contain arbitrary keys.
+RSS-Bridge specifies common keys which are used to generate most common feed formats.
 
 <details><summary>Show example</summary><div>
 
 ```PHP
-
-$item = []; // Create a new item
-
+$item = [];
 $item['title'] = 'Hello World!';
-
-$this->items[] = $item; // Add item to the list
-
+$this->items[] = $item;
 ```
 
 </div></details><br>
+
 Additional keys may be added for custom APIs (ignored by RSS-Bridge).
 
 ## Item parameters
 
-The item array should provide as much information as possible for RSS-Bridge to generate feature rich feeds. Find below list of keys supported by RSS-Bridge.
+The item array should provide as much information as possible for RSS-Bridge to generate feature rich feeds.
+Find below list of keys supported by RSS-Bridge.
 
 ```PHP
 $item['uri']        // URI to reach the subject ("https://...")
@@ -379,65 +403,81 @@ $item['enclosures'] // Array of URIs to an attachments (pictures, files, etc...)
 $item['categories'] // Array of categories / tags / topics
 $item['uid']        // A unique ID to identify the current item
 ```
+
 All formats support these parameters. The formats `Plaintext` and `JSON` also support custom parameters.
 
 # getDescription
 
 The `getDescription` function returns the description for a bridge.
 
-**Notice:** By default **RSS-Bridge** returns the contents of `const DESCRIPTION`, so you only have to implement this function if you require different behavior!
+**Notice:** By default **RSS-Bridge** returns the contents of `const DESCRIPTION`,
+so you only have to implement this function if you require different behavior!
 
 ```PHP
-	public function getDescription(){
-		return self::DESCRIPTION;
-	}
+public function getDescription()
+{
+    return self::DESCRIPTION;
+}
 ```
 
 # getMaintainer
 
 The `getMaintainer` function returns the name of the maintainer for a bridge.
 
-**Notice:** By default **RSS-Bridge** returns `const MAINTAINER`, so you only have to implement this function if you require different behavior!
+**Notice:** By default **RSS-Bridge** returns `const MAINTAINER`,
+so you only have to implement this function if you require different behavior!
 
 ```PHP
-	public function getMaintainer(){
-		return self::MAINTAINER;
-	}
+public function getMaintainer()
+{
+    return self::MAINTAINER;
+}
 ```
 
 # getName
+
 The `getName` function returns the name of a bridge.
 
-**Notice:** By default **RSS-Bridge** returns `const NAME`, so you only have to implement this function if you require different behavior!
+**Notice:** By default **RSS-Bridge** returns `const NAME`,
+so you only have to implement this function if you require different behavior!
 
 ```PHP
-	public function getName(){
-		return self::NAME;
-	}
+public function getName()
+{
+    return self::NAME;
+}
 ```
 
 # getURI
+
 The `getURI` function returns the base URI for a bridge.
 
-**Notice:** By default **RSS-Bridge** returns `const URI`, so you only have to implement this function if you require different behavior!
+**Notice:** By default **RSS-Bridge** returns `const URI`,
+so you only have to implement this function if you require different behavior!
 
 ```PHP
-	public function getURI(){
-		return self::URI;
-	}
+public function getURI()
+{
+    return self::URI;
+}
 ```
 
 # getIcon
+
 The `getIcon` function returns the URI for an icon, used as favicon in feeds.
 
-If no icon is specified by the bridge, RSS-Bridge will use a default location: `static::URI . '/favicon.ico'` (i.e. "https://github.com/favicon.ico") which may or may not exist.
+If no icon is specified by the bridge,
+RSS-Bridge will use a default location: `static::URI . '/favicon.ico'` (i.e. "https://github.com/favicon.ico") which may or may not exist.
 
 ```PHP
-	public function getIcon(){
-		return static::URI . '/favicon.ico';
-	}
+public function getIcon()
+{
+    return static::URI . '/favicon.ico';
+}
 ```
+
 # detectParameters
+
 The `detectParameters` function takes a URL and attempts to extract a valid set of parameters for the current bridge.
 
 If the passed URL is valid for this bridge, the function should return an array of parameter -> value pairs that can be used by this bridge, including context if available, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge, the function should return `null`.
@@ -445,31 +485,34 @@ If the passed URL is valid for this bridge, the function should return an array 
 **Notice:** Implementing this function is optional. By default, **RSS-Bridge** tries to match the supplied URL to the `URI` constant defined in the bridge, which may be enough for bridges without any parameters defined.
 
 ```PHP
-public function detectParameters($url){
-	$regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
-	if(empty(static::PARAMETERS)
-	&& preg_match($regex, $url, $urlMatches) > 0
-	&& preg_match($regex, static::URI, $bridgeUriMatches) > 0
-	&& $urlMatches[3] === $bridgeUriMatches[3]) {
-		return [];
-	} else {
-		return null;
-	}
+public function detectParameters($url)
+{
+    $regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
+    if (empty(static::PARAMETERS)
+        && preg_match($regex, $url, $urlMatches) > 0
+        && preg_match($regex, static::URI, $bridgeUriMatches) > 0
+        && $urlMatches[3] === $bridgeUriMatches[3]
+    ) {
+        return [];
+    } else {
+        return null;
+    }
 }
 ```
 
-**Notice:** This function is also used by the [findFeed](../04_For_Developers/04_Actions.md#findfeed) action. This action allows an user to get a list of all feeds corresponding to an URL.
+**Notice:** This function is also used by the [findFeed](../04_For_Developers/04_Actions.md#findfeed) action.
+This action allows an user to get a list of all feeds corresponding to an URL.
 
 You can implement automated tests for the `detectParameters` function by adding the `TEST_DETECT_PARAMETERS` constant to your bridge class constant.
 
 `TEST_DETECT_PARAMETERS` is an array, with as key the URL passed to the `detectParameters`function and as value, the array of parameters returned by `detectParameters` 
 
 ```PHP
-    const TEST_DETECT_PARAMETERS = [
-        'https://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
-        'https://instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
-        'http://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
-    ];
+const TEST_DETECT_PARAMETERS = [
+    'https://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+    'https://instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+    'http://www.instagram.com/metaverse' => ['context' => 'Username', 'u' => 'metaverse'],
+];
 ```
 
 **Notice:** Adding this constant is optional. If the constant is not present, no automated test will be executed.
@@ -478,57 +521,47 @@ You can implement automated tests for the `detectParameters` function by adding 
 ***
 
 # Helper Methods
-`BridgeAbstract` implements helper methods to make it easier for bridge maintainers to create bridges. Use these methods whenever possible instead of writing your own.
 
-- [saveCacheValue](#savecachevalue)
-- [loadCacheValue](#loadcachevalue)
+`BridgeAbstract` implements helper methods to make it easier for bridge maintainers to create bridges.
+Use these methods whenever possible instead of writing your own.
 
 ## saveCacheValue
-Within the context of the current bridge, stores a value by key in the cache. The value can later be retrieved with [loadCacheValue](#loadcachevalue).
+
+Within the context of the current bridge, stores a value by key in the cache.
+The value can later be retrieved with [loadCacheValue](#loadcachevalue).
 
 ```php
-protected function saveCacheValue($key, $value)
+protected function saveCacheValue($key, $value, $ttl = null)
 ```
 
-- `$key` - the name under which the value is stored in the cache.
-- `$value` - the value to store in the cache.
-
-Usage example:
+Example:
 
 ```php
-const MY_KEY = 'MyKey';
-
 public function collectData()
 {
-    $value = 'my value';
-    $this->saveCacheValue(MY_KEY, $value);
+    $this->saveCacheValue('my_key', 'my_value', 3600); // 1h
 }
 ```
 
 ## loadCacheValue
-Within the context of the current bridge, loads a value by key from cache. Optionally specifies the cache duration for the key. Returns `null` if the key doesn't exist or the value is expired.
+
+Within the context of the current bridge, loads a value by key from cache.
+Optionally specifies the cache duration for the key.
+Returns `null` if the key doesn't exist or the value is expired.
 
 ```php
-protected function loadCacheValue($key, $duration = null)
+protected function loadCacheValue($key, $default = null)
 ```
 
-- `$key` - the name under which the value is stored in the cache.
-- `$duration` - the maximum time in seconds after which the value expires.
-
-Usage example:
+Example:
 
 ```php
-const MY_KEY = 'MyKey';
-
 public function collectData()
 {
-  $value = $this->loadCacheValue(MY_KEY, 1800 /* 30 minutes */);
+    $value = $this->loadCacheValue('my_key');
 
-  if (!isset($value)){
-      // load value
-      $this->saveCacheValue(MY_KEY, $value);
-  }
-
-  // ...
+    if (! $value) {
+        $this->saveCacheValue('my_key', 'foobar');
+    }
 }
 ```

@@ -436,8 +436,6 @@ class XenForoBridge extends BridgeAbstract
                 break;
         }
 
-        // Debug::log(date_format($df, 'U'));
-
         return date_format($df, 'U');
     }
 }

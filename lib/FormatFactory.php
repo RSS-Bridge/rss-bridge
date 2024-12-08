@@ -2,32 +2,26 @@
 
 class FormatFactory
 {
-    private $folder;
-    private $formatNames;
+    private array $formatNames = [];
 
-    public function __construct(string $folder = PATH_LIB_FORMATS)
+    public function __construct()
     {
-        $this->folder = $folder;
-
-        // create format names
-        foreach (scandir($this->folder) as $file) {
-            if (preg_match('/^([^.]+)Format\.php$/U', $file, $m)) {
+        $iterator = new \FilesystemIterator(__DIR__ . '/../formats');
+        foreach ($iterator as $file) {
+            if (preg_match('/^([^.]+)Format\.php$/U', $file->getFilename(), $m)) {
                 $this->formatNames[] = $m[1];
             }
         }
+        sort($this->formatNames);
     }
 
-    /**
-     * @throws \InvalidArgumentException
-     * @param string $name The name of the format e.g. "Atom", "Mrss" or "Json"
-     */
     public function create(string $name): FormatAbstract
     {
         if (! preg_match('/^[a-zA-Z0-9-]*$/', $name)) {
             throw new \InvalidArgumentException('Format name invalid!');
         }
-        $sanitizedName = $this->sanitizeFormatName($name);
-        if ($sanitizedName === null) {
+        $sanitizedName = $this->sanitizeName($name);
+        if (!$sanitizedName) {
             throw new \InvalidArgumentException(sprintf('Unknown format given `%s`', $name));
         }
         $className = '\\' . $sanitizedName . 'Format';
@@ -39,15 +33,13 @@ class FormatFactory
         return $this->formatNames;
     }
 
-    protected function sanitizeFormatName(string $name)
+    protected function sanitizeName(string $name): ?string
     {
         $name = ucfirst(strtolower($name));
-
         // Trim trailing '.php' if exists
         if (preg_match('/(.+)(?:\.php)/', $name, $matches)) {
             $name = $matches[1];
         }
-
         // Trim trailing 'Format' if exists
         if (preg_match('/(.+)(?:Format)/i', $name, $matches)) {
             $name = $matches[1];

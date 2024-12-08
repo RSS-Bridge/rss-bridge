@@ -144,6 +144,7 @@
 * [Niehztog](https://github.com/Niehztog)
 * [NikNikYkt](https://github.com/NikNikYkt)
 * [Nono-m0le](https://github.com/Nono-m0le)
+* [NotsoanoNimus](https://github.com/NotsoanoNimus)
 * [obsiwitch](https://github.com/obsiwitch)
 * [Ololbu](https://github.com/Ololbu)
 * [ORelio](https://github.com/ORelio)

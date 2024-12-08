@@ -31,7 +31,7 @@ class FDroidBridge extends BridgeAbstract
             CURLOPT_NOBODY => true,
         ];
         $reponse = getContents($url, [], $curlOptions, true);
-        $lastModified = $reponse['headers']['last-modified'][0] ?? null;
+        $lastModified = $reponse->getHeader('last-modified');
         $timestamp = strtotime($lastModified ?? 'today');
         return $timestamp;
     }

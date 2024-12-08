@@ -12,9 +12,7 @@ class FeedItem
     protected ?string $uid = null;
     protected array $misc = [];
 
-    public function __construct()
-    {
-    }
+    private Logger $logger;
 
     public static function fromArray(array $itemArray): self
     {
@@ -23,6 +21,14 @@ class FeedItem
             $item->__set($key, $value);
         }
         return $item;
+    }
+
+    private function __construct()
+    {
+        global $container;
+
+        // The default NullLogger is for when running the unit tests
+        $this->logger = $container['logger'] ?? new NullLogger();
     }
 
     public function __set($name, $value)
@@ -89,18 +95,6 @@ class FeedItem
         return $this->uri;
     }
 
-    /**
-     * Set URI to the full article.
-     *
-     * Use {@see FeedItem::getURI()} to get the URI.
-     *
-     * _Note_: Removes whitespace from the beginning and end of the URI.
-     *
-     * _Remarks_: Uses the attribute "href" or "src" if the provided URI is an
-     * object of simple_html_dom_node.
-     *
-     * @param simple_html_dom_node|object|string $uri URI to the full article.
-     */
     public function setURI($uri)
     {
         $this->uri = null; // Clear previous data
@@ -111,17 +105,17 @@ class FeedItem
             } elseif ($uri->hasAttribute('src')) { // Image
                 $uri = $uri->src;
             } else {
-                Debug::log('The item provided as URI is unknown!');
+                $this->logger->debug('The item provided as URI is unknown!');
             }
         }
         if (!is_string($uri)) {
-            Debug::log(sprintf('Expected $uri to be string but got %s', gettype($uri)));
+            $this->logger->debug(sprintf('Expected $uri to be string but got %s', gettype($uri)));
             return;
         }
         $uri = trim($uri);
         // Intentionally doing a weak url validation here because FILTER_VALIDATE_URL is too strict
         if (!preg_match('#^https?://#i', $uri)) {
-            Debug::log(sprintf('Not a valid url: "%s"', $uri));
+            $this->logger->debug(sprintf('Not a valid url: "%s"', $uri));
             return;
         }
         $this->uri = $uri;
@@ -136,7 +130,7 @@ class FeedItem
     {
         $this->title = null;
         if (!is_string($title)) {
-            Debug::log('Title must be a string!');
+            $this->logger->debug('Title must be a string: ' . print_r($title, true));
         } else {
             $this->title = truncate(trim($title));
         }
@@ -155,11 +149,11 @@ class FeedItem
         } else {
             $timestamp = strtotime($datetime);
             if ($timestamp === false) {
-                Debug::log('Unable to parse timestamp!');
+                $this->logger->debug('Unable to parse timestamp!');
             }
         }
         if ($timestamp <= 0) {
-            Debug::log('Timestamp must be greater than zero!');
+            $this->logger->debug('Timestamp must be greater than zero!');
         } else {
             $this->timestamp = $timestamp;
         }
@@ -174,11 +168,10 @@ class FeedItem
     {
         $this->author = null;
         if (!is_string($author)) {
-            Debug::log('Author must be a string!');
+            $this->logger->debug('Author must be a string!');
         } else {
             $this->author = $author;
         }
-        return $this;
     }
 
     public function getContent(): ?string
@@ -187,21 +180,23 @@ class FeedItem
     }
 
     /**
-     * @param string|object $content The item content as text or simple_html_dom object.
+     * @param string|array|\simple_html_dom|\simple_html_dom_node $content The item content
      */
     public function setContent($content)
     {
         $this->content = null;
+
         if (
             $content instanceof simple_html_dom
             || $content instanceof simple_html_dom_node
         ) {
             $content = (string) $content;
         }
+
         if (is_string($content)) {
             $this->content = $content;
         } else {
-            Debug::log(sprintf('Feed content must be a string but got %s', gettype($content)));
+            $this->logger->debug(sprintf('Unable to convert feed content to string: %s', gettype($content)));
         }
     }
 
@@ -215,7 +210,7 @@ class FeedItem
         $this->enclosures = [];
 
         if (!is_array($enclosures)) {
-            Debug::log('Enclosures must be an array!');
+            $this->logger->debug('Enclosures must be an array!');
             return;
         }
         foreach ($enclosures as $enclosure) {
@@ -226,7 +221,7 @@ class FeedItem
                     FILTER_FLAG_PATH_REQUIRED
                 )
             ) {
-                Debug::log('Each enclosure must contain a scheme, host and path!');
+                $this->logger->debug('Each enclosure must contain a scheme, host and path!');
             } elseif (!in_array($enclosure, $this->enclosures)) {
                 $this->enclosures[] = $enclosure;
             }
@@ -243,14 +238,14 @@ class FeedItem
         $this->categories = [];
 
         if (!is_array($categories)) {
-            Debug::log('Categories must be an array!');
+            $this->logger->debug('Categories must be an array!');
             return;
         }
         foreach ($categories as $category) {
             if (is_string($category)) {
                 $this->categories[] = $category;
             } else {
-                Debug::log('Category must be a string!');
+                $this->logger->debug('Category must be a string!');
             }
         }
     }
@@ -264,7 +259,7 @@ class FeedItem
     {
         $this->uid = null;
         if (!is_string($uid)) {
-            Debug::log(sprintf('uid must be string: %s (%s)', (string) $uid, var_export($uid, true)));
+            $this->logger->debug(sprintf('uid must be string: %s (%s)', (string) $uid, var_export($uid, true)));
             return;
         }
         if (preg_match('/^[a-f0-9]{40}$/', $uid)) {
@@ -278,13 +273,12 @@ class FeedItem
     public function addMisc($name, $value)
     {
         if (!is_string($name)) {
-            Debug::log('Key must be a string!');
+            $this->logger->debug('Key must be a string!');
         } elseif (in_array($name, get_object_vars($this))) {
-            Debug::log('Key must be unique!');
+            $this->logger->debug('Key must be unique!');
         } else {
             $this->misc[$name] = $value;
         }
-        return $this;
     }
 
     public function toArray(): array

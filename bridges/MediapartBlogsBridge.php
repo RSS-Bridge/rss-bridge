@@ -35,7 +35,12 @@ class MediapartBlogsBridge extends BridgeAbstract
 
             $item['title'] = $item_title->innertext;
             $item['uri'] = self::BASE_URI . trim($item_title->href);
-            $item['author'] = $element->find('.author .subscriber', 0)->innertext;
+
+            $author = $element->find('.author .subscriber', 0);
+            if ($author) {
+                $item['author'] = $author->innertext;
+            }
+
             $item['content'] = $item_divs[count($item_divs) - 2] . $item_divs[count($item_divs) - 1];
             $item['timestamp'] = strtotime($element->find('.author time', 0)->datetime);
 

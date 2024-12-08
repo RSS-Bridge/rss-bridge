@@ -7,29 +7,35 @@
  */
 class FindfeedAction implements ActionInterface
 {
-    public function execute(array $request)
-    {
-        $targetURL = $request['url'] ?? null;
-        $format = $request['format'] ?? null;
+    private BridgeFactory $bridgeFactory;
 
-        if (!$targetURL) {
+    public function __construct(
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->bridgeFactory = $bridgeFactory;
+    }
+
+    public function __invoke(Request $request): Response
+    {
+        $url = $request->get('url');
+        $format = $request->get('format');
+
+        if (!$url) {
             return new Response('You must specify a url', 400);
         }
         if (!$format) {
             return new Response('You must specify a format', 400);
         }
 
-        $bridgeFactory = new BridgeFactory();
-
         $results = [];
-        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
-            if (!$bridgeFactory->isEnabled($bridgeClassName)) {
+        foreach ($this->bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            if (!$this->bridgeFactory->isEnabled($bridgeClassName)) {
                 continue;
             }
 
-            $bridge = $bridgeFactory->create($bridgeClassName);
+            $bridge = $this->bridgeFactory->create($bridgeClassName);
 
-            $bridgeParams = $bridge->detectParameters($targetURL);
+            $bridgeParams = $bridge->detectParameters($url);
 
             if ($bridgeParams === null) {
                 continue;

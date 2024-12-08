@@ -19,23 +19,6 @@ class FirefoxAddonsBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 3600;
 
     private $feedName = '';
-    private $releaseDateRegex = '/Released ([\w, ]+) - ([\w. ]+)/';
-    private $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
-    private $outgoingRegex = '/https:\/\/prod.outgoing\.prod\.webservices\.mozgcp\.net\/v1\/(?:[A-z0-9]+)\//';
-
-    private $urlRegex = '/addons\.mozilla\.org\/(?:[\w-]+\/)?firefox\/addon\/([\w-]+)/';
-
-    public function detectParameters($url)
-    {
-        $params = [];
-
-        if (preg_match($this->urlRegex, $url, $matches)) {
-            $params['id'] = $matches[1];
-            return $params;
-        }
-
-        return null;
-    }
 
     public function collectData()
     {
@@ -52,7 +35,8 @@ class FirefoxAddonsBridge extends BridgeAbstract
             $item['uri'] = $this->getURI();
             $item['author'] = $author;
 
-            if (preg_match($this->releaseDateRegex, $li->find('div.AddonVersionCard-fileInfo', 0)->plaintext, $match)) {
+            $releaseDateRegex = '/Released ([\w, ]+) - ([\w. ]+)/';
+            if (preg_match($releaseDateRegex, $li->find('div.AddonVersionCard-fileInfo', 0)->plaintext, $match)) {
                 $item['timestamp'] = $match[1];
                 $size = $match[2];
             }
@@ -68,7 +52,8 @@ class FirefoxAddonsBridge extends BridgeAbstract
 
             $releaseNotes = $this->removeLinkRedirects($li->find('div.AddonVersionCard-releaseNotes', 0));
 
-            if (preg_match($this->xpiFileRegex, $downloadlink, $match)) {
+            $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
+            if (preg_match($xpiFileRegex, $downloadlink, $match)) {
                 $xpiFilename = $match[0];
             }
 
@@ -110,10 +95,25 @@ EOD;
      */
     private function removeLinkRedirects($html)
     {
+        $outgoingRegex = '/https:\/\/prod.outgoing\.prod\.webservices\.mozgcp\.net\/v1\/(?:[A-z0-9]+)\//';
         foreach ($html->find('a') as $a) {
-            $a->href = urldecode(preg_replace($this->outgoingRegex, '', $a->href));
+            $a->href = urldecode(preg_replace($outgoingRegex, '', $a->href));
         }
 
         return $html->innertext;
+    }
+
+    public function detectParameters($url)
+    {
+        $params = [];
+
+        // Example: https://addons.mozilla.org/en-US/firefox/addon/ublock-origin
+        $pattern = '/addons\.mozilla\.org\/(?:[\w-]+\/)?firefox\/addon\/([\w-]+)/';
+        if (preg_match($pattern, $url, $matches)) {
+            $params['id'] = $matches[1];
+            return $params;
+        }
+
+        return null;
     }
 }

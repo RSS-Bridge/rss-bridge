@@ -1218,14 +1218,15 @@ EOT;
         $table = $this->generateEventDetailsTable($event);
 
         $imgsrc = $event['BannerURL'];
+        $FShareURL = $event['FShareURL'];
 
         return <<<EOT
-		<img title="Event Banner URL" src="$imgsrc"></img>
-		<br>
-		$table
-		<br>
-		More Details are available on the <a href="${event['FShareURL']}">BookMyShow website</a>.
-EOT;
+        <img title="Event Banner URL" src="$imgsrc">
+        <br>
+        $table
+        <br>
+        More Details are available on the <a href="$FShareURL">BookMyShow website</a>.
+        EOT;
     }
 
     /**
@@ -1292,14 +1293,15 @@ EOT;
 
         $synopsis = preg_replace(self::SYNOPSIS_REGEX, '', $data['EventSynopsis']);
 
+        $eventTrailerURL = $data['EventTrailerURL'];
         return <<<EOT
-		<img title="Movie Poster" src="$imgsrc"></img>
-		<div>$table</div>
-		<p>$innerHtml</p>
-		<p>${synopsis}</p>
-		More Details are available on the <a href="$url">BookMyShow website</a> and a trailer is available
-		<a href="${data['EventTrailerURL']}" title="Trailer URL">here</a>
-EOT;
+        <img title="Movie Poster" src="$imgsrc"></img>
+        <div>$table</div>
+        <p>$innerHtml</p>
+        <p>$synopsis</p>
+        More Details are available on the <a href="$url">BookMyShow website</a> and a trailer is available
+        <a href="$eventTrailerURL" title="Trailer URL">here</a>
+        EOT;
     }
 
     /**

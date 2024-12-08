@@ -18,26 +18,27 @@ class HytaleBridge extends BridgeAbstract
         $blogPosts = json_decode(getContents(self::_API_URL_PUBLISHED));
         $length = count($blogPosts);
 
-        for ($i = 1; $i < $length; $i += 3) {
+        for ($i = 0; $i < $length; $i += 3) {
             $slug = $blogPosts[$i]->slug;
 
             $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
 
-            if (property_exists($blogPost, 'previous')) {
-                $this->addBlogPost($blogPost->previous);
+            if (property_exists($blogPost, 'next')) {
+                $this->addBlogPost($blogPost->next);
             }
 
             $this->addBlogPost($blogPost);
 
-            if (property_exists($blogPost, 'next')) {
-                $this->addBlogPost($blogPost->next);
+            if (property_exists($blogPost, 'previous')) {
+                $this->addBlogPost($blogPost->previous);
             }
         }
 
-        if ($length % 3 == 1) {
-            $slug = $blogPosts[count($blogPosts) - 1]->slug;
+        if (($length >= 3) && ($length % 3 == 0)) {
+            $slug = $blogPosts[$length - 1]->slug;
 
             $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
+
             $this->addBlogPost($blogPost);
         }
     }

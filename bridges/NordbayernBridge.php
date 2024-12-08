@@ -53,6 +53,19 @@ class NordbayernBridge extends BridgeAbstract
         ]
     ]];
 
+    public function collectData()
+    {
+        $region = $this->getInput('region');
+        if ($region === 'rothenburg-o-d-t') {
+            $region = 'rothenburg-ob-der-tauber';
+        }
+        $url = self::URI . '/region/' . $region;
+        $listSite = getSimpleHTMLDOM($url);
+
+        $this->handleNewsblock($listSite);
+    }
+
+
     private function getValidImage($picture)
     {
         $img = $picture->find('img', 0);
@@ -75,23 +88,25 @@ class NordbayernBridge extends BridgeAbstract
             ) {
                 $content .= $element;
             } elseif ($element->tag === 'main') {
-                $content .= self::getUseFullContent($element->find('article', 0));
+                $content .= $this->getUseFullContent($element->find('article', 0));
             } elseif ($element->tag === 'header') {
-                $content .= self::getUseFullContent($element);
+                $content .= $this->getUseFullContent($element);
             } elseif (
                 $element->tag === 'div' &&
                 !str_contains($element->class, 'article__infobox') &&
                 !str_contains($element->class, 'authorinfo')
             ) {
-                $content .= self::getUseFullContent($element);
+                $content .= $this->getUseFullContent($element);
             } elseif (
                 $element->tag === 'section' &&
                 (str_contains($element->class, 'article__richtext') ||
                     str_contains($element->class, 'article__context'))
             ) {
-                $content .= self::getUseFullContent($element);
+                $content .= $this->getUseFullContent($element);
             } elseif ($element->tag === 'picture') {
-                $content .= self::getValidImage($element);
+                $content .= $this->getValidImage($element);
+            } elseif ($element->tag === 'ul') {
+                $content .= $element;
             }
         }
         return $content;
@@ -144,10 +159,17 @@ class NordbayernBridge extends BridgeAbstract
             // of the title image. If we didn't do this some rss programs
             // would show the subtitle of the title image as teaser instead
             // of the actuall article teaser.
-            $item['content'] .= self::getTeaser($content);
-            $item['content'] .= self::getUseFullContent($content);
+            $item['content'] .= $this->getTeaser($content);
+            $item['content'] .= $this->getUseFullContent($content);
         }
 
+        $categories = $article->find('[class=themen]', 0);
+        if ($categories) {
+            $item['categories'] = [];
+            foreach ($categories->find('a') as $category) {
+                $item['categories'][] = $category->innertext;
+            }
+        }
 
         $article->clear();
         return $item;
@@ -167,7 +189,7 @@ class NordbayernBridge extends BridgeAbstract
                 continue;
             }
 
-            $item = self::getArticle($url);
+            $item = $this->getArticle($url);
 
             // exclude police reports if desired
             if (
@@ -187,17 +209,5 @@ class NordbayernBridge extends BridgeAbstract
 
             $this->items[] = $item;
         }
-    }
-
-    public function collectData()
-    {
-        $region = $this->getInput('region');
-        if ($region === 'rothenburg-o-d-t') {
-            $region = 'rothenburg-ob-der-tauber';
-        }
-        $url = self::URI . '/region/' . $region;
-        $listSite = getSimpleHTMLDOM($url);
-
-        self::handleNewsblock($listSite);
     }
 }

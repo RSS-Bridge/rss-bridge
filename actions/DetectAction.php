@@ -2,40 +2,50 @@
 
 class DetectAction implements ActionInterface
 {
-    public function execute(array $request)
-    {
-        $targetURL = $request['url'] ?? null;
-        $format = $request['format'] ?? null;
+    private BridgeFactory $bridgeFactory;
 
-        if (!$targetURL) {
-            throw new \Exception('You must specify a url!');
+    public function __construct(
+        BridgeFactory $bridgeFactory
+    ) {
+        $this->bridgeFactory = $bridgeFactory;
+    }
+
+    public function __invoke(Request $request): Response
+    {
+        $url = $request->get('url');
+        $format = $request->get('format');
+
+        if (!$url) {
+            return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'You must specify a url']));
         }
         if (!$format) {
-            throw new \Exception('You must specify a format!');
+            return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'You must specify a format']));
         }
 
-        $bridgeFactory = new BridgeFactory();
-
-        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
-            if (!$bridgeFactory->isEnabled($bridgeClassName)) {
+        foreach ($this->bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            if (!$this->bridgeFactory->isEnabled($bridgeClassName)) {
                 continue;
             }
 
-            $bridge = $bridgeFactory->create($bridgeClassName);
+            $bridge = $this->bridgeFactory->create($bridgeClassName);
 
-            $bridgeParams = $bridge->detectParameters($targetURL);
+            $bridgeParams = $bridge->detectParameters($url);
 
-            if (is_null($bridgeParams)) {
+            if (!$bridgeParams) {
                 continue;
             }
 
-            $bridgeParams['bridge'] = $bridgeClassName;
-            $bridgeParams['format'] = $format;
-
-            $url = '?action=display&' . http_build_query($bridgeParams);
-            return new Response('', 301, ['location' => $url]);
+            $query = [
+                'action' => 'display',
+                'bridge' => $bridgeClassName,
+                'format' => $format,
+            ];
+            $query = array_merge($query, $bridgeParams);
+            return new Response('', 301, ['location' => '?' . http_build_query($query)]);
         }
 
-        throw new \Exception('No bridge found for given URL: ' . $targetURL);
+        return new Response(render(__DIR__ . '/../templates/error.html.php', [
+            'message' => 'No bridge found for given URL: ' . $url,
+        ]));
     }
 }

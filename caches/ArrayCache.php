@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/**
+ * Also known as an in-memory/runtime cache
+ */
 class ArrayCache implements CacheInterface
 {
     private array $data = [];

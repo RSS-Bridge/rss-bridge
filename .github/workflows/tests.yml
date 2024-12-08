@@ -13,9 +13,11 @@ jobs:
       matrix:
         php-versions: ['7.4', '8.0', '8.1']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
+        env:
+          update: true
       - run: composer install
       - run: composer test

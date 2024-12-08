@@ -192,7 +192,6 @@ EOD
                 . $this->getInput('u'), $authHeaders, $params);
 
                 if (isset($user->errors)) {
-                    Debug::log('User JSON: ' . json_encode($user));
                     returnServerError('Requested username can\'t be found.');
                 }
 
@@ -266,7 +265,6 @@ EOD
             (isset($data->errors) && !isset($data->data)) ||
             (isset($data->meta) && $data->meta->result_count === 0)
         ) {
-            Debug::log('Data JSON: ' . json_encode($data));
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
                     returnServerError('No results for this query.');
@@ -311,7 +309,6 @@ EOD
             foreach ($includesTweets as $includesTweet) {
                 $includesTweetsIds[] = $includesTweet->id;
             }
-            Debug::log('includesTweetsIds: ' . join(',', $includesTweetsIds));
 
             // Set default params for API query
             $params = [
@@ -336,8 +333,6 @@ EOD
 
         // Create output array with all required elements for each tweet
         foreach ($tweets as $tweet) {
-            //Debug::log('Tweet JSON: ' . json_encode($tweet));
-
             // Skip pinned tweet (if selected)
             if ($hidePinned && $tweet->id === $pinnedTweetId) {
                 continue;
@@ -376,12 +371,10 @@ EOD
             $cleanedQuotedTweet = null;
             $quotedUser = null;
             if ($isQuote) {
-                Debug::log('Tweet is quote');
                 foreach ($includesTweets as $includesTweet) {
                     if ($includesTweet->id === $tweet->referenced_tweets[0]->id) {
                         $quotedTweet = $includesTweet;
                         $cleanedQuotedTweet = nl2br($quotedTweet->text);
-                        //Debug::log('Found quoted tweet');
                         break;
                     }
                 }
@@ -389,7 +382,6 @@ EOD
                 $quotedUser = $this->getTweetUser($quotedTweet, $retweetedUsers, $includesUsers);
             }
             if ($isRetweet || is_null($user)) {
-                Debug::log('Tweet is retweet, or $user is null');
                 // Replace tweet object with original retweeted object
                 if ($isRetweet) {
                     foreach ($includesTweets as $includesTweet) {
@@ -430,7 +422,6 @@ EOD
                          . $this->item['username'] . ')';
 
             $cleanedTweet = nl2br($tweet->text);
-            //Debug::log('cleanedTweet: ' . $cleanedTweet);
 
             // Perform optional keyword filtering (only keep tweet if keyword is found)
             if (! empty($tweetFilter)) {
@@ -452,7 +443,6 @@ EOD
             // Search for and replace URLs in Tweet text
             $cleanedTweet = $this->replaceTweetURLs($tweet, $cleanedTweet);
             if (isset($cleanedQuotedTweet)) {
-                Debug::log('Replacing URLs in Quoted Tweet text');
                 $cleanedQuotedTweet = $this->replaceTweetURLs($quotedTweet, $cleanedQuotedTweet);
             }
 
@@ -478,9 +468,7 @@ EOD
             // Get external link info
             $extURL = null;
             if (isset($tweet->entities->urls) && strpos($tweet->entities->urls[0]->expanded_url, 'twitter.com') === false) {
-                Debug::log('Found an external link!');
                 $extURL = $tweet->entities->urls[0]->expanded_url;
-                Debug::log($extURL);
                 $extDisplayURL = $tweet->entities->urls[0]->display_url;
                 $extTitle = $tweet->entities->urls[0]->title;
                 $extDesc = $tweet->entities->urls[0]->description;
@@ -513,15 +501,12 @@ EOD;
             $ext_media_html = '';
             if (!$hideImages) {
                 if (isset($tweet->attachments->media_keys)) {
-                    Debug::log('Generating HTML for tweet media');
                     $media_html = $this->createTweetMediaHTML($tweet, $includesMedia, $retweetedMedia);
                 }
                 if (isset($quotedTweet->attachments->media_keys)) {
-                    Debug::log('Generating HTML for quoted tweet media');
                     $quoted_media_html = $this->createTweetMediaHTML($quotedTweet, $includesMedia, $retweetedMedia);
                 }
                 if (isset($extURL)) {
-                    Debug::log('Generating HTML for external link media');
                     if ($this->getInput('noimgscaling')) {
                         $extMediaURL = $extMediaOrig;
                     } else {
@@ -562,7 +547,6 @@ QUOTE;
 
             // Add External Link HTML, if relevant
             if (isset($extURL) && !$this->getInput('noexternallink')) {
-                Debug::log('Adding HTML for external link');
                 $ext_html = <<<EXTERNAL
 <div style="display: table; border-style: solid; border-width: 1px; border-radius: 5px; padding: 5px;">
     $ext_media_html<br>
@@ -598,7 +582,7 @@ EXTERNAL;
     private function makeApiCall($api, $authHeaders, $params)
     {
         $uri = self::API_URI . $api . '?' . http_build_query($params);
-        $result = getContents($uri, $authHeaders, [], false);
+        $result = getContents($uri, $authHeaders);
         $data = json_decode($result);
         return $data;
     }
@@ -653,21 +637,18 @@ EXTERNAL;
     {
         $originalUser = new stdClass(); // make the linters stop complaining
         if (isset($retweetedUsers)) {
-            Debug::log('Searching for tweet author_id in $retweetedUsers');
             foreach ($retweetedUsers as $retweetedUser) {
                 if ($retweetedUser->id === $tweetObject->author_id) {
                     $matchedUser = $retweetedUser;
-                    Debug::log('Found author_id match in $retweetedUsers');
                     break;
                 }
             }
         }
         if (!isset($matchedUser->username) && isset($includesUsers)) {
-            Debug::log('Searching for tweet author_id in $includesUsers');
             foreach ($includesUsers as $includesUser) {
                 if ($includesUser->id === $tweetObject->author_id) {
                     $matchedUser = $includesUser;
-                    Debug::log('Found author_id match in $includesUsers');
+
                     break;
                 }
             }
@@ -689,7 +670,6 @@ EXTERNAL;
         $tweetMedia = [];
         // Start by checking the original list of tweet Media includes
         if (isset($includesMedia)) {
-            Debug::log('Searching for media_key in $includesMedia');
             foreach ($includesMedia as $includesMedium) {
                 if (
                     in_array(
@@ -697,14 +677,12 @@ EXTERNAL;
                         $tweetObject->attachments->media_keys
                     )
                 ) {
-                    Debug::log('Found media_key in $includesMedia');
                     $tweetMedia[] = $includesMedium;
                 }
             }
         }
         // If no matches found, check the retweet Media includes
         if (empty($tweetMedia) && isset($retweetedMedia)) {
-            Debug::log('Searching for media_key in $retweetedMedia');
             foreach ($retweetedMedia as $retweetedMedium) {
                 if (
                     in_array(
@@ -712,7 +690,6 @@ EXTERNAL;
                         $tweetObject->attachments->media_keys
                     )
                 ) {
-                    Debug::log('Found media_key in $retweetedMedia');
                     $tweetMedia[] = $retweetedMedium;
                 }
             }
@@ -760,8 +737,7 @@ EOD;
 EOD;
                     break;
                 default:
-                    Debug::log('Missing support for media type: '
-                    . $media->type);
+                    break;
             }
         }
 

@@ -33,7 +33,15 @@ class GettrBridge extends BridgeAbstract
             $user,
             min($this->getInput('limit'), 20)
         );
-        $data = json_decode(getContents($api), false);
+        try {
+            $json = getContents($api);
+        } catch (HttpException $e) {
+            if ($e->getCode() === 400 && str_contains($e->response->getBody(), 'E_USER_NOTFOUND')) {
+                throw new \Exception('User not found: ' . $user);
+            }
+            throw $e;
+        }
+        $data = json_decode($json, false);
 
         foreach ($data->result->aux->post as $post) {
             $this->items[] = [

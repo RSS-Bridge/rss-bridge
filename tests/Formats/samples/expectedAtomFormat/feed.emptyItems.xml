@@ -2,15 +2,13 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
 
 	<title type="text">Sample feed with minimum data</title>
+	<link href="https://github.com/RSS-Bridge/rss-bridge/" rel="alternate" type="text/html"/>
+	<link href="https://example.com/feed" rel="self" type="application/atom+xml"/>
 	<id>https://example.com/feed</id>
-	<icon>https://github.com/favicon.ico</icon>
-	<logo>https://github.com/favicon.ico</logo>
 	<updated>2000-01-01T12:00:00+00:00</updated>
 	<author>
 		<name>RSS-Bridge</name>
 	</author>
-	<link href="https://github.com/RSS-Bridge/rss-bridge/" rel="alternate" type="text/html"/>
-	<link href="https://example.com/feed" rel="self" type="application/atom+xml"/>
 
 	<entry>
 		<title type="html">Sample Item #1</title>

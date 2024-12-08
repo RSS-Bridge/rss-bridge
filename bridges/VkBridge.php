@@ -511,15 +511,15 @@ class VkBridge extends BridgeAbstract
         while ($redirects < 2) {
             $response = getContents($uri, $httpHeaders, [CURLOPT_FOLLOWLOCATION => false], true);
 
-            if (in_array($response['code'], [200, 304])) {
-                return $response['content'];
+            if (in_array($response->getCode(), [200, 304])) {
+                return $response->getBody();
             }
 
-            $headers = $response['headers'];
+            $headers = $response->getHeaders();
             $uri = urljoin(self::URI, $headers['location'][0]);
 
             if (str_contains($uri, '/429.html')) {
-                returnServerError('VK responded "Too many requests"');
+                throw new RateLimitException();
             }
 
             if (!preg_match('#^https?://vk.com/#', $uri)) {

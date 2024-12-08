@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 class TldrTechBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
     const NAME = 'TLDR Tech Newsletter Bridge';
     const URI = 'https://tldr.tech/';
-
-    const CACHE_TIMEOUT = 3600; // 1 hour
     const DESCRIPTION = 'Return newsletter articles from TLDR Tech';
 
     const PARAMETERS = [
@@ -22,11 +22,15 @@ class TldrTechBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Tech' => 'tech',
-                    'Crypto' => 'crypto',
+                    'Web Dev' => 'webdev',
                     'AI' => 'ai',
-                    'Web Dev' => 'engineering',
+                    'Information Security' => 'infosec',
+                    'Product Management' => 'product',
+                    'DevOps' => 'devops',
+                    'Crypto' => 'crypto',
+                    'Design' => 'design',
+                    'Marketing' => 'marketing',
                     'Founders' => 'founders',
-                    'Cybersecurity' => 'cybersecurity'
                 ],
                 'defaultValue' => 'tech'
             ]
@@ -37,36 +41,53 @@ class TldrTechBridge extends BridgeAbstract
     {
         $topic = $this->getInput('topic');
         $limit = $this->getInput('limit');
-        $url = self::URI . $topic . '/archives';
-        $html = getSimpleHTMLDOM($url);
-        $entries_root = $html->find('div.content-center.mt-5', 0);
-        $added = 0;
+
+        $url = self::URI . 'api/latest/' . $topic;
+        $response = getContents($url, [], [], true);
+        $location = $response->getHeader('Location');
+        $locationUrl = Url::fromString($location);
+
+        $this->extractItem($locationUrl);
+
+        $archives_url = self::URI . $topic . '/archives';
+        $archives_html = getSimpleHTMLDOM($archives_url);
+        $entries_root = $archives_html->find('div.content-center.mt-5', 0);
         foreach ($entries_root->children() as $child) {
             if ($child->tag != 'a') {
                 continue;
             }
-            // Convert /<topic>/2023-01-01 to unix timestamp
-            $date_items = explode('/', $child->href);
-            $date = strtotime(end($date_items));
-            $this->items[] = [
-                'uri'       => self::URI . $child->href,
-                'title'     => $child->plaintext,
-                'timestamp' => $date,
-                'content'   => $this->extractContent(self::URI . $child->href),
-            ];
-            $added++;
-            if ($added >= $limit) {
+            $this->extractItem(Url::fromString(self::URI . $child->href));
+            if (count($this->items) >= $limit) {
                 break;
             }
         }
     }
 
+    private function extractItem(Url $url)
+    {
+        $pathParts = explode('/', $url->getPath());
+        $date = strtotime(end($pathParts));
+        try {
+            [$content, $title] = $this->extractContent($url);
+
+            $this->items[] = [
+                'uri'       => (string) $url,
+                'title'     => $title,
+                'timestamp' => $date,
+                'content'   => $content,
+            ];
+        } catch (HttpException $e) {
+            // archive occasionally returns broken URLs
+            return;
+        }
+    }
+
     private function extractContent($url)
     {
-        $html = getSimpleHTMLDOM($url);
+        $html = getSimpleHTMLDOMCached($url);
         $content = $html->find('div.content-center.mt-5', 0);
         if (!$content) {
-            return '';
+            throw new \Exception('Could not find content');
         }
         $subscribe_form = $content->find('div.mt-5 > div > form', 0);
         if ($subscribe_form) {
@@ -103,7 +124,7 @@ class TldrTechBridge extends BridgeAbstract
                 }
             }
         }
-
-        return $content->innertext;
+        $title = $content->find('h2', 0);
+        return [$content->innertext, $title->plaintext];
     }
 }

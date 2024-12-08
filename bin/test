@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Add log records to all three levels (for testing purposes)
+ */
+
+require __DIR__ . '/../lib/bootstrap.php';
+require __DIR__ . '/../lib/config.php';
+
+$container = require __DIR__ . '/../lib/dependencies.php';
+
+/** @var Logger $logger */
+$logger = $container['logger'];
+
+$logger->debug('This is a test debug message');
+
+$logger->info('This is a test info message');
+
+$logger->error('This is a test error message');

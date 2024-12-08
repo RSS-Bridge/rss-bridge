@@ -31,7 +31,7 @@ class GBAtempBridge extends BridgeAbstract
                     $img = $this->findItemImage($newsItem, 'a.news_image');
                     $time = $this->findItemDate($newsItem);
                     $author = $newsItem->find('a.username', 0)->plaintext;
-                    $title = $this->decodeHtmlEntities($newsItem->find('h3.news_title', 0)->plaintext);
+                    $title = $this->decodeHtmlEntities($newsItem->find('h2.news_title', 0)->plaintext);
                     $content = $this->fetchPostContent($url, self::URI);
                     $this->items[] = $this->buildItem($url, $title, $author, $time, $img, $content);
                     unset($newsItem); // Some items are heavy, freeing the item proactively helps saving memory
@@ -41,7 +41,7 @@ class GBAtempBridge extends BridgeAbstract
                 foreach ($html->find('li.portal_review') as $reviewItem) {
                     $url = urljoin(self::URI, $reviewItem->find('a.review_boxart', 0)->href);
                     $img = $this->findItemImage($reviewItem, 'a.review_boxart');
-                    $title = $this->decodeHtmlEntities($reviewItem->find('h2.review_title', 0)->plaintext);
+                    $title = $this->decodeHtmlEntities($reviewItem->find('div.review_title', 0)->find('h2', 0)->plaintext);
                     $content = getSimpleHTMLDOMCached($url);
                     $author = $content->find('span.author--name', 0)->plaintext;
                     $time = $this->findItemDate($content);

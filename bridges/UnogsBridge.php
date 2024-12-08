@@ -92,7 +92,7 @@ class UnogsBridge extends BridgeAbstract
     {
         $header = [
             'Referer: https://unogs.com/',
-            'referrer: http://unogs.com'
+            'referrer: http://unogs.com',
         ];
 
         $raw = getContents($url, $header);

@@ -40,6 +40,11 @@ class ARDMediathekBridge extends BridgeAbstract
      * @const IMAGEWIDTHPLACEHOLDER
      */
     const IMAGEWIDTHPLACEHOLDER = '{width}';
+    /**
+     * Title of the current show
+     * @var string
+     */
+    private $title;
 
     const PARAMETERS = [
         [
@@ -72,7 +77,7 @@ class ARDMediathekBridge extends BridgeAbstract
             }
         }
 
-        $url = self::APIENDPOINT . $showID . '/?pageSize=' . self::PAGESIZE;
+        $url = self::APIENDPOINT . $showID . '?pageSize=' . self::PAGESIZE;
         $rawJSON = getContents($url);
         $processedJSON = json_decode($rawJSON);
 
@@ -93,6 +98,17 @@ class ARDMediathekBridge extends BridgeAbstract
             $this->items[] = $item;
         }
 
+        $this->title = $processedJSON->title;
+
         date_default_timezone_set($oldTz);
+    }
+
+    /** {@inheritdoc} */
+    public function getName()
+    {
+        if (!empty($this->title)) {
+            return $this->title;
+        }
+        return parent::getName();
     }
 }

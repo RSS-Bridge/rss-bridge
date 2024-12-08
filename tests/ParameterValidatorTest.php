@@ -20,7 +20,7 @@ class ParameterValidatorTest extends TestCase
                 ],
             ]
         ];
-        $this->assertTrue($sut->validateInput($input, $parameters));
+        $this->assertSame([], $sut->validateInput($input, $parameters));
     }
 
     public function test2()
@@ -35,6 +35,6 @@ class ParameterValidatorTest extends TestCase
                 ],
             ]
         ];
-        $this->assertFalse($sut->validateInput($input, $parameters));
+        $this->assertNotEmpty($sut->validateInput($input, $parameters));
     }
 }

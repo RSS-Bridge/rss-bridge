@@ -2,15 +2,15 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
 
 	<title type="text">Sample feed with common data</title>
-	<id>https://example.com/feed?type=common&amp;items=4</id>
+	<link href="https://example.com/blog/" rel="alternate" type="text/html"/>
+	<link href="https://example.com/feed?type=common&amp;items=4" rel="self" type="application/atom+xml"/>
 	<icon>https://example.com/logo.png</icon>
 	<logo>https://example.com/logo.png</logo>
+	<id>https://example.com/feed?type=common&amp;items=4</id>
 	<updated>2000-01-01T12:00:00+00:00</updated>
 	<author>
 		<name>RSS-Bridge</name>
 	</author>
-	<link href="https://example.com/blog/" rel="alternate" type="text/html"/>
-	<link href="https://example.com/feed?type=common&amp;items=4" rel="self" type="application/atom+xml"/>
 
 	<entry>
 		<title type="html">Test Entry</title>

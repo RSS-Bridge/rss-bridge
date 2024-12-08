@@ -6,39 +6,34 @@ abstract class FormatAbstract
 
     const MIME_TYPE = 'text/plain';
 
-    protected string $charset = 'UTF-8';
+    protected array $feed = [];
     protected array $items = [];
+
     protected int $lastModified;
-    protected array $extraInfos = [];
 
-    abstract public function stringify();
+    abstract public function render(): string;
 
-    public function getMimeType(): string
+    public function setFeed(array $feed)
     {
-        return static::MIME_TYPE;
+        $default = [
+            'name'          => '',
+            'uri'           => '',
+            'icon'          => '',
+            'donationUri'   => '',
+        ];
+        $this->feed = array_merge($default, $feed);
     }
 
-    public function setCharset(string $charset)
+    public function getFeed(): array
     {
-        $this->charset = $charset;
+        return $this->feed;
     }
 
-    public function getCharset(): string
-    {
-        return $this->charset;
-    }
-
-    public function setLastModified(int $lastModified)
-    {
-        $this->lastModified = $lastModified;
-    }
-
-    /**
-     * @param FeedItem[] $items
-     */
     public function setItems(array $items): void
     {
-        $this->items = $items;
+        foreach ($items as $item) {
+            $this->items[] = FeedItem::fromArray($item);
+        }
     }
 
     /**
@@ -49,27 +44,13 @@ abstract class FormatAbstract
         return $this->items;
     }
 
-    public function setExtraInfos(array $infos = [])
+    public function getMimeType(): string
     {
-        $extras = [
-            'name',
-            'uri',
-            'icon',
-            'donationUri',
-        ];
-        foreach ($extras as $extra) {
-            if (!isset($infos[$extra])) {
-                $infos[$extra] = '';
-            }
-        }
-        $this->extraInfos = $infos;
+        return static::MIME_TYPE;
     }
 
-    public function getExtraInfos(): array
+    public function setLastModified(int $lastModified)
     {
-        if (!$this->extraInfos) {
-            $this->setExtraInfos();
-        }
-        return $this->extraInfos;
+        $this->lastModified = $lastModified;
     }
 }

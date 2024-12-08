@@ -22,7 +22,7 @@ class RainbowSixSiegeBridge extends BridgeAbstract
         $dlUrl = $dlUrl . '&limit=6&mediaFilter=all&skip=0&startIndex=0&tags=BR-rainbow-six%20GA-siege';
         $dlUrl = $dlUrl . '&locale=en-us&fallbackLocale=en-us&environment=master';
         $jsonString = getContents($dlUrl, [
-            'Authorization: ' . self::NIMBUS_API_KEY
+            'Authorization: ' . self::NIMBUS_API_KEY,
         ]);
 
         $json = json_decode($jsonString, true);

@@ -53,10 +53,14 @@ class FileCache implements CacheInterface
             'value'         => $value,
         ];
         $cacheFile = $this->createCacheFile($key);
-        $bytes = file_put_contents($cacheFile, serialize($item), LOCK_EX);
+        $bytes = file_put_contents($cacheFile, serialize($item));
+
+        // TODO: Consider tightening the permissions of the created file.
+        // It usually allow others to read, depending on umask
+
         if ($bytes === false) {
-            // Consider just logging the error here
-            throw new \Exception(sprintf('Failed to write to: %s', $cacheFile));
+            // Typically means no disk space remaining
+            $this->logger->warning(sprintf('Failed to write to: %s', $cacheFile));
         }
     }
 
@@ -96,8 +100,10 @@ class FileCache implements CacheInterface
             }
             $expiration = $item['expiration'] ?? time();
             if ($expiration === 0 || $expiration > time()) {
+                // Cached forever, or not expired yet
                 continue;
             }
+            // Expired, so delete file
             unlink($cacheFile);
         }
     }
