@@ -5,7 +5,8 @@ class PanneauPocketBridge extends BridgeAbstract
     const NAME = 'Panneau Pocket';
     const URI = 'https://app.panneaupocket.com';
     const DESCRIPTION = 'Fetches the latest infos from Panneau Pocket.
-    <br><br>To have completion on cities, you must click on the button "Request temporary access to the demo server" <a target="_blank" href="https://cors-anywhere.herokuapp.com/corsdemo">here</a>
+    <br><br>To have completion on cities, you must click on the button "Request temporary access to the demo server" 
+    <a target="_blank" href="https://cors-anywhere.herokuapp.com/corsdemo">here</a>
     <br><br>Or use your own proxy and change the proxy value in RSS-Bridge config.ini.php';
     const MAINTAINER = 'floviolleau';
     const CACHE_TIMEOUT = 0;//7200; // 2h
