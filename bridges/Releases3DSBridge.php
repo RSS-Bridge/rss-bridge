@@ -4,7 +4,7 @@ class Releases3DSBridge extends BridgeAbstract
 {
     const MAINTAINER = 'ORelio';
     const NAME = '3DS Scene Releases';
-    const URI = 'http://www.3dsdb.com/';
+    const URI = 'http://3dsdb.com/';
     const CACHE_TIMEOUT = 10800; // 3h
     const DESCRIPTION = 'Returns the newest scene releases for Nintendo 3DS.';
 

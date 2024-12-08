@@ -44,36 +44,7 @@ class PepperBridgeAbstract extends BridgeAbstract
     protected function collectDeals($url)
     {
         $html = getSimpleHTMLDOM($url);
-        $list = $html->find('article[id]');
-
-        // Deal Image Link CSS Selector
-        $selectorImageLink = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'cept-thread-image-link',
-                'imgFrame',
-                'imgFrame--noBorder',
-                'thread-listImgCell',
-            ]
-        );
-
-        // Deal Link CSS Selector
-        $selectorLink = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'cept-tt',
-                'thread-link',
-                'linkPlain',
-            ]
-        );
-
-        // Deal Hotness CSS Selector
-        $selectorHot = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'vote-box'
-            ]
-        );
+        $list = $html->find('article[id][class*=thread--deal]]');
 
         // Deal Description CSS Selector
         $selectorDescription = implode(
@@ -83,62 +54,39 @@ class PepperBridgeAbstract extends BridgeAbstract
             ]
         );
 
-        // Deal Date CSS Selector
-        $selectorDate = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'size--all-s',
-                'flex',
-                'boxAlign-jc--all-fe'
-            ]
-        );
-
         // If there is no results, we don't parse the content because it display some random deals
-        $noresult = $html->find('h3[class*=text--b]', 0);
-        if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
+        $noresult = $html->find('div[id=content-list]', 0)->find('h2', 0);
+        if ($noresult !== null) {
             $this->items = [];
         } else {
             foreach ($list as $deal) {
+                // Get the JSON Data stored as vue
+                $jsonDealData = $this->getDealJsonData($deal);
+                $dealMeta = Json::decode($deal->find('div[class=threadGrid-headerMeta]', 0)->find('div[class=js-vue2]', 1)->getAttribute('data-vue2'));
+
                 $item = [];
-                $item['uri'] = $this->getDealURI($deal);
-                $item['title'] = $this->getTitle($deal);
-                $item['author'] = $deal->find('span.thread-username', 0)->plaintext;
+                $item['uri'] = $this->getDealURI($jsonDealData);
+                $item['title'] = $this->getTitle($jsonDealData);
+                $item['author'] = $this->getDealAuthor($jsonDealData);
 
                 $item['content'] = '<table><tr><td><a href="'
                     . $item['uri']
-                    . '"><img src="'
+                    . '">'
                     . $this->getImage($deal)
-                    . '"/></td><td>'
-                    . $this->getHTMLTitle($item)
-                    . $this->getPrice($deal)
-                    . $this->getDiscount($deal)
-                    . $this->getShipsFrom($deal)
-                    . $this->getShippingCost($deal)
-                    . $this->getSource($deal)
+                    . '</td><td>'
+                    . $this->getHTMLTitle($jsonDealData)
+                    . $this->getPrice($jsonDealData)
+                    . $this->getDiscount($jsonDealData)
+                    . $this->getShipsFrom($dealMeta)
+                    . $this->getShippingCost($jsonDealData)
+                    . $this->getSource($jsonDealData)
+                    . $this->getDealLocation($dealMeta)
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
-                    . $this->getTemperature($deal)
+                    . $this->getTemperature($jsonDealData)
                     . '</td></table>';
 
-                // Check if a clock icon is displayed on the deal
-                $clocks = $deal->find('svg[class*=icon--clock]');
-                if ($clocks !== null && count($clocks) > 0) {
-                    // Get the last clock, corresponding to the deal posting date
-                    $clock = end($clocks);
-
-                    // Find the text corresponding to the clock
-                    $spanDateDiv = $clock->next_sibling();
-                    $itemDate = $spanDateDiv->plaintext;
-                    // In some case of a Local deal, there is no date, but we can use
-                    // this case for other reason (like date not in the last field)
-                    if ($this->contains($itemDate, $this->i8n('localdeal'))) {
-                        $item['timestamp'] = time();
-                    } elseif ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
-                        $item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
-                    } else {
-                        $item['timestamp'] = $this->parseDate($itemDate);
-                    }
-                }
+                $item['timestamp'] = $this->getPublishedDate($jsonDealData);
                 $this->items[] = $item;
             }
         }
@@ -226,13 +174,16 @@ HEREDOC;
             $item['uid'] = $comment->commentId;
             // Timestamp handling needs a new parsing function
             if ($onlyWithUrl == true) {
-                // Count Links and Quote Links
-                $content = str_get_html($item['content']);
-                $countLinks = count($content->find('a[href]'));
-                $countQuoteLinks = count($content->find('a[href][class=userHtml-quote-source]'));
-                // Only add element if there are Links ans more links tant Quote links
-                if ($countLinks > 0 && $countLinks > $countQuoteLinks) {
-                    $this->items[] = $item;
+                // Only parse the comment if it is not empry
+                if ($item['content'] != '') {
+                    // Count Links and Quote Links
+                    $content = str_get_html($item['content']);
+                    $countLinks = count($content->find('a[href]'));
+                    $countQuoteLinks = count($content->find('a[href][class=userHtml-quote-source]'));
+                    // Only add element if there are Links and more links tant Quote links
+                    if ($countLinks > 0 && $countLinks > $countQuoteLinks) {
+                        $this->items[] = $item;
+                    }
                 }
             } else {
                 $this->items[] = $item;
@@ -240,15 +191,12 @@ HEREDOC;
         }
     }
 
-    /**
-     * Extract the cookies obtained from the URL
-     * @return array the array containing the cookies set by the URL
-     */
     private function getCookiesHeaderValue($url)
     {
         $response = getContents($url, [], [], true);
-        $setCookieHeaders = $response['headers']['set-cookie'] ?? [];
+        $setCookieHeaders = $response->getHeader('set-cookie', true);
         $cookies = array_map(fn($c): string => explode(';', $c)[0], $setCookieHeaders);
+
         return implode('; ', $cookies);
     }
 
@@ -270,41 +218,42 @@ HEREDOC;
      * Get the Price from a Deal if it exists
      * @return string String of the deal price
      */
-    private function getPrice($deal)
+    private function getPrice($jsonDealData)
     {
-        if (
-            $deal->find(
-                'span[class*=thread-price]',
-                0
-            ) != null
-        ) {
-            return '<div>' . $this->i8n('price') . ' : '
-                . $deal->find(
-                    'span[class*=thread-price]',
-                    0
-                )->plaintext
-                . '</div>';
+        if ($jsonDealData['props']['thread']['discountType'] == null) {
+            $price = $jsonDealData['props']['thread']['price'];
+                return '<div>' . $this->i8n('price') . ' : '
+                . $price . ' ' . $this->i8n('currency') . '</div>';
         } else {
             return '';
         }
     }
 
     /**
+     * Get the Publish Date from a Deal if it exists
+     * @return integer Timestamp of the published date of the deal
+     */
+    private function getPublishedDate($jsonDealData)
+    {
+        return $jsonDealData['props']['thread']['publishedAt'];
+    }
+
+    /**
+     * Get the Deal Author from a Deal if it exists
+     * @return String Author of the deal
+     */
+    private function getDealAuthor($jsonDealData)
+    {
+        return $jsonDealData['props']['thread']['user']['username'];
+    }
+
+    /**
      * Get the Title from a Deal if it exists
      * @return string String of the deal title
      */
-    private function getTitle($deal)
+    private function getTitle($jsonDealData)
     {
-        $titleRoot = $deal->find('div[class*=threadGrid-title]', 0);
-        $titleA = $titleRoot->find('a[class*=thread-link]', 0);
-        $titleFirstChild = $titleRoot->first_child();
-        if ($titleA !== null) {
-            $title = $titleA->plaintext;
-        } else {
-            // In some case, expired deals have a different format
-            $title = $titleRoot->find('span', 0)->plaintext;
-        }
-
+        $title = $jsonDealData['props']['thread']['title'];
         return $title;
     }
 
@@ -314,23 +263,48 @@ HEREDOC;
      */
     private function getTalkTitle()
     {
-        $html = getSimpleHTMLDOMCached($this->getInput('url'));
-        $title = $html->find('.thread-title', 0)->plaintext;
+        $cacheKey = $this->getInput('url') . 'TITLE';
+        $title = $this->loadCacheValue($cacheKey);
+        // The cache does not contain the title of the bridge, we must get it and save it in the cache
+        if ($title === null) {
+            $html = getSimpleHTMLDOMCached($this->getInput('url'));
+            $title = $html->find('title', 0)->plaintext;
+            // Save the value in the cache for the next 15 days
+            $this->saveCacheValue($cacheKey, $title, 86400 * 15);
+        }
         return $title;
+    }
+
+    /**
+     * Get the Title from a Group if it exists
+     * @return string String of the Talk title
+     */
+    private function getGroupTitle()
+    {
+        $cacheKey = $this->getInput('group') . 'TITLE';
+        $title = $this->loadCacheValue($cacheKey);
+        // The cache does not contain the title of the bridge, we must get it and save it in the cache
+        if ($title == null) {
+            $html = getSimpleHTMLDOMCached($this->getGroupURI());
+            // Search the title in the javascript mess
+            preg_match('/threadGroupName":"([^"]*)","threadGroupUrlName":"' . $this->getInput('group') . '"/m', $html, $matches);
+            $title = $matches[1];
+            // Save the value in the cache for the next 15 days
+            $this->saveCacheValue($cacheKey, $title, 86400 * 15);
+        }
+
+        $order = $this->getKey('order');
+        return $title . ' - ' . $order;
     }
 
     /**
      * Get the HTML Title code from an item
      * @return string String of the deal title
      */
-    private function getHTMLTitle($item)
+    private function getHTMLTitle($jsonDealData)
     {
-        if ($item['uri'] == '') {
-            $html = '<h2>' . $item['title'] . '</h2>';
-        } else {
-            $html = '<h2><a href="' . $item['uri'] . '">'
-                . $item['title'] . '</a></h2>';
-        }
+        $html = '<h2><a href="' . $this->getDealURI($jsonDealData) . '">'
+                . $this->getTitle($jsonDealData) . '</a></h2>';
 
         return $html;
     }
@@ -339,10 +313,11 @@ HEREDOC;
      * Get the URI from a Deal if it exists
      * @return string String of the deal URI
      */
-    private function getDealURI($deal)
+    private function getDealURI($jsonDealData)
     {
-        $dealId = $deal->attr['id'];
-        $uri = $this->i8n('bridge-uri') . $this->i8n('uri-deal') . str_replace('_', '-', $dealId);
+        $dealSlug = $jsonDealData['props']['thread']['titleSlug'];
+        $dealId = $jsonDealData['props']['thread']['threadId'];
+        $uri = $this->i8n('bridge-uri') . $this->i8n('uri-deal') . $dealSlug . '-' . $dealId;
         return $uri;
     }
 
@@ -350,18 +325,14 @@ HEREDOC;
      * Get the Shipping costs from a Deal if it exists
      * @return string String of the deal shipping Cost
      */
-    private function getShippingCost($deal)
+    private function getShippingCost($jsonDealData)
     {
-        if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0) != null) {
-            if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1) != null) {
+        $isFree = $jsonDealData['props']['thread']['shipping']['isFree'];
+        $price = $jsonDealData['props']['thread']['shipping']['price'];
+        if ($isFree !== null) {
                 return '<div>' . $this->i8n('shipping') . ' : '
-                    . strip_tags($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1)->innertext)
+                    . $price . ' ' . $this->i8n('currency')
                     . '</div>';
-            } else {
-                return '<div>' . $this->i8n('shipping') . ' : '
-                    . strip_tags($deal->find('span[class*=text--color-greyShade flex--inline]', 0)->innertext)
-                    . '</div>';
-            }
         } else {
             return '';
         }
@@ -371,21 +342,31 @@ HEREDOC;
      * Get the temperature from a Deal if it exists
      * @return string String of the deal temperature
      */
-    private function getTemperature($deal)
+    private function getTemperature($data)
+    {
+        return $data['props']['thread']['temperature'] . '°';
+    }
+
+
+    /**
+     * Get the Deal data from the "data-vue2" JSON attribute
+     * @return array Array containg the deal properties contained in the "data-vue2" attribute
+     */
+    private function getDealJsonData($deal)
     {
         $data = Json::decode($deal->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
-        return $data['props']['thread']['temperature'] . '°';
+        return $data;
     }
 
     /**
      * Get the source of a Deal if it exists
      * @return string String of the deal source
      */
-    private function getSource($deal)
+    private function getSource($jsonData)
     {
-        if (($origin = $deal->find('button[class*=text--color-greyShade]', 0)) != null) {
-            $path = str_replace(' ', '/', trim(Json::decode($origin->{'data-cloak-link'})['path']));
-            $text = $origin->find('span[class*=link]', 0);
+        if ($jsonData['props']['thread']['merchant'] != null) {
+            $path = $this->i8n('uri-merchant') . $jsonData['props']['thread']['merchant']['merchantId'];
+            $text = $jsonData['props']['thread']['merchant']['merchantName'];
             return '<div>' . $this->i8n('origin') . ' : <a href="' . static::URI . $path . '">' . $text . '</a></div>';
         } else {
             return '';
@@ -396,26 +377,44 @@ HEREDOC;
      * Get the original Price and discout from a Deal if it exists
      * @return string String of the deal original price and discount
      */
-    private function getDiscount($deal)
+    private function getDiscount($jsonDealData)
     {
-        if ($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
-            $discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
-            if ($discountHtml != null) {
-                $discount = $discountHtml->plaintext;
-            } else {
-                $discount = '';
+        $oldPrice = $jsonDealData['props']['thread']['nextBestPrice'];
+        $newPrice = $jsonDealData['props']['thread']['price'];
+        $percentage = $jsonDealData['props']['thread']['percentage'];
+
+        if ($oldPrice != 0) {
+            // If there is no percentage calculated, then calculate it manually
+            if ($percentage == 0) {
+                $percentage = round(100 - ($newPrice * 100 / $oldPrice), 2);
             }
             return '<div>' . $this->i8n('discount') . ' : <span style="text-decoration: line-through;">'
-                . $deal->find(
-                    'span[class*=mute--text text--lineThrough]',
-                    0
-                )->plaintext
-                . '</span>&nbsp;'
-                . $discount
-                . '</div>';
+                . $oldPrice . ' ' . $this->i8n('currency')
+                . '</span>&nbsp; -'
+                . $percentage
+                . ' %</div>';
         } else {
             return '';
         }
+    }
+
+    /**
+     * Get the Deal location if it exists
+     * @return string String of the deal location
+     */
+    private function getDealLocation($dealMeta)
+    {
+        $ribbons = $dealMeta['props']['metaRibbons'];
+        $isLocal = false;
+        foreach ($ribbons as $ribbon) {
+            $isLocal |= ($ribbon['type'] == 'local');
+        }
+        if ($isLocal) {
+            $content = '<div>' . $this->i8n('deal-type') . ' : ' . $this->i8n('localdeal') . '</div>';
+        } else {
+            $content = '';
+        }
+        return $content;
     }
 
     /**
@@ -424,157 +423,28 @@ HEREDOC;
      */
     private function getImage($deal)
     {
-        $selectorLazy = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'thread-image',
-                'width--all-auto',
-                'height--all-auto',
-                'imgFrame-img',
-                'img--dummy',
-                'js-lazy-img'
-            ]
-        );
-
-        $selectorPlain = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'thread-image',
-                'width--all-auto',
-                'height--all-auto',
-                'imgFrame-img',
-            ]
-        );
-        if ($deal->find('img[class=' . $selectorLazy . ']', 0) != null) {
-            return json_decode(
-                html_entity_decode(
-                    $deal->find('img[class=' . $selectorLazy . ']', 0)
-                        ->getAttribute('data-lazy-img')
-                )
-            )->{'src'};
-        } else {
-            return $deal->find('img[class*=' . $selectorPlain . ']', 0)->src ?? '';
-        }
+        // Get thread Image JSON content
+        $content = Json::decode($deal->find('div[class*=threadGrid-image]', 0)->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
+        return '<img src="' . $content['props']['threadImageUrl'] . '"/>';
     }
 
     /**
      * Get the originating country from a Deal if it exists
      * @return string String of the deal originating country
      */
-    private function getShipsFrom($deal)
+    private function getShipsFrom($dealMeta)
     {
-        $selector = implode(
-            ' ', /* Notice this is a space! */
-            [
-                'hide--toW2',
-                'metaRibbon',
-            ]
-        );
-        if ($deal->find('span[class*=' . $selector . ']', 0) != null) {
-            $children = $deal->find('span[class*=' . $selector . ']', 0)->children(2);
-            if ($children) {
-                return '<div>' . $children->plaintext . '</div>';
+        $metas = $dealMeta['props']['metaRibbons'];
+        $shipsFrom = null;
+        foreach ($metas as $meta) {
+            if ($meta['type'] == 'dispatched-from') {
+                $shipsFrom = $meta['text'];
             }
         }
+        if ($shipsFrom != null) {
+            return '<div>' . $shipsFrom . '</div>';
+        }
         return '';
-    }
-
-    /**
-     * Transforms a local date into a timestamp
-     * @return int timestamp of the input date
-     */
-    private function parseDate($string)
-    {
-        $month_local = $this->i8n('local-months');
-        $month_en = [
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December'
-        ];
-
-        // A date can be prfixed with some words, we remove theme
-        $string = $this->removeDatePrefixes($string);
-        // We translate the local months name in the english one
-        $date_str = trim(str_replace($month_local, $month_en, $string));
-
-        // If the date does not contain any year, we add the current year
-        if (!preg_match('/[0-9]{4}/', $string)) {
-            $date_str .= ' ' . date('Y');
-        }
-
-        // Add the Hour and minutes
-        $date_str .= ' 00:00';
-        $date = DateTime::createFromFormat('j F Y H:i', $date_str);
-        // In some case, the date is not recognized : as a workaround the actual date is taken
-        if ($date === false) {
-            $date = new DateTime();
-        }
-        return $date->getTimestamp();
-    }
-
-    /**
-     * Remove the prefix of a date if it has one
-     * @return the date without prefiux
-     */
-    private function removeDatePrefixes($string)
-    {
-        $string = str_replace($this->i8n('date-prefixes'), [], $string);
-        return $string;
-    }
-
-    /**
-     * Remove the suffix of a relative date if it has one
-     * @return the relative date without suffixes
-     */
-    private function removeRelativeDateSuffixes($string)
-    {
-        if (count($this->i8n('relative-date-ignore-suffix')) > 0) {
-            $string = preg_replace($this->i8n('relative-date-ignore-suffix'), '', $string);
-        }
-        return $string;
-    }
-
-    /**
-     * Transforms a relative local date into a timestamp
-     * @return int timestamp of the input date
-     */
-    private function relativeDateToTimestamp($str)
-    {
-        $date = new DateTime();
-
-        // The minimal amount of time substracted is a minute : the seconds in the resulting date would be related to the execution time of the script.
-        // This make no sense, so we set the seconds manually to "00".
-        $date->setTime($date->format('H'), $date->format('i'), 0);
-
-        // In case of update date, replace it by the regular relative date first word
-        $str = str_replace($this->i8n('relative-date-alt-prefixes'), $this->i8n('local-time-relative')[0], $str);
-
-        $str = $this->removeRelativeDateSuffixes($str);
-
-        $search = $this->i8n('local-time-relative');
-
-        $replace = [
-            '-',
-            'minute',
-            'hour',
-            'day',
-            'month',
-            'year',
-            ''
-        ];
-        $date->modify(str_replace($search, $replace, $str));
-
-
-        return $date->getTimestamp();
     }
 
     /**
@@ -588,7 +458,7 @@ HEREDOC;
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-keyword') . ' : ' . $this->getInput('q');
                 break;
             case $this->i8n('context-group'):
-                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $this->getKey('group');
+                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $this->getGroupTitle();
                 break;
             case $this->i8n('context-talk'):
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-talk') . ' : ' . $this->getTalkTitle();
@@ -631,7 +501,7 @@ HEREDOC;
         $priceFrom = $this->getInput('priceFrom');
         $priceTo = $this->getInput('priceTo');
         $url = $this->i8n('bridge-uri')
-            . 'search/advanced?q='
+            . 'search?q='
             . urlencode($q)
             . '&hide_expired=' . $hide_expired
             . '&hide_local=' . $hide_local
@@ -655,8 +525,15 @@ HEREDOC;
         $group = $this->getInput('group');
         $order = $this->getInput('order');
 
+        // This permit to keep the existing Feed to work
+        if ($order == $this->i8n('context-hot')) {
+            $sortBy = 'temp';
+        } else if ($order == $this->i8n('context-new')) {
+            $sortBy = 'new';
+        }
+
         $url = $this->i8n('bridge-uri')
-            . $this->i8n('uri-group') . $group . $order;
+            . $this->i8n('uri-group') . $group . '?sortBy=' . $sortBy;
         return $url;
     }
 

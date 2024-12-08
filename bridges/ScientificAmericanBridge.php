@@ -25,7 +25,7 @@ class ScientificAmericanBridge extends FeedExpander
     ];
 
     const FEED = 'http://rss.sciam.com/ScientificAmerican-Global';
-    const ISSUES = 'https://www.scientificamerican.com/archive/issues/2020s/';
+    const ISSUES = 'https://www.scientificamerican.com/archive/issues/';
 
     public function collectData()
     {
@@ -50,7 +50,7 @@ class ScientificAmericanBridge extends FeedExpander
 
         if ($this->getInput('addContents') == 1) {
             usort($this->items, function ($item1, $item2) {
-                return $item1['timestamp'] - $item2['timestamp'];
+                return $item2['timestamp'] - $item1['timestamp'];
             });
         }
     }
@@ -66,8 +66,12 @@ class ScientificAmericanBridge extends FeedExpander
     private function collectIssues()
     {
         $html = getSimpleHTMLDOMCached(self::ISSUES);
-        $content = $html->getElementById('content')->children(3);
-        $issues = $content->children();
+        $content = $html->getElementById('app');
+        $issues_list = $content->find('div[class^="issue__list"]', 0);
+        if ($issues_list == null) {
+            return [];
+        }
+        $issues = $issues_list->find('div[class^="list__item"]');
         $issues_count = min(
             (int)$this->getInput('parseIssues'),
             count($issues)
@@ -87,36 +91,19 @@ class ScientificAmericanBridge extends FeedExpander
         $items = [];
         $html = getSimpleHTMLDOMCached($issue_link);
 
-        $features = $html->find('[class^=Detail_issue__article__previews__featured]', 0);
-        if ($features != null) {
-            $articles = $features->find('div', 0)->children();
+        $blocks = $html->find('[class^="issueArchiveArticleListCompact"]');
+        foreach ($blocks as $block) {
+            $articles = $block->find('article[class*="article"]');
             foreach ($articles as $article) {
-                $h4 = $article->find('h4', 0);
-                $a = $h4->find('a', 0);
+                $a = $article->find('a[class^="articleLink"]', 0);
                 $link = 'https://scientificamerican.com' . $a->getAttribute('href');
-                $title = $a->plaintext;
-                $items[] = [
+                $title = $a->find('h2[class^="articleTitle"]', 0);
+                array_push($items, [
                     'uri' => $link,
-                    'title' => $title,
+                    'title' => $title->plaintext,
                     'uid' => $link,
                     'content' => ''
-                ];
-            }
-        }
-
-        $departments = $html->find('[class^=Detail_issue__article__previews__departments]', 0);
-        if ($departments != null) {
-            $headers = $departments->find('[class*=Listing_article__listing__title]');
-            foreach ($headers as $header) {
-                $a = $header->find('a', 0);
-                $link = 'https://scientificamerican.com' . $a->getAttribute('href');
-                $title = $a->plaintext;
-                $items[] = [
-                    'uri' => $link,
-                    'title' => $title,
-                    'uid' => $link,
-                    'content' => ''
-                ];
+                ]);
             }
         }
 
@@ -126,63 +113,66 @@ class ScientificAmericanBridge extends FeedExpander
     private function updateItem($item)
     {
         $html = getSimpleHTMLDOMCached($item['uri']);
-        $article = $html->find('#sa_body', 0)->find('article', 0);
+        $article = $html->find('#app', 0)->find('article', 0);
 
-        $time = $article->find('time[itemprop="datePublished"]', 0);
-        if ($time == null) {
-            $time = $html->find('span[itemprop="datePublished"]', 0);
-        }
+        $time = $article->find('p[class^="article_pub_date"]', 0);
         if ($time) {
             $datetime = DateTime::createFromFormat('F j, Y', $time->plaintext);
+            $datetime->setTime(0, 0, 0, 0);
             $item['timestamp'] = $datetime->format('U');
         }
-        $main = $article->find('section.article-grid__main', 0);
 
-        if ($main == null) {
-            $main = $article->find('div.article-text', 0);
-        }
-
-        if ($main == null) {
-            return $item;
+        $authors = $article->find('a[class^="article_authors__link"]');
+        if ($authors) {
+            $author = implode('; ', array_map(fn($a) => $a->plaintext, $authors));
+            $item['author'] = $author;
         }
 
-        foreach ($main->find('img') as $img) {
-            $img->removeAttribute('width');
-            $img->removeAttribute('height');
-            $img->setAttribute('style', 'height: auto; width: auto; max-height: 768px');
+        $res = '';
+        $desc = $article->find('div[class^="article_dek"]', 0);
+        if ($desc) {
+            $res .= $desc->innertext;
         }
 
-        $rights_link = $main->find('div.article-rightslink', 0);
-        if ($rights_link != null) {
-            $rights_link->parent->removeChild($rights_link);
-        }
-        $reprints_link = $main->find('div.article-reprintsLink', 0);
-        if ($reprints_link != null) {
-            $reprints_link->parent->removeChild($reprints_link);
-        }
-        $about_section = $main->find('section.article-author-container', 0);
-        if ($about_section != null) {
-            $about_section->parent->removeChild($about_section);
-        }
-        $read_next = $main->find('#read-next', 0);
-        if ($read_next != null) {
-            $read_next->parent->removeChild($read_next);
+        $lead_figure = $article->find('figure[class^="lead_image"]', 0);
+        if ($lead_figure) {
+            $res .= $lead_figure->outertext;
         }
 
-        foreach ($main->find('iframe') as $iframe) {
-            $a = $html->createElement('a');
-            $a->href = $iframe->src;
-            $a->innertext = $iframe->src;
-            $iframe->parent->appendChild($a);
-            $iframe->parent->removeChild($iframe);
+        $content = $article->find('div[class^="article__content"]', 0);
+        if ($content) {
+            foreach ($content->children() as $block) {
+                if (str_contains($block->innertext, 'On supporting science journalism')) {
+                    continue;
+                }
+                if (
+                    ($block->tag == 'p' && $block->getAttribute('data-block') == 'sciam/paragraph')
+                    || ($block->tag == 'figure' && str_starts_with($block->class, 'article__image'))
+                ) {
+                    $iframe = $block->find('iframe', 0);
+                    if ($iframe) {
+                        $res .= "<a href=\"{$iframe->src}\">{$iframe->src}</a>";
+                    } else {
+                        $res .= $block->outertext;
+                    }
+                } else if ($block->tag == 'h2') {
+                    $res .= '<h3>' . $block->innertext . '</h3>';
+                } else if ($block->tag == 'blockquote') {
+                    $res .= $block->outertext;
+                } else if ($block->tag == 'hr' && $block->getAttribute('data-block') == 'sciam/raw_html') {
+                    $res .= '<hr />';
+                }
+            }
         }
 
-        $authors = $main->find('span[itemprop="author"]', 0);
-        if ($authors != null) {
-            $item['author'] = $authors->plaintext;
+        $footer = $article->find('footer[class*="footer"]', 0);
+        if ($footer) {
+            $bios = $footer->find('div[class^=bio]');
+            $bio = implode('', array_map(fn($b) => $b->innertext, $bios));
+            $res .= $bio;
         }
 
-        $item['content'] = $main->innertext;
+        $item['content'] = $res;
         return $item;
     }
 }

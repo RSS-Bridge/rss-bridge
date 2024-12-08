@@ -164,7 +164,7 @@ class BugzillaBridge extends BridgeAbstract
         }
 
         $cache = $this->loadCacheValue($this->instance . $user);
-        if (!is_null($cache)) {
+        if ($cache) {
             return $cache;
         }
 

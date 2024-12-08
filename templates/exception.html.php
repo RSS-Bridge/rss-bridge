@@ -16,6 +16,21 @@
             </p>
         <?php endif; ?>
 
+        <?php if ($e->getCode() === 400): ?>
+            <h2>400 Bad Request</h2>
+            <p>
+                This is usually caused by an incorrectly constructed http request.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($e->getCode() === 403): ?>
+            <h2>403 Forbidden</h2>
+            <p>
+                The HTTP 403 Forbidden response status code indicates that the
+                server understands the request but refuses to authorize it.
+            </p>
+        <?php endif; ?>
+
         <?php if ($e->getCode() === 404): ?>
             <h2>404 Page Not Found</h2>
             <p>
@@ -37,6 +52,22 @@
             <p>
                 Common causes are a server that is down for maintenance
                 or that is overloaded.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($e->getCode() === 0): ?>
+            <p>
+                See
+                <a href="https://curl.haxx.se/libcurl/c/libcurl-errors.html">
+                    https://curl.haxx.se/libcurl/c/libcurl-errors.html
+                </a>
+                for description of the curl error code.
+            </p>
+        <?php else: ?>
+            <p>
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/<?= raw($e->getCode()) ?>">
+                    https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/<?= raw($e->getCode()) ?>
+                </a>
             </p>
         <?php endif; ?>
 

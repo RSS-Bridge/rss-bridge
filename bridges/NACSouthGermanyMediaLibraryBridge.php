@@ -31,7 +31,7 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        return 'https://www.nak-stuttgart.de/static/themes/nak_sued/images/nak-logo.png';
+        return 'https://nak-sued.de/static/themes/sued/images/logo.png';
     }
 
     private static function parseTimestamp($title)
@@ -66,9 +66,12 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
     private static function collectDataForBayern2($parent, $item)
     {
         # Find link
-        $playerDom = getSimpleHTMLDOMCached(self::BASE_URI . $parent->find('a', 0)->href);
-        $sourceURI = $playerDom->find('source', 0)->src;
-        $item['enclosures'] = [self::BASE_URI . $sourceURI];
+        $relativeURICode = $parent->find('a', 0)->onclick;
+        if (preg_match('/window\.open\(\'([^\']*)\'/', $relativeURICode, $matches)) {
+            $playerDom = getSimpleHTMLDOMCached(self::BASE_URI . $matches[1]);
+            $sourceURI = $playerDom->find('source', 0)->src;
+            $item['enclosures'] = [self::BASE_URI . $sourceURI];
+        }
 
         # Add time to timestamp
         $item['timestamp'] .= ' 06:45';
@@ -78,16 +81,16 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
 
     private function collectDataInList($pageURI, $customizeItemCall)
     {
-        $page = getSimpleHTMLDOM(self::BASE_URI . $pageURI);
+        $page = getSimpleHTMLDOM($pageURI);
 
-        foreach ($page->find('div.grids') as $parent) {
+        foreach ($page->find('div.flex-columns.entry') as $parent) {
             # Find title
-            $title = $parent->find('h2', 0)->plaintext;
+            $title = trim($parent->find('h2')[0]->innertext);
 
             # Find content
-            $contentBlock = $parent->find('ul.contentlist', 0);
+            $contentBlock = $parent->find('div')[2];
             $content = '';
-            foreach ($contentBlock->find('li') as $li) {
+            foreach ($contentBlock->find('li,p') as $li) {
                 $content .= '<p>' . $li->plaintext . '</p>';
             }
 
@@ -103,7 +106,7 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
     private function collectDataFromAllPages($rootURI, $customizeItemCall)
     {
         $rootPage = getSimpleHTMLDOM($rootURI);
-        $pages = $rootPage->find('div#tabmenu', 0);
+        $pages = $rootPage->find('div.flex-columns.inner_filter', 0);
         foreach ($pages->find('a') as $page) {
             self::collectDataInList($page->href, [$this, $customizeItemCall]);
         }

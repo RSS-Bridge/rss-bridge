@@ -3,7 +3,7 @@
 class JohannesBlickBridge extends BridgeAbstract
 {
     const NAME        = 'Johannes Blick';
-    const URI         = 'https://www.st-johannes-baptist.de/index.php/unsere-medien/johannesblick-archiv';
+    const URI         = 'https://www.st-johannes-baptist.de/index.php/medien-und-downloads/archiv-johannesblick';
     const DESCRIPTION = 'RSS feed for Johannes Blick';
     const MAINTAINER  = 'jummo4@yahoo.de';
 
@@ -13,7 +13,7 @@ class JohannesBlickBridge extends BridgeAbstract
             or returnServerError('Could not request: ' . self::URI);
 
         $html = defaultLinkTo($html, self::URI);
-        foreach ($html->find('td > a') as $index => $a) {
+        foreach ($html->find('ul[class=easyfolderlisting] > li > a') as $index => $a) {
             $item = []; // Create an empty item
             $articlePath = $a->href;
             $item['title'] = $a->innertext;

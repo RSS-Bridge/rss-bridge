@@ -63,7 +63,7 @@ class StreamCzBridge extends BridgeAbstract
             $imageUrlNode = reset($episode['node']['images']);
             $item = [
                 'title' => $episode['node']['name'],
-                'uri' => "${fixedUrl}/${episodeUrl}",
+                'uri' => $fixedUrl . '/' . $episodeUrl,
                 'content' => $imageUrlNode ? '<img src="' . $imageUrlNode['url'] . '" />' : '',
                 'timestamp' => $episode['node']['publishTime']['timestamp']
             ];

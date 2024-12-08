@@ -3,7 +3,7 @@
 class Mailman2Bridge extends BridgeAbstract
 {
     const NAME = 'Mailman2Bridge';
-    const URI = 'https://list.org/';
+    const URI = 'https://list.org';
     const MAINTAINER = 'imagoiq';
     const CACHE_TIMEOUT = 60 * 30; // 30m
     const DESCRIPTION = 'Fetch latest messages from Mailman 2 archive (Pipermail)';
@@ -68,7 +68,7 @@ class Mailman2Bridge extends BridgeAbstract
                     throw new \Exception('Failed to gzdecode');
                 }
             }
-            $mboxParts = preg_split('/^From /', $data);
+            $mboxParts = preg_split('/^From\s.+\d{2}:\d{2}:\d{2}\s\d{4}$/m', $data);
             // Drop the first element which is always an empty string
             array_shift($mboxParts);
             $mboxMails = array_reverse($mboxParts);

@@ -1,9 +1,11 @@
 <?php
 
+/**
+ * Good resource on API return values (Ex: illustType):
+ * https://hackage.haskell.org/package/pixiv-0.1.0/docs/Web-Pixiv-Types.html
+ */
 class PixivBridge extends BridgeAbstract
 {
-    // Good resource on API return values (Ex: illustType):
-    // https://hackage.haskell.org/package/pixiv-0.1.0/docs/Web-Pixiv-Types.html
     const NAME = 'Pixiv Bridge';
     const URI = 'https://www.pixiv.net/';
     const DESCRIPTION = 'Returns the tag search from pixiv.net';
@@ -18,7 +20,6 @@ class PixivBridge extends BridgeAbstract
             'defaultValue' => null
         ]
     ];
-
 
     const PARAMETERS = [
         'global' => [
@@ -159,7 +160,8 @@ class PixivBridge extends BridgeAbstract
                         $json = array_reduce($json, function ($acc, $i) {
                             if ($i['illustType'] === 0) {
                                 $acc[] = $i;
-                            }return $acc;
+                            }
+                            return $acc;
                         }, []);
                         break;
                     case 'manga':
@@ -234,8 +236,10 @@ class PixivBridge extends BridgeAbstract
 
             $item = [];
             $item['uid'] = $result['id'];
+
             $subpath = array_key_exists('illustType', $result) ? 'artworks/' : 'novel/show.php?id=';
             $item['uri'] = static::URI . $subpath . $result['id'];
+
             $item['title'] = $result['title'];
             $item['author'] = $result['userName'];
             $item['timestamp'] = $result['updateDate'];
@@ -251,14 +255,11 @@ class PixivBridge extends BridgeAbstract
                     $img_url = preg_replace('/https:\/\/i\.pximg\.net/', $proxy_url, $result['url']);
                 }
             } else {
-                //else cache and use image.
-                $img_url = $this->cacheImage(
-                    $result['url'],
-                    $result['id'],
-                    array_key_exists('illustType', $result)
-                );
+                $img_url = $result['url'];
             }
-            $item['content'] = "<img src='" . $img_url . "' />";
+
+            // Currently, this might result in broken image due to their strict referrer check
+            $item['content'] = sprintf('<a href="%s"><img src="%s"/></a>', $img_url, $img_url);
 
             // Additional content items
             if (array_key_exists('pageCount', $result)) {
@@ -271,46 +272,6 @@ class PixivBridge extends BridgeAbstract
         }
     }
 
-    /**
-     * todo: remove manual file cache
-     * See bridge specific documentation for alternative option.
-     */
-    private function cacheImage($url, $illustId, $isImage)
-    {
-        $illustId = preg_replace('/[^0-9]/', '', $illustId);
-        $thumbnailurl = $url;
-
-        $path = PATH_CACHE . 'pixiv_img/';
-        if (!is_dir($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        $path .= $illustId;
-        if ($this->getInput('fullsize')) {
-            $path .= '_fullsize';
-        }
-        $path .= '.jpg';
-
-        if (!is_file($path)) {
-            // Get fullsize URL
-            if ($isImage && $this->getInput('fullsize')) {
-                $ajax_uri = static::URI . 'ajax/illust/' . $illustId;
-                $imagejson = $this->getData($ajax_uri, true, true);
-                $url = $imagejson['body']['urls']['original'];
-            }
-
-            $headers = ['Referer: ' . static::URI];
-            try {
-                $illust = $this->getData($url, true, false, $headers);
-            } catch (Exception $e) {
-                $illust = $this->getData($thumbnailurl, true, false, $headers); // Original thumbnail
-            }
-            file_put_contents($path, $illust);
-        }
-
-        return get_home_page_url() . 'cache/pixiv_img/' . preg_replace('/.*\//', '', $path);
-    }
-
     private function checkOptions()
     {
         $proxy = $this->getOption('proxy_url');
@@ -318,7 +279,7 @@ class PixivBridge extends BridgeAbstract
             if (
                 !(strlen($proxy) > 0 && preg_match('/https?:\/\/.*/', $proxy))
             ) {
-                return returnServerError('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
+                returnServerError('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
             }
         }
 
@@ -326,8 +287,7 @@ class PixivBridge extends BridgeAbstract
         if ($cookie) {
             $isAuth = $this->loadCacheValue('is_authenticated');
             if (!$isAuth) {
-                $res = $this->getData('https://www.pixiv.net/ajax/webpush', true, true)
-                    or returnServerError('Invalid PHPSESSID cookie provided. Please check the 🍪 and try again.');
+                $res = $this->getData('https://www.pixiv.net/ajax/webpush', true, true);
                 if ($res['error'] === false) {
                     $this->saveCacheValue('is_authenticated', true);
                 }
@@ -354,7 +314,7 @@ class PixivBridge extends BridgeAbstract
     {
         // checks if cookie is set, if not initialise it with the cookie from the config
         $value = $this->loadCacheValue('cookie');
-        if (!isset($value)) {
+        if (!$value) {
             $value = $this->getOption('cookie');
 
             // 30 days + 1 day to let cookie chance to renew
@@ -372,21 +332,20 @@ class PixivBridge extends BridgeAbstract
         }
 
         if ($cache) {
-            $data = $this->loadCacheValue($url);
-            if (!$data) {
-                $data = getContents($url, $httpHeaders, $curlOptions, true) or returnServerError("Could not load $url");
-                $this->saveCacheValue($url, $data);
+            $response = $this->loadCacheValue($url);
+            if (!$response || is_array($response)) {
+                $response = getContents($url, $httpHeaders, $curlOptions, true);
+                $this->saveCacheValue($url, $response);
             }
         } else {
-            $data = getContents($url, $httpHeaders, $curlOptions, true) or returnServerError("Could not load $url");
+            $response = getContents($url, $httpHeaders, $curlOptions, true);
         }
 
-        $this->checkCookie($data['headers']);
+        $this->checkCookie($response->getHeaders());
 
         if ($getJSON) {
-            return json_decode($data['content'], true);
-        } else {
-            return $data['content'];
+            return json_decode($response->getBody(), true);
         }
+        return $response->getBody();
     }
 }

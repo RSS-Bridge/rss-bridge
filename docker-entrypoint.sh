@@ -42,4 +42,4 @@ fi
 nginx
 
 # php-fpm should not daemonize
-php-fpm8.2 --nodaemonize
+exec php-fpm8.2 --nodaemonize

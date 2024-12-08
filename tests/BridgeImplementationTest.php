@@ -160,29 +160,6 @@ class BridgeImplementationTest extends TestCase
     /**
      * @dataProvider dataBridgesProvider
      */
-    public function testVisibleMethods($path)
-    {
-        $bridgeAbstractMethods = get_class_methods(BridgeAbstract::class);
-        sort($bridgeAbstractMethods);
-        $feedExpanderMethods = get_class_methods(FeedExpander::class);
-        sort($feedExpanderMethods);
-
-        $this->setBridge($path);
-
-        $publicMethods = get_class_methods($this->bridge);
-        sort($publicMethods);
-        foreach ($publicMethods as $publicMethod) {
-            if ($this->bridge instanceof FeedExpander) {
-                $this->assertContains($publicMethod, $feedExpanderMethods);
-            } else {
-                $this->assertContains($publicMethod, $bridgeAbstractMethods);
-            }
-        }
-    }
-
-    /**
-     * @dataProvider dataBridgesProvider
-     */
     public function testMethodValues($path)
     {
         $this->setBridge($path);

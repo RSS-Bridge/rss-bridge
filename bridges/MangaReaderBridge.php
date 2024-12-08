@@ -26,11 +26,26 @@ class MangaReaderBridge extends BridgeAbstract
         ]
     ];
 
+    protected $feedName = '';
+
+
+    public function getName()
+    {
+        if (empty($this->feedName)) {
+            return parent::getName();
+        } else {
+            return $this->feedName;
+        }
+    }
+
     public function collectData()
     {
         $url = $this->getInput('url');
         $lang = $this->getInput('lang');
         $dom = getSimpleHTMLDOM($url);
+        $aniDetail = $dom->getElementById('ani_detail');
+        $this->feedName = html_entity_decode($aniDetail->find('h2', 0)->plaintext);
+
         $chapters = $dom->getElementById($lang . '-chapters');
 
         foreach ($chapters->getElementsByTagName('li') as $chapter) {

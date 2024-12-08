@@ -168,7 +168,7 @@ class NationalGeographicBridge extends BridgeAbstract
         }
 
         $image = $story['img'];
-        $item['enclosures'][] = $image['src'];
+        $item['enclosures'][] = str_replace(' ', '%20', $image['src']);
 
         foreach ($story['tags'] as $tag) {
             $item['categories'][] = $tag['name'] ?? $tag;
@@ -218,7 +218,10 @@ class NationalGeographicBridge extends BridgeAbstract
         switch ($image_type) {
             case 'image':
             case 'imagegroup':
-                $image = $image_module['image'];
+                $image = $image_module['image'] ?? null;
+                if (!$image) {
+                    return '';
+                }
                 $image_src = $image['src'];
                 if (isset($image_module['alt'])) {
                     $image_alt = $image_module['alt'];
@@ -266,7 +269,11 @@ EOD;
 
         $json = json_decode($matches[1][0], true);
 
-        $unfiltered_data = $json['page']['content']['article']['frms'];
+        if (isset($json['page']['content']['article']['frms'])) {
+            $unfiltered_data = $json['page']['content']['article']['frms'];
+        } else {
+            $unfiltered_data = $json['page']['content']['prismarticle']['frms'];
+        }
         $filtered_data = $this->filterArticleData($unfiltered_data);
 
         $article = $filtered_data['edgs'][0];
@@ -288,7 +295,7 @@ EOD;
             }
         }
 
-        $published_date = $article['pbDt'];
+        $published_date = $article['pbDt'] ?? $article['dt'];
         $article_body = $article['bdy'];
         $content = '';
 

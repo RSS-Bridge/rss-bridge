@@ -8,6 +8,8 @@ $this->getInput('your input name here');
 `getInput` will either return the value for your parameter
 or `null` if the parameter is unknown or not specified.
 
+[Defined in lib/BridgeAbstract.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/BridgeAbstract.php)
+
 # getKey
 The `getKey` function is used to receive the key name to a selected list
 value given the name of the list, specified in `const PARAMETERS`
@@ -39,6 +41,8 @@ $this->getKey('country');
 `getKey` will either return the key name for your parameter or `null` if the parameter
 is unknown or not specified.
 
+[Defined in lib/BridgeAbstract.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/BridgeAbstract.php)
+
 # getContents
 The `getContents` function uses [cURL](https://secure.php.net/manual/en/book.curl.php) to acquire data from the specified URI while respecting the various settings defined at a global level by RSS-Bridge (i.e., proxy host, user agent, etc.). This function accepts a few parameters:
 
@@ -55,6 +59,8 @@ $opts = array(CURLOPT_POST => 1);
 $html = getContents($url, $header, $opts);
 ```
 
+[Defined in lib/contents.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/contents.php)
+
 # getSimpleHTMLDOM
 The `getSimpleHTMLDOM` function is a wrapper for the 
 [simple_html_dom](https://simplehtmldom.sourceforge.io/) [file_get_html](https://simplehtmldom.sourceforge.io/docs/1.9/api/file_get_html/) function in order to provide context by design.
@@ -62,6 +68,9 @@ The `getSimpleHTMLDOM` function is a wrapper for the
 ```PHP
 $html = getSimpleHTMLDOM('your URI');
 ```
+
+[Defined in lib/contents.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/contents.php)
+
 # getSimpleHTMLDOMCached
 The `getSimpleHTMLDOMCached` function does the same as the 
 [`getSimpleHTMLDOM`](#getsimplehtmldom) function,
@@ -76,6 +85,8 @@ This function allows to specify the cache duration with the second parameter.
 $html = getSimpleHTMLDOMCached('your URI', 86400); // Duration 24h
 ```
 
+[Defined in lib/contents.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/contents.php)
+
 # returnClientError
 The `returnClientError` function aborts execution of the current bridge
 and returns the given error message with error code **400**:
@@ -86,6 +97,8 @@ returnClientError('Your error message')
 
 Use this function when the user provided invalid parameter or a required parameter is missing.
 
+[Defined in lib/utils.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php)
+
 # returnServerError
 The `returnServerError` function aborts execution of the current bridge and returns the given error message with error code **500**:
 
@@ -95,6 +108,8 @@ returnServerError('Your error message')
 
 Use this function when a problem occurs that has nothing to do with the parameters provided by the user.
 (like: Host service gone missing, empty data received, etc...)
+
+[Defined in lib/utils.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php)
 
 # defaultLinkTo
 Automatically replaces any relative URL in a given string or DOM object
@@ -122,6 +137,8 @@ $html = defaultLinkTo($html, $this->getURI()); // Using bridge URL
 // <img src="https://www.github.com/rss-bridge/rss-bridge/blob/master/README.md">
 ```
 
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
 # backgroundToImg
 Replaces tags with styles of `backgroud-image` by `<img />` tags.
 
@@ -130,6 +147,8 @@ backgroundToImg(mixed $htmlContent) : object
 ```
 
 Returns a DOM object (even if provided a string).
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
 
 # extractFromDelimiters
 Extract the first part of a string matching the specified start and end delimiters.
@@ -150,6 +169,8 @@ $extracted = extractFromDelimiters($string, $start, $end);
 // Output
 // 'John Doe'
 ```
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
 
 # stripWithDelimiters
 Remove one or more part(s) of a string using a start and end delimiter.
@@ -173,6 +194,8 @@ $cleaned = stripWithDelimiters($string, $start, $end);
 // 'foobar'
 ```
 
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
 # stripRecursiveHTMLSection
 Remove HTML sections containing one or more sections using the same HTML tag.
 
@@ -191,6 +214,8 @@ $cleaned = stripRecursiveHTMLSection($string, $tag_name, $tag_start);
 // Output
 // 'foobar'
 ```
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
 
 # markdownToHtml
 Converts markdown input to HTML using [Parsedown](https://parsedown.org/).
@@ -233,3 +258,84 @@ $html = markdownToHtml($input);
 // <li>Translation improvements</li>
 // </ul>
 ```
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
+# e
+The `e` function is used to convert special characters to HTML entities
+
+```PHP
+e('0 < 1 and 2 > 1');
+```
+
+`e` will return the content of the string escape that can be rendered as is in HTML
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
+# truncate
+The `truncate` function is used to shorten a string if exceeds a certain length, and add a string indicating that the string has been shortened.
+
+```PHP
+truncate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a neque nunc. Nam nibh sem.', 20 , '...');
+```
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
+# sanitize
+The `sanitize` function is used to remove some tags from a given HTML text.
+
+```PHP
+$html = '<head><title>Sample Page</title></head>
+<body><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+<iframe src="https://www.example.com" width="600" height="400" frameborder="0" allowfullscreen></iframe>
+</body>
+</html>';
+$tags_to_remove = ['script', 'iframe', 'input', 'form'];
+$attributes_to_keep = ['title', 'href', 'src'];
+$text_to_keep = [];
+sanitize($html, $tags_to_remove, $attributes_to_keep, $text_to_keep);
+```
+
+This function returns a simplehtmldom object of the remaining contents.
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
+# convertLazyLoading
+The `convertLazyLoading` function is used to convert onvert lazy-loading images and frames (video embeds) into static elements. It accepts the HTML content as HTML objects or string objects. It returns the HTML content with fixed image/frame URLs (same type as input).
+
+```PHP
+$html = '<html>
+<body style="background-image: url('bgimage.jpg');">
+<h1>Hello world!</h1>
+</body>
+</html>
+backgroundToImg($html);
+```
+
+[Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
+# Json::encode
+The `Json::encode` function is used to encode a value as à JSON string.
+
+```PHP
+$array = [
+    "foo" => "bar",
+    "bar" => "foo",
+];
+Json::encode($array, true, true);
+```
+
+[Defined in lib/utils.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php)
+
+# Json::decode
+The `Json::decode` function is used to decode a JSON string into à PHP variable.
+
+```PHP
+$json = '{
+    "foo": "bar",
+    "bar": "foo"
+}';
+Json::decode($json);
+```
+
+[Defined in lib/utils.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php)

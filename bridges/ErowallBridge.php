@@ -98,7 +98,7 @@ class ErowallBridge extends BridgeAbstract
                 $ret .= 'dat/';
                 break;
             default:
-                $tag = $this->getInput('tag');
+                $tag = $this->getInput('tag') ?? '';
                 $ret .= 'teg/' . str_replace(' ', '+', $tag);
         }
 

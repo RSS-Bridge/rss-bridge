@@ -54,7 +54,7 @@ class CaschyBridge extends FeedExpander
     {
         // remove unwanted stuff
         foreach (
-            $article->find('div.video-container, div.aawp, p.aawp-disclaimer, iframe.wp-embedded-content, 
+            $article->find('div.aawp, p.aawp-disclaimer, iframe.wp-embedded-content, 
             div.wp-embed, p.wp-caption-text, script') as $element
         ) {
             $element->remove();

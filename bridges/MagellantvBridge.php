@@ -63,7 +63,7 @@ class MagellantvBridge extends BridgeAbstract
 
         // Check whether items exists
         $article_list = $dom->find('div.articlePreview_preview-card__mLMOm');
-        if (sizeof($article_list) == 0) {
+        if (count($article_list) == 0) {
             throw new Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
 

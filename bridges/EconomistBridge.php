@@ -8,6 +8,12 @@ class EconomistBridge extends FeedExpander
     const CACHE_TIMEOUT = 3600; //1hour
     const DESCRIPTION = 'Returns the latest articles for the selected category';
 
+    const CONFIGURATION = [
+        'cookie' => [
+            'required' => false,
+        ]
+    ];
+
     const PARAMETERS = [
         'global' => [
             'limit' => [
@@ -99,7 +105,24 @@ class EconomistBridge extends FeedExpander
 
     protected function parseItem(array $item)
     {
-        $dom = getSimpleHTMLDOM($item['uri']);
+        $headers = [];
+        if ($this->getOption('cookie')) {
+            $headers = [
+                'Authority: www.economist.com',
+                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-language: en-US,en;q=0.9',
+                'Cache-control: max-age=0',
+                'Cookie: ' . $this->getOption('cookie'),
+                'Upgrade-insecure-requests: 1',
+                'User-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+            ];
+        }
+        try {
+            $dom = getSimpleHTMLDOM($item['uri'], $headers);
+        } catch (Exception $e) {
+            $item['content'] = $e->getMessage();
+            return $item;
+        }
 
         $article = $dom->find('#new-article-template', 0);
         if ($article == null) {
@@ -203,6 +226,15 @@ class EconomistBridge extends FeedExpander
         // particularly useful anyhow
         foreach ($elem->find('a.ds-link-with-arrow-icon') as $a) {
             $a->parent->removeChild($a);
+        }
+        // Sections like "Leaders on day X"
+        foreach ($elem->find('div[data-tracking-id=content-well-chapter-list]') as $div) {
+            $div->parent->removeChild($div);
+        }
+        // "Explore more" section
+        foreach ($elem->find('h3[id=article-tags]') as $h3) {
+            $div = $h3->parent;
+            $div->parent->removeChild($div);
         }
 
         // The Economist puts infographics into iframes, which doesn't

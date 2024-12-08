@@ -8,10 +8,12 @@ final class BridgeFactory
     private array $enabledBridges = [];
     private array $missingEnabledBridges = [];
 
-    public function __construct()
-    {
-        $this->cache = RssBridge::getCache();
-        $this->logger = RssBridge::getLogger();
+    public function __construct(
+        CacheInterface $cache,
+        Logger $logger
+    ) {
+        $this->cache = $cache;
+        $this->logger = $logger;
 
         // Create all possible bridge class names from fs
         foreach (scandir(__DIR__ . '/../bridges/') as $file) {

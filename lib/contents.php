@@ -5,8 +5,8 @@
  *
  * @param array $httpHeaders E.g. ['Content-type: text/plain']
  * @param array $curlOptions Associative array e.g. [CURLOPT_MAXREDIRS => 3]
- * @param bool $returnFull Whether to return an array: ['code' => int, 'headers' => array, 'content' => string]
- * @return string|array
+ * @param bool $returnFull Whether to return Response object
+ * @return string|Response
  */
 function getContents(
     string $url,
@@ -14,8 +14,15 @@ function getContents(
     array $curlOptions = [],
     bool $returnFull = false
 ) {
-    $httpClient = RssBridge::getHttpClient();
-    $cache = RssBridge::getCache();
+    global $container;
+
+    /** @var HttpClient $httpClient */
+    $httpClient = $container['http_client'];
+
+    /** @var CacheInterface $cache */
+    $cache = $container['cache'];
+
+    // TODO: consider url validation at this point
 
     $httpHeadersNormalized = [];
     foreach ($httpHeaders as $httpHeader) {
@@ -24,6 +31,32 @@ function getContents(
         $headerValue = trim(implode(':', array_slice($parts, 1)));
         $httpHeadersNormalized[$headerName] = $headerValue;
     }
+
+    $requestBodyHash = null;
+    if (isset($curlOptions[CURLOPT_POSTFIELDS])) {
+        $requestBodyHash = md5(Json::encode($curlOptions[CURLOPT_POSTFIELDS], false));
+    }
+    $cacheKey = implode('_', ['server',  $url, $requestBodyHash]);
+
+    /** @var Response $cachedResponse */
+    $cachedResponse = $cache->get($cacheKey);
+    if ($cachedResponse) {
+        $lastModified = $cachedResponse->getHeader('last-modified');
+        if ($lastModified) {
+            try {
+                // Some servers send Unix timestamp instead of RFC7231 date. Prepend it with @ to allow parsing as DateTime
+                $lastModified = new \DateTimeImmutable((is_numeric($lastModified) ? '@' : '') . $lastModified);
+                $config['if_not_modified_since'] = $lastModified->getTimestamp();
+            } catch (Exception $e) {
+                // Failed to parse last-modified
+            }
+        }
+        $etag = $cachedResponse->getHeader('etag');
+        if ($etag) {
+            $httpHeadersNormalized['if-none-match'] = $etag;
+        }
+    }
+
     // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
     $defaultHttpHeaders = [
         'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -35,9 +68,11 @@ function getContents(
         'Sec-Fetch-User' => '?1',
         'TE' => 'trailers',
     ];
+
     $config = [
         'useragent' => Configuration::getConfig('http', 'useragent'),
         'timeout' => Configuration::getConfig('http', 'timeout'),
+        'retries' => Configuration::getConfig('http', 'retries'),
         'headers' => array_merge($defaultHttpHeaders, $httpHeadersNormalized),
         'curl_options' => $curlOptions,
     ];
@@ -50,28 +85,6 @@ function getContents(
 
     if (Configuration::getConfig('proxy', 'url') && !defined('NOPROXY')) {
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
-    }
-
-    $requestBodyHash = null;
-    if (isset($curlOptions[CURLOPT_POSTFIELDS])) {
-        $requestBodyHash = md5(Json::encode($curlOptions[CURLOPT_POSTFIELDS], false));
-    }
-    $cacheKey = implode('_', ['server',  $url, $requestBodyHash]);
-
-    /** @var Response $cachedResponse */
-    $cachedResponse = $cache->get($cacheKey);
-    if ($cachedResponse) {
-        $cachedLastModified = $cachedResponse->getHeader('last-modified');
-        if ($cachedLastModified) {
-            try {
-                // Some servers send Unix timestamp instead of RFC7231 date. Prepend it with @ to allow parsing as DateTime
-                $cachedLastModified = new \DateTimeImmutable((is_numeric($cachedLastModified) ? '@' : '') . $cachedLastModified);
-                $config['if_not_modified_since'] = $cachedLastModified->getTimestamp();
-            } catch (Exception $dateTimeParseFailue) {
-                // Ignore invalid 'Last-Modified' HTTP header value
-            }
-        }
-        // todo: to be nice nice citizen we should also check for Etag
     }
 
     $response = $httpClient->request($url, $config);
@@ -101,28 +114,11 @@ function getContents(
             $response = $response->withBody($cachedResponse->getBody());
             break;
         default:
-            $exceptionMessage = sprintf(
-                '%s resulted in %s %s %s',
-                $url,
-                $response->getCode(),
-                $response->getStatusLine(),
-                // If debug, include a part of the response body in the exception message
-                Debug::isEnabled() ? mb_substr($response->getBody(), 0, 500) : '',
-            );
-
-            if (CloudFlareException::isCloudFlareResponse($response)) {
-                throw new CloudFlareException($exceptionMessage, $response->getCode());
-            }
-            throw new HttpException(trim($exceptionMessage), $response->getCode());
+            $e = HttpException::fromResponse($response, $url);
+            throw $e;
     }
     if ($returnFull === true) {
-        // todo: return the actual response object
-        return [
-            'code'      => $response->getCode(),
-            'headers'   => $response->getHeaders(),
-            // For legacy reasons, use 'content' instead of 'body'
-            'content'   => $response->getBody(),
-        ];
+        return $response;
     }
     return $response->getBody();
 }
@@ -151,7 +147,6 @@ function getContents(
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM(
     $url,
@@ -163,11 +158,12 @@ function getSimpleHTMLDOM(
     $stripRN = true,
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
-) {
+): \simple_html_dom {
     $html = getContents($url, $header ?? [], $opts ?? []);
     if ($html === '') {
         throw new \Exception('Unable to parse dom because the http response was the empty string');
     }
+
     return str_get_html(
         $html,
         $lowercase,
@@ -221,7 +217,11 @@ function getSimpleHTMLDOMCached(
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
 ) {
-    $cache = RssBridge::getCache();
+    global $container;
+
+    /** @var CacheInterface $cache */
+    $cache = $container['cache'];
+
     $cacheKey = 'pages_' . $url;
     $content = $cache->get($cacheKey);
     if (!$content) {

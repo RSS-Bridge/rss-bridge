@@ -18,12 +18,12 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
     {
         $html = getSimpleHTMLDOM(self::URI);
 
-        $json = $this->loadEmbeddedJsonData($html);
+        $data = $this->fetchData($html);
 
         foreach ($html->find('li[id^="screenshot-"]') as $shot) {
             $item = [];
 
-            $additional_data = $this->findJsonForShot($shot, $json);
+            $additional_data = $this->findJsonForShot($shot, $data);
             if ($additional_data === null) {
                 $item['uri'] = self::URI . $shot->find('a', 0)->href;
                 $item['title'] = $shot->find('.shot-title', 0)->plaintext;
@@ -46,9 +46,8 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
         }
     }
 
-    private function loadEmbeddedJsonData($html)
+    private function fetchData($html)
     {
-        $json = [];
         $scripts = $html->find('script');
 
         foreach ($scripts as $script) {
@@ -69,12 +68,17 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
                 $end = strpos($script->innertext, '];') + 1;
 
                 // convert JSON to PHP array
-                $json = json_decode(substr($script->innertext, $start, $end - $start), true);
-                break;
+                $json = substr($script->innertext, $start, $end - $start);
+
+                try {
+                    // TODO: fix broken json
+                    return Json::decode($json);
+                } catch (\JsonException $e) {
+                    return [];
+                }
             }
         }
-
-        return $json;
+        return [];
     }
 
     private function findJsonForShot($shot, $json)

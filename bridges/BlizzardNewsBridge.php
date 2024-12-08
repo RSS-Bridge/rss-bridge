@@ -37,7 +37,7 @@ class BlizzardNewsBridge extends XPathAbstract
 
     const XPATH_EXPRESSION_ITEM = '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article';
     const XPATH_EXPRESSION_ITEM_TITLE = './/div/div[2]/h2';
-    const XPATH_EXPRESSION_ITEM_CONTENT = './/div[@class="ArticleListItem-description"]/div[@class="h6"]';
+    const XPATH_EXPRESSION_ITEM_CONTENT = './/div[@class="ArticleListItem-description"]/div[@class="h6"]/text()';
     const XPATH_EXPRESSION_ITEM_URI = './/a[@class="ArticleLink ArticleLink"]/@href';
     const XPATH_EXPRESSION_ITEM_AUTHOR = '';
     const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp';
@@ -56,5 +56,12 @@ class BlizzardNewsBridge extends XPathAbstract
             return 'https://cn.news.blizzard.com';
         }
         return 'https://news.blizzard.com/' . $locale;
+    }
+
+    public function getIcon()
+    {
+        return <<<icon
+https://blznews.akamaized.net/images/favicon-cb34a003c6f2f637ee8f4f7b406f3b9b120b918c04cabec7f03a760e708977ea9689a1c638f4396def8dce7b202cd007eae91946cc3c4a578aa8b5694226cfc6.ico
+icon;
     }
 }

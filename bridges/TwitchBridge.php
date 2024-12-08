@@ -95,10 +95,14 @@ EOD;
         if ($data->user === null) {
             throw new \Exception(sprintf('Unable to find channel `%s`', $channel));
         }
+
         $user = $data->user;
         if ($user->videos === null) {
-            throw new HttpException('Service Unavailable', 503);
+            // twitch regularly does this for unknown reasons
+            $this->debug->info('Twitch returned empty set of videos', ['data' => $data]);
+            return;
         }
+
         foreach ($user->videos->edges as $edge) {
             $video = $edge->node;
 
@@ -192,23 +196,21 @@ EOD;
     // e.g. 01:53:27
     private function formatTimestampTime($seconds)
     {
-        return sprintf(
-            '%02d:%02d:%02d',
-            floor($seconds / 3600),
-            ($seconds / 60) % 60,
-            $seconds % 60
-        );
+        $floor = floor($seconds / 3600);
+        $i = intval($seconds / 60) % 60;
+        $i1 = $seconds % 60;
+
+        return sprintf('%02d:%02d:%02d', $floor, $i, $i1);
     }
 
     // e.g. 01h53m27s
     private function formatQueryTime($seconds)
     {
-        return sprintf(
-            '%02dh%02dm%02ds',
-            floor($seconds / 3600),
-            ($seconds / 60) % 60,
-            $seconds % 60
-        );
+        $floor = floor($seconds / 3600);
+        $i = intval($seconds / 60) % 60;
+        $i1 = $seconds % 60;
+
+        return sprintf('%02dh%02dm%02ds', $floor, $i, $i1);
     }
 
     /**

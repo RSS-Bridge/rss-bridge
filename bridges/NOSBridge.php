@@ -14,7 +14,7 @@ class NOSBridge extends BridgeAbstract
                 'name' => 'Onderwerp',
                 'title' => 'Kies onderwerp',
                 'values' => [
-                    'Laatste nieuws' => 'nieuws',
+                    'Laatste nieuws' => 'nieuws/laatste',
                     'Binnenland' => 'nieuws/binnenland',
                     'Buitenland' => 'nieuws/buitenland',
                     'Regionaal nieuws' => 'nieuws/regio',
@@ -38,17 +38,16 @@ class NOSBridge extends BridgeAbstract
     {
         $url = sprintf('https://www.nos.nl/%s', $this->getInput('topic'));
         $dom = getSimpleHTMLDOM($url);
-        $dom = $dom->find('ul.list-items', 0);
+        $dom = $dom->find('main#content > div > section > ul', 0);
         if (!$dom) {
             throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
         }
         $dom = defaultLinkTo($dom, $this->getURI());
-        foreach ($dom->find('li.list-items__item') as $article) {
-            $a = $article->find('a', 0);
+        foreach ($dom->find('li') as $article) {
             $this->items[] = [
-                'title' => $article->find('h3.list-items__title', 0)->plaintext,
-                'uri' => $article->find('a.list-items__link', 0)->href,
-                'content' => $article->find('p.list-items__description', 0)->plaintext,
+                'title' => $article->find('h2', 0)->plaintext,
+                'uri' => $article->find('a', 0)->href,
+                'content' => $article->find('p', 0)->plaintext,
                 'timestamp' => strtotime($article->find('time', 0)->datetime),
             ];
         }

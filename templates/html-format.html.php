@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="<?= $charset ?>">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/ >
     <meta name="description" content="RSS-Bridge" />
     <title><?= e($title) ?></title>
     <link href="static/style.css?2023-03-24" rel="stylesheet">
     <link rel="icon" type="image/png" href="static/favicon.png">
 
-	<?php foreach ($linkTags as $link): ?>
+    <?php foreach ($formats as $format): ?>
+
         <link
-            href="<?= $link['href'] ?>"
-            title="<?= $link['title'] ?>"
+            href="<?= e($format['url']) ?>"
+            title="<?= e($format['name']) ?>"
             rel="alternate"
-            type="<?= $link['type'] ?>"
+            type="<?= e($format['type']) ?>"
         >
 	<?php endforeach; ?>
 
@@ -21,7 +22,6 @@
 </head>
 
 <body>
-
     <div class="container">
 
         <h1 class="pagetitle">
@@ -29,15 +29,25 @@
         </h1>
 
         <div class="buttons">
-            <a href="./#bridge-<?= $_GET['bridge'] ?>">
+            <a href="./#bridge-<?= e($bridge_name) ?>">
                 <button class="backbutton">← back to rss-bridge</button>
             </a>
 
-            <?php foreach ($buttons as $button): ?>
-                <a href="<?= $button['href'] ?>">
-                    <button class="rss-feed"><?= $button['value'] ?></button>
+            <?php foreach ($formats as $format): ?>
+                <a href="<?= e($format['url']) ?>">
+                    <button class="rss-feed">
+                        <?= e($format['name']) ?>
+                    </button>
                 </a>
             <?php endforeach; ?>
+
+            <?php if ($donation_uri): ?>
+                <a href="<?= e($donation_uri) ?>">
+                    <button class="rss-feed">
+                        Donate to maintainer
+                    </button>
+                </a>
+            <?php endif; ?>
         </div>
 
         <?php foreach ($items as $item): ?>

@@ -42,45 +42,23 @@ class CVEDetailsBridge extends BridgeAbstract
             $this->fetchContent();
         }
 
-        foreach ($this->html->find('#searchresults > .row') as $i => $tr) {
-            // There are some optional vulnerability types, which will be
-            // added to the categories as well as the CWE number -- which is
-            // always given.
-            $categories = [$this->vendor];
-            $enclosures = [];
-
-            $detailLink = $tr->find('h3 > a', 0);
-            $detailHtml = getSimpleHTMLDOM($detailLink->href);
-
-            // The CVE number itself
+        $var = $this->html->find('#searchresults > div > div.row');
+        foreach ($var as $i => $tr) {
+            $uri = $tr->find('h3 > a', 0)->href ?? null;
             $title = $tr->find('h3 > a', 0)->innertext;
-            $content = $tr->find('.cvesummarylong', 0)->innertext;
-            $cweList = $detailHtml->find('h2', 2)->next_sibling();
-            foreach ($cweList->find('li') as $li) {
-                $cweWithDescription = $li->find('a', 0)->innertext ?? '';
-
-                if (preg_match('/CWE-(\d+)/', $cweWithDescription, $cwe)) {
-                    $categories[] = 'CWE-' . $cwe[1];
-                    $enclosures[] = 'https://cwe.mitre.org/data/definitions/' . $cwe[1] . '.html';
-                }
-            }
-
-            if ($this->product != '') {
-                $categories[] = $this->product;
-            }
+            $content = $tr->find('.cvesummarylong', 0)->innertext ?? '';
+            $timestamp = $tr->find('[data-tsvfield="publishDate"]', 0)->innertext ?? 0;
 
             $this->items[] = [
-                'uri'           => 'https://cvedetails.com/' . $detailHtml->find('h1 > a', 0)->href,
+                'uri'           => $uri,
                 'title'         => $title,
-                'timestamp'     => $tr->find('[data-tsvfield="publishDate"]', 0)->innertext,
+                'timestamp'     => $timestamp,
                 'content'       => $content,
-                'categories'    => $categories,
-                'enclosures'    => $enclosures,
+                'categories'    => [$this->vendor],
+                'enclosures'    => [],
                 'uid'           => $title,
             ];
-
-            // We only want to fetch the latest 10 CVEs
-            if (count($this->items) >= 10) {
+            if (count($this->items) >= 30) {
                 break;
             }
         }

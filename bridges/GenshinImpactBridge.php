@@ -2,11 +2,11 @@
 
 class GenshinImpactBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'corenting';
     const NAME = 'Genshin Impact';
-    const URI = 'https://genshin.mihoyo.com/en/news';
-    const CACHE_TIMEOUT = 7200; // 2h
-    const DESCRIPTION = 'News from the Genshin Impact website';
+    const URI = 'https://genshin.hoyoverse.com/en/news';
+    const CACHE_TIMEOUT = 18000; // 5h
+    const DESCRIPTION = 'Latest news from the Genshin Impact website';
+    const MAINTAINER = 'Miicat_47';
     const PARAMETERS = [
         [
             'category' => [
@@ -25,37 +25,31 @@ class GenshinImpactBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $category = $this->getInput('category');
-
-        $url = 'https://genshin.mihoyo.com/content/yuanshen/getContentList';
-        $url = $url . '?pageSize=5&pageNum=1&channelId=' . $category;
+        $url = 'https://api-os-takumi-static.hoyoverse.com/content_v2_user/app/a1b1f9d3315447cc/getContentList?iAppId=32&iChanId=395&iPageSize=5&iPage=1&sLangKey=en-us';
         $api_response = getContents($url);
-        $json_list = json_decode($api_response, true);
+        $json_list = Json::decode($api_response);
 
         foreach ($json_list['data']['list'] as $json_item) {
-            $article_url = 'https://genshin.mihoyo.com/content/yuanshen/getContent';
-            $article_url = $article_url . '?contentId=' . $json_item['contentId'];
-            $article_res = getContents($article_url);
-            $article_json = json_decode($article_res, true);
-            $article_time = $article_json['data']['start_time'];
-            $timezone = 'Asia/Shanghai';
-            $article_timestamp = new DateTime($article_time, new DateTimeZone($timezone));
+            $article_html = str_get_html($json_item['sContent']);
 
+            // Check if article contains a embed YouTube video
+            $exp_youtube = '#https://[w\.]+youtube\.com/embed/([\w]+)#m';
+            if (preg_match($exp_youtube, $article_html, $matches)) {
+                // Replace the YouTube embed with a YouTube link
+                $yt_embed = $article_html->find('div[class="ttr-video-frame"]', 0);
+                $yt_link = sprintf('<a href="https://youtube.com/watch?v=%1$s">https://youtube.com/watch?v=%1$s</a>', $matches[1]);
+                $article_html = str_replace($yt_embed, $yt_link, $article_html);
+            }
             $item = [];
-
-            $item['title'] = $article_json['data']['title'];
-            $item['timestamp'] = $article_timestamp->format('U');
-            $item['content'] = $article_json['data']['content'];
-            $item['uri'] = $this->getArticleUri($json_item);
-            $item['id'] = $json_item['contentId'];
+            $item['title'] = $json_item['sTitle'];
+            $item['timestamp'] = $json_item['dtStartTime'];
+            $item['content'] = $article_html;
+            $item['uri'] = 'https://genshin.hoyoverse.com/en/news/detail/' . $json_item['iInfoId'];
+            $item['id'] = $json_item['iInfoId'];
 
             // Picture
-            foreach ($article_json['data']['ext'] as $ext) {
-                if ($ext['arrtName'] == 'banner' && count($ext['value']) == 1) {
-                    $item['enclosures'] = [$ext['value'][0]['url']];
-                    break;
-                }
-            }
+            $json_ext = Json::decode($json_item['sExt']);
+            $item['enclosures'] = [$json_ext['banner'][0]['url']];
 
             $this->items[] = $item;
         }
@@ -63,11 +57,6 @@ class GenshinImpactBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        return 'https://genshin.mihoyo.com/favicon.ico';
-    }
-
-    private function getArticleUri($json_item)
-    {
-        return 'https://genshin.mihoyo.com/en/news/detail/' . $json_item['contentId'];
+        return 'https://genshin.hoyoverse.com/favicon.ico';
     }
 }

@@ -58,26 +58,26 @@ class PicukiBridge extends BridgeAbstract
         }
 
         $count = 0;
-        foreach ($html->find('.box-photos .box-photo') as $element) {
+        foreach ($html->find('div[class=.box-photo][data-s=media]') as $element) {
             // skip ad items
             if (in_array('adv', explode(' ', $element->class))) {
                 continue;
             }
 
-            $url = urljoin(self::URI, $element->find('a', 0)->href);
-            $html = getSimpleHTMLDOMCached($url);
+            $url = $element->find('a', 0)->href;
+            $html_single = getSimpleHTMLDOMCached($url);
             $sourceUrl = null;
-            if (preg_match($re, $html, $matches) > 0) {
+            if (preg_match($re, $html_single, $matches) > 0) {
                 $sourceUrl = 'https://instagram.com/p/' . $matches[1];
             }
 
-            $author = trim($element->find('.user-nickname', 0)->plaintext);
+            //$author = trim($element->find('.single-photo-nickname', 0)->plaintext);
 
             $date = date_create();
             $relativeDate = str_replace(' ago', '', $element->find('.time', 0)->plaintext);
             date_sub($date, date_interval_create_from_date_string($relativeDate));
 
-            $description = trim($element->find('.photo-description', 0)->plaintext);
+            $description = trim($element->find('.photo-action-description', 0)->plaintext);
 
             $isVideo = (bool) $element->find('.video-icon', 0);
             $videoNote = $isVideo ? '<p><i>(video)</i></p>' : '';
@@ -89,12 +89,9 @@ class PicukiBridge extends BridgeAbstract
             $imageUrlParts[count($imageUrlParts) - 1] = urlencode($imageUrlParts[count($imageUrlParts) - 1]);
             $imageUrl = implode('/', $imageUrlParts);
 
-            // add fake file extension for it to be recognized as image/jpeg instead of application/octet-stream
-            $imageUrl = $imageUrl . '#.jpg';
-
             $this->items[] = [
                 'uri'        => $url,
-                'author'     => $author,
+                /*'author'     => $author,*/
                 'timestamp'  => date_format($date, 'r'),
                 'title'      => strlen($description) > 60 ? mb_substr($description, 0, 57) . '...' : $description,
                 'thumbnail'  => $imageUrl,

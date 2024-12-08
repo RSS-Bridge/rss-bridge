@@ -9,7 +9,7 @@ class DarkReadingBridge extends FeedExpander
 
     const PARAMETERS = [ [
         'feed' => [
-            'name' => 'Feed',
+            'name' => 'Feed (NOT IN USE)',
             'type' => 'list',
             'values' => [
                 'All Dark Reading Stories' => '000_AllArticles',
@@ -41,17 +41,7 @@ class DarkReadingBridge extends FeedExpander
 
     public function collectData()
     {
-        $feed = $this->getInput('feed');
-        $feed_splitted = explode('_', $feed);
-        $feed_id = $feed_splitted[0];
-        $feed_name = $feed_splitted[1];
-        if (empty($feed) || !ctype_digit($feed_id) || !preg_match('/[A-Za-z%20\/]/', $feed_name)) {
-            returnClientError('Invalid feed, please check the "feed" parameter.');
-        }
-        $feed_url = $this->getURI() . 'rss_simple.asp';
-        if ($feed_id != '000') {
-            $feed_url .= '?f_n=' . $feed_id . '&f_ln=' . $feed_name;
-        }
+        $feed_url = 'https://www.darkreading.com/rss.xml';
         $limit = $this->getInput('limit') ?? 10;
         $this->collectExpandableDatas($feed_url, $limit);
     }
@@ -71,7 +61,7 @@ class DarkReadingBridge extends FeedExpander
 
     private function extractArticleContent($article)
     {
-        $content = $article->find('div.article-content', 0)->innertext;
+        $content = $article->find('div.ContentModule-Wrapper', 0)->innertext;
 
         foreach (
             [

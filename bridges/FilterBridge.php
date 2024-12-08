@@ -15,6 +15,12 @@ class FilterBridge extends FeedExpander
             'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day',
             'required' => true,
         ],
+        'name' => [
+            'name'          => 'Feed name (optional)',
+            'type'          => 'text',
+            'exampleValue'  => 'My feed',
+            'required'      => false,
+        ],
         'filter' => [
             'name' => 'Filter (regular expression!!!)',
             'required' => false,
@@ -77,7 +83,7 @@ class FilterBridge extends FeedExpander
     {
         $url = $this->getInput('url');
         if (!Url::validate($url)) {
-            returnClientError('The url parameter must either refer to http or https protocol.');
+            throw new \Exception('The url parameter must either refer to http or https protocol.');
         }
         $this->collectExpandableDatas($this->getURI());
     }
@@ -158,11 +164,18 @@ class FilterBridge extends FeedExpander
     public function getURI()
     {
         $url = $this->getInput('url');
-
-        if (empty($url)) {
-            $url = parent::getURI();
+        if ($url) {
+            return $url;
         }
+        return parent::getURI();
+    }
 
-        return $url;
+    public function getName()
+    {
+        $name = $this->getInput('name');
+        if ($name) {
+            return $name;
+        }
+        return parent::getName();
     }
 }

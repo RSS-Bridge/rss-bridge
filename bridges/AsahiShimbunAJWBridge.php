@@ -45,7 +45,6 @@ class AsahiShimbunAJWBridge extends BridgeAbstract
 
         foreach ($html->find('#MainInner li a') as $element) {
             if ($element->parent()->class == 'HeadlineTopImage-S') {
-                Debug::log('Skip Headline, it is repeated below');
                 continue;
             }
             $item = [];

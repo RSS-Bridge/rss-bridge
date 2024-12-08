@@ -5,15 +5,30 @@ on:
     branches: [ master ]
 
 jobs:
+  check-bridges:
+    name: Check if bridges were changed
+    runs-on: ubuntu-latest
+    outputs:
+      BRIDGES: ${{ steps.check1.outputs.BRIDGES }}
+    steps:
+      - name: Check number of bridges
+        id: check1
+        run: |
+          PR=${{github.event.number}};
+          wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
+          bridgeamount=$(cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq | wc -l);
+          echo "BRIDGES=$bridgeamount" >> "$GITHUB_OUTPUT"
   test-pr:
     name: Generate HTML
     runs-on: ubuntu-latest
+    needs: check-bridges
+    if: needs.check-bridges.outputs.BRIDGES > 0
     env:
       PYTHONUNBUFFERED: 1
     # Needs additional permissions https://github.com/actions/first-interaction/issues/10#issuecomment-1041402989
     steps:
       - name: Check out self
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
@@ -33,9 +48,9 @@ jobs:
           docker build -t prbuild .;
           docker run -d -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG -p 3001:80 prbuild
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.7'
+          python-version: '3.13'
           cache: 'pip'
       - name: Install requirements
         run: |
@@ -51,9 +66,17 @@ jobs:
           body="${body//$'\n'/'%0A'}";
           body="${body//$'\r'/'%0D'}";
           echo "bodylength=${#body}" >> $GITHUB_OUTPUT
+        env:
+          PR: ${{ github.event.number }}
+      - name: Upload generated tests
+        uses: actions/upload-artifact@v4
+        id: upload-generated-tests
+        with:
+          name: tests
+          path: '*.html'
       - name: Find Comment
         if: ${{ steps.testrun.outputs.bodylength > 130 }}
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -61,9 +84,43 @@ jobs:
           body-includes: Pull request artifacts
       - name: Create or update comment
         if: ${{ steps.testrun.outputs.bodylength > 130 }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body-file: comment.txt
           edit-mode: replace
+  upload_tests:
+    name: Upload tests
+    runs-on: ubuntu-latest
+    needs: test-pr
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: 'RSS-Bridge/rss-bridge-tests'
+          ref: 'main'
+          token:  ${{ secrets.RSSTESTER_ACTION }}
+  
+      - name: Setup git config
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "<>"
+  
+      - name: Download tests
+        uses: actions/download-artifact@v4
+        with:
+          name: tests
+
+      - name: Move tests
+        run: |
+          cd prs
+          mkdir -p ${{github.event.number}}
+          cd ${{github.event.number}}
+          mv -f $GITHUB_WORKSPACE/*.html .
+          
+      - name: Commit and push generated tests
+        run: |
+          export COMMIT_MESSAGE="Added tests for PR ${{github.event.number}}"
+          git add .
+          git commit -m "$COMMIT_MESSAGE"
+          git push

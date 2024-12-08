@@ -105,7 +105,7 @@ class MastodonBridge extends BridgeAbstract
                         break;
                     }
                     $rtUser = $this->loadCacheValue($rtContent['attributedTo']);
-                    if (!isset($rtUser)) {
+                    if (!$rtUser) {
                         // We fetch the author, since we cannot always assume the format of the URL.
                         $user = $this->fetchAP($rtContent['attributedTo']);
                         preg_match('/https?:\/\/([a-z0-9-\.]{0,})\//', $rtContent['attributedTo'], $matches);
@@ -275,11 +275,13 @@ class MastodonBridge extends BridgeAbstract
             $toSign = '(request-target): get ' . $matches[2] . "\nhost: " . $matches[1] . "\ndate: " . $date;
             $result = openssl_sign($toSign, $signature, $pkey, 'RSA-SHA256');
             if ($result) {
-                Debug::log($toSign);
-                $sig = 'Signature: keyId="' . $keyId . '",headers="(request-target) host date",signature="' .
-                        base64_encode($signature) . '"';
-                Debug::log($sig);
-                array_push($headers, $sig);
+                $sig = sprintf(
+                    'Signature: keyId="%s",headers="(request-target) host date",signature="%s"',
+                    $keyId,
+                    base64_encode($signature)
+                );
+
+                $headers[] = $sig;
             }
         }
         try {

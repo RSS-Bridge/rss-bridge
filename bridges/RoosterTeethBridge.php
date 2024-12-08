@@ -17,6 +17,7 @@ class RoosterTeethBridge extends BridgeAbstract
                 'values' => [
                     'All channels' => 'all',
                     'Achievement Hunter' => 'achievement-hunter',
+                    'Camp Camp' => 'camp-camp',
                     'Cow Chop' => 'cow-chop',
                     'Death Battle' => 'death-battle',
                     'Friends of RT' => 'friends-of-rt',

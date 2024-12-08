@@ -2,37 +2,26 @@
 
 class ParameterValidator
 {
-    private array $invalid = [];
-
     /**
-     * Check that inputs are actually present in the bridge parameters.
-     *
-     * Also check whether input values are allowed.
+     * Validate and sanitize user inputs against configured bridge parameters (contexts)
      */
-    public function validateInput(&$input, $parameters): bool
+    public function validateInput(array &$input, $contexts): array
     {
-        if (!is_array($input)) {
-            return false;
-        }
+        $errors = [];
 
         foreach ($input as $name => $value) {
-            // Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
-            if ($name === '_') {
-                continue;
-            }
-
             $registered = false;
-            foreach ($parameters as $context => $set) {
-                if (!array_key_exists($name, $set)) {
+            foreach ($contexts as $contextName => $contextParameters) {
+                if (!array_key_exists($name, $contextParameters)) {
                     continue;
                 }
                 $registered = true;
-                if (!isset($set[$name]['type'])) {
+                if (!isset($contextParameters[$name]['type'])) {
                     // Default type is text
-                    $set[$name]['type'] = 'text';
+                    $contextParameters[$name]['type'] = 'text';
                 }
 
-                switch ($set[$name]['type']) {
+                switch ($contextParameters[$name]['type']) {
                     case 'number':
                         $input[$name] = $this->validateNumberValue($value);
                         break;
@@ -40,12 +29,12 @@ class ParameterValidator
                         $input[$name] = $this->validateCheckboxValue($value);
                         break;
                     case 'list':
-                        $input[$name] = $this->validateListValue($value, $set[$name]['values']);
+                        $input[$name] = $this->validateListValue($value, $contextParameters[$name]['values']);
                         break;
                     default:
                     case 'text':
-                        if (isset($set[$name]['pattern'])) {
-                            $input[$name] = $this->validateTextValue($value, $set[$name]['pattern']);
+                        if (isset($contextParameters[$name]['pattern'])) {
+                            $input[$name] = $this->validateTextValue($value, $contextParameters[$name]['pattern']);
                         } else {
                             $input[$name] = $this->validateTextValue($value);
                         }
@@ -54,56 +43,56 @@ class ParameterValidator
 
                 if (
                     is_null($input[$name])
-                    && isset($set[$name]['required'])
-                    && $set[$name]['required']
+                    && isset($contextParameters[$name]['required'])
+                    && $contextParameters[$name]['required']
                 ) {
-                    $this->invalid[] = ['name' => $name, 'reason' => 'Parameter is invalid!'];
+                    $errors[] = ['name' => $name, 'reason' => 'Parameter is invalid!'];
                 }
             }
 
             if (!$registered) {
-                $this->invalid[] = ['name' => $name, 'reason' => 'Parameter is not registered!'];
+                $errors[] = ['name' => $name, 'reason' => 'Parameter is not registered!'];
             }
         }
 
-        return $this->invalid === [];
+        return $errors;
     }
 
     /**
      * Get the name of the context matching the provided inputs
      *
      * @param array $input Associative array of user data
-     * @param array $parameters Array of bridge parameters
+     * @param array $contexts Array of bridge parameters
      * @return string|null Returns the context name or null if no match was found
      */
-    public function getQueriedContext($input, $parameters)
+    public function getQueriedContext(array $input, array $contexts)
     {
         $queriedContexts = [];
 
         // Detect matching context
-        foreach ($parameters as $context => $set) {
-            $queriedContexts[$context] = null;
+        foreach ($contexts as $contextName => $contextParameters) {
+            $queriedContexts[$contextName] = null;
 
             // Ensure all user data exist in the current context
-            $notInContext = array_diff_key($input, $set);
-            if (array_key_exists('global', $parameters)) {
-                $notInContext = array_diff_key($notInContext, $parameters['global']);
+            $notInContext = array_diff_key($input, $contextParameters);
+            if (array_key_exists('global', $contexts)) {
+                $notInContext = array_diff_key($notInContext, $contexts['global']);
             }
             if (count($notInContext) > 0) {
                 continue;
             }
 
             // Check if all parameters of the context are satisfied
-            foreach ($set as $id => $properties) {
-                if (isset($input[$id]) && !empty($input[$id])) {
-                    $queriedContexts[$context] = true;
+            foreach ($contextParameters as $id => $properties) {
+                if (!empty($input[$id])) {
+                    $queriedContexts[$contextName] = true;
                 } elseif (
                     isset($properties['type'])
                     && ($properties['type'] === 'checkbox' || $properties['type'] === 'list')
                 ) {
                     continue;
                 } elseif (isset($properties['required']) && $properties['required'] === true) {
-                    $queriedContexts[$context] = false;
+                    $queriedContexts[$contextName] = false;
                     break;
                 }
             }
@@ -111,7 +100,7 @@ class ParameterValidator
 
         // Abort if one of the globally required parameters is not satisfied
         if (
-            array_key_exists('global', $parameters)
+            array_key_exists('global', $contexts)
             && $queriedContexts['global'] === false
         ) {
             return null;
@@ -124,9 +113,9 @@ class ParameterValidator
                 if (isset($input['context'])) {
                     return $input['context'];
                 }
-                foreach ($queriedContexts as $context => $queried) {
+                foreach ($queriedContexts as $context2 => $queried) {
                     if (is_null($queried)) {
-                        return $context;
+                        return $context2;
                     }
                 }
                 return null;
@@ -136,11 +125,6 @@ class ParameterValidator
             default:
                 return false;
         }
-    }
-
-    public function getInvalidParameters(): array
-    {
-        return $this->invalid;
     }
 
     private function validateTextValue($value, $pattern = null)
