@@ -251,7 +251,7 @@ final class BridgeCard
         $attributes = self::getInputAttributes($entry);
 
         $fieldsDisplayString = '';
-        foreach($entry['fields_name_used_for_display'] as $index => $field) {
+        foreach ($entry['fields_name_used_for_display'] as $index => $field) {
             if ($index === 0) {
                 $fieldsDisplayString = 'option.' . $field;
             } else {
@@ -260,7 +260,7 @@ final class BridgeCard
         }
 
         $fieldsValueString = '';
-        foreach($entry['fields_name_used_as_value'] as $index => $field) {
+        foreach ($entry['fields_name_used_as_value'] as $index => $field) {
             if ($index === 0) {
                 $fieldsValueString = 'option.' . $field;
             } else {
@@ -268,64 +268,65 @@ final class BridgeCard
             }
         }
 
-        $list = sprintf('<input %s id="input-%s" name="%s" type="text" list="options-%s" onmousedown="
-            const id = \'%s\';
-            const inputElement = document.getElementById(\'input-\' + id);
-            const errorElement = document.getElementById(\'error-\' + id);
-            const datalist = document.getElementById(\'options-\' + id);
-            const options = document.getElementById(\'options-\' + id).options;
+        $list = sprintf(
+            '<input %s id="input-%s" name="%s" type="text" list="options-%s" onmousedown="
+                const id = \'%s\';
+                const inputElement = document.getElementById(\'input-\' + id);
+                const errorElement = document.getElementById(\'error-\' + id);
+                const datalist = document.getElementById(\'options-\' + id);
+                const options = document.getElementById(\'options-\' + id).options;
 
-            let hasError = errorElement.innerHTML === \'\' ? false : true;
-            if (!hasError && (!options || options.length === 0)) {
-                // set himself disabled while the request is progressing
-                inputElement.disabled = true;
-                inputElement.value = \'loading...\';
-                // used to not be blocked by cors
-                const proxy = \'%s\';
+                let hasError = errorElement.innerHTML === \'\' ? false : true;
+                if (!hasError && (!options || options.length === 0)) {
+                    // set himself disabled while the request is progressing
+                    inputElement.disabled = true;
+                    inputElement.value = \'loading...\';
+                    // used to not be blocked by cors
+                    const proxy = \'%s\';
 
-                // Perform AJAX request
-                const xhr = new XMLHttpRequest();
+                    // Perform AJAX request
+                    const xhr = new XMLHttpRequest();
 
-                xhr.open(\'GET\', proxy + \'%s\', true);
-                xhr.onerror = function () {
-                    errorElement.innerHTML = \'failed fetching data\';
-                    inputElement.value = \'\';
-                    inputElement.disabled = false;
-                    hasError = true;
-                }
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        // Parse the response and update the datalist
-                        datalist.innerHTML = \'\'; // Clear existing options
-                        const options = JSON.parse(xhr.responseText); // Assuming JSON response
-                        options.forEach(option => {
-                            const opt = document.createElement(\'option\');
-
-                            opt.innerHTML = %s; // the displayed value
-                            opt.value = %s; // the value
-                            datalist.appendChild(opt);
-                        });
-                        // set himself enabled when the request is done
-                        inputElement.value = \'\';
-                        inputElement.disabled = false;
-                    } else {
+                    xhr.open(\'GET\', proxy + \'%s\', true);
+                    xhr.onerror = function () {
                         errorElement.innerHTML = \'failed fetching data\';
                         inputElement.value = \'\';
                         inputElement.disabled = false;
+                        hasError = true;
                     }
-                };
-                xhr.send();
-            }
-        " />' . "\n",
-          $attributes,
-          $id,
-          $name,
-          $id,
-          $id,
-          Configuration::getConfig('proxy', 'url') ?: 'https://cors-anywhere.herokuapp.com/',
-          $entry['ajax_route'],
-          $fieldsDisplayString,
-          $fieldsValueString,
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            // Parse the response and update the datalist
+                            datalist.innerHTML = \'\'; // Clear existing options
+                            const options = JSON.parse(xhr.responseText); // Assuming JSON response
+                            options.forEach(option => {
+                                const opt = document.createElement(\'option\');
+
+                                opt.innerHTML = %s; // the displayed value
+                                opt.value = %s; // the value
+                                datalist.appendChild(opt);
+                            });
+                            // set himself enabled when the request is done
+                            inputElement.value = \'\';
+                            inputElement.disabled = false;
+                        } else {
+                            errorElement.innerHTML = \'failed fetching data\';
+                            inputElement.value = \'\';
+                            inputElement.disabled = false;
+                        }
+                    };
+                    xhr.send();
+                }
+            " />' . "\n",
+            $attributes,
+            $id,
+            $name,
+            $id,
+            $id,
+            Configuration::getConfig('proxy', 'url') ?: 'https://cors-anywhere.herokuapp.com/',
+            $entry['ajax_route'],
+            $fieldsDisplayString,
+            $fieldsValueString,
         );
         $list .= sprintf('<datalist id="options-%s"></datalist>' . "\n", $id);
         $list .= sprintf('<br><div id="error-%s" style="color: red; height: 28px"></div>' . "\n", $id);
