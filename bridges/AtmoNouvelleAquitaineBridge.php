@@ -91,7 +91,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract
                 $message .= ';' . strip_tags($polluant);
             }
         }
-        
+
         return $message;
     }
 }
