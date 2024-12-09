@@ -7,13 +7,19 @@ class TelegramBridge extends BridgeAbstract
     const DESCRIPTION = 'Returns newest posts from a *public* Telegram channel';
     const MAINTAINER = 'VerifiedJoseph';
     const PARAMETERS = [[
-            'username' => [
-                'name' => 'Username',
-                'type' => 'text',
-                'required' => true,
-                'exampleValue' => '@rssbridge',
-            ]
+        'username' => [
+            'name' => 'Username',
+            'type' => 'text',
+            'required' => true,
+            'exampleValue' => '@rssbridge',
+        ],
+        'posts' => [
+            'name' => 'Post Limit',
+            'type' => 'number',
+            'required' => false,
+            'defaultValue' => 20,
         ]
+    ]
     ];
     const TEST_DETECT_PARAMETERS = [
         'https://t.me/s/rssbridge' => ['username' => 'rssbridge'],
@@ -27,6 +33,7 @@ class TelegramBridge extends BridgeAbstract
     ];
 
     const CACHE_TIMEOUT = 60 * 15; // 15 mins
+    const PAGES_HARD_LIMIT = 10; // Limit number of fetched webpages. As of Jan 2024, each webpage contains variable(!) number of posts.
     private $feedName = '';
 
     private $enclosures = [];
@@ -36,34 +43,57 @@ class TelegramBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $postLimit = $this->getInput('posts');
+        $iniURI = $this->getURI();
+        $earliestPostNum = -1;
 
-        $channelTitle = $html->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
-        $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
-        $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
-        $posts = $html->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
-        if (!$channelTitle && !$posts) {
-            throw new \Exception('Unable to find channel. The channel is non-existing or non-public.');
-        }
-        foreach ($posts as $messageDiv) {
-            $this->itemTitle = '';
-            $this->enclosures = [];
-            $item = [];
-
-            $item['uri'] = $messageDiv->find('a.tgme_widget_message_date', 0)->href;
-            $item['content'] = $this->processContent($messageDiv);
-            $item['title'] = $this->itemTitle;
-            $item['timestamp'] = $messageDiv->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
-            $item['enclosures'] = $this->enclosures;
-
-            $messageOwner = $messageDiv->find('a.tgme_widget_message_owner_name', 0);
-            if ($messageOwner) {
-                $item['author'] = html_entity_decode(trim($messageOwner->plaintext), ENT_QUOTES);
+        $i = 0;
+        while (sizeof($this->items) < $postLimit && $i <= self::PAGES_HARD_LIMIT - 1 && ($earliestPostNum > 1 || $earliestPostNum == -1)) {
+            if ($i == 0) {
+                $html = getSimpleHTMLDOM($iniURI);
+                $channelTitle = $html->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
+                $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
+                $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
+            } else {
+                $html = getSimpleHTMLDOM($iniURI . '?before=' . $earliestPostNum);
             }
 
-            $this->items[] = $item;
+            $postItems = $html->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
+            if (!$channelTitle && !$postItems) {
+                throw new \Exception('Unable to find channel. The channel is non-existing or non-public.');
+            }
+
+            $pageItems = [];
+
+            foreach ($postItems as $messageDiv) {
+                $this->itemTitle = '';
+                $this->enclosures = [];
+                $item = [];
+
+                $itemURI = $messageDiv->find('a.tgme_widget_message_date', 0)->href;
+                $item['uri'] = $itemURI;
+                $item['content'] = $this->processContent($messageDiv);
+                $item['title'] = $this->itemTitle;
+                $item['timestamp'] = $messageDiv->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
+                $item['enclosures'] = $this->enclosures;
+                $author = trim($messageDiv->find('a.tgme_widget_message_owner_name', 0)->plaintext);
+                $item['author'] = html_entity_decode($author, ENT_QUOTES);
+
+                $pageItems[] = $item;
+
+                $postNum = $this->getPostNum($itemURI);
+
+                if ($earliestPostNum == -1) {
+                    $earliestPostNum = $postNum;
+                } else {
+                    $earliestPostNum = min($earliestPostNum, $postNum);
+                }
+            }
+
+            $this->items = array_merge($this->items, array_reverse($pageItems));
+            $i++;
         }
-        $this->items = array_reverse($this->items);
+        $this->items = array_slice($this->items, 0, $postLimit);
     }
 
     private function processContent($messageDiv)
@@ -375,6 +405,18 @@ EOD;
             return substr($username, 1);
         }
         return $username;
+    }
+
+    private function getPostNum($postUrl): int
+    {
+        $path = parse_url($postUrl)['path'];
+        $path = rtrim($path, '/');
+        $segments = explode('/', $path);
+        $last_segment = end($segments);
+        if (!is_numeric($last_segment)) {
+            throw new \Exception('Unable to get post number form post URI');
+        }
+        return (int)$last_segment;
     }
 
     public function detectParameters($url)
