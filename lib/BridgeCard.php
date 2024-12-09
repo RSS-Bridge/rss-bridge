@@ -260,16 +260,17 @@ final class BridgeCard
         }
 
         $fieldsValueString = '';
+        $fieldsNameUsedAsValueSeparator = isset($entry['fields_name_used_as_value_separator']) ? $entry['fields_name_used_as_value_separator'] : '-';
         foreach ($entry['fields_name_used_as_value'] as $index => $field) {
             if ($index === 0) {
                 $fieldsValueString = 'option.' . $field;
             } else {
-                $fieldsValueString .= ' + \'-\' + option.' . $field;
+                $fieldsValueString .= ' + \'' . $fieldsNameUsedAsValueSeparator . '\' + option.' . $field;
             }
         }
 
         $list = sprintf(
-            '<input %s id="input-%s" name="%s" type="text" list="options-%s" onmousedown="
+            '<input %s id="input-%s" name="%s" autocomplete="off" type="text" list="options-%s" onmousedown="
                 const id = \'%s\';
                 const inputElement = document.getElementById(\'input-\' + id);
                 const errorElement = document.getElementById(\'error-\' + id);
@@ -298,7 +299,10 @@ final class BridgeCard
                         if (xhr.status === 200) {
                             // Parse the response and update the datalist
                             datalist.innerHTML = \'\'; // Clear existing options
-                            const options = JSON.parse(xhr.responseText); // Assuming JSON response
+                            let options = JSON.parse(xhr.responseText); // Assuming JSON response
+                            if (%s) {
+                                options = options[\'%s\'];
+                            }
                             options.forEach(option => {
                                 const opt = document.createElement(\'option\');
 
@@ -325,6 +329,8 @@ final class BridgeCard
             $id,
             Configuration::getConfig('proxy', 'url') ?: 'https://cors-anywhere.herokuapp.com/',
             $entry['ajax_route'],
+            isset($entry['field_for_options']) ? 'true' : 'false',
+            isset($entry['field_for_options']) ? $entry['field_for_options'] : null,
             $fieldsDisplayString,
             $fieldsValueString,
         );
