@@ -28,28 +28,35 @@ class SteamAppNewsBridge extends BridgeAbstract
             'type' => 'number',
             'defaultValue' => 20
         ],
-        'tags' => [
-            'name' => 'Tag Filter',
-            'title' => 'Comma-separated list of tags to filter by',
-            'type' => 'text',
-            'exampleValue' => 'patchnotes'
+        'use_app_name' => [
+            'name' => 'Use App Name as Author ?',
+            'title' => 'Use the app name as author',
+            'type' => 'checkbox',
+            'defaultValue' => 20
         ]
     ]];
 
     public function collectData()
     {
-        $apiTarget = 'https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/';
+        $api = 'https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/';
         // Example with params: https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=730&maxlength=0&count=20
+        $details_api = 'https://store.steampowered.com/api/appdetails?appids=';
+        // API used to get app name from its appid
+
         // More info at dev docs https://partner.steamgames.com/doc/webapi/ISteamNews
-        $url = $apiTarget
-            . '?appid=' . $this->getInput('appid')
-            . '&maxlength=' . $this->getInput('maxlength')
-            . '&count=' . $this->getInput('count')
-            . '&tags=' . $this->getInput('tags');
+        $url = $api . '?appid='
+            . $this->getInput('appid') . '&maxlength='
+            . $this->getInput('maxlength') . '&count='
+            . $this->getInput('count');
 
         // Get the JSON content
         $json = getContents($url);
         $json_list = json_decode($json, true);
+
+        // Get the app name
+        $app_details_json = getContents($details_api . $this->getInput('appid'));
+        $app_details_decoded_json = json_decode($app_details_json, true);
+        $this->app_name = $app_details_decoded_json[$this->getInput('appid')]['data']['name'];
 
         foreach ($json_list['appnews']['newsitems'] as $json_item) {
             $this->items[] = $this->collectArticle($json_item);
@@ -62,7 +69,11 @@ class SteamAppNewsBridge extends BridgeAbstract
         $item['uri'] = preg_replace('[ ]', '%20', $json_item['url']);
         $item['title'] = $json_item['title'];
         $item['timestamp'] = $json_item['date'];
-        $item['author'] = $json_item['author'];
+        if ($this->getInput('use_app_name') == "yes") {
+            $item['author'] = $this->app_name;
+        } else {
+            $item['author'] = $json_item['author'];
+        }
 
         # Fix /n
         if (str_contains($item['uri'], 'steam_community_announcements')) {
