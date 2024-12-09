@@ -43,7 +43,7 @@ class AtmoOccitanieBridge extends BridgeAbstract
         $indice = $lastRecommendationsDom->find('.current-indice .indice div', 0)->innertext;
         $informationDescriptionMessage = $lastRecommendationsDom->find('.current-indice .description p', 0)->innertext;
 
-        $message = "$generalMessage L'indice est de " . 6 - $indice . "/6. $informationDescriptionMessage. $recommendationsMessage";
+        $message = "$generalMessage L'indice est de " . (6 - $indice) . "/6. $informationDescriptionMessage. $recommendationsMessage";
         $city = $this->getInput('city');
 
         $item['uri'] = $uri;
