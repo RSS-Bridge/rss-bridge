@@ -594,7 +594,9 @@ class BlueskyBridge extends BridgeAbstract
     private function getAuthorFeed($did, $filter)
     {
         $uri = 'https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=' . urlencode($did) . '&filter=' . urlencode($filter) . '&limit=30';
-        if (Debug::isEnabled()) {error_log($uri);}
+        if (Debug::isEnabled()) {
+            error_log($uri);
+        }
         $response = json_decode(getContents($uri), true);
         return $response;
     }
