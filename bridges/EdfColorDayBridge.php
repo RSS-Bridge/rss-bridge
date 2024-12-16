@@ -65,7 +65,7 @@ class EdfColorDayBridge extends BridgeAbstract
     private function getDisplayableColor(string $color): string
     {
         $displayableColor = null;
-        switch($color) {
+        switch ($color) {
             case 'BLUE':
                 $displayableColor = '🟦 TEMPO_BLEU';
                 break;
@@ -87,7 +87,7 @@ class EdfColorDayBridge extends BridgeAbstract
     {
         $month = date('n'); // Current month as a number (1-12)
         $year = date('Y');  // Current year
-    
+
         // Assuming the tempo year starts in September
         if ($month >= 9) {
             return $year . '-' . ($year + 1); // e.g., 2024-2025
