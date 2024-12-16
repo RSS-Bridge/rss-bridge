@@ -15,7 +15,7 @@ class EdfPricesBridge extends BridgeAbstract
                 // we can add later more option prices
                 'values' => [
                     'Base' => '/energie/edf/tarifs/tarif-bleu#base',
-                    'HCHP' => '/energie/edf/tarifs/tarif-bleu#hchp',
+                    'HPHC' => '/energie/edf/tarifs/tarif-bleu#hphc',
                     'EJP' => '/energie/edf/tarifs/tarif-bleu#ejp',
                     'Tempo' => '/energie/edf/tarifs/tempo'
                 ],
@@ -75,7 +75,7 @@ class EdfPricesBridge extends BridgeAbstract
 
         // add subscription power info
         $tablePrices = $ulDom->nextSibling()->nextSibling()->nextSibling()->find('.table--responsive', 0);
-        $this->addSubscriptionPowerInfo($tablePrices, $power, 7);
+        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 7);
     }
 
     /**
@@ -109,7 +109,7 @@ class EdfPricesBridge extends BridgeAbstract
             $this->items[] = $item;
         }
 
-        $this->addSubscriptionPowerInfo($tablePrices, $power, 9);
+        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 9);
     }
 
     /**
@@ -117,7 +117,7 @@ class EdfPricesBridge extends BridgeAbstract
      * @param string $contractUri
      * @return void
      */
-    private function hchp(simple_html_dom $html, string $contractUri, int $power): void
+    private function hphc(simple_html_dom $html, string $contractUri, int $power): void
     {
         $tablePrices = $html
                             ->find('#grille-tarifaire-et-prix-du-kwh-du-tarif-reglemente-edf-en-option-heures-pleines-heures-creuses', 0)
@@ -147,7 +147,7 @@ class EdfPricesBridge extends BridgeAbstract
             }
         }
 
-        $this->addSubscriptionPowerInfo($tablePrices, $power, 8);
+        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 8);
     }
 
     /**
@@ -185,10 +185,10 @@ class EdfPricesBridge extends BridgeAbstract
             }
         }
 
-        $this->addSubscriptionPowerInfo($tablePrices, $power, 5);
+        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 5);
     }
 
-    private function addSubscriptionPowerInfo(simple_html_dom_node $tablePrices, int $power, int $numberOfPrices): void
+    private function addSubscriptionPowerInfo(simple_html_dom_node $tablePrices, string $contractUri, int $power, int $numberOfPrices): void
     {
         $prices = $tablePrices->find('.table--stripped tbody tr');
         // last element is useless because part of another table
@@ -196,7 +196,7 @@ class EdfPricesBridge extends BridgeAbstract
 
         // 7 contracts for tempo: 6, 9, 12, 15, 18, 30 and 36 kVA
         // 9 contracts for base: 3, 6, 9, 12, 15, 18, 24, 30 and 36 kVA
-        // 7 contracts for HCHP: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
+        // 7 contracts for HPHC: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
         // 5 contracts for EJP: 9, 12, 15, 18 and 36 kVA
         if ($prices && count($prices) === $numberOfPrices) {
             $powerFound = false;
@@ -252,8 +252,8 @@ class EdfPricesBridge extends BridgeAbstract
             $this->base($html, $contractUri, $power);
         }
 
-        if ($contract === 'HCHP') {
-            $this->hchp($html, $contractUri, $power);
+        if ($contract === 'HPHC') {
+            $this->hphc($html, $contractUri, $power);
         }
 
         if ($contract === 'EJP') {
