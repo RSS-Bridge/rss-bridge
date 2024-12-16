@@ -90,7 +90,7 @@ class EdfPricesBridge extends BridgeAbstract
                             ->nextSibling()
                             ->nextSibling()
                             ->nextSibling();
-        
+
         $prices = $tablePrices->find('.table--stripped tbody tr');
         // last element is useless because part of another table
         array_pop($prices);
@@ -124,7 +124,7 @@ class EdfPricesBridge extends BridgeAbstract
                             ->nextSibling()
                             ->nextSibling()
                             ->nextSibling();
-        
+
         $prices = $tablePrices->find('.table--stripped tbody tr');
         // last element is useless because part of another table
         array_pop($prices);
@@ -132,7 +132,7 @@ class EdfPricesBridge extends BridgeAbstract
         // price per kWh is same for all powers
         if ($prices && count($prices) === 8) {
             $values = ['HC', 'HP'];
-            foreach($values as $key => $value) {
+            foreach ($values as $key => $value) {
                 $i++;
                 $item = [];
 
@@ -162,7 +162,7 @@ class EdfPricesBridge extends BridgeAbstract
                             ->nextSibling()
                             ->nextSibling()
                             ->nextSibling();
-        
+
         $prices = $tablePrices->find('.table--stripped tbody tr');
         // last element is useless because part of another table
         array_pop($prices);
@@ -170,7 +170,7 @@ class EdfPricesBridge extends BridgeAbstract
         // price per kWh is same for all powers
         if ($prices && count($prices) === 5) {
             $values = ['Non EJP', 'EJP'];
-            foreach($values as $key => $value) {
+            foreach ($values as $key => $value) {
                 $i++;
                 $item = [];
 
