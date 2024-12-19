@@ -40,7 +40,7 @@ class MixologyBridge extends BridgeAbstract
         $result['enclosures'][] = self::URI . $teaser->find('img', 0)->src;
         $result['uid'] = hash('sha256', $result['title']);
 
-        $categories = $teaser->find('views-field-field-kategorie', 0);
+        $categories = $teaser->find('.views-field-field-kategorie', 0);
         if ($categories) {
             $result['categories'] = [];
             foreach ($categories->find('a') as $category) {
