@@ -176,7 +176,7 @@ class BlueskyBridge extends BridgeAbstract
             $postAuthorHandle = $post['post']['author']['handle'] !== 'handle.invalid' ? '<i>@' . $post['post']['author']['handle'] . '</i> ' : '';
             $postDisplayName = $post['post']['author']['displayName'] ?? '';
             $postDisplayName = e($postDisplayName);
-        $postUri = $item['uri'];
+            $postUri = $item['uri'];
 
             if (Debug::isEnabled()) {
                 $url = explode('/', $post['post']['uri']);
@@ -259,7 +259,7 @@ class BlueskyBridge extends BridgeAbstract
                     $quotedAuthorDid = $quotedRecord['author']['did'];
                     $quotedDisplayName = $quotedRecord['author']['displayName'] ?? '';
                     $quotedDisplayName = e($quotedDisplayName);
-                $quotedAuthorHandle = $quotedRecord['author']['handle'] !== 'handle.invalid' ? '<i>@' . $quotedRecord['author']['handle'] . '</i>' : '';
+                    $quotedAuthorHandle = $quotedRecord['author']['handle'] !== 'handle.invalid' ? '<i>@' . $quotedRecord['author']['handle'] . '</i>' : '';
 
                     $parts = explode('/', $quotedRecord['uri']);
                     $quotedPostId = end($parts);
@@ -330,7 +330,7 @@ class BlueskyBridge extends BridgeAbstract
                 $replyPostAuthorHandle = $replyPost['author']['handle'] !== 'handle.invalid' ? '<i>@' . $replyPost['author']['handle'] . '</i> ' : '';
                 $replyPostDisplayName = $replyPost['author']['displayName'] ?? '';
                 $replyPostDisplayName = e($replyPostDisplayName);
-            $replyPostUri = self::URI . '/profile/' . $this->fallbackAuthor($replyPost['author'], 'url') . '/post/' . explode('app.bsky.feed.post/', $replyPost['uri'])[1];
+                $replyPostUri = self::URI . '/profile/' . $this->fallbackAuthor($replyPost['author'], 'url') . '/post/' . explode('app.bsky.feed.post/', $replyPost['uri'])[1];
 
                 // reply post
                 $description .= $this->getPostDescription(
