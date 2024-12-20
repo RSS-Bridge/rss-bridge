@@ -143,27 +143,6 @@ class BlueskyBridge extends BridgeAbstract
 
     public function collectData()
     {
-        //https://bsky.app/profile/mm-gazzetta-sport.bsky.social/post/3lb5byr5fuw2c
-        if ($this->getInput('post_id') !== null) {
-            // $videoURL = 'https://bsky.social/xrpc/com.atproto.sync.getBlob?did=did:plc:heeihz7xdhf7dbjx4befobqw&cid=bafkreifexy4uovu5oxtbj5354il3ns5raqkgx2wilfuuejucllxfmde7iq';
-            // $resolvedVideoURL = getContents($videoURL, [], [CURLOPT_FOLLOWLOCATION => 1, CURLOPT_NOBODY => 1], true);
-            // print_r($resolvedVideoURL->getHeaders()['location'][0]);
-
-            //explode and get handle
-            $explode = explode('/', $this->getInput('post_id'));
-            $handle = $explode[4];
-            $post_id = $explode[6];
-            $did = $this->resolveHandle($handle);
-            //at://did:plc:xh7ydadmdldkzzi5fzccg6zg/app.bsky.feed.post/3lcnpj2ro5c2p
-            //https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at://did:plc:hw753x7fbyzmn5ouveyepbxx/app.bsky.feed.post/3lcvcqvmyw223
-            $uri = 'https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at://' . urlencode($did) . '/app.bsky.feed.post/' . $post_id;
-            $response = json_decode(getContents($uri), true);
-            $text = $response['posts'][0]['record']['text'];
-            print_r($uri);
-            print('<hr>' . $this->textToDescription($response['posts'][0]['record']));
-            return;
-        }
-
         $user_id = $this->getInput('user_id');
         $handle_match = preg_match('/(?:[a-zA-Z]*\.)+([a-zA-Z](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)/', $user_id, $handle_res); //gets the TLD in $handle_match[1]
         $did_match = preg_match('/did:plc:[a-z2-7]{24}/', $user_id); //https://github.com/did-method-plc/did-method-plc#identifier-syntax
