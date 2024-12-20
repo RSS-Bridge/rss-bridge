@@ -174,8 +174,9 @@ class BlueskyBridge extends BridgeAbstract
 
             $postAuthorDID = $post['post']['author']['did'];
             $postAuthorHandle = $post['post']['author']['handle'] !== 'handle.invalid' ? '<i>@' . $post['post']['author']['handle'] . '</i> ' : '';
-            $postDisplayName = e($post['post']['author']['displayName']) ?? '';
-            $postUri = $item['uri'];
+            $postDisplayName = $post['post']['author']['displayName'] ?? '';
+            $postDisplayName = e($postDisplayName);
+        $postUri = $item['uri'];
 
             if (Debug::isEnabled()) {
                 $url = explode('/', $post['post']['uri']);
@@ -256,8 +257,9 @@ class BlueskyBridge extends BridgeAbstract
                     $description .= 'Author of quoted post has blocked OP.';
                 } else {
                     $quotedAuthorDid = $quotedRecord['author']['did'];
-                    $quotedDisplayName = e($quotedRecord['author']['displayName']) ?? '';
-                    $quotedAuthorHandle = $quotedRecord['author']['handle'] !== 'handle.invalid' ? '<i>@' . $quotedRecord['author']['handle'] . '</i>' : '';
+                    $quotedDisplayName = $quotedRecord['author']['displayName'] ?? '';
+                    $quotedDisplayName = e($quotedDisplayName);
+                $quotedAuthorHandle = $quotedRecord['author']['handle'] !== 'handle.invalid' ? '<i>@' . $quotedRecord['author']['handle'] . '</i>' : '';
 
                     $parts = explode('/', $quotedRecord['uri']);
                     $quotedPostId = end($parts);
@@ -326,8 +328,9 @@ class BlueskyBridge extends BridgeAbstract
 
                 $replyPostAuthorDID = $replyPost['author']['did'];
                 $replyPostAuthorHandle = $replyPost['author']['handle'] !== 'handle.invalid' ? '<i>@' . $replyPost['author']['handle'] . '</i> ' : '';
-                $replyPostDisplayName = e($replyPost['author']['displayName']) ?? '';
-                $replyPostUri = self::URI . '/profile/' . $this->fallbackAuthor($replyPost['author'], 'url') . '/post/' . explode('app.bsky.feed.post/', $replyPost['uri'])[1];
+                $replyPostDisplayName = $replyPost['author']['displayName'] ?? '';
+                $replyPostDisplayName = e($replyPostDisplayName);
+            $replyPostUri = self::URI . '/profile/' . $this->fallbackAuthor($replyPost['author'], 'url') . '/post/' . explode('app.bsky.feed.post/', $replyPost['uri'])[1];
 
                 // reply post
                 $description .= $this->getPostDescription(
@@ -398,7 +401,8 @@ class BlueskyBridge extends BridgeAbstract
                         $description .= 'Author of quoted post has blocked OP.';
                     } else {
                         $quotedAuthorDid = $replyQuotedRecord['author']['did'];
-                        $quotedDisplayName = e($replyQuotedRecord['author']['displayName']) ?? '';
+                        $quotedDisplayName = $replyQuotedRecord['author']['displayName'] ?? '';
+                        $quotedDisplayName = e($quotedDisplayName);
                         $quotedAuthorHandle = $replyQuotedRecord['author']['handle'] !== 'handle.invalid' ? '<i>@' . $replyQuotedRecord['author']['handle'] . '</i>' : '';
 
                         $parts = explode('/', $replyQuotedRecord['uri']);
@@ -515,7 +519,8 @@ class BlueskyBridge extends BridgeAbstract
                 case 'url':
                     return $author['did'];
                 case 'display':
-                    return e($author['displayName']);
+                    $displayName = $author['displayName'] ?? '';
+                    return e($displayName);
             }
         }
         return $author['handle'];
