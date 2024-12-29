@@ -24,6 +24,13 @@ function getContents(
 
     // TODO: consider url validation at this point
 
+    $config = [
+        'useragent'     => Configuration::getConfig('http', 'useragent'),
+        'timeout'       => Configuration::getConfig('http', 'timeout'),
+        'retries'       => Configuration::getConfig('http', 'retries'),
+        'curl_options'  => $curlOptions,
+    ];
+
     $httpHeadersNormalized = [];
     foreach ($httpHeaders as $httpHeader) {
         $parts = explode(':', $httpHeader);
@@ -69,13 +76,7 @@ function getContents(
         'TE' => 'trailers',
     ];
 
-    $config = [
-        'useragent' => Configuration::getConfig('http', 'useragent'),
-        'timeout' => Configuration::getConfig('http', 'timeout'),
-        'retries' => Configuration::getConfig('http', 'retries'),
-        'headers' => array_merge($defaultHttpHeaders, $httpHeadersNormalized),
-        'curl_options' => $curlOptions,
-    ];
+    $config['headers'] = array_merge($defaultHttpHeaders, $httpHeadersNormalized);
 
     $maxFileSize = Configuration::getConfig('http', 'max_filesize');
     if ($maxFileSize) {
