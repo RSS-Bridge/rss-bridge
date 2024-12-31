@@ -35,39 +35,26 @@ class BlizzardNewsBridge extends BridgeAbstract
     ];
     const CACHE_TIMEOUT = 3600;
 
-    private const PRODUCT_ID_1 = 'blt525c436e4a1b0a97';
-    private const PRODUCT_ID_2 = 'blt54fbd3787a705054';
-    private const PRODUCT_ID_3 = 'blt2031aef34200656d';
-    private const PRODUCT_ID_4 = 'blt795c314400d7ded9';
-    private const PRODUCT_ID_5 = 'blt5cfc6affa3ca0638';
-    private const PRODUCT_ID_6 = 'blt2e50e1521bb84dc6';
-    private const PRODUCT_ID_7 = 'blt376fb94931906b6f';
-    private const PRODUCT_ID_8 = 'blt81d46fcb05ab8811';
-    private const PRODUCT_ID_9 = 'bltede2389c0a8885aa';
-    private const PRODUCT_ID_10 = 'blt24859ba8086fb294';
-    private const PRODUCT_ID_11 = 'blte27d02816a8ff3e1';
-    private const PRODUCT_ID_12 = 'blt2caca37e42f19839';
-    private const PRODUCT_ID_13 = 'blt90855744d00cd378';
-    private const PRODUCT_ID_14 = 'bltec70ad0ea4fd6d1d';
-    private const PRODUCT_ID_15 = 'blt500c1f8b5470bfdb';
+    private const PRODUCT_IDS = [
+        'blt525c436e4a1b0a97',
+        'blt54fbd3787a705054',
+        'blt2031aef34200656d',
+        'blt795c314400d7ded9',
+        'blt5cfc6affa3ca0638',
+        'blt2e50e1521bb84dc6',
+        'blt376fb94931906b6f',
+        'blt81d46fcb05ab8811',
+        'bltede2389c0a8885aa',
+        'blt24859ba8086fb294',
+        'blte27d02816a8ff3e1',
+        'blt2caca37e42f19839',
+        'blt90855744d00cd378',
+        'bltec70ad0ea4fd6d1d',
+        'blt500c1f8b5470bfdb'
+    ];
 
-    private const API_PATH = '/api/news/blizzard?' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_1 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_2 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_3 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_4 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_5 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_6 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_7 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_8 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_9 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_10 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_11 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_12 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_13 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_14 . '&' .
-        'feedCxpProductIds[]=' . self::PRODUCT_ID_15;
-    
+    private const API_PATH = '/api/news/blizzard?';
+
     /**
      * Source Web page URL (should provide either HTML or XML content)
      * @return string
@@ -76,9 +63,14 @@ class BlizzardNewsBridge extends BridgeAbstract
     {
         $locale = $this->getInput('locale');
         if ('zh-cn' === $locale) {
-            return 'https://cn.news.blizzard.com' . self::API_PATH;
+            $baseUrl = 'https://cn.news.blizzard.com' . self::API_PATH;
         }
-        return 'https://news.blizzard.com/' . $locale . self::API_PATH;
+        else {
+            $baseUrl = 'https://news.blizzard.com/' . $locale . self::API_PATH;
+        }
+        return $baseUrl .= http_build_query([
+            'feedCxpProductIds' => self::PRODUCT_IDS
+        ]);
     }
 
     public function collectData()
