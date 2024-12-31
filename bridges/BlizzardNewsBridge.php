@@ -34,8 +34,40 @@ class BlizzardNewsBridge extends BridgeAbstract
         ]
     ];
     const CACHE_TIMEOUT = 3600;
-    private const API_PATH = '/api/news/blizzard?feedCxpProductIds[]=blt525c436e4a1b0a97&feedCxpProductIds[]=blt54fbd3787a705054&feedCxpProductIds[]=blt2031aef34200656d&feedCxpProductIds[]=blt795c314400d7ded9&feedCxpProductIds[]=blt5cfc6affa3ca0638&feedCxpProductIds[]=blt2e50e1521bb84dc6&feedCxpProductIds[]=blt376fb94931906b6f&feedCxpProductIds[]=blt81d46fcb05ab8811&feedCxpProductIds[]=bltede2389c0a8885aa&feedCxpProductIds[]=blt24859ba8086fb294&feedCxpProductIds[]=blte27d02816a8ff3e1&feedCxpProductIds[]=blt2caca37e42f19839&feedCxpProductIds[]=blt90855744d00cd378&feedCxpProductIds[]=bltec70ad0ea4fd6d1d&feedCxpProductIds[]=blt500c1f8b5470bfdb';
 
+    private const PRODUCT_ID_1 = 'blt525c436e4a1b0a97';
+    private const PRODUCT_ID_2 = 'blt54fbd3787a705054';
+    private const PRODUCT_ID_3 = 'blt2031aef34200656d';
+    private const PRODUCT_ID_4 = 'blt795c314400d7ded9';
+    private const PRODUCT_ID_5 = 'blt5cfc6affa3ca0638';
+    private const PRODUCT_ID_6 = 'blt2e50e1521bb84dc6';
+    private const PRODUCT_ID_7 = 'blt376fb94931906b6f';
+    private const PRODUCT_ID_8 = 'blt81d46fcb05ab8811';
+    private const PRODUCT_ID_9 = 'bltede2389c0a8885aa';
+    private const PRODUCT_ID_10 = 'blt24859ba8086fb294';
+    private const PRODUCT_ID_11 = 'blte27d02816a8ff3e1';
+    private const PRODUCT_ID_12 = 'blt2caca37e42f19839';
+    private const PRODUCT_ID_13 = 'blt90855744d00cd378';
+    private const PRODUCT_ID_14 = 'bltec70ad0ea4fd6d1d';
+    private const PRODUCT_ID_15 = 'blt500c1f8b5470bfdb';
+
+    private const API_PATH = '/api/news/blizzard?' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_1 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_2 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_3 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_4 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_5 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_6 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_7 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_8 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_9 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_10 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_11 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_12 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_13 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_14 . '&' .
+        'feedCxpProductIds[]=' . self::PRODUCT_ID_15;
+    
     /**
      * Source Web page URL (should provide either HTML or XML content)
      * @return string
@@ -49,29 +81,29 @@ class BlizzardNewsBridge extends BridgeAbstract
         return 'https://news.blizzard.com/' . $locale . self::API_PATH;
     }
 
-    public function collectData() {
-
+    public function collectData()
+    {
         $feedContent = json_decode(getContents($this->getSourceUrl()), true);
 
         foreach ($feedContent['feed']['contentItems'] as $entry) {
             $properties = $entry['properties'];
 
-            $item = array();
+            $item = [];
 
             $item['title'] = $this->filterChars($properties['title']);
             $item['content'] = $this->filterChars($properties['summary']);
             $item['uri'] = $properties['newsUrl'];
             $item['author'] = $this->filterChars($properties['author']);
             $item['timestamp'] = strtotime($properties['lastUpdated']);
-            $item['enclosures'] = array($properties['staticAsset']['imageUrl']);
-            $item['categories'] = array($this->filterChars($properties['cxpProduct']['title']));
+            $item['enclosures'] = [$properties['staticAsset']['imageUrl']];
+            $item['categories'] = [$this->filterChars($properties['cxpProduct']['title'])];
 
             $this->items[] = $item;
         }
-
     }
 
-    private function filterChars($content) {
+    private function filterChars($content)
+    {
         return htmlspecialchars($content, ENT_XML1);
     }
 
