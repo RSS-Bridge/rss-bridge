@@ -64,8 +64,7 @@ class BlizzardNewsBridge extends BridgeAbstract
         $locale = $this->getInput('locale');
         if ('zh-cn' === $locale) {
             $baseUrl = 'https://cn.news.blizzard.com' . self::API_PATH;
-        }
-        else {
+        } else {
             $baseUrl = 'https://news.blizzard.com/' . $locale . self::API_PATH;
         }
         return $baseUrl .= http_build_query([
