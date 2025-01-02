@@ -48,6 +48,11 @@ class CentreFranceBridge extends BridgeAbstract
         ]
     ];
 
+    private static array $monthNumberByFrenchName = [
+        'janvier' => 1, 'février' => 2, 'mars' => 3, 'avril' => 4, 'mai' => 5, 'juin' => 6, 'juillet' => 7,
+        'août' => 8, 'septembre' => 9, 'octobre' => 10, 'novembre' => 11, 'décembre' => 12
+    ];
+
     public function collectData()
     {
         $value = $this->getInput('limit');
@@ -130,14 +135,22 @@ class CentreFranceBridge extends BridgeAbstract
             'enclosures' => [],
         ];
 
-        $articleInformations = $html->find('.c-article-informations p');
+        $articleInformations = $html->find('#content hgroup > div.typo-p3 > *');
         if (is_array($articleInformations) && $articleInformations !== []) {
-            $authorPosition = 1;
+            $publicationDateIndex = 0;
+
+            // Article author
+            $probableAuthorName = strip_tags($articleInformations[0]->innertext);
+            if (str_starts_with($probableAuthorName, 'Par ')) {
+                $publicationDateIndex = 1;
+                $item['author'] = substr($probableAuthorName, 4);
+            }
 
             // Article publication date
-            if (preg_match('/(\d{2})\/(\d{2})\/(\d{4})( à (\d{2})h(\d{2}))?/', $articleInformations[0]->innertext, $articleDateParts) > 0) {
+            preg_match('/Publié le (\d{2}) (.+) (\d{4})( à (\d{2})h(\d{2}))?/', strip_tags($articleInformations[$publicationDateIndex]->innertext), $articleDateParts);
+            if ($articleDateParts !== [] && array_key_exists($articleDateParts[2], self::$monthNumberByFrenchName)) {
                 $articleDate = new \DateTime('midnight');
-                $articleDate->setDate($articleDateParts[3], $articleDateParts[2], $articleDateParts[1]);
+                $articleDate->setDate($articleDateParts[3], self::$monthNumberByFrenchName[$articleDateParts[2]], $articleDateParts[1]);
 
                 if (count($articleDateParts) === 7) {
                     $articleDate->setTime($articleDateParts[5], $articleDateParts[6]);
@@ -145,57 +158,31 @@ class CentreFranceBridge extends BridgeAbstract
 
                 $item['timestamp'] = $articleDate->getTimestamp();
             }
-
-            // Article update date
-            if (count($articleInformations) >= 2 && preg_match('/(\d{2})\/(\d{2})\/(\d{4})( à (\d{2})h(\d{2}))?/', $articleInformations[1]->innertext, $articleDateParts) > 0) {
-                $authorPosition = 2;
-
-                $articleDate = new \DateTime('midnight');
-                $articleDate->setDate($articleDateParts[3], $articleDateParts[2], $articleDateParts[1]);
-
-                if (count($articleDateParts) === 7) {
-                    $articleDate->setTime($articleDateParts[5], $articleDateParts[6]);
-                }
-
-                $item['timestamp'] = $articleDate->getTimestamp();
-            }
-
-            if (count($articleInformations) === ($authorPosition + 1)) {
-                $item['author'] = $articleInformations[$authorPosition]->innertext;
-            }
         }
 
-        $articleContent = $html->find('.b-article .contenu > *');
-        if (is_array($articleContent)) {
-            $item['content'] = '';
-
-            foreach ($articleContent as $contentPart) {
-                if (in_array($contentPart->getAttribute('id'), ['cf-audio-player', 'poool-widget'], true)) {
-                    continue;
+        $articleContent = $html->find('#content>div.flex+div.grid section>.z-10')[0] ?? null;
+        if ($articleContent instanceof \simple_html_dom_node) {
+            $articleHiddenParts = $articleContent->find('.ad-slot, #cf-digiteka-player');
+            if (is_array($articleHiddenParts)) {
+                foreach ($articleHiddenParts as $articleHiddenPart) {
+                    $articleContent->removeChild($articleHiddenPart);
                 }
-
-                $articleHiddenParts = $contentPart->find('.bloc, .p402_hide');
-                if (is_array($articleHiddenParts)) {
-                    foreach ($articleHiddenParts as $articleHiddenPart) {
-                        $contentPart->removeChild($articleHiddenPart);
-                    }
-                }
-
-                $item['content'] .= $contentPart->innertext;
             }
+
+            $item['content'] = $articleContent->innertext;
         }
 
-        $articleIllustration  = $html->find('.photo-wrapper .photo-box img');
+        $articleIllustration  = $html->find('#content>div.flex+div.grid section>figure>img');
         if (is_array($articleIllustration) && count($articleIllustration) === 1) {
             $item['enclosures'][] = $articleIllustration[0]->getAttribute('src');
         }
 
-        $articleAudio = $html->find('#cf-audio-player-container audio');
+        $articleAudio = $html->find('audio[src^="https://api.octopus.saooti.com/"]');
         if (is_array($articleAudio) && count($articleAudio) === 1) {
             $item['enclosures'][] = $articleAudio[0]->getAttribute('src');
         }
 
-        $articleTags = $html->find('.b-article > ul.c-tags > li > a.t-simple');
+        $articleTags = $html->find('#content>div.flex+div.grid section>.bg-gray-light>a.border-gray-dark');
         if (is_array($articleTags)) {
             $item['categories'] = array_map(static fn ($articleTag) => $articleTag->innertext, $articleTags);
         }
