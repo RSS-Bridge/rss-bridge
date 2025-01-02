@@ -1,6 +1,6 @@
 <?php
 
-class BlizzardNewsBridge extends XPathAbstract
+class BlizzardNewsBridge extends BridgeAbstract
 {
     const NAME = 'Blizzard News';
     const URI = 'https://news.blizzard.com';
@@ -35,33 +35,73 @@ class BlizzardNewsBridge extends XPathAbstract
     ];
     const CACHE_TIMEOUT = 3600;
 
-    const XPATH_EXPRESSION_ITEM = '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article';
-    const XPATH_EXPRESSION_ITEM_TITLE = './/div/div[2]/h2';
-    const XPATH_EXPRESSION_ITEM_CONTENT = './/div[@class="ArticleListItem-description"]/div[@class="h6"]/text()';
-    const XPATH_EXPRESSION_ITEM_URI = './/a[@class="ArticleLink ArticleLink"]/@href';
-    const XPATH_EXPRESSION_ITEM_AUTHOR = '';
-    const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp';
-    const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/div[@class="ArticleListItem-image"]/@style';
-    const XPATH_EXPRESSION_ITEM_CATEGORIES = './/div[@class="ArticleListItem-label"]';
-    const SETTING_FIX_ENCODING = true;
+    private const PRODUCT_IDS = [
+        'blt525c436e4a1b0a97',
+        'blt54fbd3787a705054',
+        'blt2031aef34200656d',
+        'blt795c314400d7ded9',
+        'blt5cfc6affa3ca0638',
+        'blt2e50e1521bb84dc6',
+        'blt376fb94931906b6f',
+        'blt81d46fcb05ab8811',
+        'bltede2389c0a8885aa',
+        'blt24859ba8086fb294',
+        'blte27d02816a8ff3e1',
+        'blt2caca37e42f19839',
+        'blt90855744d00cd378',
+        'bltec70ad0ea4fd6d1d',
+        'blt500c1f8b5470bfdb'
+    ];
+
+    private const API_PATH = '/api/news/blizzard?';
 
     /**
      * Source Web page URL (should provide either HTML or XML content)
      * @return string
      */
-    protected function getSourceUrl()
+    private function getSourceUrl(): string
     {
         $locale = $this->getInput('locale');
         if ('zh-cn' === $locale) {
-            return 'https://cn.news.blizzard.com';
+            $baseUrl = 'https://cn.news.blizzard.com' . self::API_PATH;
+        } else {
+            $baseUrl = 'https://news.blizzard.com/' . $locale . self::API_PATH;
         }
-        return 'https://news.blizzard.com/' . $locale;
+        return $baseUrl .= http_build_query([
+            'feedCxpProductIds' => self::PRODUCT_IDS
+        ]);
+    }
+
+    public function collectData()
+    {
+        $feedContent = json_decode(getContents($this->getSourceUrl()), true);
+
+        foreach ($feedContent['feed']['contentItems'] as $entry) {
+            $properties = $entry['properties'];
+
+            $item = [];
+
+            $item['title'] = $this->filterChars($properties['title']);
+            $item['content'] = $this->filterChars($properties['summary']);
+            $item['uri'] = $properties['newsUrl'];
+            $item['author'] = $this->filterChars($properties['author']);
+            $item['timestamp'] = strtotime($properties['lastUpdated']);
+            $item['enclosures'] = [$properties['staticAsset']['imageUrl']];
+            $item['categories'] = [$this->filterChars($properties['cxpProduct']['title'])];
+
+            $this->items[] = $item;
+        }
+    }
+
+    private function filterChars($content)
+    {
+        return htmlspecialchars($content, ENT_XML1);
     }
 
     public function getIcon()
     {
         return <<<icon
-https://blznews.akamaized.net/images/favicon-cb34a003c6f2f637ee8f4f7b406f3b9b120b918c04cabec7f03a760e708977ea9689a1c638f4396def8dce7b202cd007eae91946cc3c4a578aa8b5694226cfc6.ico
+https://dfbmfbnnydoln.cloudfront.net/production/images/favicons/favicon.ba01bb119359d74970b02902472fd82e96b5aba7.ico
 icon;
     }
 }
