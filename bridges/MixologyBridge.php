@@ -1,48 +1,72 @@
 <?php
 
-class MixologyBridge extends FeedExpander
+class MixologyBridge extends BridgeAbstract
 {
     const MAINTAINER = 'swofl';
     const NAME = 'Mixology';
     const URI = 'https://mixology.eu';
     const CACHE_TIMEOUT = 6 * 60 * 60; // 6h
     const DESCRIPTION = 'Get latest blog posts from Mixology';
-    const PARAMETERS = [ [
-        'limit' => self::LIMIT,
-    ] ];
 
     public function collectData()
     {
-        $feed_url = self::URI . '/feed';
-        $limit = $this->getInput('limit') ?? 10;
-        $this->collectExpandableDatas($feed_url, $limit);
+        $html = getSimpleHTMLDOM(self::URI);
+
+        $teasers = [];
+        $teaserElements = [];
+
+        $teaserElements[] = $html->find('.aufmacher .views-view-responsive-grid__item-inner', 0);
+        foreach ($html->find('.block-views-blockmixology-frontpage-block-2 .views-col') as $teaser) {
+            $teaserElements[] = $teaser;
+        }
+
+        foreach ($teaserElements as $teaser) {
+            $teasers[] = $this->parseTeaser($teaser);
+        }
+
+        foreach ($teasers as $article) {
+            $this->items[] = $this->parseItem($article);
+        }
+    }
+
+    protected function parseTeaser($teaser)
+    {
+        $result = [];
+
+        $title = $teaser->find('.views-field-title a', 0);
+        $result['title'] = $title->plaintext;
+        $result['uri'] = self::URI . $title->href;
+        $result['enclosures'] = [];
+        $result['enclosures'][] = self::URI . $teaser->find('img', 0)->src;
+        $result['uid'] = hash('sha256', $result['title']);
+
+        $categories = $teaser->find('.views-field-field-kategorie', 0);
+        if ($categories) {
+            $result['categories'] = [];
+            foreach ($categories->find('a') as $category) {
+                $result['categories'][] = $category->innertext;
+            }
+        }
+
+        return $result;
     }
 
     protected function parseItem(array $item)
     {
         $article = getSimpleHTMLDOMCached($item['uri']);
 
+        $item['author'] = $article->find('.beitrag-author a', 0)->plaintext;
+        $item['timestamp'] = strtotime($article->find('.beitrag-date time', 0)->datetime);
+
         $content = '';
 
-        $headerImage = $article->find('div.edgtf-full-width img.wp-post-image', 0);
+        $content .= '<img src="' . $item['enclosures'][0] . '"/>';
 
-        if (is_object($headerImage)) {
-            $item['enclosures'] = [];
-            $item['enclosures'][] = $headerImage->src;
-            $content .= '<img src="' . $headerImage->src . '"/>';
-        }
-
-        foreach ($article->find('article .wpb_content_element > .wpb_wrapper') as $element) {
+        foreach ($article->find('article .wpb_content_element>.wpb_wrapper, article .field--type-text-with-summary>.wp-block-columns>.wp-block-column') as $element) {
             $content .= $element->innertext;
         }
 
         $item['content'] = $content;
-
-        $item['categories'] = [];
-
-        foreach ($article->find('.edgtf-tags > a') as $tag) {
-            $item['categories'][] = $tag->plaintext;
-        }
 
         return $item;
     }
