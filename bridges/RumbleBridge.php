@@ -60,15 +60,10 @@ class RumbleBridge extends BridgeAbstract
 
         $dom = getSimpleHTMLDOM($url);
         foreach ($dom->find('ol.thumbnail__grid div.thumbnail__grid--item') as $video) {
-            $itemUrlString = self::URI . $video->find('a', 0)->href;
-            $itemUrl = Url::fromString($itemUrlString);
+            $href = $video->find('a', 0)->href;
 
             $item = [
                 'title'     => $video->find('h3', 0)->plaintext,
-
-                // Remove tracking parameter in query string
-                'uri'       => $itemUrl->withQueryString(null)->__toString(),
-
                 'author'    => $account . '@rumble.com',
                 'content'   => defaultLinkTo($video, self::URI)->innertext,
             ];
@@ -78,6 +73,14 @@ class RumbleBridge extends BridgeAbstract
                 $publishedAt = new \DateTimeImmutable($time->getAttribute('datetime'));
                 $item['timestamp'] = $publishedAt->getTimestamp();
             }
+
+            if (isset($publishedAt) && $publishedAt > new \DateTimeImmutable('2025-01-31')) {
+                $href = ltrim($href, '/');
+            }
+            $itemUrl = Url::fromString(self::URI . $href);
+            // Remove tracking parameter in query string
+            $item['uri'] = $itemUrl->withQueryString(null)->__toString();
+
             $this->items[] = $item;
         }
     }
