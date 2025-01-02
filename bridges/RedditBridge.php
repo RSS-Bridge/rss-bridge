@@ -234,11 +234,14 @@ class RedditBridge extends BridgeAbstract
                 } elseif ($data->is_video) {
                     // Video
 
-                    // Higher index -> Higher resolution
-                    end($data->preview->images[0]->resolutions);
-                    $index = key($data->preview->images[0]->resolutions);
-
-                    $item['content'] = $this->createFigureLink($data->url, $data->preview->images[0]->resolutions[$index]->url, 'Video');
+                    if ($data->media->reddit_video) {
+                        $item['content'] = $this->createVideoContent($data->media->reddit_video);
+                    } else {
+                        // Higher index -> Higher resolution
+                        end($data->preview->images[0]->resolutions);
+                        $index = key($data->preview->images[0]->resolutions);
+                        $item['content'] = $this->createFigureLink($data->url, $data->preview->images[0]->resolutions[$index]->url, 'Video');
+                    }
                 } elseif (isset($data->media) && $data->media->type == 'youtube.com') {
                     // Youtube link
                     $item['content'] = $this->createFigureLink($data->url, $data->media->oembed->thumbnail_url, 'YouTube');
@@ -316,6 +319,16 @@ class RedditBridge extends BridgeAbstract
     private function createLink($href, $text)
     {
         return sprintf('<a href="%s">%s</a>', $href, $text);
+    }
+
+    private function createVideoContent(\stdClass $video): string
+    {
+        return <<<HTML
+            <video width="$video->width" height="$video->height" controls>
+                <source src="$video->fallback_url" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        HTML;
     }
 
     public function detectParameters($url)
