@@ -13,7 +13,7 @@ class CacheMiddleware implements Middleware
 
     public function __invoke(Request $request, $next): Response
     {
-        $action = $request->attribute('action');
+        $action = $request->getAttribute('action');
 
         if ($action !== 'DisplayAction') {
             // We only cache DisplayAction (for now)
@@ -43,9 +43,14 @@ class CacheMiddleware implements Middleware
         /** @var Response $response */
         $response = $next($request);
 
-        if (in_array($response->getCode(), [403, 429, 500, 503])) {
+        if ($response->getCode() === 200) {
+            // Do nothing because DisplayAction has already cached this on $cacheKey
+        } elseif (in_array($response->getCode(), [400, 403, 404, 429, 500, 503])) {
             // Cache these responses for about ~10 mins on average
             $this->cache->set($cacheKey, $response, 60 * 5 + rand(1, 60 * 10));
+        } else {
+            // Should never happen
+            $this->cache->set($cacheKey, $response, 60 * 5);
         }
 
         // For 1% of requests, prune cache

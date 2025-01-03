@@ -13,8 +13,8 @@
     <?= e($message) ?>
 </p>
 
-<form action="" method="get">
+<form action="" method="get" autocomplete="off">
     <label for="token">Token:</label>
-    <input type="password" name="token" id="token" placeholder="token">
+    <input type="text" name="token" id="token" placeholder="token" value="<?= e($token) ?>">
     <input type="submit" value="OK">
 </form>

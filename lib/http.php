@@ -220,7 +220,7 @@ final class Request
         return $clone;
     }
 
-    public function attribute(string $key, $default = null)
+    public function getAttribute(string $key, $default = null)
     {
         return $this->attributes[$key] ?? $default;
     }

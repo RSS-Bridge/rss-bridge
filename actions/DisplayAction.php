@@ -23,7 +23,7 @@ class DisplayAction implements ActionInterface
         $noproxy = $request->get('_noproxy');
 
         if (!$bridgeName) {
-            return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Missing bridge parameter']), 400);
+            return new Response(render(__DIR__ . '/../templates/error.html.php', ['message' => 'Missing bridge name parameter']), 400);
         }
         $bridgeClassName = $this->bridgeFactory->createBridgeClassName($bridgeName);
         if (!$bridgeClassName) {
