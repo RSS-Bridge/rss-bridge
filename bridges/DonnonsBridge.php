@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Retourne les dons d'une recherche filtrée sur le site Donnons.org
  * Example: https://donnons.org/Sport/Ile-de-France
@@ -44,58 +46,60 @@ class DonnonsBridge extends BridgeAbstract
     {
         $uri = $this->getPageURI($page);
 
-        $html = getSimpleHTMLDOM($uri);
+        $dom = getSimpleHTMLDOM($uri);
 
-        $searchDiv = $html->find('div[id=search]', 0);
+        $searchDiv = $dom->find('div[id=search]', 0);
 
-        if (!is_null($searchDiv)) {
-            $elements = $searchDiv->find('a.lst-annonce');
-            foreach ($elements as $element) {
-                $item = [];
+        if (! $searchDiv) {
+            return;
+        }
 
-                // Lien vers le don
-                $item['uri'] = self::URI . $element->href;
-                // Id de l'objet
-                $item['uid'] = $element->getAttribute('data-id');
+        $elements = $searchDiv->find('a.lst-annonce');
+        foreach ($elements as $element) {
+            $item = [];
 
-                // Grab info from json
-                $jsonString = $element->find('script', 0)->innertext;
-                $json = json_decode($jsonString, true);
+            // Lien vers le don
+            $item['uri'] = self::URI . $element->href;
+            // Id de l'objet
+            $item['uid'] = $element->getAttribute('data-id');
 
-                $name = $json['name'];
-                $category = $json['category'];
-                $date = $json['availabilityStarts'];
-                $description = $json['description'];
-                $city = $json['availableAtOrFrom']['address']['addressLocality'];
-                $region = $json['availableAtOrFrom']['address']['addressRegion'];
+            // Grab info from json
+            $jsonString = $element->find('script', 0)->innertext;
+            $json = json_decode($jsonString, true);
 
-                // Grab info from HTML
-                $imageSrc = $element->find('img.ima-center', 0)->getAttribute('src');
-                // Use large image instead of small one
-                $imageSrc = str_replace('/xs/', '/lg/', $imageSrc);
-                $image = self::URI . $imageSrc;
-                $author = $element->find('div.avatar-holder', 0)->plaintext;
+            $name = $json['name'];
+            $category = $json['category'];
+            $date = $json['availabilityStarts'];
+            $description = $json['description'];
+            $city = $json['availableAtOrFrom']['address']['addressLocality'];
+            $region = $json['availableAtOrFrom']['address']['addressRegion'];
 
-                $content = '
-					<img style="margin-right:1em;" src="' . $image . '">
-					<div>
-						<h1>' . $name . '</h1>
-						<p>' . $description . '</p>
-						<p>Lieu : <b>' . $city . '</b> - ' . $region . '</p>
-						<p>Par : ' . $author . '</p>
-						<p>Date : ' . $date . '</p>
-					</div>
-				';
+            // Grab info from HTML
+            $imageSrc = $element->find('img.ima-center', 0)->getAttribute('src');
+            // Use large image instead of small one
+            $imageSrc = str_replace('/xs/', '/lg/', $imageSrc);
+            $image = self::URI . $imageSrc;
+            $author = $element->find('div.avatar-holder', 0)->plaintext;
 
-                // Titre du don
-                $item['title'] = '[' . $category . '] ' . $name;
-                $item['timestamp'] = $date;
-                $item['author'] = $author;
-                $item['content'] = $content;
-                $item['enclosures'] = [$image];
+            $content = '
+                <img style="margin-right:1em;" src="' . $image . '">
+                <div>
+                    <h1>' . $name . '</h1>
+                    <p>' . $description . '</p>
+                    <p>Lieu : <b>' . $city . '</b> - ' . $region . '</p>
+                    <p>Par : ' . $author . '</p>
+                    <p>Date : ' . $date . '</p>
+                </div>
+            ';
 
-                $this->items[] = $item;
-            }
+            // Titre du don
+            $item['title'] = '[' . $category . '] ' . $name;
+            $item['timestamp'] = $date;
+            $item['author'] = $author;
+            $item['content'] = $content;
+            $item['enclosures'] = [$image];
+
+            $this->items[] = $item;
         }
     }
 
