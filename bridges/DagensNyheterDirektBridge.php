@@ -18,8 +18,7 @@ class DagensNyheterDirektBridge extends BridgeAbstract
     {
         $NEWSURL = self::BASEURL . '/ajax/direkt/';
 
-        $html = getSimpleHTMLDOM($NEWSURL) or
-            returnServerError('Could not request: ' . $NEWSURL);
+        $html = getSimpleHTMLDOM($NEWSURL);
 
         foreach ($html->find('article') as $element) {
             $link = $element->find('button', 0)->getAttribute('data-link');

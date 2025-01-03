@@ -109,7 +109,7 @@ class GoogleScholarBridge extends BridgeAbstract
             case 'user':
                 $userId = $this->getInput('userId');
                 $uri = self::URI . '/citations?hl=en&view_op=list_works&sortby=pubdate&user=' . $userId;
-                $html = getSimpleHTMLDOM($uri) or returnServerError('Could not fetch Google Scholar data.');
+                $html = getSimpleHTMLDOM($uri);
 
                 $publications = $html->find('tr[class="gsc_a_tr"]');
 
@@ -184,7 +184,7 @@ class GoogleScholarBridge extends BridgeAbstract
                 $uri .= $sortBy ? '&scisbd=1' : '';
                 $uri .= $numResults ? '&num=' . $numResults : '';
 
-                $html = getSimpleHTMLDOM($uri) or returnServerError('Could not fetch Google Scholar data.');
+                $html = getSimpleHTMLDOM($uri);
 
                 $publications = $html->find('div[class="gs_r gs_or gs_scl"]');
 

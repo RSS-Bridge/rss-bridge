@@ -34,8 +34,7 @@ class FurAffinityUserBridge extends BridgeAbstract
 
         $url = self::URI . '/gallery/' . $this->getInput('searchUsername');
 
-        $html = getSimpleHTMLDOM($url, [], $opt)
-            or returnServerError('Could not load the user\'s gallery page.');
+        $html = getSimpleHTMLDOM($url, [], $opt);
 
         $submissions = $html->find('section[id=gallery-gallery]', 0)->find('figure');
         foreach ($submissions as $submission) {

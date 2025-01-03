@@ -65,7 +65,7 @@ class StockFilingsBridge extends FeedExpander
     {
         $uri = $this->getSearchUrl();
 
-        return getSimpleHTMLDOM($uri) ?: returnServerError('Could not request SEC.');
+        return getSimpleHTMLDOM($uri);
     }
 
     /**

@@ -438,8 +438,7 @@ class ItakuBridge extends BridgeAbstract
     private function getOwnerID($username)
     {
         $url = self::URI . "/api/user_profiles/{$username}/?format=json";
-        $data = $this->getData($url, true, true)
-            or returnServerError("Could not load $url");
+        $data = $this->getData($url, true, true);
 
         return $data['owner'];
     }
@@ -451,8 +450,7 @@ class ItakuBridge extends BridgeAbstract
         }
         $uri = self::URI . '/posts/' . $id;
         $url = self::URI . '/api/posts/' . $id . '/?format=json';
-        $data = $metadata ?? $this->getData($url, true, true)
-            or returnServerError("Could not load $url");
+        $data = $metadata ?? $this->getData($url, true, true);
 
         $content_str = nl2br($data['content']);
         $content = "<p>{$content_str}</p><br/>"; //TODO: Add link and itaku user mention detection and convert into links.
@@ -497,8 +495,7 @@ class ItakuBridge extends BridgeAbstract
                 $content .= "<a href=\"{$url}\"><b>{$title}</b></a><br/>";
                 if ($media['is_thumbnail_for_video']) {
                     $url = self::URI . '/api/galleries/images/' . $media['id'] . '/?format=json';
-                    $media_data = $this->getData($url, true, true)
-                        or returnServerError("Could not load $url");
+                    $media_data = $this->getData($url, true, true);
                     $content .= "<video controls src=\"{$media_data['video']['video']}\" poster=\"{$media['image_xl']}\"/>";
                 } else {
                     $content .= "<a href=\"{$url}\"><img src=\"{$src}\"></a>";
@@ -523,11 +520,11 @@ class ItakuBridge extends BridgeAbstract
         $url = self::URI . '/api/commissions/' . $id . '/?format=json';
         $uri = self::URI . '/commissions/' . $id;
 
-        $data = $metadata ?? $this->getData($url, true, true)
-            or returnServerError("Could not load $url");
+        $data = $metadata ?? $this->getData($url, true, true);
 
         $content_str = nl2br($data['description']);
-        $content = "<p>{$content_str}</p><br>"; //TODO: Add link and itaku user mention detection and convert into links.
+        $content = "<p>{$content_str}</p><br>";
+        //TODO: Add link and itaku user mention detection and convert into links.
 
         if (array_key_exists('tags', $data) && count($data['tags']) > 0) {
             // $content .= "🏷 Tag(s): ";
@@ -570,8 +567,7 @@ class ItakuBridge extends BridgeAbstract
             $content .= "<a href=\"{$uri}\"><b>{$data['thumbnail_detail']['title']}</b></a><br/>";
             if ($data['thumbnail_detail']['is_thumbnail_for_video']) {
                 $url = self::URI . '/api/galleries/images/' . $data['thumbnail_detail']['id'] . '/?format=json';
-                $media_data = $this->getData($url, true, true)
-                    or returnServerError("Could not load $url");
+                $media_data = $this->getData($url, true, true);
                 $content .= "<video controls src=\"{$media_data['video']['video']}\" poster=\"{$data['thumbnail_detail']['image_lg']}\"/>";
             } else {
                 $content .= "<a href=\"{$uri}\"><img src=\"{$data['thumbnail_detail']['image_lg']}\"></a>";
@@ -595,8 +591,7 @@ class ItakuBridge extends BridgeAbstract
     {
         $uri = self::URI . '/images/' . $id;
         $url = self::URI . '/api/galleries/images/' . $id . '/?format=json';
-        $data = /* $metadata ?? */ $this->getData($url, true, true)
-            or returnServerError("Could not load $url");
+        $data = /* $metadata ?? */ $this->getData($url, true, true);
 
         $content_str = nl2br($data['description']);
         $content = "<p>{$content_str}</p><br/>"; //TODO: Add link and itaku user mention detection and convert into links.
@@ -640,8 +635,7 @@ class ItakuBridge extends BridgeAbstract
 
         if (array_key_exists('is_thumbnail_for_video', $data)) {
             $url = self::URI . '/api/galleries/images/' . $data['id'] . '/?format=json';
-            $media_data = $this->getData($url, true, true)
-                or returnServerError("Could not load $url");
+            $media_data = $this->getData($url, true, true);
             $content .= "<video controls src=\"{$media_data['video']['video']}\" poster=\"{$data['image_xl']}\"/>";
         } else {
             if (array_key_exists('video', $data) && is_null($data['video'])) {

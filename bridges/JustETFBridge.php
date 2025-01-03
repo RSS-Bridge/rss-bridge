@@ -181,8 +181,7 @@ class JustETFBridge extends BridgeAbstract
             if ($this->getInput('full')) {
                 $uri = $this->extractNewsUri($article);
 
-                $html = getSimpleHTMLDOMCached($uri)
-                    or returnServerError('Failed loading full article from ' . $uri);
+                $html = getSimpleHTMLDOMCached($uri);
 
                 $fullArticle = $html->find('div.article', 0)
                     or returnServerError('No content found! Layout might have changed!');

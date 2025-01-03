@@ -171,8 +171,7 @@ class GogsBridge extends BridgeAbstract
             ];
 
             if ($this->getInput('include_description')) {
-                $issue_html = getSimpleHTMLDOMCached($uri, 3600)
-                    or returnServerError('Unable to load issue description');
+                $issue_html = getSimpleHTMLDOMCached($uri, 3600);
 
                 $issue_html = defaultLinkTo($issue_html, $uri);
 

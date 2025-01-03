@@ -64,10 +64,6 @@ Returns feeds for bug comments';
             DEFAULT_SPAN_TEXT
         );
 
-        if ($html === false) {
-            returnServerError('Failed to load page!');
-        }
-
         // Fix relative URLs
         defaultLinkTo($html, self::URI);
 

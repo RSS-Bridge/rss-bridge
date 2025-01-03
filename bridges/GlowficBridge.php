@@ -28,7 +28,7 @@ class GlowficBridge extends BridgeAbstract
     public function collectData()
     {
         $url = $this->getAPIURI();
-        $metadata = get_headers($url . '/replies', true) or returnClientError('Post did not return reply headers.');
+        $metadata = get_headers($url . '/replies', true);
         $metadata['Last-Page'] = ceil($metadata['Total'] / $metadata['Per-Page']);
         if (
             !is_null($this->getInput('start_page')) &&

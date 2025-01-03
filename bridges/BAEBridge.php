@@ -29,7 +29,7 @@ class BAEBridge extends BridgeAbstract
     public function collectData()
     {
         $url = $this->getURI();
-        $html = getSimpleHTMLDOM($url) or returnClientError('No results for this query.');
+        $html = getSimpleHTMLDOM($url);
 
         $annonces = $html->find('main article');
         foreach ($annonces as $annonce) {

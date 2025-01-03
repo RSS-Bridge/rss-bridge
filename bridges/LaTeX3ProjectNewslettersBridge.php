@@ -11,7 +11,7 @@ class LaTeX3ProjectNewslettersBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(static::URI . '/news/latex3-news/') or returnServerError('No contents received!');
+        $html = getSimpleHTMLDOM(static::URI . '/news/latex3-news/');
         $newsContainer = $html->find('article tbody', 0);
 
         foreach ($newsContainer->find('tr') as $row) {

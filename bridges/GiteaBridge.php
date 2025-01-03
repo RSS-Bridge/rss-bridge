@@ -155,8 +155,7 @@ class GiteaBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI())
-            or returnServerError('Could not request ' . $this->getURI());
+        $html = getSimpleHTMLDOM($this->getURI());
         $html = defaultLinkTo($html, $this->getURI());
 
         $this->title = $html->find('[property="og:title"]', 0)->content;
@@ -246,8 +245,7 @@ class GiteaBridge extends BridgeAbstract
             ];
 
             if ($this->getInput('include_description')) {
-                $issue_html = getSimpleHTMLDOMCached($uri, 3600)
-                    or returnServerError('Unable to load issue description');
+                $issue_html = getSimpleHTMLDOMCached($uri, 3600);
 
                 $issue_html = defaultLinkTo($issue_html, $uri);
 
@@ -308,8 +306,7 @@ class GiteaBridge extends BridgeAbstract
             ];
 
             if ($this->getInput('include_description')) {
-                $issue_html = getSimpleHTMLDOMCached($uri, 3600)
-                    or returnServerError('Unable to load issue description');
+                $issue_html = getSimpleHTMLDOMCached($uri, 3600);
 
                 $issue_html = defaultLinkTo($issue_html, $uri);
 
