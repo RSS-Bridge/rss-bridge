@@ -111,6 +111,9 @@ final class Url
         if (!str_starts_with($path, '/')) {
             throw new UrlException(sprintf('Path must start with forward slash: %s', $path));
         }
+        if (str_starts_with($path, '//')) {
+            throw new UrlException(sprintf('Illegal path (too many forward slashes): %s', $path));
+        }
         $clone = clone $this;
         $clone->path = $path;
         return $clone;

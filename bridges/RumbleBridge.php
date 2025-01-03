@@ -74,9 +74,7 @@ class RumbleBridge extends BridgeAbstract
                 $item['timestamp'] = $publishedAt->getTimestamp();
             }
 
-            if (isset($publishedAt) && $publishedAt > new \DateTimeImmutable('2025-01-31')) {
-                $href = ltrim($href, '/');
-            }
+            $href = ltrim($href, '/');
             $itemUrl = Url::fromString(self::URI . $href);
             // Remove tracking parameter in query string
             $item['uri'] = $itemUrl->withQueryString(null)->__toString();
