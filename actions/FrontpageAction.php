@@ -12,7 +12,7 @@ final class FrontpageAction implements ActionInterface
 
     public function __invoke(Request $request): Response
     {
-        $token = $request->attribute('token');
+        $token = $request->getAttribute('token');
 
         $messages = [];
         $activeBridges = 0;

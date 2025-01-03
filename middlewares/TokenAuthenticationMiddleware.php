@@ -10,15 +10,15 @@ class TokenAuthenticationMiddleware implements Middleware
             return $next($request);
         }
 
-        // Always add token to request attribute
+        // Add token as request attribute
         $request = $request->withAttribute('token', $request->get('token'));
 
-        if (! $request->attribute('token')) {
+        if (! $request->getAttribute('token')) {
             return new Response(render(__DIR__ . '/../templates/token.html.php', [
                 'message' => 'Missing token',
             ]), 401);
         }
-        if (! hash_equals(Configuration::getConfig('authentication', 'token'), $request->attribute('token'))) {
+        if (! hash_equals(Configuration::getConfig('authentication', 'token'), $request->getAttribute('token'))) {
             return new Response(render(__DIR__ . '/../templates/token.html.php', [
                 'message' => 'Invalid token',
             ]), 401);
