@@ -36,7 +36,7 @@ class TapasBridge extends FeedExpander
             $this->id = $this->getInput('title');
         }
         if ($this->getInput('force_title') || !$this->id) {
-            $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
+            $html = getSimpleHTMLDOM($this->getURI());
             $this->id = $html->find('meta[property$=":url"]', 0)->content;
             $this->id = str_ireplace(['tapastic://series/', '/info'], '', $this->id);
         }

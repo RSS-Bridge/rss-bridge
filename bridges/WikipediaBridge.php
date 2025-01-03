@@ -105,10 +105,6 @@ class WikipediaBridge extends BridgeAbstract
         // This will automatically send us to the correct main page in any language (try it!)
         $html = getSimpleHTMLDOM($this->getURI() . '/wiki');
 
-        if (!$html) {
-            returnServerError('Could not load site: ' . $this->getURI() . '!');
-        }
-
         /*
         * Now read content depending on the language (make sure to create one function per language!)
         * We build the function name automatically, just make sure you create a private function ending

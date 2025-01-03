@@ -32,8 +32,7 @@ class AirBreizhBridge extends BridgeAbstract
     public function collectData()
     {
         $html = '';
-        $html = getSimpleHTMLDOM(static::URI . 'publications/?fwp_publications_thematiques=' . $this->getInput('theme'))
-            or returnClientError('No results for this query.');
+        $html = getSimpleHTMLDOM(static::URI . 'publications/?fwp_publications_thematiques=' . $this->getInput('theme'));
 
         foreach ($html->find('article') as $article) {
             $item = [];

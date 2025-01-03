@@ -9,8 +9,7 @@ class JohannesBlickBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI)
-            or returnServerError('Could not request: ' . self::URI);
+        $html = getSimpleHTMLDOM(self::URI);
 
         $html = defaultLinkTo($html, self::URI);
         foreach ($html->find('ul[class=easyfolderlisting] > li > a') as $index => $a) {

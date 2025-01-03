@@ -10,8 +10,7 @@ class UsesTechbridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI)
-            or returnServerError('Could not request: ' . self::URI);
+        $html = getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('div[class=PersonInner]') as $index => $a) {
             $item = []; // Create an empty item

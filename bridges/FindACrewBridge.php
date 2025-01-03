@@ -60,7 +60,7 @@ class FindACrewBridge extends BridgeAbstract
             CURLOPT_POSTFIELDS => http_build_query($data) . "\n"
         ];
 
-        $html = getSimpleHTMLDOM($url, $header, $opts) or returnClientError('No results for this query.');
+        $html = getSimpleHTMLDOM($url, $header, $opts);
 
         $annonces = $html->find('.css_SrhRst');
         $limit = $this->getInput('limit') ?? 10;

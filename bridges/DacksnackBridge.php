@@ -53,8 +53,7 @@ class DacksnackBridge extends BridgeAbstract
     public function collectData()
     {
         $NEWSURL = self::URI;
-        $html = getSimpleHTMLDOMCached($NEWSURL, 18000) or
-            returnServerError('Could not request: ' . $NEWSURL);
+        $html = getSimpleHTMLDOMCached($NEWSURL, 18000);
 
         foreach ($html->find('a.main-news-item') as $element) {
             // Debug::log($element);
@@ -64,8 +63,7 @@ class DacksnackBridge extends BridgeAbstract
             $url = self::URI . $element->getAttribute('href');
             $published = $this->parseSwedishDates(trim($element->find('.published', 0)->plaintext));
 
-            $article_html = getSimpleHTMLDOMCached($url, 18000) or
-                returnServerError('Could not request: ' . $url);
+            $article_html = getSimpleHTMLDOMCached($url, 18000);
             $article_content = $article_html->find('#ctl00_ContentPlaceHolder1_NewsArticleVeiw_pnlArticle', 0);
 
             $figure = self::URI . $article_content->find('img.news-image', 0)->getAttribute('src');

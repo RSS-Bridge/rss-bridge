@@ -105,8 +105,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract
 
     private function collectCardData()
     {
-        $json = getContents($this->getTagURI())
-            or returnServerError('Could not request: ' . $this->getTagURI());
+        $json = getContents($this->getTagURI());
 
         $tagContents = json_decode($json, true);
 

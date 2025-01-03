@@ -25,8 +25,7 @@ class OMonlineBridge extends BridgeAbstract
             $url = sprintf('%s', self::URI);
         }
 
-        $html = getSimpleHTMLDOM($url)
-            or returnServerError('Could not request: ' . $url);
+        $html = getSimpleHTMLDOM($url);
 
         $html = defaultLinkTo($html, $url);
 
@@ -35,8 +34,7 @@ class OMonlineBridge extends BridgeAbstract
 
             $articlePath = $a->href;
 
-            $articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT)
-                or returnServerError('Could not request: ' . $articlePath);
+            $articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT);
 
             $articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
 

@@ -56,8 +56,7 @@ class TestFaktaBridge extends BridgeAbstract
     public function collectData()
     {
         $NEWSURL = self::URI . '/sv';
-        $html = getSimpleHTMLDOMCached($NEWSURL, 18000) or
-            returnServerError('Could not request: ' . $NEWSURL);
+        $html = getSimpleHTMLDOMCached($NEWSURL, 18000);
 
         foreach ($html->find('.row-container') as $element) {
             // Debug::log($element);
@@ -68,8 +67,7 @@ class TestFaktaBridge extends BridgeAbstract
             $figure = $element->find('img', 0);
             $preamble = trim($element->find('.text', 0)->plaintext);
 
-            $article_html = getSimpleHTMLDOMCached($url, 18000) or
-                returnServerError('Could not request: ' . $url);
+            $article_html = getSimpleHTMLDOMCached($url, 18000);
             $article_content = $article_html->find('div.content', 0);
             $article_text = $article_html->find('article', 0);
 

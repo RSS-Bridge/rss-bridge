@@ -25,9 +25,6 @@ class StorytelBridge extends BridgeAbstract
         }
 
         $html = getSimpleHTMLDOM($url);
-        if (!$html) {
-            returnServerError('Unable to fetch Storytel list');
-        }
 
         foreach ($html->find('li.sc-4615116a-1') as $element) {
             $item = [];
