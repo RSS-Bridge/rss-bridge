@@ -18,25 +18,6 @@ class CeskaTelevizeBridge extends BridgeAbstract
         ]
     ];
 
-    private function fixChars($text)
-    {
-        return html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-    }
-
-    private function getUploadTimeFromString($string)
-    {
-        if (strpos($string, 'dnes') !== false) {
-            return strtotime('today');
-        } elseif (strpos($string, 'včera') !== false) {
-            return strtotime('yesterday');
-        } elseif (!preg_match('/(\d+).\s(\d+).(\s(\d+))?/', $string, $match)) {
-            returnServerError('Could not get date from Česká televize string');
-        }
-
-        $date = sprintf('%04d-%02d-%02d', $match[3] ?? date('Y'), $match[2], $match[1]);
-        return strtotime($date);
-    }
-
     public function collectData()
     {
         $url = $this->getInput('url');
@@ -58,22 +39,36 @@ class CeskaTelevizeBridge extends BridgeAbstract
         }
 
         foreach ($html->find('#episodeListSection a[data-testid=card]') as $element) {
-            $itemTitle = $element->find('h3', 0);
             $itemContent = $element->find('p[class^=content-]', 0);
             $itemDate = $element->find('div[class^=playTime-] span, [data-testid=episode-item-broadcast] span', 0);
-            $itemThumbnail = $element->find('img', 0);
-            $itemUri = self::URI . $element->getAttribute('href');
-
             $item = [
-                'title' => $this->fixChars($itemTitle->plaintext),
-                'uri' => $itemUri,
-                'content' => '<img src="' . $itemThumbnail->getAttribute('src') . '" /><br />'
-                    . $this->fixChars($itemContent->plaintext),
-                'timestamp' => $this->getUploadTimeFromString($itemDate->plaintext)
+                'title'     => $this->fixChars($element->find('h3', 0)->plaintext),
+                'uri'       => self::URI . $element->getAttribute('href'),
+                'content'   => '<img src="' . $element->find('img', 0)->getAttribute('srcset') . '" /><br />' . $this->fixChars($itemContent->plaintext),
+                'timestamp' => $this->getUploadTimeFromString($itemDate->plaintext),
             ];
 
             $this->items[] = $item;
         }
+    }
+
+    private function getUploadTimeFromString($string)
+    {
+        if (strpos($string, 'dnes') !== false) {
+            return strtotime('today');
+        } elseif (strpos($string, 'včera') !== false) {
+            return strtotime('yesterday');
+        } elseif (!preg_match('/(\d+).\s(\d+).(\s(\d+))?/', $string, $match)) {
+            returnServerError('Could not get date from Česká televize string');
+        }
+
+        $date = sprintf('%04d-%02d-%02d', $match[3] ?? date('Y'), $match[2], $match[1]);
+        return strtotime($date);
+    }
+
+    private function fixChars($text)
+    {
+        return html_entity_decode($text, ENT_QUOTES, 'UTF-8');
     }
 
     public function getURI()
