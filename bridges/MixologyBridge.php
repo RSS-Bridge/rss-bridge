@@ -55,8 +55,15 @@ class MixologyBridge extends BridgeAbstract
     {
         $article = getSimpleHTMLDOMCached($item['uri']);
 
-        $item['author'] = $article->find('.beitrag-author a', 0)->plaintext;
-        $item['timestamp'] = strtotime($article->find('.beitrag-date time', 0)->datetime);
+        $authorLink = $article->find('.beitrag-author a', 0);
+        if (!empty($authorLink)) {
+            $item['author'] = $authorLink->plaintext;
+        }
+
+        $timeElement = $article->find('.beitrag-date time', 0);
+        if (!empty($timeElement)) {
+            $item['timestamp'] = strtotime($timeElement->datetime);
+        }
 
         $content = '';
 
