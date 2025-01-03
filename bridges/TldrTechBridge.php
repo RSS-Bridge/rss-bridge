@@ -56,7 +56,7 @@ class TldrTechBridge extends BridgeAbstract
             if ($child->tag != 'a') {
                 continue;
             }
-            $this->extractItem(Url::fromString(self::URI . $child->href));
+            $this->extractItem(Url::fromString(self::URI . ltrim($child->href, '/')));
             if (count($this->items) >= $limit) {
                 break;
             }
