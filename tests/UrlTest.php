@@ -36,6 +36,12 @@ class UrlTest extends TestCase
         }
     }
 
+    public function testIllegalPath()
+    {
+        $this->expectException(\UrlException::class);
+        Url::fromString('https://example.com//foo');
+    }
+
     public function testMutation()
     {
         $this->assertSame('http://example.com/foo', (Url::fromString('http://example.com/'))->withPath('/foo')->__toString());
