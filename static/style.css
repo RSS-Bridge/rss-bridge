@@ -186,6 +186,7 @@ section li {
     margin-left: 1em;
 }
 .bridge-card {
+    position: relative;
     text-align: center;
 }
 
