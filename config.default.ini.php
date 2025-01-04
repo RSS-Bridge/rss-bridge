@@ -155,6 +155,11 @@ port = 11211
 
 ; --- Bridge specific configuration ------
 
+[TelegramBridge]
+
+; Max pages to fetch (1 page => 20 messages), min=1 max=100
+max_pages = 1
+
 [DiscogsBridge]
 
 ; Sets the personal access token for interactions with Discogs. When

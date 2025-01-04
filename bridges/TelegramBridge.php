@@ -15,6 +15,14 @@ class TelegramBridge extends BridgeAbstract
             ]
         ]
     ];
+
+    const CONFIGURATION = [
+        'max_pages' => [
+            'required'      => false,
+            'defaultValue'  => 1,
+        ],
+    ];
+
     const TEST_DETECT_PARAMETERS = [
         'https://t.me/s/rssbridge' => ['username' => 'rssbridge'],
         'https://t.me/rssbridge' => ['username' => 'rssbridge'],
@@ -26,7 +34,7 @@ class TelegramBridge extends BridgeAbstract
         'https://rssbridge.t.me/' => ['username' => 'rssbridge'],
     ];
 
-    const CACHE_TIMEOUT = 60 * 15; // 15 mins
+    const CACHE_TIMEOUT = 60 * 60; // 1h
     private $feedName = '';
 
     private $enclosures = [];
@@ -36,33 +44,56 @@ class TelegramBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $pages = 0;
+        $url = 'https://t.me/s/' . $this->normalizeUsername();
 
-        $channelTitle = $html->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
-        $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
-        $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
-        $posts = $html->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
-        if (!$channelTitle && !$posts) {
-            throw new \Exception('Unable to find channel. The channel is non-existing or non-public.');
-        }
-        foreach ($posts as $messageDiv) {
-            $this->itemTitle = '';
-            $this->enclosures = [];
-            $item = [];
+        $max_pages = $this->getOption('max_pages');
 
-            $item['uri'] = $messageDiv->find('a.tgme_widget_message_date', 0)->href;
-            $item['content'] = $this->processContent($messageDiv);
-            $item['title'] = $this->itemTitle;
-            $item['timestamp'] = $messageDiv->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
-            $item['enclosures'] = $this->enclosures;
+        // Hard-coded upper bound of 100 loops
+        while ($pages < $max_pages && $pages < 100) {
+            $pages++;
 
-            $messageOwner = $messageDiv->find('a.tgme_widget_message_owner_name', 0);
-            if ($messageOwner) {
-                $item['author'] = html_entity_decode(trim($messageOwner->plaintext), ENT_QUOTES);
+            $dom = getSimpleHTMLDOM($url);
+
+            $channelTitle = $dom->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
+            $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
+            $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
+
+            $messages = $dom->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
+            if (!$channelTitle && !$messages) {
+                throw new \Exception('Unable to find channel. The channel is non-existing or non-public.');
             }
 
-            $this->items[] = $item;
+            foreach (array_reverse($messages) as $message) {
+                $this->itemTitle = '';
+                $this->enclosures = [];
+
+                $item = [];
+
+                $item['uri'] = $message->find('a.tgme_widget_message_date', 0)->href;
+                $item['content'] = $this->processContent($message);
+                $item['title'] = $this->itemTitle;
+                $item['timestamp'] = $message->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
+                $item['enclosures'] = $this->enclosures;
+
+                $messageOwner = $message->find('a.tgme_widget_message_owner_name', 0);
+                if ($messageOwner) {
+                    $item['author'] = html_entity_decode(trim($messageOwner->plaintext), ENT_QUOTES);
+                }
+
+                array_unshift($this->items, $item);
+            }
+
+            $more = $dom->find('> div.tgme_widget_message_centered.js-messages_more_wrap a', 0);
+            if ($more && str_contains($more->href, 'before')) {
+                $url = 'https://t.me/' . $more->href;
+            } else {
+                break;
+            }
         }
+
+        $this->logger->info(sprintf('Fetched %s messages from %s pages (%s)', count($this->items), $pages, $url));
+
         $this->items = array_reverse($this->items);
     }
 
@@ -369,12 +400,7 @@ EOD;
 
     private function normalizeUsername()
     {
-        // todo: can be replaced with ltrim($username, '@');
-        $username = $this->getInput('username');
-        if (substr($username, 0, 1) === '@') {
-            return substr($username, 1);
-        }
-        return $username;
+        return ltrim($this->getInput('username'), '@');
     }
 
     public function detectParameters($url)
