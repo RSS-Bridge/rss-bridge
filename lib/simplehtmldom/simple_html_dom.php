@@ -114,8 +114,9 @@ function str_get_html(
     if (empty($str)) {
         throw new \Exception('Refusing to parse empty string input');
     }
-    if (strlen($str) > MAX_FILE_SIZE) {
-        throw new \Exception('Refusing to parse too big input');
+
+    if (strlen($str) > Configuration::getConfig('system', 'max_file_size')) {
+        throw new \Exception('simple_html_dom: Refusing to parse too big input: ' . strlen($str));
     }
 
 	return $dom->load($str, $lowercase, $stripRN);

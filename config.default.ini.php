@@ -46,7 +46,11 @@ enable_debug_mode = false
 ; Whether to enable maintenance mode. If enabled, feed requests receive 503 Service Unavailable
 enable_maintenance_mode = false
 
+; Max file size for simple_html_dom in bytes (10000000 => 10 MB)
+max_file_size = 10000000
+
 [http]
+
 ; Operation timeout in seconds
 timeout = 15
 
@@ -70,6 +74,7 @@ type = "file"
 custom_timeout = false
 
 [admin]
+
 ; Advertise an email address where people can reach the administrator.
 ; This address is displayed on the main page, visible to everyone!
 ; ""    = Disabled (default)
@@ -86,6 +91,7 @@ telegram = ""
 donations = true
 
 [proxy]
+
 ; The HTTP proxy to tunnel requests through
 ; https://curl.se/libcurl/c/CURLOPT_PROXY.html
 ; ""    = Proxy disabled (default)
@@ -135,6 +141,7 @@ report_limit = 1
 ; --- Cache specific configuration ---------------------------------------------
 
 [FileCache]
+
 ; The root folder to store files in.
 ; "" = Use the cache folder in the repository (default)
 path = ""
@@ -142,6 +149,7 @@ path = ""
 enable_purge = true
 
 [SQLiteCache]
+
 ; Filepath of the sqlite db file
 file = "cache.sqlite"
 ; Whether to actually delete data when purging
@@ -150,6 +158,7 @@ enable_purge = true
 timeout = 5000
 
 [MemcachedCache]
+
 host = "localhost"
 port = 11211
 

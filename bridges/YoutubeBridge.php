@@ -1,12 +1,5 @@
 <?php
 
-/**
-* RssBridgeYoutube
-* Returns the newest videos
-* WARNING: to parse big playlists (over ~90 videos), you need to edit simple_html_dom.php:
-* change: define('MAX_FILE_SIZE', 600000);
-* into:   define('MAX_FILE_SIZE', 900000);  (or more)
-*/
 class YoutubeBridge extends BridgeAbstract
 {
     const NAME = 'YouTube Bridge';
