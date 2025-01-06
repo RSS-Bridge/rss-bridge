@@ -41,6 +41,12 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             'quote' => [
                 'name' => 'Include the quote of the day',
                 'type' => 'checkbox'
+            ],
+            'mergeEverything' => [
+                'name' => 'Merge everything into one entry',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+                'title' => 'Whether to merge all the stories into one entry'
             ]
         ]
     ];
@@ -61,7 +67,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         }
         $html = getSimpleHTMLDOM(self::URI, $headers);
         $gobbets = $html->find('p[data-component="the-world-in-brief-paragraph"]');
-        if ($this->getInput('splitGobbets') == 1) {
+        if ($this->getInput('splitGobbets') == 1 && !$this->getInput('mergeEverything')) {
             $this->splitGobbets($gobbets);
         } else {
             $this->mergeGobbets($gobbets);
@@ -76,6 +82,9 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         if ($this->getInput('quote') == 1) {
             $quote = $html->find('blockquote[data-test-id="inspirational-quote"]', 0);
             $this->addQuote($quote);
+        }
+        if ($this->getInput('mergeEverything') == 1) {
+            $this->mergeEverything();
         }
     }
 
@@ -131,6 +140,9 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             if ($element->tag != 'div') {
                 continue;
             }
+            if ($element->find('._newsletterContentPromo', 0) != null) {
+                continue;
+            }
             $image = $element->find('figure', 0);
             $title = $element->find('h3', 0)->plaintext;
             $content = $element->find('h3', 0)->parent();
@@ -164,5 +176,36 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             'timestamp' => $today->format('U'),
             'uid' => 'quote-' . $today->format('U')
         ];
+    }
+
+    private function mergeEverything()
+    {
+        $today = new Datetime();
+        $today->setTime(0, 0, 0, 0);
+        $contents = '';
+
+        foreach ($this->items as $item) {
+            $header = null;
+            if (str_contains($item['uid'], 'story-')) {
+                $header = $item['title'];
+            } elseif (str_contains($item['uid'], 'quote-')) {
+                $header = 'Quote of the day';
+            } elseif (str_contains($item['uid'], 'world-in-brief-')) {
+                $header = 'World in brief';
+            }
+            if ($header != null) {
+                $contents .= "<h2>{$header}</h2>";
+            }
+            $contents .= $item['content'];
+        }
+
+        $item = [
+            'uri' => self::URI,
+            'title' => 'The Economist World in Brief ' . $today->format('d.m.Y'),
+            'content' => $contents,
+            'timestamp' => $today->format('U'),
+            'uid' => 'world-in-brief-merged' . $today->format('U')
+        ];
+        $this->items = [$item];
     }
 }
