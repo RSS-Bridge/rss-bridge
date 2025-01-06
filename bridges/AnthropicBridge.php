@@ -58,8 +58,7 @@ class AnthropicBridge extends BridgeAbstract
 
     private function extractPageData($html)
     {
-        foreach ($html->find('script') as $script)
-        {
+        foreach ($html->find('script') as $script) {
             $js_code = $script->innertext;
             if (!str_starts_with($js_code, 'self.__next_f.push(')) {
                 continue;
@@ -92,8 +91,10 @@ class AnthropicBridge extends BridgeAbstract
                     continue;
                 }
                 foreach ($tabPage['sections'] as $section1) {
-                    if (!array_key_exists('title', $section1)
-                        || $section1['title'] != 'Publications') {
+                    if (
+                        !array_key_exists('title', $section1)
+                        || $section1['title'] != 'Publications'
+                    ) {
                         continue;
                     }
                     foreach ($section1['posts'] as $post) {
