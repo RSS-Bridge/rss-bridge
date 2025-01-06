@@ -208,5 +208,4 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         ];
         $this->items = [$item];
     }
-
 }
