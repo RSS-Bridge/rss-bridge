@@ -2,7 +2,6 @@
 class PocketExploreBridge extends BridgeAbstract {
     const NAME = 'Pocket Explore Bridge';
     const URI = 'https://getpocket.com/';
-    const CACHE_TIMEOUT = 1;
     const DESCRIPTION = 'Fetches recommendations from Pocket Explore (What you can see on the Firefox Home)';
     const MAINTAINER = 'dhuschde';
     const PARAMETERS = [[
