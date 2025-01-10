@@ -7,7 +7,7 @@ class OllamaBridge extends BridgeAbstract
     const URI = 'https://ollama.com';
 
     const CACHE_TIMEOUT = 3600; // 1 hour
-    const DESCRIPTION = 'Returns laters blog posts from Ollama';
+    const DESCRIPTION = 'Returns latest blog posts from Ollama';
 
     const PARAMETERS = [
         '' => [
