@@ -1,26 +1,10 @@
 <?php
 
-/**
- * Crunchyroll News Bridge for RSS-Bridge
- *
- * This bridge fetches the latest news from the Crunchyroll News API and provides it as an RSS feed.
- * 
- * Parameters:
- * - category: The category of news to fetch (e.g., Announcements, News, etc.).
- * - page_size: The number of results to return per page (default: 16).
- * - page: The page number for paginated results (default: 1).
- *
- * @author YourName
- */
-
 class CrunchyrollBridge extends BridgeAbstract {
-    // Metadata about the bridge
     const NAME = 'Crunchyroll News Bridge';
     const URI = 'https://www.crunchyroll.com/news';
-    const DESCRIPTION = 'Returns the latest news from Crunchyroll';
+    const DESCRIPTION = 'Returns latest news from Crunchyroll';
     const MAINTAINER = 'YourName';
-
-    // Input parameters for the bridge
     const PARAMETERS = [
         [
             'category' => [
@@ -41,12 +25,9 @@ class CrunchyrollBridge extends BridgeAbstract {
                 'required' => false,
                 'defaultValue' => 1,
             ],
-        ]
+        ],
     ];
 
-    /**
-     * Collects data from the Crunchyroll API and formats it as an RSS feed.
-     */
     public function collectData() {
         // Define API base URL
         $apiBaseUrl = 'https://cr-news-api-service.prd.crunchyrollsvc.com/v1/en-US/stories/search';
@@ -56,7 +37,7 @@ class CrunchyrollBridge extends BridgeAbstract {
         $pageSize = $this->getInput('page_size');
         $page = $this->getInput('page');
 
-        // Construct the API URL
+        // Construct the API URL with query parameters
         $apiUrl = sprintf(
             '%s?category=%s&page_size=%d&page=%d',
             $apiBaseUrl,
@@ -96,15 +77,35 @@ class CrunchyrollBridge extends BridgeAbstract {
             throw new Exception('Failed to decode JSON response: ' . json_last_error_msg());
         }
 
+        // Map UUIDs to author names from the `rels` array
+        $authorMap = [];
+        foreach ($data['rels'] as $rel) {
+            if (isset($rel['uuid']) && isset($rel['content']['name'])) {
+                $authorMap[$rel['uuid']] = $rel['content']['name'];
+            }
+        }
+
         // Process each story in the response
         foreach ($data['stories'] as $story) {
             $item = [];
+
+            // Find the author name(s) for the story
+            $authorNames = [];
+            if (!empty($story['content']['authors'])) {
+                foreach ($story['content']['authors'] as $authorUuid) {
+                    if (isset($authorMap[$authorUuid])) {
+                        $authorNames[] = $authorMap[$authorUuid];
+                    }
+                }
+            }
+
+            // Set the `author` field to the resolved names or default to 'Unknown'
+            $item['author'] = implode(', ', $authorNames) ?: 'Unknown';
 
             // Set the item properties
             $item['uri'] = self::URI . '/' . $story['slug'];
             $item['title'] = $story['content']['headline'];
             $item['timestamp'] = strtotime($story['content']['article_date']);
-            $item['author'] = 'Unknown'; // Author data can be added if available
             $item['content'] = sprintf(
                 '<img src="%s" alt="%s"><br>%s',
                 $story['content']['thumbnail']['filename'],
