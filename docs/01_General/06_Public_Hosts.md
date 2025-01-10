@@ -3,7 +3,7 @@
 | Country | Address | Status |  Contact | Comment |
 |:-------:|---------|--------|----------|---------|
 | ![](https://iplookup.flagfox.net/images/h16/GB.png) | https://rss-bridge.org/bridge01 | ![](https://img.shields.io/website/https/rss-bridge.org/bridge01.svg) | [@dvikan](https://github.com/dvikan) | London, Digital Ocean|
-| ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://rssbridge.flossboxin.org.in | ![](https://img.shields.io/badge/website-up-brightgreen) | [@vdbhb59](https://github.com/vdbhb59) | Hosted with OVH SAS (Maintained in India) |
+| ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://rssbridge.flossboxin.org.in | ![](https://img.shields.io/badge/website-up-brightgreen) | [@vdbhb59](https://github.com/vdbhb59) | Hosted with Netcup Germany (Maintained in India) |
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://rss-bridge.cheredeprince.net | ![](https://img.shields.io/website/https/rss-bridge.cheredeprince.net) | [@La_Bécasse](https://cheredeprince.net/contact) | Self-Hosted at home in France |
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://rss-bridge.sans-nuage.fr | ![](https://img.shields.io/website/https/rss-bridge.sans-nuage.fr) | [@Alsace Réseau Neutre](https://arn-fai.net/contact) | Hosted in Alsace, France |
 | ![](https://iplookup.flagfox.net/images/h16/GB.png) | https://rss-bridge.lewd.tech | ![](https://img.shields.io/website/https/rss-bridge.lewd.tech.svg) | [@Erisa](https://github.com/Erisa) | Hosted in London, protected by Cloudflare Rate Limiting |
