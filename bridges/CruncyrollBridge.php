@@ -4,7 +4,7 @@ class CrunchyrollBridge extends BridgeAbstract {
     const NAME = 'Crunchyroll News Bridge';
     const URI = 'https://www.crunchyroll.com/news';
     const DESCRIPTION = 'Returns latest news from Crunchyroll';
-    const MAINTAINER = 'YourName';
+    const MAINTAINER = 'peppy6582';
     const PARAMETERS = [
         [
             'category' => [
