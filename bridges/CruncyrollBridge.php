@@ -1,10 +1,14 @@
 <?php
 
-class CrunchyrollBridge extends BridgeAbstract {
+/**
+ * CrunchyrollBridge fetches news articles from the Crunchyroll API.
+ */
+class CrunchyrollBridge extends BridgeAbstract
+{
     const NAME = 'Crunchyroll News Bridge';
     const URI = 'https://www.crunchyroll.com/news';
     const DESCRIPTION = 'Returns latest news from Crunchyroll';
-    const MAINTAINER = 'peppy6582';
+    const MAINTAINER = 'YourName';
     const PARAMETERS = [
         [
             'category' => [
@@ -28,7 +32,13 @@ class CrunchyrollBridge extends BridgeAbstract {
         ],
     ];
 
-    public function collectData() {
+    /**
+     * Collects data from the Crunchyroll API and populates items.
+     *
+     * @throws Exception If the API call or JSON decoding fails.
+     */
+    public function collectData()
+    {
         // Define API base URL
         $apiBaseUrl = 'https://cr-news-api-service.prd.crunchyrollsvc.com/v1/en-US/stories/search';
 
@@ -47,16 +57,25 @@ class CrunchyrollBridge extends BridgeAbstract {
         );
 
         // Define HTTP headers for the API request
-        $headers = [
-            'User-Agent: Mozilla/5.0 (compatible; RSSBridge/2025)',
-            'Accept: application/json',
-            'Accept-Language: en-US,en;q=0.5',
-            'Origin: https://www.crunchyroll.com',
-            'Referer: https://www.crunchyroll.com/',
+        $options = [
+            'http' => [
+                'method' => 'GET',
+                'header' => [
+                    'User-Agent: Mozilla/5.0 (compatible; RSSBridge/2025)',
+                    'Accept: application/json',
+                    'Accept-Language: en-US,en;q=0.5',
+                    'Origin: https://www.crunchyroll.com',
+                    'Referer: https://www.crunchyroll.com/',
+                ],
+            ],
         ];
 
-        // Fetch data from the API
-        $response = getContents($apiUrl, $headers);
+        // Use getContents for better error handling and compliance
+        $response = getContents($apiUrl, [], $options);
+
+        if ($response === false) {
+            throw new Exception('Failed to fetch data from the Crunchyroll API.');
+        }
 
         // Parse the JSON response
         $data = json_decode($response, true);
@@ -68,7 +87,7 @@ class CrunchyrollBridge extends BridgeAbstract {
         // Map UUIDs to author names from the `rels` array
         $authorMap = [];
         foreach ($data['rels'] as $rel) {
-            if (isset($rel['uuid']) && isset($rel['content']['name'])) {
+            if (isset($rel['uuid'], $rel['content']['name'])) {
                 $authorMap[$rel['uuid']] = $rel['content']['name'];
             }
         }
