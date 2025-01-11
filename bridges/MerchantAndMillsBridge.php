@@ -1,12 +1,13 @@
 <?php
 
-class MerchantAndMillsBridge extends BridgeAbstract {
+class MerchantAndMillsBridge extends BridgeAbstract
+{
     const NAME = 'Merchant and Mills Blog';
     const URI = 'https://merchantandmills.com';
     const DESCRIPTION = 'The latest blog posts from Merchant and Mills.';
     const MAINTAINER = 'caseykulm';
     const CACHE_TIMEOUT = 43200; // 12h
-    const POST_LIMIT = 10; // Maximum number of blog posts to fetch
+    const POST_LIMIT = 5; // Maximum number of blog posts to fetch
     const PARAMETERS = [[
         'selected_country_id' => [
             'name' => 'Country',
@@ -20,7 +21,8 @@ class MerchantAndMillsBridge extends BridgeAbstract {
         ]
     ]];
 
-    private function getCountryBlogPath($countryName): string {
+    private function getCountryBlogPath($countryName): string
+    {
         if ($countryName === 'European Union') {
             return '/eu/blog';
         }
@@ -36,7 +38,8 @@ class MerchantAndMillsBridge extends BridgeAbstract {
         return '/rw/blog';
     }
 
-    public function collectData() {
+    public function collectData()
+    {
         $selectedCountryKey = $this->getKey('selected_country_id');
         $selectedCountryBlogPath = $this->getCountryBlogPath($selectedCountryKey);
         $url = self::URI . $selectedCountryBlogPath;
