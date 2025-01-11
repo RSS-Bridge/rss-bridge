@@ -47,28 +47,16 @@ class CrunchyrollBridge extends BridgeAbstract {
         );
 
         // Define HTTP headers for the API request
-        $options = [
-            'http' => [
-                'method' => 'GET',
-                'header' => [
-                    'User-Agent: Mozilla/5.0 (compatible; RSSBridge/2025)',
-                    'Accept: application/json',
-                    'Accept-Language: en-US,en;q=0.5',
-                    'Origin: https://www.crunchyroll.com',
-                    'Referer: https://www.crunchyroll.com/',
-                ],
-            ],
+        $headers = [
+            'User-Agent: Mozilla/5.0 (compatible; RSSBridge/2025)',
+            'Accept: application/json',
+            'Accept-Language: en-US,en;q=0.5',
+            'Origin: https://www.crunchyroll.com',
+            'Referer: https://www.crunchyroll.com/',
         ];
 
-        // Create a context for the HTTP request
-        $context = stream_context_create($options);
-
         // Fetch data from the API
-        $response = file_get_contents($apiUrl, false, $context);
-
-        if ($response === false) {
-            throw new Exception('Failed to fetch data from the Crunchyroll API.');
-        }
+        $response = getContents($apiUrl, $headers);
 
         // Parse the JSON response
         $data = json_decode($response, true);
