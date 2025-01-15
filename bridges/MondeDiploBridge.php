@@ -19,14 +19,28 @@ class MondeDiploBridge extends BridgeAbstract
 
         foreach ($html->find('div.unarticle') as $article) {
             $element = $article->parent();
-            $title = $element->find('h3', 0)->plaintext;
-            $datesAuteurs = $element->find('div.dates_auteurs', 0)->plaintext;
+            $titleElement = $element->find('h3', 0);
+            if (!$titleElement) {
+                continue;
+            }
+            $title = $titleElement->plaintext;
+            $datesAuteursElement = $element->find('div.dates_auteurs', 0);
+            $datesAuteurs = is_null($datesAuteursElement) ? '' : $element->find('div.dates_auteurs', 0)->plaintext;
             $item = [];
             $item['uri'] = urljoin(self::URI, $element->href);
-            $item['title'] = $this->cleanText($title) . ' - ' . $this->cleanText($datesAuteurs);
+            $item['title'] = $this->getItemTitle($title, $datesAuteurs);
             $item['content'] = $this->cleanText(str_replace([$title, $datesAuteurs], '', $element->plaintext));
 
             $this->items[] = $item;
         }
+    }
+
+    private function getItemTitle($title, $datesAuteurs)
+    {
+        $itemTitle = $this->cleanText($title);
+        if (strlen($datesAuteurs) > 0) {
+            $itemTitle .= ' - ' . $this->cleanText($datesAuteurs);
+        }
+        return $itemTitle;
     }
 }
