@@ -5,13 +5,13 @@ class Formula1Bridge extends BridgeAbstract
     const NAME = 'Formula1 Bridge';
     const URI = 'https://formula1.com/';
     const DESCRIPTION = 'Returns latest official Formula 1 news';
-    const MAINTAINER = 'AxorPL';
+    const MAINTAINER = 'axor-mst';
 
-    const API_KEY = 'qPgPPRJyGCIPxFT3el4MF7thXHyJCzAP';
+    const API_KEY = 'xZ7AOODSjiQadLsIYWefQrpCSQVDbHGC';
     const API_URL = 'https://api.formula1.com/v1/editorial/articles?limit=%u';
 
     const ARTICLE_AUTHOR = 'Formula 1';
-    const ARTICLE_URL = 'https://formula1.com/en/latest/article.%s.%s.html';
+    const ARTICLE_URL = 'https://formula1.com/en/latest/article/%s.%s';
 
     const LIMIT_MIN = 1;
     const LIMIT_DEFAULT = 10;
@@ -36,7 +36,11 @@ class Formula1Bridge extends BridgeAbstract
         $limit = min(self::LIMIT_MAX, max(self::LIMIT_MIN, $limit));
         $url = sprintf(self::API_URL, $limit);
 
-        $json = json_decode(getContents($url, ['apikey: ' . self::API_KEY]));
+        $json = json_decode(getContents($url, [
+            'Accept: application/json',
+            'apikey: ' . self::API_KEY,
+            'locale: en'
+        ]));
         if (property_exists($json, 'error')) {
             returnServerError($json->message);
         }
