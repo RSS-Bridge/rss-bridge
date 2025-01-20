@@ -15,7 +15,7 @@
 * [Astalaseven](https://github.com/Astalaseven)
 * [Astyan-42](https://github.com/Astyan-42)
 * [austinhuang0131](https://github.com/austinhuang0131)
-* [AxorPL](https://github.com/AxorPL)
+* [axor-mst](https://github.com/axor-mst)
 * [ayacoo](https://github.com/ayacoo)
 * [az5he6ch](https://github.com/az5he6ch)
 * [b1nj](https://github.com/b1nj)
