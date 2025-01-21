@@ -255,6 +255,10 @@ class BlueskyBridge extends BridgeAbstract
                     $description .= '<a href="' . $uri_reconstructed . '">Quoted post detached.</a>';
                 } elseif (isset($quotedRecord['blocked']) && $quotedRecord['blocked']) { //blocked by quote author
                     $description .= 'Author of quoted post has blocked OP.';
+                } elseif (($quotedRecord['$type'] ?? '') === 'app.bsky.feed.defs#generatorView') {
+                    $description .= '</p>';
+                    $description .= $this->getGeneratorViewDescription($quotedRecord);
+                    $description .= '<p>';
                 } else {
                     $quotedAuthorDid = $quotedRecord['author']['did'];
                     $quotedDisplayName = $quotedRecord['author']['displayName'] ?? '';
@@ -399,6 +403,10 @@ class BlueskyBridge extends BridgeAbstract
                         $description .= '<a href="' . $uri_reconstructed . '">Quoted post detached.</a>';
                     } elseif (isset($replyQuotedRecord['blocked']) && $replyQuotedRecord['blocked']) { //blocked by quote author
                         $description .= 'Author of quoted post has blocked OP.';
+                    } elseif (($replyQuotedRecord['$type'] ?? '') === 'app.bsky.feed.defs#generatorView') {
+                        $description .= '</p>';
+                        $description .= $this->getGeneratorViewDescription($replyQuotedRecord);
+                        $description .= '<p>';
                     } else {
                         $quotedAuthorDid = $replyQuotedRecord['author']['did'];
                         $quotedDisplayName = $replyQuotedRecord['author']['displayName'] ?? '';
@@ -583,5 +591,30 @@ class BlueskyBridge extends BridgeAbstract
         }
         $response = json_decode(getContents($uri), true);
         return $response;
+    }
+
+    private function getGeneratorViewDescription(array $record): string
+    {
+        $avatar = e($record['avatar']);
+        $displayName = e($record['displayName']);
+        $displayHandle = e($record['creator']['handle']);
+        $likeCount = e($record['likeCount']);
+        preg_match('/\/([^\/]+)$/', $record['uri'], $matches);
+        $uri = e('https://bsky.app/profile/' . $record['creator']['did'] . '/feed/' . $matches[1]);
+
+        return <<<END
+<a href="{$uri}" style="color: inherit;">
+    <div style="border: 1px solid #333; padding: 10px;">
+        <div style="display: flex; margin-bottom: 10px;">
+            <img src="{$avatar}" height="50" width="50" style="margin-right: 10px;">
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <h3>{$displayName}</h3>
+                <span>Feed by @{$displayHandle}</span>
+            </div>
+        </div>
+        <span>Liked by {$likeCount} users</span>
+    </div>
+</a>
+END;
     }
 }
