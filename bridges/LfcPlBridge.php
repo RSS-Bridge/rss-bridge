@@ -6,6 +6,20 @@ class LfcPlBridge extends BridgeAbstract
     const DESCRIPTION = 'LFC.pl - największa polska strona o Liverpool FC';
     const URI = 'https://lfc.pl';
     const MAINTAINER = 'brtsos';
+    const PARAMETERS = [
+        [
+            'comments' => [
+                'type' => 'list',
+                'name' => 'Include comments',
+                'title' => 'Include comments in the article content',
+                'values' => [
+                    'No' => 'no',
+                    'Yes' => 'yes',
+                ],
+            ]
+        ]
+    ];
+
     public function collectData()
     {
         $dom = getSimpleHTMLDOM(self::URI . '/Archiwum/' . date('Y') . date('m'));
@@ -54,17 +68,19 @@ class LfcPlBridge extends BridgeAbstract
         $commentsHtml = $article->find('#comments', 0);
 
         $comments = '';
-        if ($commentsHtml) {
-            $commentsDom = $commentsHtml->find('.comment');
+        if ($this->withComment()) {
+            if ($commentsHtml) {
+                $commentsDom = $commentsHtml->find('.comment');
 
-            if (count($commentsDom) > 0) {
-                $comments = '<h3>Komentarze:</h3>';
-            }
+                if (count($commentsDom) > 0) {
+                    $comments = '<h3>Komentarze:</h3>';
+                }
 
-            foreach ($commentsDom as $comment) {
-                $header = $comment->find('.header', 0)->plaintext;
-                $content = $comment->find('.content', 0)->plaintext;
-                $comments .= $header . '<br />' . $content . '<br /><br />';
+                foreach ($commentsDom as $comment) {
+                    $header = $comment->find('.header', 0)->plaintext;
+                    $content = $comment->find('.content', 0)->plaintext;
+                    $comments .= $header . '<br />' . $content . '<br /><br />';
+                }
             }
         }
 
@@ -85,5 +101,10 @@ class LfcPlBridge extends BridgeAbstract
         }
 
         return null;
+    }
+
+    private function withComment(): bool
+    {
+        return $this->getInput('comments') === 'yes';
     }
 }
