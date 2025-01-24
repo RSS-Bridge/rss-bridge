@@ -132,7 +132,7 @@ class RutubeBridge extends BridgeAbstract
                     $video->description . ' '
                 )
             );
-            $item['timestamp'] = $video->created_ts;
+            $item['timestamp'] = $video->publication_ts;
             $item['author'] = $video->author->name;
             $item['content'] = $content;
 
