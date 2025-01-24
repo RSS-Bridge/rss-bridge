@@ -50,7 +50,25 @@ class LfcPlBridge extends BridgeAbstract
 
     private function getContent($article)
     {
-        return $article->find('.news-body', 0)?->innertext;
+        $content = $article->find('.news-body', 0)->innertext;
+        $commentsHtml = $article->find('#comments', 0);
+
+        $comments = '';
+        if ($commentsHtml) {
+            $commentsDom = $commentsHtml->find('.comment');
+
+            if (count($commentsDom) > 0) {
+                $comments = '<h3>Komentarze:</h3>';
+            }
+
+            foreach ($commentsDom as $comment) {
+                $header = $comment->find('.header', 0)->plaintext;
+                $content = $comment->find('.content', 0)->plaintext;
+                $comments .= $header . '<br />' . $content . '<br /><br />';
+            }
+        }
+
+        return $content . '<br /> <br />' . $comments;
     }
 
     private function getImage($article): ?string
