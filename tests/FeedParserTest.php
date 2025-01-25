@@ -183,4 +183,83 @@ class FeedParserTest extends TestCase
         ];
         $this->assertEquals($expected, $feed);
     }
+
+    public function testYoutubeMediaModule()
+    {
+        $xml = <<<XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+         <link rel="self" href="http://www.youtube.com/feeds/videos.xml?channel_id=UCuCkxoKLYO_EQ2GeFtbM_bw"/>
+         <id>yt:channel:uCkxoKLYO_EQ2GeFtbM_bw</id>
+         <yt:channelId>uCkxoKLYO_EQ2GeFtbM_bw</yt:channelId>
+         <title>Half as Interesting</title>
+         <link rel="alternate" href="https://www.youtube.com/channel/UCuCkxoKLYO_EQ2GeFtbM_bw"/>
+         <author>
+          <name>Half as Interesting</name>
+          <uri>https://www.youtube.com/channel/UCuCkxoKLYO_EQ2GeFtbM_bw</uri>
+         </author>
+         <published>2017-08-26T20:06:05+00:00</published>
+         <entry>
+          <id>yt:video:Upjg7F28DJw</id>
+          <yt:videoId>Upjg7F28DJw</yt:videoId>
+          <yt:channelId>UCuCkxoKLYO_EQ2GeFtbM_bw</yt:channelId>
+          <title>The Nuke-Proof US Military Base in a Mountain</title>
+          <link rel="alternate" href="https://www.youtube.com/watch?v=Upjg7F28DJw"/>
+          <author>
+           <name>Half as Interesting</name>
+           <uri>https://www.youtube.com/channel/UCuCkxoKLYO_EQ2GeFtbM_bw</uri>
+          </author>
+          <published>2025-01-24T15:44:18+00:00</published>
+          <updated>2025-01-25T06:55:19+00:00</updated>
+          <media:group>
+           <media:title>The Nuke-Proof US Military Base in a Mountain</media:title>
+           <media:content url="https://www.youtube.com/v/Upjg7F28DJw?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+           <media:thumbnail url="https://i2.ytimg.com/vi/Upjg7F28DJw/hqdefault.jpg" width="480" height="360"/>
+           <media:description>Receive 10% off anything on bellroy.com: https://bit.ly/3HdOWu9</media:description>
+           <media:community>
+            <media:starRating count="10157" average="5.00" min="1" max="5"/>
+            <media:statistics views="228462"/>
+           </media:community>
+          </media:group>
+         </entry>
+        </feed>
+        XML;
+
+        $feed = $this->sut->parseFeed($xml);
+        $expected = [
+            'title' => 'Half as Interesting',
+            'uri' => 'https://www.youtube.com/channel/UCuCkxoKLYO_EQ2GeFtbM_bw',
+            'icon' => null,
+            'items' => [
+                [
+                    'uri' => 'https://www.youtube.com/watch?v=Upjg7F28DJw',
+                    'title' => 'The Nuke-Proof US Military Base in a Mountain',
+                    'content' => '',
+                    'timestamp' => 1737788119,
+                    'author' => 'Half as Interesting',
+                    'id' => 'yt:video:Upjg7F28DJw',
+                    'published' => '2025-01-24T15:44:18+00:00',
+                    'updated' => '2025-01-25T06:55:19+00:00',
+                    'link' => '',
+                    'yt' => [
+                        'videoId' => 'Upjg7F28DJw',
+                        'channelId' => 'UCuCkxoKLYO_EQ2GeFtbM_bw',
+                    ],
+                    'media' => [
+                        'group' => [
+                            'title' => 'The Nuke-Proof US Military Base in a Mountain',
+                            'content' => '',
+                            'thumbnail' => '',
+                            'description' => 'Receive 10% off anything on bellroy.com: https://bit.ly/3HdOWu9',
+                            'community' => [
+                                'starRating' => '',
+                                'statistics' => '',
+                            ],
+                        ],
+                    ],
+                ]
+            ],
+        ];
+        $this->assertEquals($expected, $feed);
+    }
 }
