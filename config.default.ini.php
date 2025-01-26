@@ -21,20 +21,15 @@
 ;enabled_bridges[] = ThePirateBay
 ;enabled_bridges[] = TikTokBridge
 ;enabled_bridges[] = Twitch
-;enabled_bridges[] = Vk
 ;enabled_bridges[] = XPathBridge
 ;enabled_bridges[] = Youtube
 ;enabled_bridges[] = YouTubeCommunityTabBridge
 enabled_bridges[] = *
 
-; Defines the timezone used by RSS-Bridge
-; Find a list of supported timezones at
-; https://www.php.net/manual/en/timezones.php
-; timezone = "UTC" (default)
 timezone = "UTC"
 
 ; Display a system message to users.
-message = ""
+;message = "Hello world"
 
 ; Whether to enable debug mode.
 enable_debug_mode = false
@@ -52,12 +47,12 @@ max_file_size = 10000000
 [http]
 
 ; Operation timeout in seconds
-timeout = 15
+timeout = 5
 
 ; Operation retry count in case of curl error
-retries = 2
+retries = 1
 
-; User agent
+; Curl user agent
 useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
 
 ; Max http response size in MB
