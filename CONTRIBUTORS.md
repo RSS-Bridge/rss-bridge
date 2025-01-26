@@ -23,6 +23,7 @@
 * [Binnette](https://github.com/Binnette)
 * [BoboTiG](https://github.com/BoboTiG)
 * [Bockiii](https://github.com/Bockiii)
+* [brtsos](https://github.com/brtsos)
 * [captn3m0](https://github.com/captn3m0)
 * [chemel](https://github.com/chemel)
 * [Chouchen](https://github.com/Chouchen)
