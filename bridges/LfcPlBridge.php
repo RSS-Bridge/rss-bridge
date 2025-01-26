@@ -78,8 +78,8 @@ class LfcPlBridge extends BridgeAbstract
 
                 foreach ($commentsDom as $comment) {
                     $header = $comment->find('.header', 0)->plaintext;
-                    $content = $comment->find('.content', 0)->plaintext;
-                    $comments .= $header . '<br />' . $content . '<br /><br />';
+                    $commentContent = $comment->find('.content', 0)->plaintext;
+                    $comments .= $header . '<br />' . $commentContent . '<br /><br />';
                 }
             }
         }
