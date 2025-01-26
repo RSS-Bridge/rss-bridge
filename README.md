@@ -150,11 +150,11 @@ listen = /run/php/rss-bridge.sock
 listen.owner = www-data
 listen.group = www-data
 
-# Create 10 workers standing by to serve requests
+; Create 10 workers standing by to serve requests
 pm = static
 pm.max_children = 10
 
-# Respawn worker after 500 requests (workaround for memory leaks etc.) 
+; Respawn worker after 500 requests (workaround for memory leaks etc.)
 pm.max_requests = 500
 ```
 
@@ -460,7 +460,6 @@ See [CONTRIBUTORS.md](CONTRIBUTORS.md)
 
 RSS-Bridge uses caching to prevent services from banning your server for repeatedly updating feeds.
 The specific cache duration can be different between bridges.
-Cached files are deleted automatically after 24 hours.
 
 RSS-Bridge allows you to take full control over which bridges are displayed to the user.
 That way you can host your own RSS-Bridge service with your favorite collection of bridges!

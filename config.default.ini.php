@@ -75,7 +75,7 @@ custom_timeout = false
 ; ""    = Disabled (default)
 email = ""
 
-; Advertise a contact Telegram url e.g. "https://t.me/elegantobjects"
+; Advertise a contact URL (can be any URL!) e.g. "https://t.me/elegantobjects"
 telegram = ""
 
 ; Show Donation information for bridges if available.
