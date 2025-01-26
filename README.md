@@ -150,11 +150,11 @@ listen = /run/php/rss-bridge.sock
 listen.owner = www-data
 listen.group = www-data
 
-# Create 10 workers standing by to serve requests
+; Create 10 workers standing by to serve requests
 pm = static
 pm.max_children = 10
 
-# Respawn worker after 500 requests (workaround for memory leaks etc.) 
+; Respawn worker after 500 requests (workaround for memory leaks etc.)
 pm.max_requests = 500
 ```
 
