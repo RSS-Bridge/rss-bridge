@@ -80,14 +80,8 @@ class MrssFormat extends FormatAbstract
                 $feedUrl = get_current_url();
                 $linkSelf->setAttribute('href', $feedUrl);
             } elseif ($feedKey === 'icon') {
-                $allowedIconExtensions = [
-                    '.gif',
-                    '.jpg',
-                    '.png',
-                    '.ico',
-                ];
                 $icon = $feedValue;
-                if ($icon && in_array(substr($icon, -4), $allowedIconExtensions)) {
+                if ($icon) {
                     $feedImage = $document->createElement('image');
                     $channel->appendChild($feedImage);
                     $iconUrl = $document->createElement('url');
