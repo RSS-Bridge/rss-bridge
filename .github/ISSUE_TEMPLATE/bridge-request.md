@@ -49,9 +49,9 @@ Please describe what you expect from the bridge. Whenever possible provide sampl
   - _Default limit_: 5
 - [ ] Load full articles
   - _Cache articles_ (articles are stored in a local cache on first request): yes
-  - _Cache timeout_ (max = 24 hours): 24 hours
+  - _Cache timeout_ : 24 hours
 - [X] Balance requests (RSS-Bridge uses cached versions to reduce bandwith usage)
-  - _Timeout_ (default = 5 minutes, max = 24 hours): 5 minutes
+  - _Timeout_ (default = 5 minutes): 5 minutes
 
 <!--Be aware that some options might not be available for your specific request due to technical limitations!-->
 

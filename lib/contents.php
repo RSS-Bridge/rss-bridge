@@ -177,10 +177,8 @@ function getSimpleHTMLDOM(
 }
 
 /**
- * Gets contents from the Internet as simplhtmldom object. Contents are cached
+ * Fetch contents from the Internet as simplhtmldom object. Contents are cached
  * and re-used for subsequent calls until the cache duration elapsed.
- *
- * _Notice_: Cached contents are forcefully removed after 24 hours (86400 seconds).
  *
  * @param string $url The URL.
  * @param int $ttl Cache duration in seconds.
