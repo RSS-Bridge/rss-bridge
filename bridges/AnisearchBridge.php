@@ -67,7 +67,7 @@ class AnisearchBridge extends BridgeAbstract
                 $trailerlink = $domarticle->find('section#trailers > div > div.swiper > ul.swiper-wrapper > li.swiper-slide > a', 0);
                 if (isset($trailerlink)) {
                     $trailersite = getSimpleHTMLDOM($baseurl . $trailerlink->href);
-                    $trailer = $trailersite->find('div#player > iframe', 0);
+                    $trailer = $trailersite->find('div#video > iframe', 0);
                     $trailer = $trailer->{'data-xsrc'};
                     $ytlink = <<<EOT
                         <br /><iframe width="560" height="315" src="$trailer" title="YouTube video player"
