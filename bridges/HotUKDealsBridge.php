@@ -48,7 +48,7 @@ https://www.hotukdeals.com/tag/broadband?sortBy=temp
 Then enter :
 broadband',
             ],
-            'subgrousp' => [
+            'subgroups' => [
                 'name' => 'category',
                 'type' => 'text',
                 'exampleValue' => '343563',
