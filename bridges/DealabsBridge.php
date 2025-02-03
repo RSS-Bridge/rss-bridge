@@ -48,6 +48,16 @@ https://www.dealabs.com/groupe/abonnements-internet?sortBy=lowest_price
 Il faut alors saisir :
 abonnements-internet',
                 ],
+            'subgroup' => [
+                'name' => 'Catégorie',
+                'type' => 'text',
+                'exampleValue' => '1071',
+                'title' => 'Numéro du ou des catégories dans l\'URL : Il faut entrer le ou les numéros de catégories qui sont présent après "groups=" et avant tout éventuel "&"
+Exemple : Si l\'URL du groupe affichées dans le navigateur est :
+https://www.dealabs.com/groupe/telecommunications?groups=1071%2C1070&sortBy=new
+Il faut alors saisir :
+1071%2C1070',
+                ],
             'order' => [
                 'name' => 'Trier par',
                 'type' => 'list',
@@ -88,6 +98,7 @@ abonnements-internet',
         'uri-group' => 'groupe/',
         'uri-deal' => 'bons-plans/',
         'uri-merchant' => 'search/bons-plans?merchant-id=',
+        'image-host' => 'https://static-pepper.dealabs.com/',
         'request-error' => 'Impossible de joindre Dealabs',
         'thread-error' => 'Impossible de déterminer l\'ID de la discussion. Vérifiez l\'URL que vous avez entré',
         'currency' => '€',

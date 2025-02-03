@@ -48,6 +48,16 @@ https://www.hotukdeals.com/tag/broadband?sortBy=temp
 Then enter :
 broadband',
             ],
+            'subgrousp' => [
+                'name' => 'category',
+                'type' => 'text',
+                'exampleValue' => '343563',
+                'title' => 'Category number in the URL : The category number that must be entered is present after "groups=" and before any "&".
+Example: If the URL of the group displayed in the browser is :
+https://www.hotukdeals.com/tag/broadband?groups=343563&sortBy=new
+Then enter :
+343563',
+            ],
             'order' => [
                 'name' => 'Order by',
                 'type' => 'list',
@@ -86,6 +96,7 @@ broadband',
         'uri-group' => 'tag/',
         'uri-deal' => 'deals/',
         'uri-merchant' => 'search/deals?merchant-id=',
+        'image-host' => 'https://images.hotukdeals.com/',
         'request-error' => 'Could not request HotUKDeals',
         'thread-error' => 'Unable to determine the thread ID. Check the URL you entered',
         'currency' => '£',
