@@ -48,6 +48,16 @@ https://www.mydealz.de/gruppe/dsl?sortBy=temp
 Dann geben Sie ein:
 dsl',
                 ],
+            'subgroups' => [
+                'name' => 'Kategorie',
+                'type' => 'text',
+                'exampleValue' => '293',
+                'title' => 'Nummer des Kategorie in der URL: Der einzugebende Kategorienummer steht nach "groups=" und vor einem "&".
+Beispiel: Wenn die URL der Gruppe, die im Browser angezeigt wird, :
+https://www.mydealz.de/gruppe/telefon-internet?groups=153%2C154&sortBy=new&time_frame=0
+Dann geben Sie ein:
+153%2C154',
+                ],
             'order' => [
                 'name' => 'sortieren nach',
                 'type' => 'list',
@@ -84,6 +94,7 @@ dsl',
         'uri-group' => 'gruppe/',
         'uri-deal' => 'deals/',
         'uri-merchant' => 'search/gutscheine?merchant-id=',
+        'image-host' => 'https://static.mydealz.de/',
         'request-error' => 'Could not request mydeals',
         'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
         'currency' => '€',
