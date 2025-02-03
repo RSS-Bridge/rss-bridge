@@ -48,7 +48,7 @@ https://www.dealabs.com/groupe/abonnements-internet?sortBy=lowest_price
 Il faut alors saisir :
 abonnements-internet',
                 ],
-            'subgroup' => [
+            'subgroups' => [
                 'name' => 'Catégorie',
                 'type' => 'text',
                 'exampleValue' => '1071',
