@@ -66,7 +66,7 @@ class CarThrottleBridge extends BridgeAbstract
         foreach ($categoryPage->find('div.cmg-card') as $post) {
             $item = [];
 
-            $titleElement = $post->find('div.title a')[0];
+            $titleElement = $post->find('a.title')[0];
             $post_uri = self::URI . $titleElement->getAttribute('href');
 
             if (!isset($post_uri) || $post_uri == '') {
@@ -80,8 +80,8 @@ class CarThrottleBridge extends BridgeAbstract
 
             $item['author'] = $this->parseAuthor($articlePage);
 
-            $articleImage = $articlePage->find('div.block-layout-field-image')[0];
-            $article = $articlePage->find('div.block-layout-body')[1];
+            $articleImage = $articlePage->find('figure')[0];
+            $article = $articlePage->find('div.first-column div.body')[0];
 
             //remove ads
             foreach ($article->find('aside') as $ad) {
