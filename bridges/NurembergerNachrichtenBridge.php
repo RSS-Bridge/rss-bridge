@@ -6,7 +6,7 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
     const NAME = 'Nürnberger Nachrichten';
     const CACHE_TIMEOUT = 3600;
     const URI = 'https://www.nn.de';
-    const DESCRIPTION = 'Bridge for Bavarian regional news site nordbayern.de';
+    const DESCRIPTION = 'Bridge for NurembergerNachrichten news site nn.de';
     const PARAMETERS = [ [
         'region' => [
             'name' => 'region',
@@ -66,7 +66,7 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
             // exclude nn+ articles if desired
             if (
                 $this->getInput('hideNNPlus') &&
-                str_contains($articleContent->find('article[id=article]', 0)->find('header', 0), 'icon-nnplus')
+                $articleContent->find('div[class=paywall]')
             ) {
                 continue;
             }
