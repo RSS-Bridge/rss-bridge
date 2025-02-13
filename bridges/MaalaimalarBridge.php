@@ -86,7 +86,7 @@ class MaalaimalarBridge extends BridgeAbstract
             }
 
             $location = $article->find('a.location-anchor', 0)->href;
-            $segments = array_filter(explode("/", $location));
+            $segments = array_filter(explode('/', $location));
             $category = [end($segments)];
 
             $date = $article->find('time.h-date span', 0);
