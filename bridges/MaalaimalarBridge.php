@@ -80,22 +80,27 @@ class MaalaimalarBridge extends BridgeAbstract
         $articles = $dom->find('div.mb-20.infinite-card-wrapper.white-section');
 
         foreach ($articles as $article) {
-            $titleElement = $article->find('h2.title a', 0);
-            if (!$titleElement) {
+            $title = $article->find('h2.title a', 0);
+            if (!$title) {
                 continue;
             }
 
-            $dateElement = $article->find('time.h-date span', 0);
-            $date = $dateElement ? $dateElement->{'data-datestring'} . 'UTC' : '';
+            $location = $article->find('a.location-anchor', 0)->href;
+            $segments = array_filter(explode("/", $location));
+            $category = [end($segments)];
+
+            $date = $article->find('time.h-date span', 0);
+            $timestamp = $date ? $date->{'data-datestring'} . 'UTC' : '';
 
             $content = $this->constructContent($article);
 
             $this->items[] = [
-                'content'   => $content,
-                'timestamp' => $date,
-                'title'     => $titleElement->plaintext,
-                'uid'       => $titleElement->href,
-                'uri'       => self::URI . $titleElement->href,
+                'categories' => $category,
+                'content'    => $content,
+                'timestamp'  => $timestamp,
+                'title'      => $title->plaintext,
+                'uid'        => $title->href,
+                'uri'        => self::URI . $title->href,
             ];
         }
     }
@@ -103,18 +108,19 @@ class MaalaimalarBridge extends BridgeAbstract
     private function constructContent($article)
     {
         $content = '';
-        $imageElement = $article->find('div.ignore-autoplay img', 0);
-        if ($imageElement && isset($imageElement->{'data-src'})) {
-            $url = str_replace('500x300_', '', $imageElement->{'data-src'});
+        $image = $article->find('div.ignore-autoplay img', 0);
 
-            if (filter_var($url, FILTER_VALIDATE_URL)) {
-                $content = sprintf('<p><img src="%s"></p>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8'));
+        if ($image && isset($image->{'data-src'})) {
+            $imageUrl = str_replace('500x300_', '', $image->{'data-src'});
+
+            if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                $content = sprintf('<p><img src="%s"></p>', htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'));
             }
         }
 
-        $storyElement = $article->find('div.story-content', 0);
-        if ($storyElement) {
-            $content .= $storyElement->innertext;
+        $story = $article->find('div.story-content', 0);
+        if ($story) {
+            $content .= $story->innertext;
         }
 
         return $content;
