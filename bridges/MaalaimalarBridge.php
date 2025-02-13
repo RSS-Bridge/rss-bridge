@@ -85,7 +85,7 @@ class MaalaimalarBridge extends BridgeAbstract
                 continue;
             }
 
-            $location = $article->find('a.location-anchor', 0)->href;
+            $location = $article->find('a.location-anchor', 0)->href ?? '';
             $segments = array_filter(explode('/', $location));
             $category = [end($segments)];
 
