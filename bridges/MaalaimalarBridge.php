@@ -80,43 +80,49 @@ class MaalaimalarBridge extends BridgeAbstract
         $articles = $dom->find('div.mb-20.infinite-card-wrapper.white-section');
 
         foreach ($articles as $article) {
-            $titleElement = $article->find('h2.title a', 0);
-            if (!$titleElement) {
+            if (!$title = $article->find('h2.title a', 0)) {
                 continue;
             }
 
-            $dateElement = $article->find('time.h-date span', 0);
-            $date = $dateElement ? $dateElement->{'data-datestring'} . 'UTC' : '';
-
-            $content = $this->constructContent($article);
-
             $this->items[] = [
-                'content'   => $content,
-                'timestamp' => $date,
-                'title'     => $titleElement->plaintext,
-                'uid'       => $titleElement->href,
-                'uri'       => self::URI . $titleElement->href,
+                'categories'   => $this->extractCategory($article),
+                'title'        => $title->plaintext,
+                'uid'          => $title->href,
+                'uri'          => self::URI . $title->href,
+                'content'      => $this->constructContent($article),
+                'timestamp'    => $this->extractTimestamp($article),
             ];
         }
     }
 
+    private function extractCategory($article)
+    {
+        if (!$locationAnchor = $article->find('a.location-anchor', 0)?->href) {
+            return null;
+        }
+
+        $segments = array_filter(explode('/', trim($locationAnchor)));
+        return ($category = end($segments)) ? [$category] : null;
+    }
+
+    private function extractTimestamp($article)
+    {
+        $timestamp = $article->find('time.h-date span', 0)?->{'data-datestring'};
+        return $timestamp ? $timestamp . 'UTC' : null;
+    }
+
     private function constructContent($article)
     {
-        $content = '';
-        $imageElement = $article->find('div.ignore-autoplay img', 0);
-        if ($imageElement && isset($imageElement->{'data-src'})) {
-            $url = str_replace('500x300_', '', $imageElement->{'data-src'});
+        $image = '';
 
-            if (filter_var($url, FILTER_VALIDATE_URL)) {
-                $content = sprintf('<p><img src="%s"></p>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8'));
+        if ($imageUrl = $article->find('div.ignore-autoplay img', 0)?->{'data-src'}) {
+            $imageUrl = str_replace('500x300_', '', $imageUrl);
+
+            if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                $image = sprintf('<p><img src="%s"></p>', htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'));
             }
         }
 
-        $storyElement = $article->find('div.story-content', 0);
-        if ($storyElement) {
-            $content .= $storyElement->innertext;
-        }
-
-        return $content;
+        return $image . ($article->find('div.story-content', 0)?->innertext ?? '');
     }
 }
