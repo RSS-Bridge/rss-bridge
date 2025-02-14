@@ -7,8 +7,8 @@ class VkBridge extends BridgeAbstract
     // const MAINTAINER = 'ahiles3005';
     const NAME = 'VK.com';
     const URI = 'https://vk.com/';
-    const CACHE_TIMEOUT = 300; // 5min
-    const DESCRIPTION = 'Working with open pages';
+    const CACHE_TIMEOUT = 3600; // 1h
+    const DESCRIPTION = 'Does not work anymore';
     const PARAMETERS = [
         [
             'u' => [
@@ -65,6 +65,7 @@ class VkBridge extends BridgeAbstract
 
     public function collectData()
     {
+        return;
         $text_html = $this->getContents();
 
         $text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
@@ -391,10 +392,13 @@ class VkBridge extends BridgeAbstract
             $item['categories'] = $hashtags;
 
             // get post link
-            $post_link = $post->find('a.PostHeaderSubtitle__link', 0)->getAttribute('href');
-            preg_match('/wall-?\d+_(\d+)/', $post_link, $preg_match_result);
-            $item['post_id'] = intval($preg_match_result[1]);
-            $item['uri'] = $post_link;
+            $var = $post->find('a.PostHeaderSubtitle__link', 0);
+            if ($var) {
+                $post_link = $var->getAttribute('href');
+                preg_match('/wall-?\d+_(\d+)/', $post_link, $preg_match_result);
+                $item['post_id'] = intval($preg_match_result[1]);
+                $item['uri'] = $post_link;
+            }
             $item['timestamp'] = $this->getTime($post);
             $item['title'] = $this->getTitle($item['content']);
             $item['author'] = $post_author;
@@ -402,7 +406,7 @@ class VkBridge extends BridgeAbstract
                 // do not append it now
                 $pinned_post_item = $item;
             } else {
-                $last_post_id = $item['post_id'];
+                $last_post_id = $item['post_id'] ?? null;
                 $this->items[] = $item;
             }
         }
@@ -474,7 +478,10 @@ class VkBridge extends BridgeAbstract
         if ($accurateDateElement) {
             return $accurateDateElement->getAttribute('time');
         } else {
-            $strdate = $post->find('time.PostHeaderSubtitle__item', 0)->plaintext;
+            $strdate = $post->find('time.PostHeaderSubtitle__item', 0)->plaintext ?? null;
+            if (!$strdate) {
+                return 0;
+            }
             $strdate = preg_replace('/[\x00-\x1F\x7F-\xFF]/', ' ', $strdate);
 
             $date = date_parse($strdate);
