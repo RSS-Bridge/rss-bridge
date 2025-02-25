@@ -44,8 +44,7 @@ class ShadertoyBridge extends BridgeAbstract
         $category = $this->getInput('category');
         $json = null;
 
-        if ($category == 'sotw') 
-        {
+        if ($category == 'sotw') {
             $url = static::URI . '/playlist/week';
             $contents = getContents($url);
             $shaderids = extractFromDelimiters($contents, 'var gShaderIDs = ', ';');
@@ -68,8 +67,7 @@ class ShadertoyBridge extends BridgeAbstract
             ];
             $json = getContents($url, $header, $opts);
         } 
-        else 
-        {
+        else {
             $url = static::URI . '/results?sort=' . $category;
             $contents = getContents($url);
             $json = extractFromDelimiters($contents, 'var gShaders=', 'var gUseScreenshots');
