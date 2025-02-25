@@ -66,8 +66,7 @@ class ShadertoyBridge extends BridgeAbstract
                 CURLOPT_RETURNTRANSFER => true
             ];
             $json = getContents($url, $header, $opts);
-        } 
-        else {
+        } else {
             $url = static::URI . '/results?sort=' . $category;
             $contents = getContents($url);
             $json = extractFromDelimiters($contents, 'var gShaders=', 'var gUseScreenshots');
