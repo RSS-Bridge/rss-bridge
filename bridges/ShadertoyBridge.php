@@ -42,14 +42,14 @@ class ShadertoyBridge extends BridgeAbstract
     public function collectData()
     {
         $category = $this->getInput('category');
-        $json = NULL;
+        $json = null;
 
-        if ($category == 'sotw')
+        if ($category == 'sotw') 
         {
             $url = static::URI . '/playlist/week';
             $contents = getContents($url);
             $shaderids = extractFromDelimiters($contents, 'var gShaderIDs = ', ';');
-            $shaderids = str_replace("'", "\"", $shaderids);
+            $shaderids = str_replace('\'', '"', $shaderids);
 
             $url = static::URI . '/shadertoy';
             $data = 's=' . rawurlencode('{ "shaders": ' . $shaderids . ' }') . '&nt=0&nl=0&np=0';
@@ -67,8 +67,8 @@ class ShadertoyBridge extends BridgeAbstract
                 CURLOPT_RETURNTRANSFER => true
             ];
             $json = getContents($url, $header, $opts);
-        }
-        else
+        } 
+        else 
         {
             $url = static::URI . '/results?sort=' . $category;
             $contents = getContents($url);
@@ -85,11 +85,11 @@ class ShadertoyBridge extends BridgeAbstract
         foreach ($json as $article) {
             $id = $article['info']['id'];
 
-            $title = $article["info"]["name"];
-            $author = $article["info"]["username"];
-            $uri = static::URI . "/view/" . $id;
-            $content = '<p><img src="' . static::URI . '/media/shaders/' . $id . '.jpg"></p><p>' . $this->postprocessDescription($article["info"]["description"]) . '</p>';
-            $timestamp = $article["info"]["date"];
+            $title = $article['info']['name'];
+            $author = $article['info']['username'];
+            $uri = static::URI . '/view/' . $id;
+            $content = '<p><img src="' . static::URI . '/media/shaders/' . $id . '.jpg"></p><p>' . $this->postprocessDescription($article['info']['description']) . '</p>';
+            $timestamp = $article['info']['date'];
 
             $this->items[] = [
                 'title' => $title,
