@@ -40,7 +40,7 @@ class RadioMelodieBridge extends BridgeAbstract
                 $picture = [];
 
                 // Get the Main picture URL
-                $picture[] = self::URI . $article->find('figure[class*=photoviewer]', 0)->find('img', 0)->src;
+                $picture[] = $article->find('figure[class*=photoviewer]', 0)->find('img', 0)->src;
                 $audioHTML = $article->find('audio');
 
                 // Add the audio element to the enclosure
@@ -123,7 +123,7 @@ class RadioMelodieBridge extends BridgeAbstract
             preg_match('/wavesurfer[0-9]+.load\(\'(.*)\'\)/m', $js->innertext, $urls);
 
             // Create the plain HTML <audio> content to play this audio file
-            $content = '<audio style="width: 100%" src="' . $urls[1] . '" controls ></audio>';
+            $content = '<audio style="width: 100%" src="' . self::URI . $urls[1] . '" controls ></audio>';
 
             // Replace the <script> tag by the <audio> tag
             $js->outertext = $content;
