@@ -3,7 +3,8 @@
 class FreeTelechargerBridge extends BridgeAbstract
 {
     const NAME = 'Free-Telecharger';
-    const URI = 'https://www.free-telecharger.art/';
+    const URI = 'https://www.free-telecharger.fun/';
+    const ALTERNATEURI = 'https://www.free-telecharger.com/';
     const DESCRIPTION = 'Suivi de série sur Free-Telecharger';
     const MAINTAINER  = 'sysadminstory';
     const PARAMETERS = [
@@ -12,19 +13,19 @@ class FreeTelechargerBridge extends BridgeAbstract
                             'name' => 'URL de la série',
                             'type' => 'text',
                             'required' => true,
-                            'title' => 'URL d\'une série sans le https://www.free-telecharger.art/',
+                            'title' => 'URL d\'une série sans le https://www.free-telecharger.fun/',
                             'pattern' => 'series.*\.html',
                             'exampleValue' => 'series-vf-hd/151432-wolf-saison-1-complete-web-dl-720p.html'
                     ],
             ]
     ];
     const CACHE_TIMEOUT = 3600;
-    private string $showTitle;
-    private string $showTechDetails;
+    private string $showTitle = '';
+    private string $showTechDetails = '';
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . $this->getInput('url'));
+        $html = getSimpleHTMLDOM(self::ALTERNATEURI . $this->getInput('url'));
 
         // Find all block content of the page
         $blocks = $html->find('div[class=block1]');
