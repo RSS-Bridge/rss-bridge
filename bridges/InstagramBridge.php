@@ -86,6 +86,11 @@ class InstagramBridge extends BridgeAbstract
         $headers = [];
         $sessionId = $this->getOption('session_id');
         $dsUserId = $this->getOption('ds_user_id');
+        $headers[] = 'x-ig-app-id: 936619743392459';
+        $headers[] = 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36';
+        $headers[] = 'Accept-Language: en-US,en;q=0.9,ru;q=0.8';
+        $headers[] = 'Accept-Encoding: gzip, deflate, br';
+        $headers[] = 'Accept: */*';
         if ($sessionId and $dsUserId) {
             $headers[] = 'cookie: sessionid=' . $sessionId . '; ds_user_id=' . $dsUserId;
         }
@@ -125,8 +130,10 @@ class InstagramBridge extends BridgeAbstract
             return;
         }
 
-        if (!is_null($this->getInput('u'))) {
+        if (!is_null($this->getInput('u')) && !$this->fallbackMode) {
             $userMedia = $data->data->user->edge_owner_to_timeline_media->edges;
+        } elseif (!is_null($this->getInput('u')) && $this->fallbackMode) {
+            $userMedia = $data->context->graphql_media;
         } elseif (!is_null($this->getInput('h'))) {
             $userMedia = $data->data->hashtag->edge_hashtag_to_media->edges;
         } elseif (!is_null($this->getInput('l'))) {
@@ -134,7 +141,12 @@ class InstagramBridge extends BridgeAbstract
         }
 
         foreach ($userMedia as $media) {
-            $media = $media->node;
+            // The media is not in the same element if in fallback mode than not
+            if (!$this->fallbackMode) {
+                $media = $media->node;
+            } else {
+                $media = $media->shortcode_media;
+            }
 
             switch ($this->getInput('media_type')) {
                 case 'all':
@@ -267,14 +279,39 @@ class InstagramBridge extends BridgeAbstract
 
     protected function getInstagramJSON($uri)
     {
+        // Sets fallbackMode to false
+        $this->fallbackMode = false;
         if (!is_null($this->getInput('u'))) {
-            $userId = $this->getInstagramUserId($this->getInput('u'));
-            $data = $this->getContents(self::URI .
+            try {
+                $userId = $this->getInstagramUserId($this->getInput('u'));
+                $data = $this->getContents(self::URI .
                                 'graphql/query/?query_hash=' .
                                  self::USER_QUERY_HASH .
                                  '&variables={"id"%3A"' .
                                 $userId .
                                 '"%2C"first"%3A10}');
+            } catch (HttpException $e) {
+                // If loading the data directly failed, we fall back to the "/embed" data loading
+                // We are in the fallback mode : set a booolean to handle this specific case while collecting the content
+                $this->fallbackMode = true;
+                // Get the HTML code of the profile embed page, and extract the JSON of it
+                $username = $this->getInput('u');
+                // Load the content using the integrated function to use helping headers
+                $htmlString = $this->getContents(self::URI . $username . '/embed/');
+                // Load the String as an SimpleHTMLDom Object
+                $html = new simple_html_dom();
+                $html->load($htmlString);
+                // Find the <script> tag containing the JSON content
+                $jsCode = $html->find('body', 0)->find('script', 3)->innertext;
+
+                // Extract the content needed by our bridge of the whole Javascript content
+                $regex = '#"contextJSON":"(.*)"}\]\],\["NavigationMetrics"#m';
+                preg_match($regex, $jsCode, $matches);
+                $jsVariable = $matches[1];
+                $data = stripcslashes($jsVariable);
+                // stripcslashes remove Javascript unicode escaping : add it back to the string so json_decode can handle it
+                $data = preg_replace('/(?<!\\\\)u[0-9A-Fa-f]{4}/', '\\\\$0', $data);
+            }
             return json_decode($data);
         } elseif (!is_null($this->getInput('h'))) {
             $data = $this->getContents(self::URI .
