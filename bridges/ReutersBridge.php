@@ -35,7 +35,7 @@ class ReutersBridge extends BridgeAbstract
                 'title' => 'Feeds from Reuters U.S/International edition',
                 'values' => [
                     'Top News' => 'home/topnews',
-                    'Fact Check' => 'chan:abtpk0vm',
+                    'Fact Check' => '/fact-check',
                     'Entertainment' => 'chan:8ym8q8dl',
                     'Politics' => 'politics',
                     'Wire' => 'wire',
@@ -137,7 +137,6 @@ class ReutersBridge extends BridgeAbstract
 
     const OLD_WIRE_SECTION = [
         'home/topnews',
-        'chan:abtpk0vm',
         'chan:8ym8q8dl',
         'politics',
         'wire'
