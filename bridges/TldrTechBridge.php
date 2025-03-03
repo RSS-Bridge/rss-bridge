@@ -57,6 +57,9 @@ class TldrTechBridge extends BridgeAbstract
                 continue;
             }
             $itemUrl = Url::fromString(self::URI . ltrim($child->href, '/'));
+            if ($itemUrl == $locationUrl) {
+                continue;
+            }
             $this->extractItem($itemUrl);
             if (count($this->items) >= $limit) {
                 break;
@@ -123,6 +126,11 @@ class TldrTechBridge extends BridgeAbstract
                 if ($grandchild->tag == 'div') {
                     $grandchild->style = 'margin-bottom: 12px;';
                 }
+            }
+        }
+        foreach ($content->find('section') as $section) {
+            if (count($section->children()) == 0) {
+                $content->removeChild($section);
             }
         }
         $title = $content->find('h2', 0);
