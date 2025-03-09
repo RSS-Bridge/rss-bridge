@@ -38,7 +38,8 @@ class RedditBridge extends BridgeAbstract
                     'Hot' => 'hot',
                     'Relevance' => 'relevance',
                     'New' => 'new',
-                    'Top' => 'top'
+                    'Top' => 'top',
+                    'Comments' => 'comments'
                 ],
                 'defaultValue' => 'Hot'
             ],
