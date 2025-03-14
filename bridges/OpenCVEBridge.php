@@ -338,7 +338,7 @@ class OpenCVEBridge extends BridgeAbstract
         $parts = explode('/', $cvssVector);
 
         if (!preg_match('/^CVSS:3\.[01]/', $parts[0])) {
-            return "Error: Not a valid CVSS v3.0 or v3.1 vector";
+            return 'Error: Not a valid CVSS v3.0 or v3.1 vector';
         }
 
         for ($i = 1; $i < count($parts); $i++) {
@@ -476,13 +476,13 @@ class OpenCVEBridge extends BridgeAbstract
         return $html;
     }
 
-    function cvssV4VectorToTable($cvssVector)
+    private function cvssV4VectorToTable($cvssVector)
     {
         $vectorComponents = [];
         $parts = explode('/', $cvssVector);
 
         if (!preg_match('/^CVSS:4\.0/', $parts[0])) {
-            return "Error: Not a valid CVSS v4.0 vector";
+            return 'Error: Not a valid CVSS v4.0 vector';
         }
 
         for ($i = 1; $i < count($parts); $i++) {
