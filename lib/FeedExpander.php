@@ -22,14 +22,7 @@ abstract class FeedExpander extends BridgeAbstract
         if ($xmlString === '') {
             throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url), 10);
         }
-        // prepare/massage the xml to make it more acceptable
-        $problematicStrings = [
-            '&nbsp;',
-            '&raquo;',
-            '&rsquo;',
-        ];
-        $xmlString = str_replace($problematicStrings, '', $xmlString);
-
+        $xmlString = $this->prepareXml($xmlString);
         $feedParser = new FeedParser();
         try {
             $this->feed = $feedParser->parseFeed($xmlString);
@@ -57,6 +50,42 @@ abstract class FeedExpander extends BridgeAbstract
     protected function parseItem(array $item)
     {
         return $item;
+    }
+
+    /**
+    * Prepare XML document to make it more acceptable by the parser
+    * This method can be overriden by bridges to change this behavior
+    *
+    * @return string
+    */
+    protected function prepareXml($xmlString)
+    {
+        // Remove problematic escape sequences
+        $problematicStrings = [
+            '&nbsp;',
+            '&raquo;',
+            '&rsquo;',
+        ];
+        $xmlString = str_replace($problematicStrings, '', $xmlString);
+
+        // Remove extra content at the end of the document, if any.
+        // First retrieve tag name of root node, which is the first node following <?xml prolog,
+        // Then find the last matching </tag> in xml string and strip anything beyond that.
+        if (preg_match('/(?:<\?xml[^>]*\?>[^<]*<)([^ "\'>]+)/i', $xmlString, $matches) === 1)
+        {
+            $root_node_tag = $matches[1];
+            $last_closing_occurrence = strripos($xmlString, '</' . $root_node_tag);
+            if ($last_closing_occurrence !== false)
+            {
+                $closing_node_end = strpos($xmlString, '>', $last_closing_occurrence);
+                if ($closing_node_end !== false)
+                {
+                    $xmlString = substr($xmlString, 0, $closing_node_end + 1);
+                }
+            }
+        }
+
+        return $xmlString;
     }
 
     public function getURI()
