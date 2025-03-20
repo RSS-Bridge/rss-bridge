@@ -58,11 +58,11 @@ class CeskaTelevizeBridge extends BridgeAbstract
             return strtotime('today');
         } elseif (strpos($string, 'včera') !== false) {
             return strtotime('yesterday');
-        } elseif (!preg_match('/(\d+).\s(\d+).(\s(\d+))?/', $string, $match)) {
+        } elseif (!preg_match('/(\d+).\s(\d+).(\s(\d+))?/u', $string, $match)) {
             returnServerError('Could not get date from Česká televize string');
         }
 
-        $date = sprintf('%04d-%02d-%02d', $match[3] ?? date('Y'), $match[2], $match[1]);
+        $date = sprintf('%04d-%02d-%02d', $match[4] ?? date('Y'), $match[2], $match[1]);
         return strtotime($date);
     }
 
