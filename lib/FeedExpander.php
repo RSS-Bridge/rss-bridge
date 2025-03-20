@@ -68,7 +68,7 @@ abstract class FeedExpander extends BridgeAbstract
         ];
         $xmlString = str_replace($problematicStrings, '', $xmlString);
 
-        // Remove extra content at the end of the document, if any.
+        // Remove extra content at the end of the document, if any (#4485)
         // First retrieve tag name of root node, which is the first node following <?xml prolog,
         // Then find the last matching </tag> in xml string and strip anything beyond that.
         if (preg_match('/(?:<\?xml[^>]*\?>[^<]*<)([^ "\'>]+)/i', $xmlString, $matches) === 1)
