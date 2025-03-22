@@ -43,7 +43,7 @@ class CeskaTelevizeBridge extends BridgeAbstract
             $itemDate = $element->find('div[class^=playTime-] span, [data-testid=episode-item-broadcast] span', 0);
 
             // Remove special characters and whitespace
-            $cleanDate =  preg_replace('/[^0-9.]/', '', $itemDate->plaintext);
+            $cleanDate = preg_replace('/[^0-9.]/', '', $itemDate->plaintext);
 
             $item = [
                 'title'     => $this->fixChars($element->find('h3', 0)->plaintext),
