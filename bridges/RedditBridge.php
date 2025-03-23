@@ -20,7 +20,15 @@ class RedditBridge extends BridgeAbstract
                 'required' => false,
                 'type' => 'number',
                 'exampleValue' => 100,
-                'title' => 'Filter out posts with lower score'
+                'title' => 'Filter out posts with lower score. Set to -1 to disable. If both score and comments are set, an OR is applied.',
+            ],
+            'min_comments' => [
+                'name' => 'Minimal number of comments',
+                'required' => false,
+                'type' => 'number',
+                'exampleValue' => 100,
+                'title' => 'Filter out posts with lower number of comments. Set to -1 to disable. If both score and comments are set, an OR is applied.',
+                'defaultValue' => -1
             ],
             'd' => [
                 'name' => 'Sort By',
@@ -30,9 +38,24 @@ class RedditBridge extends BridgeAbstract
                     'Hot' => 'hot',
                     'Relevance' => 'relevance',
                     'New' => 'new',
-                    'Top' => 'top'
+                    'Top' => 'top',
+                    'Comments' => 'comments',
                 ],
                 'defaultValue' => 'Hot'
+            ],
+            't' => [
+                'name' => 'Time',
+                'type' => 'list',
+                'title' => 'Sort by new, hot, top or relevancy',
+                'values' => [
+                    'All' => 'all',
+                    'Year' => 'year',
+                    'Month' => 'month',
+                    'Week' => 'week',
+                    'Day' => 'day',
+                    'Hour' => 'hour',
+                ],
+                'defaultValue' => 'week'
             ],
             'search' => [
                 'name' => 'Keyword search',
@@ -126,6 +149,7 @@ class RedditBridge extends BridgeAbstract
             $frontend = 'https://old.reddit.com';
         }
         $section = $this->getInput('d');
+        $time = $this->getInput('t');
 
         switch ($this->queriedContext) {
             case 'single':
@@ -147,7 +171,7 @@ class RedditBridge extends BridgeAbstract
         foreach ($subreddits as $subreddit) {
             $version = 'v0.0.2';
             $useragent = "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)";
-            $url = self::createUrl($search, $flareInput, $subreddit, $user, $section, $this->queriedContext);
+            $url = self::createUrl($search, $flareInput, $subreddit, $user, $section, $time, $this->queriedContext);
 
             $response = getContents($url, ['User-Agent: ' . $useragent], [], true);
 
@@ -162,8 +186,20 @@ class RedditBridge extends BridgeAbstract
 
                 $data = $post->data;
 
-                if ($data->score < $this->getInput('score')) {
-                    continue;
+                $min_score = $this->getInput('score');
+                $min_comments = $this->getInput('min_comments');
+                if ($min_score >= 0 && $min_comments >= 0) {
+                    if ($data->num_comments < $min_comments || $data->score < $min_score) {
+                        continue;
+                    }
+                } elseif ($min_score >= 0) {
+                    if ($data->score < $min_score) {
+                        continue;
+                    }
+                } elseif ($min_comments >= 0) {
+                    if ($data->num_comments < $min_comments) {
+                        continue;
+                    }
                 }
 
                 $item = [];
@@ -264,7 +300,7 @@ class RedditBridge extends BridgeAbstract
         });
     }
 
-    public static function createUrl($search, $flareInput, $subreddit, bool $user, $section, $queriedContext): string
+    public static function createUrl($search, $flareInput, $subreddit, bool $user, $section, $time, $queriedContext): string
     {
         if ($search === '') {
             $keywords = '';
@@ -286,6 +322,7 @@ class RedditBridge extends BridgeAbstract
             'q' => $keywords . $flair . ($user ? 'author:' : 'subreddit:') . $name,
             'sort' => $section,
             'include_over_18' => 'on',
+            't' => $time
         ];
         return 'https://old.reddit.com/search.json?' . http_build_query($query);
     }
