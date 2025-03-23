@@ -41,11 +41,15 @@ class CeskaTelevizeBridge extends BridgeAbstract
         foreach ($html->find('#episodeListSection a[data-testid=card]') as $element) {
             $itemContent = $element->find('p[class^=content-]', 0);
             $itemDate = $element->find('div[class^=playTime-] span, [data-testid=episode-item-broadcast] span', 0);
+
+            // Remove special characters and whitespace
+            $cleanDate = preg_replace('/[^0-9.]/', '', $itemDate->plaintext);
+
             $item = [
                 'title'     => $this->fixChars($element->find('h3', 0)->plaintext),
                 'uri'       => self::URI . $element->getAttribute('href'),
                 'content'   => '<img src="' . $element->find('img', 0)->getAttribute('srcset') . '" /><br />' . $this->fixChars($itemContent->plaintext),
-                'timestamp' => $this->getUploadTimeFromString($itemDate->plaintext),
+                'timestamp' => $this->getUploadTimeFromString($cleanDate),
             ];
 
             $this->items[] = $item;
@@ -58,7 +62,7 @@ class CeskaTelevizeBridge extends BridgeAbstract
             return strtotime('today');
         } elseif (strpos($string, 'včera') !== false) {
             return strtotime('yesterday');
-        } elseif (!preg_match('/(\d+).\s(\d+).(\s(\d+))?/', $string, $match)) {
+        } elseif (!preg_match('/(\d+).(\d+).((\d+))?/', $string, $match)) {
             returnServerError('Could not get date from Česká televize string');
         }
 
