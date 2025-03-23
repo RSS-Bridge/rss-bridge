@@ -5,7 +5,7 @@ class BazarakiBridge extends BridgeAbstract
     const NAME = 'Bazaraki Bridge';
     const URI = 'https://bazaraki.com';
     const DESCRIPTION = 'Fetch adverts from Bazaraki, a Cyprus-based classifieds website.';
-    const MAINTAINER = 'No maintainer';
+    const MAINTAINER = 'danwain';
     const PARAMETERS = [
         [
             'url' => [
@@ -19,7 +19,7 @@ class BazarakiBridge extends BridgeAbstract
                 'name'         => 'Limit',
                 'type'         => 'number',
                 'required'     => false,
-                'title'        => 'Enter the number of adverts to fetch.',
+                'title'        => 'Enter the number of adverts to fetch. (max 50)',
                 'exampleValue' => '10',
                 'defaultValue' => 10,
             ]
@@ -28,18 +28,23 @@ class BazarakiBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getInput('url'));
+        $url = $this->getInput('url');
+        if (! str_starts_with($url, 'https://www.bazaraki.com/')) {
+            throw new \Exception('Nope');
+        }
+
+        $html = getSimpleHTMLDOM($url);
 
         $i = 0;
         foreach ($html->find('div.advert') as $element) {
             $i++;
-            if ($i > $this->getInput('limit')) {
+            if ($i > $this->getInput('limit') || $i > 50) {
                 break;
             }
 
             $item = [];
 
-            $item['uri'] = "https://www.bazaraki.com" . $element->find('a.advert__content-title', 0)->href;
+            $item['uri'] = 'https://www.bazaraki.com' . $element->find('a.advert__content-title', 0)->href;
 
             # Get the content
             $advert = getSimpleHTMLDOM($item['uri']);
