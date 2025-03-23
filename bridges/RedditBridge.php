@@ -192,13 +192,11 @@ class RedditBridge extends BridgeAbstract
                     if ($data->num_comments < $min_comments || $data->score < $min_score) {
                         continue;
                     }
-                }
-                else if ($min_score >= 0) {
+                } elseif ($min_score >= 0) {
                     if ($data->score < $min_score) {
                         continue;
                     }
-                }
-                else if ($min_comments >= 0) {
+                } elseif ($min_comments >= 0) {
                     if ($data->num_comments < $min_comments) {
                         continue;
                     }
