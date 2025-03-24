@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></h1>
                 <span class="ModifiedDate">
-            January 26, 2025 at 2:21 AM        </span>
+            March 24, 2025 at 1:12 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/05_XPathAbstract.md" target="_blank">
                 Edit on GitHub            </a>
@@ -175,7 +175,7 @@
 <h3><a id="method-providefeedtitle" href="#method-providefeedtitle" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>provideFeedTitle()</code></h3>
 <p>This method should provide the feed title. Usually the XPath expression defined in <code>XPATH_EXPRESSION_FEED_TITLE</code> is used for extracting the title directly from the page source.</p>
 <h3><a id="method-providefeedicon" href="#method-providefeedicon" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>provideFeedIcon()</code></h3>
-<p>This method should provide the feed title. Usually the XPath expression defined in <code>XPATH_EXPRESSION_FEED_ICON</code> is used for extracting the title directly from the page source.</p>
+<p>This method should provide the URL of the feed’s favicon. Usually the XPath expression defined in <code>XPATH_EXPRESSION_FEED_ICON</code> is used for extracting the title directly from the page source.</p>
 <h3><a id="method-providefeeditems" href="#method-providefeeditems" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>provideFeedItems()</code></h3>
 <p>This method should provide the feed items. Usually the XPath expression defined in <code>XPATH_EXPRESSION_ITEM</code> is used for extracting the items from the page source. All other XPath expressions are applied on a per-item basis, item by item, and only on the item’s contents.</p>
 <h2><a id="methods-for-formatting-and-filtering-feed-item-attributes" href="#methods-for-formatting-and-filtering-feed-item-attributes" class="Permalink" aria-hidden="true" title="Permalink">#</a>Methods for formatting and filtering feed item attributes</h2>
@@ -190,8 +190,8 @@
 <p>Accepts the items author as parameter, processes and returns it. Should return a string.</p>
 <h3><a id="method-formatitemtimestamp" href="#method-formatitemtimestamp" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>formatItemTimestamp()</code></h3>
 <p>Accepts the items creation timestamp as parameter, processes and returns it. Should return a unix timestamp as integer.</p>
-<h3><a id="method-cleanimageurl" href="#method-cleanimageurl" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>cleanImageUrl()</code></h3>
-<p>Method invoked for cleaning feed icon and item image URL’s. Extracts the image URL from the passed parameter, stripping any additional content. Furthermore makes sure that relative image URL’s get transformed to absolute ones.</p>
+<h3><a id="method-cleanmediaurl" href="#method-cleanmediaurl" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>cleanMediaUrl()</code></h3>
+<p>Method invoked for cleaning feed icon, item image and media attachment (like .mp3, .webp) URL’s. Extracts the media URL from the passed parameter, stripping any additional content. Furthermore, makes sure that relative media URL’s get transformed to absolute ones.</p>
 <h3><a id="method-fixencoding" href="#method-fixencoding" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>fixEncoding()</code></h3>
 <p>Only invoked when class constant <code>SETTING_FIX_ENCODING</code> is set to true. It then passes all extracted string values through PHP’s <code>utf8_decode</code> function.</p>
 <h3><a id="method-generateitemid" href="#method-generateitemid" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>generateItemId()</code></h3>
