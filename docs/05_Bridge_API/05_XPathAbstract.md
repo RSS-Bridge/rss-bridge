@@ -99,7 +99,7 @@ This method should return the HTML source as a base for the XPath expressions. U
 This method should provide the feed title. Usually the XPath expression defined in `XPATH_EXPRESSION_FEED_TITLE` is used for extracting the title directly from the page source.
 
 ### Method `provideFeedIcon()`
-This method should provide the feed title. Usually the XPath expression defined in `XPATH_EXPRESSION_FEED_ICON` is used for extracting the title directly from the page source.
+This method should provide the URL of the feed's favicon. Usually the XPath expression defined in `XPATH_EXPRESSION_FEED_ICON` is used for extracting the title directly from the page source.
 
 ### Method `provideFeedItems()`
 This method should provide the feed items. Usually the XPath expression defined in `XPATH_EXPRESSION_ITEM` is used for extracting the items from the page source. All other XPath expressions are applied on a per-item basis, item by item, and only on the item's contents.
@@ -122,8 +122,8 @@ Accepts the items author as parameter, processes and returns it. Should return a
 ### Method `formatItemTimestamp()`
 Accepts the items creation timestamp as parameter, processes and returns it. Should return a unix timestamp as integer.
 
-### Method `cleanImageUrl()`
-Method invoked for cleaning feed icon and item image URL's. Extracts the image URL from the passed parameter, stripping any additional content. Furthermore makes sure that relative image URL's get transformed to absolute ones.
+### Method `cleanMediaUrl()`
+Method invoked for cleaning feed icon, item image and media attachment (like .mp3, .webp) URL's. Extracts the media URL from the passed parameter, stripping any additional content. Furthermore, makes sure that relative media URL's get transformed to absolute ones.
 
 ### Method `fixEncoding()`
 Only invoked when class constant `SETTING_FIX_ENCODING` is set to true. It then passes all extracted string values through PHP's `utf8_decode` function.
