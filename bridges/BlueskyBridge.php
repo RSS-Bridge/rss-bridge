@@ -566,14 +566,14 @@ class BlueskyBridge extends BridgeAbstract
             }
             $title .= ', replying to ' . $replyAuthor;
         }
-        
+
         if (
-            isset($post['post']['embed']) && 
+            isset($post['post']['embed']) &&
             isset($post['post']['embed']['record']) &&
             //if not starter pack, feed or list
-            ($post['post']['embed']['record']['$type'] ?? '') !== "app.bsky.feed.defs#generatorView" &&
-            ($post['post']['embed']['record']['$type'] ?? '') !== "app.bsky.graph.defs#listView" &&
-            ($post['post']['embed']['record']['$type'] ?? '') !== "app.bsky.graph.defs#starterPackViewBasic"
+            ($post['post']['embed']['record']['$type'] ?? '') !== 'app.bsky.feed.defs#generatorView' &&
+            ($post['post']['embed']['record']['$type'] ?? '') !== 'app.bsky.graph.defs#listView' &&
+            ($post['post']['embed']['record']['$type'] ?? '') !== 'app.bsky.graph.defs#starterPackViewBasic'
         ) {
             if (isset($post['post']['embed']['record']['blocked'])) {
                 $quotedAuthor = 'blocked user';
@@ -616,12 +616,12 @@ class BlueskyBridge extends BridgeAbstract
     //Embed for generated feeds and lists
     private function getListFeedDescription(array $record): string
     {
-        $feedViewAvatar = isset($record['avatar']) ? "<img src=\"" . preg_replace('/\/img\/avatar\//', '/img/avatar_thumbnail/', $record['avatar']) . "\">" : "";
+        $feedViewAvatar = isset($record['avatar']) ? '<img src="' . preg_replace('/\/img\/avatar\//', '/img/avatar_thumbnail/', $record['avatar']) . '">' : '';
         $feedViewName = e($record['displayName'] ?? $record['name']);
         $feedViewDescription = e($record['description'] ?? '');
         $authorDisplayName = e($record['creator']['displayName']);
         $authorHandle = e($record['creator']['handle']);
-        $likeCount = isset($record['likeCount']) ? "<br>Liked by " . e($record['likeCount']) . " users" : '';
+        $likeCount = isset($record['likeCount']) ? '<br>Liked by ' . e($record['likeCount']) . ' users' : '';
         preg_match('/\/([^\/]+)$/', $record['uri'], $matches);
         if (($record['purpose'] ?? '') === 'app.bsky.graph.defs#modlist') {
             $typeURL = '/lists/';
