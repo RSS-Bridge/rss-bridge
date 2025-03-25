@@ -240,7 +240,7 @@ abstract class BridgeAbstract
                 if (isset($input[$name])) {
                     $value = $input[$name];
                 } else {
-                    if ($properties['type'] ?? null === 'checkbox') {
+                    if (($properties['type'] ?? null) === 'checkbox') {
                         $value = false;
                     } elseif (isset($properties['defaultValue'])) {
                         $value = $properties['defaultValue'];
