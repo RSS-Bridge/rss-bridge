@@ -10,7 +10,7 @@ class ManyVidsBridge extends BridgeAbstract
     const PARAMETERS = [
         [
             'profile' => [
-                'name' => 'Profil',
+                'name' => 'Profile',
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => '678459/Aziani-Studios',
@@ -19,21 +19,30 @@ class ManyVidsBridge extends BridgeAbstract
         ]
     ];
 
-    private $domCache = null;
+    private ?simple_html_dom $htmlDom = null;
+    private ?string $parsedProfileInput = null;
 
     public function collectData()
     {
         $profile = $this->getInput('profile');
-        if (preg_match('#^(\d+/.*)$#', $profile, $m)) {
-            $profile = $m[1];
-        } elseif (preg_match('#https://www.manyvids.com/Profile/(\d+/\w+)#', $profile, $m)) {
-            $profile = $m[1];
-        } else {
-            throw new \Exception('nope');
+        if (!$profile) {
+            throw new \Exception('No value for \'profile\' was provided.');
         }
 
-        $dom = $this->getHTML($profile);
-        $elements = $dom->find('div[class^="ProfileTabGrid_card__"]');
+        if (preg_match('#^(\d+/.*)$#', $profile, $m)) {
+            $this->parsedProfileInput = $m[1];
+        } elseif (preg_match('#https://(www.)?manyvids.com/Profile/(\d+/.*?)/#', $profile, $m)) {
+            $this->parsedProfileInput = $m[2];
+        } else {
+            throw new \Exception(sprintf('Profile could not be parsed: %s', $profile));
+        }
+
+        $profileUrl = $this->getUri();
+        $url = sprintf('%s?sort=newest', $profileUrl);
+        $opt = [CURLOPT_COOKIE => 'sfwtoggle=false'];
+        $this->htmlDom = getSimpleHTMLDOM($url, [], $opt);
+
+        $elements = $this->htmlDom->find('div[class^="ProfileTabGrid_card__"]');
 
         foreach ($elements as $element) {
             $content = '';
@@ -45,7 +54,7 @@ class ManyVidsBridge extends BridgeAbstract
 
             $linkElement = $element->find('a[href^="/Video/"]', 0);
             if ($linkElement) {
-                $itemUri = $this::URI . $linkElement->getAttribute('href');
+                $itemUri = self::URI . $linkElement->getAttribute('href');
             }
 
             $image = $element->find('img', 0);
@@ -78,18 +87,15 @@ class ManyVidsBridge extends BridgeAbstract
             $this->items[] = [
                 'title' => $title->innertext,
                 'uri' => isset($itemUri) ? $itemUri : null,
-                'content' => $content
+                'content' => $content,
             ];
         }
     }
 
     public function getName()
     {
-        $profile = $this->getInput('profile');
-
-        if ($profile) {
-            $dom = $this->getHTML($profile);
-            $profileNameElement = $dom->find('[class^="ProfileAboutMeUI_stageName__"]', 0);
+        if (!is_null($this->htmlDom)) {
+            $profileNameElement = $this->htmlDom->find('[class^="ProfileAboutMeUI_stageName__"]', 0);
             if (!$profileNameElement) {
                 return parent::getName();
             }
@@ -106,22 +112,10 @@ class ManyVidsBridge extends BridgeAbstract
 
     public function getUri()
     {
-        $profile = $this->getInput('profile');
-        if ($profile) {
-            return sprintf('%s/Profile/%s/Store/Videos', $this::URI, $profile);
+        if (!is_null($this->parsedProfileInput)) {
+            return sprintf('%s/Profile/%s/Store/Videos', self::URI, $this->parsedProfileInput);
         }
 
         return parent::getUri();
-    }
-
-    private function getHTML($profile)
-    {
-        if (is_null($this->domCache)) {
-            $opt = [CURLOPT_COOKIE => 'sfwtoggle=false'];
-            $url = sprintf('https://manyvids.com/Profile/%s/Store/Videos?sort=newest', $profile);
-            $this->domCache = getSimpleHTMLDOM($url, [], $opt);
-        }
-
-        return $this->domCache;
     }
 }
