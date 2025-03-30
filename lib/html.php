@@ -230,7 +230,7 @@ function defaultLinkTo($dom, $url)
  * Parse a srcset HTML attribute value and return size => URL mappings
  * Srcset contains a list of image URLs with associated size specified as size (e.g. 1024w) or scale (e.g. 2x)
  * The web browser should pick the most appropriate image depending on screen size and/or pixel density
- * 
+ *
  * This function takes a srcset string such as the following:
  * header640.png 640w, header960.png 960w, header1024.png 1024w
  *
@@ -240,7 +240,7 @@ function defaultLinkTo($dom, $url)
  *    '960w' => 'header960.png',
  *    '1024w' => 'header1024.png'
  * ]
- * 
+ *
  * @param string $srcset Content of srcset html attribute
  * @param bool $return_largest_url Instead of returning an array, return URL for the largest entry
  * @return array|string Content of srcset attribute as { size => url } array, or largest entry URL if requested
@@ -279,7 +279,7 @@ function parseSrcset($srcset, $return_largest_url = false)
     } else {
         return $entries;
     }
-};
+}
 
 /**
  * Convert lazy-loading images and frames (video embeds) into static elements
