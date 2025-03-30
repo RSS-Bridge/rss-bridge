@@ -66,23 +66,7 @@ abstract class FeedExpander extends BridgeAbstract
             '&raquo;',
             '&rsquo;',
         ];
-        $xmlString = str_replace($problematicStrings, '', $xmlString);
-
-        // Remove extra content at the end of the document, if any (#4485)
-        // First retrieve tag name of root node, which is the first node following <?xml prolog,
-        // Then find the last matching </tag> in xml string and strip anything beyond that.
-        if (preg_match('/(?:<\?xml[^>]*\?>[^<]*<)([^ "\'>]+)/i', $xmlString, $matches) === 1) {
-            $root_node_tag = $matches[1];
-            $last_closing_occurrence = strripos($xmlString, '</' . $root_node_tag);
-            if ($last_closing_occurrence !== false) {
-                $closing_node_end = strpos($xmlString, '>', $last_closing_occurrence);
-                if ($closing_node_end !== false) {
-                    $xmlString = substr($xmlString, 0, $closing_node_end + 1);
-                }
-            }
-        }
-
-        return $xmlString;
+        return str_replace($problematicStrings, '', $xmlString);
     }
 
     public function getURI()
