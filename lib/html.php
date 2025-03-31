@@ -245,7 +245,7 @@ function defaultLinkTo($dom, $url)
  * @param bool $return_largest_url Instead of returning an array, return URL for the largest entry
  * @return array|string Content of srcset attribute as { size => url } array, or largest entry URL if requested
  */
-function parseSrcset($srcset, $return_largest_url = false)
+function parseSrcset(string $srcset, bool $return_largest_url = false)
 {
     // The srcset format is more tricky to parse that it seems:
     //   URLs may contain commas, and space after comma is not mandatory, so the following is valid:
@@ -257,12 +257,14 @@ function parseSrcset($srcset, $return_largest_url = false)
     //     2. Any amount of characters up to the next whitespace (space, tab, newline...): This is the URL
     //     3. A nonnegative number followed by lowercase w, x or h: This is the image size
     //   We parse the srcset entries using a regex to mimick the above parser/tokenizer behavior.
-    preg_match_all('/[\s]*,?[\s]*([^\s]+)\s+([0-9]+[wxh])/', $srcset, $matches);
+    $preg_status = preg_match_all('/[\s]*,?[\s]*([^\s]+)\s+([0-9]+[wxh])/', $srcset, $matches);
     $entries = [];
-    foreach ($matches[1] as $index => $url) {
-        if (array_key_exists($index, $matches[2])) {
-            $size = $matches[2][$index];
-            $entries[$size] = html_entity_decode($url);
+    if ($preg_status !== false && $preg_status > 0) {
+        foreach ($matches[1] as $index => $url) {
+            if (array_key_exists($index, $matches[2])) {
+                $size = $matches[2][$index];
+                $entries[$size] = html_entity_decode($url);
+            }
         }
     }
     if ($return_largest_url) {
