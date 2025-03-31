@@ -58,7 +58,7 @@ abstract class FeedExpander extends BridgeAbstract
     *
     * @return string
     */
-    protected function prepareXml($xmlString)
+    protected function prepareXml(string $xmlString): string
     {
         // Remove problematic escape sequences
         $problematicStrings = [
