@@ -227,6 +227,63 @@ function defaultLinkTo($dom, $url)
 }
 
 /**
+ * Parse a srcset HTML attribute value and return size => URL mappings
+ * Srcset contains a list of image URLs with associated size specified as size (e.g. 1024w) or scale (e.g. 2x)
+ * The web browser should pick the most appropriate image depending on screen size and/or pixel density
+ *
+ * This function takes a srcset string such as the following:
+ * header640.png 640w, header960.png 960w, header1024.png 1024w
+ *
+ * Returns an array such as the following:
+ * [
+ *    '640w' => 'header640.png',
+ *    '960w' => 'header960.png',
+ *    '1024w' => 'header1024.png'
+ * ]
+ *
+ * @param string $srcset Content of srcset html attribute
+ * @param bool $return_largest_url Instead of returning an array, return URL for the largest entry
+ * @return array|string Content of srcset attribute as { size => url } array, or largest entry URL if requested
+ */
+function parseSrcset(string $srcset, bool $return_largest_url = false)
+{
+    // The srcset format is more tricky to parse that it seems:
+    //   URLs may contain commas, and space after comma is not mandatory, so the following is valid:
+    //   image.png?resize=640,640 640w,image.png?resize=960,960 960w,image.png?resize=1024,1024 1024w
+    // Since splitting by space or comma will not work, there is a precise algorithm to parse srcset attribute:
+    //   https://html.spec.whatwg.org/multipage/images.html#parse-a-srcset-attribute
+    //   To summarize, each srcset entry has the following format:
+    //     1. Leading spaces and comma. Zero or more spaces, zero or at most one comma
+    //     2. Any amount of characters up to the next whitespace (space, tab, newline...): This is the URL
+    //     3. A nonnegative number followed by lowercase w, x or h: This is the image size
+    //   We parse the srcset entries using a regex to mimick the above parser/tokenizer behavior.
+    $preg_status = preg_match_all('/[\s]*,?[\s]*([^\s]+)\s+([0-9]+[wxh])/', $srcset, $matches);
+    $entries = [];
+    if ($preg_status !== false && $preg_status > 0) {
+        foreach ($matches[1] as $index => $url) {
+            if (array_key_exists($index, $matches[2])) {
+                $size = $matches[2][$index];
+                $entries[$size] = html_entity_decode($url);
+            }
+        }
+    }
+    if ($return_largest_url) {
+        $largest_image_url = null;
+        $largest_image_size = -1;
+        foreach ($entries as $size => $url) {
+            $size_int = intval(substr($size, 0, strlen($size) - 1));
+            if ($size_int > $largest_image_size) {
+                $largest_image_size = $size_int;
+                $largest_image_url = $url;
+            }
+        }
+        return $largest_image_url;
+    } else {
+        return $entries;
+    }
+}
+
+/**
  * Convert lazy-loading images and frames (video embeds) into static elements
  *
  * This function looks for lazy-loading attributes such as 'data-src' and converts
@@ -244,28 +301,18 @@ function convertLazyLoading($dom)
         $dom = str_get_html($dom);
     }
 
-    // Retrieve image URL from srcset attribute
-    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset
-    // Example: convert "header640.png 640w, header960.png 960w, header1024.png 1024w" to "header1024.png"
-    $srcset_to_src = function ($srcset) {
-        $sources = explode(',', $srcset);
-        $last_entry = trim($sources[array_key_last($sources)]);
-        $url = explode(' ', $last_entry)[0];
-        return $url;
-    };
-
     // Process standalone images, embeds and picture sources
     foreach ($dom->find('img, iframe, source') as $img) {
         if (!empty($img->getAttribute('data-src'))) {
             $img->src = $img->getAttribute('data-src');
         } elseif (!empty($img->getAttribute('data-srcset'))) {
-            $img->src = $srcset_to_src($img->getAttribute('data-srcset'));
+            $img->src = parseSrcset($img->getAttribute('data-srcset'));
         } elseif (!empty($img->getAttribute('data-lazy-src'))) {
             $img->src = $img->getAttribute('data-lazy-src');
         } elseif (!empty($img->getAttribute('data-orig-file'))) {
             $img->src = $img->getAttribute('data-orig-file');
         } elseif (!empty($img->getAttribute('srcset'))) {
-            $img->src = $srcset_to_src($img->getAttribute('srcset'));
+            $img->src = parseSrcset($img->getAttribute('srcset'));
         } else {
             continue; // Proceed to next element without removing attributes
         }
