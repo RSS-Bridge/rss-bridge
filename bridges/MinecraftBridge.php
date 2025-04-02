@@ -7,6 +7,11 @@ class MinecraftBridge extends BridgeAbstract
     const DESCRIPTION = 'Catch up on the latest Minecraft articles';
     const MAINTAINER = 'tillcash';
 
+    public function getIcon()
+    {
+        return 'https://www.minecraft.net/etc.clientlibs/minecraftnet/clientlibs/clientlib-site/resources/favicon.ico';
+    }
+
     public function collectData()
     {
         $json = getContents(
