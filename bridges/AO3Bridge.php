@@ -27,6 +27,13 @@ class AO3Bridge extends BridgeAbstract
                     'Entire work' => 'all',
                 ],
             ],
+            'unique' => [
+                'name' => 'Make separate entries for new fic chapters',
+                'type' => 'checkbox',
+                'required' => false,
+                'title' => 'Make separate entries for new fic chapters',
+                'defaultValue' => 'checked',
+            ],
             'limit' => self::LIMIT,
         ],
         'Bookmarks' => [
@@ -118,7 +125,12 @@ class AO3Bridge extends BridgeAbstract
             $chapters = $element->find('dl dd.chapters', 0);
             // bookmarked series and external works do not have a chapters count
             $chapters = (isset($chapters) ? $chapters->plaintext : 0);
-            $item['uid'] = $item['uri'] . "/$strdate/$chapters";
+            if ($this->getInput('unique')) {
+                $item['uid'] = $item['uri'] . "/$strdate/$chapters";
+            } else {
+                $item['uid'] = $item['uri'];
+            }
+
 
             // Fetch workskin of desired chapter(s) in list
             if ($this->getInput('range') && ($limit == 0 || $count++ < $limit)) {
