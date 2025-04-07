@@ -42,16 +42,20 @@ class TikTokBridge extends BridgeAbstract
             $parsedUrl = parse_url($href);
             $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
-            $image = $video->find('video', 0)->poster;
-            $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
+            $videoEmbedResponse = getContents('https://tiktok.com/oembed?url=' . $url);
+            $videoEmbedData = json_decode($videoEmbedResponse);
+
+            $title = $videoEmbedData->title;
+            $image = $videoEmbedData->thumbnail_url;
 
             $enclosures = [$image, $authorProfilePicture];
 
             $item['uri'] = $url;
-            $item['title'] = 'Video';
-            $item['author'] = '@' . $author;
+            $item['title'] = $title;
+            $item['author'] = '@' . $videoEmbedData->author_unique_id;
             $item['enclosures'] = $enclosures;
             $item['content'] = <<<EOD
+<p>$title</p>
 <a href="{$url}"><img src="{$image}"/></a>
 <p>{$views} views<p><br/>
 EOD;
