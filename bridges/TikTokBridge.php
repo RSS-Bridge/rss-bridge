@@ -47,6 +47,7 @@ class TikTokBridge extends BridgeAbstract
 
             $title = $videoEmbedData->title;
             $image = $videoEmbedData->thumbnail_url;
+            $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
 
             $enclosures = [$image, $authorProfilePicture];
 
