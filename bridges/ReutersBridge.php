@@ -5,7 +5,7 @@ class ReutersBridge extends BridgeAbstract
     const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
     const NAME = 'Reuters Bridge';
     const URI = 'https://www.reuters.com';
-    const CACHE_TIMEOUT = 1800; // 30min
+    const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = 'Returns news from Reuters';
 
     private $feedName = self::NAME;
@@ -141,6 +141,98 @@ class ReutersBridge extends BridgeAbstract
         'politics',
         'wire'
     ];
+
+    public function collectData()
+    {
+        $endpoint = $this->getSectionEndpoint();
+        $url = $this->getAPIURL($endpoint, 'section');
+        $json = getContents($url);
+        $data = Json::decode($json);
+
+        $stories = [];
+        $section_name = '';
+        if ($this->useWireAPI) {
+            $reuters_wireitems = $data['wireitems'];
+            $section_name = $data['wire_name'];
+            $processedData = $this->processData($reuters_wireitems);
+
+            // Merge all articles from Editor's Highlight section into existing array of templates.
+            $top_section = reset($processedData);
+            if ($top_section['type'] == 'headlines') {
+                $top_section = array_shift($processedData);
+                $articles = $top_section['headlines'];
+                $processedData = array_merge($articles, $processedData);
+            }
+            $stories = $processedData;
+        } else {
+            $section_name = $data['result']['section']['name'];
+            if (isset($data['arcResult']['articles'])) {
+                $stories = $data['arcResult']['articles'];
+            } else {
+                $stories = $data['result']['articles'];
+            }
+        }
+        $this->feedName = $section_name . ' | Reuters';
+
+        usort($stories, function ($story1, $story2) {
+            return $story2['published_time'] <=> $story1['published_time'];
+        });
+
+        $stories = array_slice($stories, 0, 20);
+
+        foreach ($stories as $story) {
+            $uid = '';
+            $author = '';
+            $category = [];
+            $content = $story['description'];
+            $title = '';
+            $timestamp = $story['published_time'];
+            $url = '';
+            $article_uri = '';
+            $source_type = '';
+            if ($this->useWireAPI) {
+                $uid = $story['story']['usn'];
+                $article_uri = $story['template_action']['api_path'];
+                $title = $story['story']['hed'];
+                $url = $story['template_action']['url'];
+            } else {
+                $uid = $story['id'];
+                $url = self::URI . $story['canonical_url'];
+                $title = $story['title'];
+                $article_uri = $story['canonical_url'];
+                $source_type = $story['source']['name'];
+            }
+
+            // Some article cause unexpected behaviour like redirect to another site not API.
+            // Attempt to check article source type to avoid this.
+            if (!$this->useWireAPI && $source_type != 'Package') { // Only Reuters PF api have this, Wire don't.
+                $author = $this->handleAuthorName($story['authors'] ?? []);
+                $timestamp = $story['published_time'];
+                $image_placeholder = '';
+                if (isset($story['thumbnail'])) {
+                    $image_placeholder = $this->handleImage([$story['thumbnail']]);
+                }
+                $content = $story['description'] . $image_placeholder;
+                if (isset($story['primary_section']['name'])) {
+                    $category = [$story['primary_section']['name']];
+                } else {
+                    $category = [];
+                }
+            } else {
+                $content_detail = $this->getArticle($article_uri);
+                $description = $content_detail['content'];
+                $description = defaultLinkTo($description, $this->getURI());
+
+                $author = $content_detail['author'];
+                $images = $content_detail['images'];
+                $category = $content_detail['category'];
+                //$content = "$description  $images";
+                //$timestamp = $content_detail['published_at'];
+            }
+
+            $this->addStories($title, $content, $timestamp, $author, $url, $category);
+        }
+    }
 
     /**
      * Takes in data from Reuters Wire API and
@@ -280,6 +372,14 @@ class ReutersBridge extends BridgeAbstract
 
     private function getArticle($feed_uri, $is_article_uid = false)
     {
+        // Temp fix to try to avoid reuters anti-bot
+        return [
+            'content' => '',
+            'author' => '',
+            'category' => '',
+            'images' => '',
+            'published_at' => ''
+        ];
         // This will make another request to API to get full detail of article and author's name.
         $url = $this->getAPIURL($feed_uri, 'article', $is_article_uid);
 
@@ -492,91 +592,5 @@ EOD;
     public function getName()
     {
         return $this->feedName;
-    }
-
-    public function collectData()
-    {
-        $endpoint = $this->getSectionEndpoint();
-        $url = $this->getAPIURL($endpoint, 'section');
-        $json = getContents($url);
-        $data = Json::decode($json);
-
-        $stories = [];
-        $section_name = '';
-        if ($this->useWireAPI) {
-            $reuters_wireitems = $data['wireitems'];
-            $section_name = $data['wire_name'];
-            $processedData = $this->processData($reuters_wireitems);
-
-            // Merge all articles from Editor's Highlight section into existing array of templates.
-            $top_section = reset($processedData);
-            if ($top_section['type'] == 'headlines') {
-                $top_section = array_shift($processedData);
-                $articles = $top_section['headlines'];
-                $processedData = array_merge($articles, $processedData);
-            }
-            $stories = $processedData;
-        } else {
-            $section_name = $data['result']['section']['name'];
-            if (isset($data['arcResult']['articles'])) {
-                $stories = $data['arcResult']['articles'];
-            } else {
-                $stories = $data['result']['articles'];
-            }
-        }
-        $this->feedName = $section_name . ' | Reuters';
-
-        foreach ($stories as $story) {
-            $uid = '';
-            $author = '';
-            $category = [];
-            $content = '';
-            $title = '';
-            $timestamp = '';
-            $url = '';
-            $article_uri = '';
-            $source_type = '';
-            if ($this->useWireAPI) {
-                $uid = $story['story']['usn'];
-                $article_uri = $story['template_action']['api_path'];
-                $title = $story['story']['hed'];
-                $url = $story['template_action']['url'];
-            } else {
-                $uid = $story['id'];
-                $url = self::URI . $story['canonical_url'];
-                $title = $story['title'];
-                $article_uri = $story['canonical_url'];
-                $source_type = $story['source']['name'];
-            }
-
-            // Some article cause unexpected behaviour like redirect to another site not API.
-            // Attempt to check article source type to avoid this.
-            if (!$this->useWireAPI && $source_type != 'Package') { // Only Reuters PF api have this, Wire don't.
-                $author = $this->handleAuthorName($story['authors'] ?? []);
-                $timestamp = $story['published_time'];
-                $image_placeholder = '';
-                if (isset($story['thumbnail'])) {
-                    $image_placeholder = $this->handleImage([$story['thumbnail']]);
-                }
-                $content = $story['description'] . $image_placeholder;
-                if (isset($story['primary_section']['name'])) {
-                    $category = [$story['primary_section']['name']];
-                } else {
-                    $category = [];
-                }
-            } else {
-                $content_detail = $this->getArticle($article_uri);
-                $description = $content_detail['content'];
-                $description = defaultLinkTo($description, $this->getURI());
-
-                $author = $content_detail['author'];
-                $images = $content_detail['images'];
-                $category = $content_detail['category'];
-                $content = "$description  $images";
-                $timestamp = $content_detail['published_at'];
-            }
-
-            $this->addStories($title, $content, $timestamp, $author, $url, $category);
-        }
     }
 }
