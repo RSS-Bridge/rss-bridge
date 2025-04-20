@@ -42,7 +42,7 @@ class TikTokBridge extends BridgeAbstract
             $parsedUrl = parse_url($href);
             $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
-            $videoEmbedResponse = getContents('https://tiktok.com/oembed?url=' . $url);
+            $videoEmbedResponse = getContents('https://www.tiktok.com/oembed?url=' . $url);
             $videoEmbedData = json_decode($videoEmbedResponse);
 
             $title = $videoEmbedData->title;
