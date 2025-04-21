@@ -400,7 +400,9 @@ EOD;
 
     private function normalizeUsername()
     {
-        return ltrim($this->getInput('username'), '@');
+        $username = trim($this->getInput('username'));
+
+        return ltrim($username, '@');
     }
 
     public function detectParameters($url)
