@@ -83,7 +83,7 @@ class AppleAppStoreBridge extends BridgeAbstract
         $platform_param = ($platform === 'mac') ? 'mac' : $platform;
 
         return sprintf(
-            'https://amp-api.apps.apple.com/v1/catalog/%s/apps/%s?platform=%s&extend=versionHistory',
+            'https://amp-api-edge.apps.apple.com/v1/catalog/%s/apps/%s?platform=%s&extend=versionHistory',
             $country,
             $id,
             $platform_param
