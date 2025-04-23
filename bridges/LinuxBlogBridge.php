@@ -59,6 +59,6 @@ class LinuxBlogBridge extends BridgeAbstract
             return 'Content Not Found';
         }
 
-        return $article;
+        return $article->innertext;
     }
 }
