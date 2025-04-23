@@ -7,12 +7,12 @@ class LinuxBlogBridge extends BridgeAbstract
     const DESCRIPTION = 'Retrieve recent articles';
     const MAINTAINER = 'tillcash';
     const CACHE_TIMEOUT = 60 * 60 * 6; // 6 hours
-    const MAX_ARTICLES = 10;
+    const MAX_ARTICLES = 5;
 
     public function collectData()
     {
-        $dom = getSimpleHTMLDOM(self::URI);
         $count = 0;
+        $dom = getSimpleHTMLDOM(self::URI);
         $articles = $dom->find('ul.display-posts-listing li.listing-item');
 
         if (!$articles) {
@@ -30,9 +30,9 @@ class LinuxBlogBridge extends BridgeAbstract
                 continue;
             }
 
+            $timestamp = null;
             $url = $element->href;
             $date = $article->find('span.date', 0);
-            $timestamp = null;
 
             if ($date && $date->plaintext) {
                 $timestamp = strtotime($date->plaintext . ' 00:00:00 GMT');
