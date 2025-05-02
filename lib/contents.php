@@ -64,19 +64,7 @@ function getContents(
         }
     }
 
-    // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
-    $defaultHttpHeaders = [
-        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language' => 'en-US,en;q=0.5',
-        'Upgrade-Insecure-Requests' => '1',
-        'Sec-Fetch-Dest' => 'document',
-        'Sec-Fetch-Mode' => 'navigate',
-        'Sec-Fetch-Site' => 'none',
-        'Sec-Fetch-User' => '?1',
-        'TE' => 'trailers',
-    ];
-
-    $config['headers'] = array_merge($defaultHttpHeaders, $httpHeadersNormalized);
+    $config['headers'] = $httpHeadersNormalized;
 
     $maxFileSize = Configuration::getConfig('http', 'max_filesize');
     if ($maxFileSize) {

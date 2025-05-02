@@ -119,7 +119,9 @@ Default network timeout.
 
 ### useragent
 
-Default user agent.
+Overrides the user agent value. Note that the default value, together with a set of other detection-preventing options is set
+automatically by the [libcurl-impersonate](https://github.com/lexiforest/curl-impersonate), which is used by the default Docker container distributed together with RSS-Bridge. Use only if you know what you're doing, otherwise you may stop libcurl-impersonate
+from doing its job impersonating real browser.
 
 ## Authentication
 
