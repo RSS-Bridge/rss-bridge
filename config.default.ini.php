@@ -53,7 +53,10 @@ timeout = 5
 retries = 1
 
 ; Curl user agent
-useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
+; This is already set by curl-impersonate, which comes included as default 
+; in RSS-Bridge docker container. Use only if you know what you're doing.
+; For reference, see https://github.com/lexiforest/curl-impersonate/tree/main/docs
+;useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
 
 ; Max http response size in MB
 max_filesize = 20
