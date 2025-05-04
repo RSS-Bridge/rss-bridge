@@ -21,6 +21,8 @@ class TikTokBridge extends BridgeAbstract
             'context' => 'By user', 'username' => '@tiktok'
         ]
     ];
+    const OEMBED_RETRY_COUNT = 20;
+    const OEMBED_RETRY_DELAY = 0.1;
 
     const CACHE_TIMEOUT = 900; // 15 minutes
 
@@ -42,7 +44,19 @@ class TikTokBridge extends BridgeAbstract
             $parsedUrl = parse_url($href);
             $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
-            $videoEmbedResponse = getContents('https://www.tiktok.com/oembed?url=' . $url);
+            // Sometimes the API fails to return data for a second, so try a few times
+            $attempts = 0;
+	        do {
+                try {
+                    // Fetch the video embed data from the OEmbed API
+                    $videoEmbedResponse = getContents('https://www.tiktok.com/oembed?url=' . $url);
+                } catch (Exception $e) {
+                    $attempts++;
+                    sleep($OEMBED_RETRY_DELAY);
+                    continue;
+                }
+                break;
+            } while($attempts < $OEMBED_RETRY_COUNT);
             $videoEmbedData = json_decode($videoEmbedResponse);
 
             $title = $videoEmbedData->title;
