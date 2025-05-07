@@ -22,19 +22,9 @@ class FinanzflussBridge extends BridgeAbstract
             $domarticle = getSimpleHTMLDOM($url);
             $content = $domarticle->find('div.content', 0);
 
-            //get header-image and set absolute src
+            //get header-image
             $headerimage = $domarticle->find('div.article-header-image', 0);
             $headerimageimg = $headerimage->find('img[src]', 0);
-            $src = $headerimageimg->src;
-            $headerimageimg->src = $baseurl . $src;
-            $headerimageimg->srcset = $baseurl . $src;
-
-            //set absolute src for all img
-            foreach ($content->find('img[src]') as $img) {
-                $src = $img->src;
-                $img->src = $baseurl . $src;
-                $img->srcset = $baseurl . $src;
-            }
 
             //remove unwanted stuff
             foreach ($content->find('div.newsletter-signup') as $element) {
