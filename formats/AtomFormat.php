@@ -72,10 +72,9 @@ class AtomFormat extends FormatAbstract
         $feed->appendChild($id);
         $id->appendChild($document->createTextNode($feedUrl));
 
-        $feedTimestamp = gmdate(DATE_ATOM, $this->lastModified);
         $updated = $document->createElement('updated');
         $feed->appendChild($updated);
-        $updated->appendChild($document->createTextNode($feedTimestamp));
+        $updated->appendChild($document->createTextNode(gmdate(DATE_ATOM, $this->lastModified)));
 
         // since we can't guarantee that all items have an author,
         // a global feed author is mandatory
@@ -108,10 +107,6 @@ class AtomFormat extends FormatAbstract
                 $entryID = 'urn:sha1:' . hash('sha1', $entryTitle . $entryContent);
             }
 
-            if (empty($entryTimestamp)) {
-                $entryTimestamp = $this->lastModified;
-            }
-
             if (empty($entryTitle)) {
                 $entryTitle = str_replace("\n", ' ', strip_tags($entryContent));
                 if (strlen($entryTitle) > 140) {
@@ -132,14 +127,17 @@ class AtomFormat extends FormatAbstract
             $title->setAttribute('type', 'html');
             $title->appendChild($document->createTextNode($entryTitle));
 
-            $entryTimestamp = gmdate(\DATE_ATOM, $entryTimestamp);
-            $published = $document->createElement('published');
-            $entry->appendChild($published);
-            $published->appendChild($document->createTextNode($entryTimestamp));
+            if ($entryTimestamp) {
+                $timestamp = gmdate(\DATE_ATOM, $entryTimestamp);
 
-            $updated = $document->createElement('updated');
-            $entry->appendChild($updated);
-            $updated->appendChild($document->createTextNode($entryTimestamp));
+                $published = $document->createElement('published');
+                $entry->appendChild($published);
+                $published->appendChild($document->createTextNode($timestamp));
+
+                $updated = $document->createElement('updated');
+                $entry->appendChild($updated);
+                $updated->appendChild($document->createTextNode($timestamp));
+            }
 
             $id = $document->createElement('id');
             $entry->appendChild($id);
