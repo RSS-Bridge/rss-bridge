@@ -302,11 +302,10 @@ class RedditBridge extends BridgeAbstract
 
     public static function createUrl($search, $flareInput, $subreddit, bool $user, $section, $time, $queriedContext): string
     {
-        if ($search === '') {
-            $keywords = '';
-        } else {
-            $keywords = $search;
-            $keywords = str_replace([',', ' '], ' ', $keywords);
+        $keywords = '';
+
+        if ($search) {
+            $keywords = str_replace([',', ' '], ' ', $search);
             $keywords = $keywords . ' ';
         }
 
