@@ -35,7 +35,7 @@ class GoComicsBridge extends BridgeAbstract
         for ($i = 0; $i < $this->getInput('limit'); $i++) {
             $html = getSimpleHTMLDOM($link);
             // get json data from the first page
-            $json = $html->find('div.ComicViewer_comicViewer__comic__oftX6 script[type="application/ld+json"]', 0)->innertext;
+            $json = $html->find('div[class^="ShowComicViewer_showComicViewer__comic__"] script[type="application/ld+json"]', 0)->innertext;
             $data = json_decode($json, false);
 
             $item = [];
@@ -60,7 +60,7 @@ class GoComicsBridge extends BridgeAbstract
             $item['timestamp'] = DateTime::createFromFormat('F j, Y', $date)->setTime(0, 0, 0)->getTimestamp();
             $item['content'] = '<img src="' . $imagelink . '" />';
 
-            $link = rtrim(self::URI, '/') . $html->find('.Controls_controls__button_previous__P4LhX', 0)->href;
+            $link = rtrim(self::URI, '/') . $html->find('a[class*="ComicNavigation_controls__button_previous__"]', 0)->href;
             $this->items[] = $item;
         }
     }
