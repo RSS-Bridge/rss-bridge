@@ -52,8 +52,12 @@ $container['logger'] = function () {
     } else {
         $logger->addHandler(new ErrorLogHandler(Logger::INFO));
     }
-    // Uncomment this for info logging to fs
-    // $logger->addHandler(new StreamHandler('/tmp/rss-bridge.txt', Logger::INFO));
+    $path  = Configuration::getConfig('system', 'log_file_path');
+    $level = Configuration::getConfig('system', 'log_file_level');
+    if ($path && $level) {
+        $level = array_flip(Logger::LEVEL_NAMES)[strtoupper($level)];
+        $logger->addHandler(new StreamHandler($path, $level));
+    }
 
     // Uncomment this for debug logging to fs
     // $logger->addHandler(new StreamHandler('/tmp/rss-bridge-debug.txt', Logger::DEBUG));
