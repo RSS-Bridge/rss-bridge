@@ -15,8 +15,8 @@ class AllegroBridge extends BridgeAbstract
         ],
         'cookie' => [
             'name' => 'The complete cookie value',
-            'title' => 'Paste the value of the cookie value from your browser if you want to prevent Allegro imposing rate limits',
-            'required' => false,
+            'title' => 'Paste the cookie value from your browser, otherwise 403 gets returned',
+            'required' => true,
         ],
         'includeSponsoredOffers' => [
             'type' => 'checkbox',
@@ -65,93 +65,56 @@ class AllegroBridge extends BridgeAbstract
         $url = preg_replace('/([?&])order=[^&]+(&|$)/', '$1', $this->getInput('url'));
         $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'order=n';
 
-        $opts = [];
+        $html = getContents($url, [], [CURLOPT_COOKIE => $this->getInput('cookie')]);
 
-        // If a cookie is provided
-        if ($cookie = $this->getInput('cookie')) {
-            $opts[CURLOPT_COOKIE] = $cookie;
+        $storeData = null;
+        if (preg_match('/<script[^>]*>\s*(\{\s*?"__listing_StoreState".*\})\s*<\/script>/i', $html, $match)) {
+            $data = json_decode($match[1], true);
+            $storeData = $data['__listing_StoreState'] ?? null;
         }
 
-        $html = getSimpleHTMLDOM($url, [], $opts);
+        foreach ($storeData['items']['elements'] as $elements) {
+            if (!array_key_exists('offerId', $elements)) {
+                continue;
+            }
+            if (!$this->getInput('includeSponsoredOffers') && $elements['isSponsored']) {
+                continue;
+            }
+            if (!$this->getInput('includePromotedOffers') && $elements['promoted']) {
+                continue;
+            }
 
-        # if no results found
-        if ($html->find('.mzmg_6m.m9qz_yo._6a66d_-fJr5')) {
-            return;
-        }
-
-        $results = $html->find('article[data-analytics-view-custom-context="REGULAR"]');
-
-        if ($this->getInput('includeSponsoredOffers')) {
-            $results = array_merge($results, $html->find('article[data-analytics-view-custom-context="SPONSORED"]'));
-        }
-
-        if ($this->getInput('includePromotedOffers')) {
-            $results = array_merge($results, $html->find('article[data-analytics-view-custom-context="PROMOTED"]'));
-        }
-
-        foreach ($results as $post) {
             $item = [];
+            $item['uid'] = $elements['offerId'];
+            $item['uri'] = $elements['url'];
+            $item['title'] = $elements['alt'];
 
-            $item['uid'] = $post->{'data-analytics-view-value'};
-
-            $item_link = $post->find('a[href*="' . $item['uid'] . '"], a[href*="allegrolokalnie"]', 0);
-
-            $item['uri'] = $item_link->href;
-
-            $item['title'] = $item_link->find('img', 0)->alt;
-
-            $image = $item_link->find('img', 0)->{'data-src'} ?: $item_link->find('img', 0)->src ?? false;
-
+            $image = $elements['photos'][0]['medium'];
             if ($image) {
                 $item['enclosures'] = [$image . '#.image'];
             }
 
-            $price = $post->{'data-analytics-view-json-custom-price'};
-            if ($price) {
-                $priceDecoded = json_decode(html_entity_decode($price));
-                $price = $priceDecoded->amount . ' ' . $priceDecoded->currency;
+            $price = $elements['price']['mainPrice']['amount'];
+            $currency = $elements['price']['mainPrice']['currency'];
+            $sellerType = $elements['seller']['title'];
+
+            $item['categories'] = [$sellerType];
+
+            $description = '';
+            foreach ($elements['parameters'] as $parameter) {
+                $item['categories'] = array_merge($item['categories'], $parameter['values']);
+                $description .= '<dt>' . $parameter['name'] . ': ' . implode(',', $parameter['values']) . '</dt>';
             }
 
-            $descriptionPatterns = ['/<\s*dt[^>]*>\b/', '/<\/dt>/', '/<\s*dd[^>]*>\b/', '/<\/dd>/'];
-            $descriptionReplacements = ['<span>', ':</span> ', '<strong>', '&emsp;</strong> '];
-            $description = $post->find('.m7er_k4.mpof_5r.mpof_z0_s', 0)->innertext;
-            $descriptionPretty = preg_replace($descriptionPatterns, $descriptionReplacements, $description);
-
-            $pricingExtraInfo = array_filter($post->find('.mqu1_g3.mgn2_12'), function ($node) {
-                return empty($node->find('.mvrt_0'));
-            });
-
-            $pricingExtraInfo = $pricingExtraInfo[0]->plaintext ?? '';
-
-            $offerExtraInfo = array_map(function ($node) {
-                return str_contains($node->plaintext, 'zapłać później') ? '' : $node->outertext;
-            }, $post->find('div.mpof_ki.mwdn_1.mj7a_4.mgn2_12'));
-
-            $isSmart = $post->find('img[alt="Smart!"]', 0) ?? false;
-            if ($isSmart) {
-                $pricingExtraInfo .= $isSmart->outertext;
-            }
-
-            $item['categories'] = [];
-            $parameters = $post->find('dd');
-            foreach ($parameters as $parameter) {
-                if (in_array(strtolower($parameter->innertext), ['brak', 'nie'])) {
-                    continue;
-                }
-
-                $item['categories'][] = $parameter->innertext;
-            }
-
-            $item['content'] = $descriptionPretty
-                . '<div><strong>'
-                . $price
-                . '</strong></div><div>'
-                . implode('</div><div>', $offerExtraInfo)
-                . '</div><dl>'
-                . $pricingExtraInfo
+            $item['content'] = '<div><strong>'
+                . $price . ' ' . $currency
+                . '</strong></div><dl><dt>'
+                . $sellerType . '</dt>'
+                . $description
                 . '</dl><hr>';
 
             $this->items[] = $item;
         }
     }
 }
+
