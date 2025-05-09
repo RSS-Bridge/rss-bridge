@@ -108,15 +108,13 @@ class InstagramBridge extends BridgeAbstract
 
         if (!$pk) {
             $data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
-            foreach (json_decode($data)->users as $user) {
-                if (strtolower($user->user->username) === strtolower($username)) {
-                    $pk = $user->user->pk;
+            if (!$data) {
+                foreach (json_decode($data)->users as $user) {
+                    if (strtolower($user->user->username) === strtolower($username)) {
+                        $pk = $user->user->pk;
+                    }
                 }
             }
-            if (!$pk) {
-                returnServerError('Unable to find username in search result.');
-            }
-            $this->cache->set($cacheKey, $pk);
         }
         return $pk;
     }
@@ -284,33 +282,22 @@ class InstagramBridge extends BridgeAbstract
         if (!is_null($this->getInput('u'))) {
             try {
                 $userId = $this->getInstagramUserId($this->getInput('u'));
-                $data = $this->getContents(self::URI .
+
+                // If the Userid is not null, try to load the data from the graphql
+                if (!$userId) {
+                    $data = $this->getContents(self::URI .
                                 'graphql/query/?query_hash=' .
                                  self::USER_QUERY_HASH .
                                  '&variables={"id"%3A"' .
                                 $userId .
                                 '"%2C"first"%3A10}');
+                } else {
+                    // In case we did not get the UserId then we must go back to the fallback mode
+                    $data = $this->getInstagramJSONFallback();
+                }
             } catch (HttpException $e) {
-                // If loading the data directly failed, we fall back to the "/embed" data loading
-                // We are in the fallback mode : set a booolean to handle this specific case while collecting the content
-                $this->fallbackMode = true;
-                // Get the HTML code of the profile embed page, and extract the JSON of it
-                $username = $this->getInput('u');
-                // Load the content using the integrated function to use helping headers
-                $htmlString = $this->getContents(self::URI . $username . '/embed/');
-                // Load the String as an SimpleHTMLDom Object
-                $html = new simple_html_dom();
-                $html->load($htmlString);
-                // Find the <script> tag containing the JSON content
-                $jsCode = $html->find('body', 0)->find('script', 3)->innertext;
-
-                // Extract the content needed by our bridge of the whole Javascript content
-                $regex = '#"contextJSON":"(.*)"}\]\],\["NavigationMetrics"#m';
-                preg_match($regex, $jsCode, $matches);
-                $jsVariable = $matches[1];
-                $data = stripcslashes($jsVariable);
-                // stripcslashes remove Javascript unicode escaping : add it back to the string so json_decode can handle it
-                $data = preg_replace('/(?<!\\\\)u[0-9A-Fa-f]{4}/', '\\\\$0', $data);
+                // Even if the UserId is not nul, the graphql request could go wrong, and then we should try to use the fallback mode
+                $data = $this->getInstagramJSONFallback();
             }
             return json_decode($data);
         } elseif (!is_null($this->getInput('h'))) {
@@ -332,6 +319,31 @@ class InstagramBridge extends BridgeAbstract
             }
             return null;
         }
+    }
+
+    protected function getInstagramJSONFallback()
+    {
+        // If loading the data directly failed, we fall back to the "/embed" data loading
+        // We are in the fallback mode : set a booolean to handle this specific case while collecting the content
+        $this->fallbackMode = true;
+        // Get the HTML code of the profile embed page, and extract the JSON of it
+        $username = $this->getInput('u');
+        // Load the content using the integrated function to use helping headers
+        $htmlString = $this->getContents(self::URI . $username . '/embed/');
+        // Load the String as an SimpleHTMLDom Object
+        $html = new simple_html_dom();
+        $html->load($htmlString);
+        // Find the <script> tag containing the JSON content
+        $jsCode = $html->find('body', 0)->find('script', 3)->innertext;
+
+        // Extract the content needed by our bridge of the whole Javascript content
+        $regex = '#"contextJSON":"(.*)"}\]\],\["NavigationMetrics"#m';
+        preg_match($regex, $jsCode, $matches);
+        $jsVariable = $matches[1];
+        $data = stripcslashes($jsVariable);
+        // stripcslashes remove Javascript unicode escaping : add it back to the string so json_decode can handle it
+        $data = preg_replace('/(?<!\\\\)u[0-9A-Fa-f]{4}/', '\\\\$0', $data);
+        return $data;
     }
 
     public function getName()
