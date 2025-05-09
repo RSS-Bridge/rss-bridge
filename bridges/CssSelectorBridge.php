@@ -232,8 +232,10 @@ class CssSelectorBridge extends BridgeAbstract
                     continue;
                 }
             }
-            $item['uri'] = $link->href;
-            $item['title'] = $link->plaintext;
+
+            $item['uri'] = html_entity_decode($link->href);
+            $item['title'] = html_entity_decode($link->plaintext);
+
             if (isset($item['content'])) {
                 $item['content'] = convertLazyLoading($item['content']);
                 $item['content'] = defaultLinkTo($item['content'], $item['uri']);
