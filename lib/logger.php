@@ -79,6 +79,15 @@ final class SimpleLogger implements Logger
             }
         }
 
+        if (isset($context['e'])) {
+            /** @var \Throwable $e */
+            $e = $context['e'];
+
+            if ($e instanceof RateLimitException) {
+                return;
+            }
+        }
+
         foreach ($this->handlers as $handler) {
             $handler([
                 'name'          => $this->name,
