@@ -2,7 +2,7 @@
 
 class LinuxBlogBridge extends BridgeAbstract
 {
-    const NAME = 'LinuxBlog.in';
+    const NAME = 'LinuxBlog.io';
     const URI = 'https://linuxblog.io';
     const DESCRIPTION = 'Retrieve recent articles';
     const MAINTAINER = 'tillcash';
