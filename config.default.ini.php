@@ -31,6 +31,10 @@ timezone = "UTC"
 ; Display a system message to users.
 ;message = "Hello world"
 
+; Where to store logs and at which level (debug, info, warning, error)
+;log_file_path = "/tmp/rss-bridge.log"
+;log_file_level = "info"
+
 ; Whether to enable debug mode.
 enable_debug_mode = false
 
