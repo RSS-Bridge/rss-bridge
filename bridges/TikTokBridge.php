@@ -21,6 +21,8 @@ class TikTokBridge extends BridgeAbstract
             'context' => 'By user', 'username' => '@tiktok'
         ]
     ];
+    const OEMBED_RETRY_COUNT = 20;
+    const OEMBED_RETRY_DELAY = 0.1;
 
     const CACHE_TIMEOUT = 900; // 15 minutes
 
@@ -42,16 +44,33 @@ class TikTokBridge extends BridgeAbstract
             $parsedUrl = parse_url($href);
             $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
-            $image = $video->find('video', 0)->poster;
+            // Sometimes the API fails to return data for a second, so try a few times
+            $attempts = 0;
+	        do {
+                try {
+                    // Fetch the video embed data from the OEmbed API
+                    $videoEmbedResponse = getContents('https://www.tiktok.com/oembed?url=' . $url);
+                } catch (Exception $e) {
+                    $attempts++;
+                    sleep($OEMBED_RETRY_DELAY);
+                    continue;
+                }
+                break;
+            } while($attempts < $OEMBED_RETRY_COUNT);
+            $videoEmbedData = json_decode($videoEmbedResponse);
+
+            $title = $videoEmbedData->title;
+            $image = $videoEmbedData->thumbnail_url;
             $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
 
             $enclosures = [$image, $authorProfilePicture];
 
             $item['uri'] = $url;
-            $item['title'] = 'Video';
-            $item['author'] = '@' . $author;
+            $item['title'] = $title;
+            $item['author'] = '@' . $videoEmbedData->author_unique_id;
             $item['enclosures'] = $enclosures;
             $item['content'] = <<<EOD
+<p>$title</p>
 <a href="{$url}"><img src="{$image}"/></a>
 <p>{$views} views<p><br/>
 EOD;
