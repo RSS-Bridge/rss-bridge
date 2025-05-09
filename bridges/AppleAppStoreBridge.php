@@ -52,120 +52,183 @@ class AppleAppStoreBridge extends BridgeAbstract
             ],
             'defaultValue'  => 'US',
         ],
+        'debug' => [
+            'name' => 'Debug Mode',
+            'type' => 'checkbox',
+            'defaultValue' => false
+        ]
     ]];
 
     const PLATFORM_MAPPING = [
-        'iphone'    => 'ios',
-        'ipad'  => 'ios',
+        'iphone' => 'ios',
+        'ipad' => 'ios',
+        'mac' => 'osx'
     ];
 
-    private function makeHtmlUrl($id, $country)
+    private $name;
+
+    private function makeHtmlUrl()
     {
-        return 'https://apps.apple.com/' . $country . '/app/id' . $id;
+        $id = $this->getInput('id');
+        $country = $this->getInput('country');
+        return sprintf('https://apps.apple.com/%s/app/id%s', $country, $id);
     }
 
-    private function makeJsonUrl($id, $platform, $country)
-    {
-        return "https://amp-api.apps.apple.com/v1/catalog/$country/apps/$id?platform=$platform&extend=versionHistory";
-    }
-
-    public function getName()
-    {
-        if (isset($this->name)) {
-            return $this->name . ' - AppStore Updates';
-        }
-
-        return parent::getName();
-    }
-
-    /**
-     * In case of some platforms, the data is present in the initial response
-     */
-    private function getDataFromShoebox($id, $platform, $country)
-    {
-        $uri = $this->makeHtmlUrl($id, $country);
-        $html = getSimpleHTMLDOMCached($uri, 3600);
-        $script = $html->find('script[id="shoebox-ember-data-store"]', 0);
-
-        $json = json_decode($script->innertext, true);
-        return $json['data'];
-    }
-
-    private function getJWTToken($id, $platform, $country)
-    {
-        $uri = $this->makeHtmlUrl($id, $country);
-
-        $html = getSimpleHTMLDOMCached($uri, 3600);
-
-        $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
-
-        $json = urldecode($meta->content);
-
-        $json = json_decode($json);
-
-        return $json->MEDIA_API->token;
-    }
-
-    private function getAppData($id, $platform, $country, $token)
-    {
-        $uri = $this->makeJsonUrl($id, $platform, $country);
-
-        $headers = [
-            "Authorization: Bearer $token",
-            'Origin: https://apps.apple.com',
-        ];
-
-        $json = json_decode(getContents($uri, $headers), true);
-
-        return $json['data'][0];
-    }
-
-    /**
-     * Parses the version history from the data received
-     * @return array list of versions with details on each element
-     */
-    private function getVersionHistory($data, $platform)
-    {
-        switch ($platform) {
-            case 'mac':
-                return $data['relationships']['platforms']['data'][0]['attributes']['versionHistory'];
-            default:
-                $os = self::PLATFORM_MAPPING[$platform];
-                return $data['attributes']['platformAttributes'][$os]['versionHistory'];
-        }
-    }
-
-    public function collectData()
+    private function makeJsonUrl()
     {
         $id = $this->getInput('id');
         $country = $this->getInput('country');
         $platform = $this->getInput('p');
 
-        switch ($platform) {
-            case 'mac':
-                $data = $this->getDataFromShoebox($id, $platform, $country);
-                break;
+        $platform_param = ($platform === 'mac') ? 'mac' : $platform;
 
-            default:
-                $token = $this->getJWTToken($id, $platform, $country);
-                $data = $this->getAppData($id, $platform, $country, $token);
+        return sprintf(
+            'https://amp-api-edge.apps.apple.com/v1/catalog/%s/apps/%s?platform=%s&extend=versionHistory',
+            $country,
+            $id,
+            $platform_param
+        );
+    }
+
+    public function getName()
+    {
+        if (isset($this->name)) {
+            return sprintf('%s - AppStore Updates', $this->name);
         }
 
-        $versionHistory = $this->getVersionHistory($data, $platform);
-        $name = $this->name = $data['attributes']['name'];
-        $author = $data['attributes']['artistName'];
+        return parent::getName();
+    }
 
-        foreach ($versionHistory as $row) {
+    private function debugLog($message)
+    {
+        if ($this->getInput('debug')) {
+            $this->logger->info(sprintf('[AppleAppStoreBridge] %s', $message));
+        }
+    }
+
+    private function getHtml()
+    {
+        $url = $this->makeHtmlUrl();
+        $this->debugLog(sprintf('Fetching HTML from: %s', $url));
+
+        return getSimpleHTMLDOM($url);
+    }
+
+    private function getJWTToken()
+    {
+        $html = $this->getHtml();
+        $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
+
+        if (!$meta || !isset($meta->content)) {
+            throw new \Exception('JWT token not found in page content');
+        }
+
+        $decoded_content = urldecode($meta->content);
+        $this->debugLog('Found meta tag content');
+
+        try {
+            $decoded_json = Json::decode($decoded_content);
+        } catch (\Exception $e) {
+            throw new \Exception(sprintf('Failed to parse JSON from meta tag: %s', $e->getMessage()));
+        }
+
+        if (!isset($decoded_json['MEDIA_API']['token'])) {
+            throw new \Exception('Token field not found in JSON structure');
+        }
+
+        $token = $decoded_json['MEDIA_API']['token'];
+        $this->debugLog('Successfully extracted JWT token');
+        return $token;
+    }
+
+    private function getAppData()
+    {
+        $token = $this->getJWTToken();
+
+        $url = $this->makeJsonUrl();
+        $this->debugLog(sprintf('Fetching data from API: %s', $url));
+
+        $headers = [
+            'Authorization: Bearer ' . $token,
+            'Origin: https://apps.apple.com',
+            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        ];
+
+        $content = getContents($url, $headers);
+
+        try {
+            $json = Json::decode($content);
+        } catch (\Exception $e) {
+            throw new \Exception(sprintf('Failed to parse API response: %s', $e->getMessage()));
+        }
+
+        if (!isset($json['data']) || empty($json['data'])) {
+            throw new \Exception('No app data found in API response');
+        }
+
+        $this->debugLog('Successfully retrieved app data from API');
+        return $json['data'][0];
+    }
+
+    private function extractAppDetails($data)
+    {
+        if (isset($data['attributes'])) {
+            $this->name = $data['attributes']['name'] ?? null;
+            $author = $data['attributes']['artistName'] ?? null;
+            $this->debugLog(sprintf('Found app details in attributes: %s by %s', $this->name, $author));
+            return [$this->name, $author];
+        }
+
+        // Fallback to default values if not found
+        $this->name = sprintf('App %s', $this->getInput('id'));
+        $this->debugLog(sprintf('App details not found, using default: %s', $this->name));
+        return [$this->name, 'Unknown Developer'];
+    }
+
+    private function getVersionHistory($data)
+    {
+        $platform = $this->getInput('p');
+        $this->debugLog(sprintf('Extracting version history for platform: %s', $platform));
+
+        // Get the mapped platform key (ios for iPhone/iPad, osx for Mac)
+        $platform_key = self::PLATFORM_MAPPING[$platform] ?? $platform;
+
+        $version_history = $data['attributes']['platformAttributes'][$platform_key]['versionHistory'] ?? [];
+
+        if (empty($version_history)) {
+            $this->debugLog(sprintf('No version history found for %s', $platform));
+        }
+
+        return $version_history;
+    }
+
+    public function collectData()
+    {
+        $this->debugLog(sprintf('Getting data for %s app', $this->getInput('p')));
+        $data = $this->getAppData();
+
+        // Get app name and author using array destructuring
+        [$name, $author] = $this->extractAppDetails($data);
+
+        // Get version history
+        $version_history = $this->getVersionHistory($data);
+        $this->debugLog(sprintf('Found %d versions for %s', count($version_history), $name));
+
+        foreach ($version_history as $entry) {
+            $version = $entry['versionDisplay'] ?? 'Unknown Version';
+            $release_notes = $entry['releaseNotes'] ?? 'No release notes available';
+            $release_date = $entry['releaseDate'] ?? 'Unknown Date';
+
             $item = [];
-
-            $item['content'] = nl2br($row['releaseNotes']);
-            $item['title'] = $name . ' - ' . $row['versionDisplay'];
-            $item['timestamp'] = $row['releaseDate'];
+            $item['title'] = sprintf('%s - %s', $name, $version);
+            $item['content'] = nl2br($release_notes) ?: 'No release notes available';
+            $item['timestamp'] = $release_date;
             $item['author'] = $author;
-
-            $item['uri'] = $this->makeHtmlUrl($id, $country);
+            $item['uri'] = $this->makeHtmlUrl();
 
             $this->items[] = $item;
         }
+
+        $this->debugLog(sprintf('Successfully collected %d items', count($this->items)));
     }
 }
