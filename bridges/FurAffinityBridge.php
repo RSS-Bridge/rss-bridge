@@ -920,7 +920,9 @@ class FurAffinityBridge extends BridgeAbstract
                 break;
             }
 
-            $item = [];
+            $item = [
+                'categories' => [],
+            ];
 
             $submissionURL = $figure->find('b u a', 0)->href;
             $imgURL = $figure->find('b u a img', 0)->src;
