@@ -12,15 +12,11 @@
 
 	<entry>
 		<title type="html">Sample Item #1</title>
-		<published>2000-01-01T12:00:00+00:00</published>
-		<updated>2000-01-01T12:00:00+00:00</updated>
 		<id>urn:sha1:29f59918d266c56a935da13e4122b524298e5a39</id>
 		<content type="html"> </content>
 	</entry>
 	<entry>
 		<title type="html">Sample Item #2</title>
-		<published>2000-01-01T12:00:00+00:00</published>
-		<updated>2000-01-01T12:00:00+00:00</updated>
 		<id>urn:sha1:edf358cad1a7ae255d6bc97640dd9d27738f1b7b</id>
 		<content type="html"> </content>
 	</entry>
