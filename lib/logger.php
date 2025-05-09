@@ -71,13 +71,14 @@ final class SimpleLogger implements Logger
         $ignoredMessages = [
             'Format name invalid',
             'Unknown format given',
-            'Unable to find channel',
+            'Unable to find',
         ];
         foreach ($ignoredMessages as $ignoredMessage) {
             if (str_starts_with($message, $ignoredMessage)) {
                 return;
             }
         }
+
         foreach ($this->handlers as $handler) {
             $handler([
                 'name'          => $this->name,

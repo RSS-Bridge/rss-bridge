@@ -92,7 +92,7 @@ class TelegramBridge extends BridgeAbstract
             }
         }
 
-        $this->logger->info(sprintf('Fetched %s messages from %s pages (%s)', count($this->items), $pages, $url));
+        $this->logger->debug(sprintf('Fetched %s messages from %s pages (%s)', count($this->items), $pages, $url));
 
         $this->items = array_reverse($this->items);
     }
