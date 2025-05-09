@@ -18,19 +18,16 @@ class TikTokBridge extends BridgeAbstract
 
     const TEST_DETECT_PARAMETERS = [
         'https://www.tiktok.com/@tiktok' => [
-            'context' => 'By user', 'username' => '@tiktok'
+            'context' => 'By user',
+            'username' => '@tiktok',
         ]
     ];
-    const OEMBED_RETRY_COUNT = 20;
-    const OEMBED_RETRY_DELAY = 0.1;
 
-    const CACHE_TIMEOUT = 900; // 15 minutes
+    const CACHE_TIMEOUT = 60 * 60; // 1h
 
     public function collectData()
     {
         $html = getSimpleHTMLDOMCached('https://www.tiktok.com/embed/' . $this->processUsername());
-
-        $author = $html->find('span[data-e2e=creator-profile-userInfo-TUXText]', 0)->plaintext ?? self::NAME;
         $authorProfilePicture = $html->find('img[data-e2e=creator-profile-userInfo-Avatar]', 0)->src ?? '';
 
         $videos = $html->find('div[data-e2e=common-videoList-VideoContainer]');
@@ -44,20 +41,31 @@ class TikTokBridge extends BridgeAbstract
             $parsedUrl = parse_url($href);
             $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
+            $json = null;
+
             // Sometimes the API fails to return data for a second, so try a few times
             $attempts = 0;
-	        do {
+            do {
                 try {
                     // Fetch the video embed data from the OEmbed API
-                    $videoEmbedResponse = getContents('https://www.tiktok.com/oembed?url=' . $url);
-                } catch (Exception $e) {
+                    $json = getContents('https://www.tiktok.com/oembed?url=' . $url);
+                } catch (HttpException $e) {
                     $attempts++;
-                    sleep($OEMBED_RETRY_DELAY);
+                    // Sleep 0.1s
+                    usleep(100000);
                     continue;
                 }
                 break;
-            } while($attempts < $OEMBED_RETRY_COUNT);
-            $videoEmbedData = json_decode($videoEmbedResponse);
+            } while ($attempts < 3);
+
+            if ($json) {
+                $videoEmbedData = json_decode($json);
+            } else {
+                $videoEmbedData = new \stdClass();
+                $videoEmbedData->title = $url;
+                $videoEmbedData->thumbnail_url = '';
+                $videoEmbedData->author_unique_id = '';
+            }
 
             $title = $videoEmbedData->title;
             $image = $videoEmbedData->thumbnail_url;
