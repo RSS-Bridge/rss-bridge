@@ -66,7 +66,7 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
             // exclude nn+ articles if desired
             if (
                 $this->getInput('hideNNPlus') &&
-                $articleContent->find('div[class=paywall]')
+                $articleContent->find('span[class=icon-nnplus]')
             ) {
                 continue;
             }
