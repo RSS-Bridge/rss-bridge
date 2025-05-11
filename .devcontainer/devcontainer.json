@@ -6,9 +6,9 @@
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"php.validate.executablePath": "/usr/local/bin/php",
-				"phpSniffer.executablesFolder": "/usr/local/bin/",
-				"phpcs.executablePath": "/usr/local/bin/phpcs",
+				"php.validate.executablePath": "/usr/bin/php",
+				"phpSniffer.executablesFolder": "/root/.config/composer/vendor/bin",
+				"phpcs.executablePath": "/root/.config/composer/vendor/bin/phpcs",
 				"phpcs.lintOnType": false
 			},
 
@@ -22,6 +22,9 @@
 			]
 		}
 	},
+	"remoteEnv": {
+		"PATH": "${containerEnv:PATH}:/root/.config/composer/vendor/bin",
+	},
 	"forwardPorts": [3100, 9000, 9003],
-	"postCreateCommand": "cp .devcontainer/nginx.conf /etc/nginx/conf.d/default.conf && cp .devcontainer/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini && mkdir .vscode && cp .devcontainer/launch.json .vscode && echo '*' > whitelist.txt && chmod a+x \"$(pwd)\" && rm -rf /var/www/html && ln -s \"$(pwd)\" /var/www/html && nginx && php-fpm -D"
+	"postCreateCommand": "/usr/local/bin/post-create-command"
 }

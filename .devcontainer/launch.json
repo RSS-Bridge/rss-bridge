@@ -9,7 +9,8 @@
             "type": "php",
             "request": "launch",
             "port": 9003,
-            "auto": true
+            "auto": true,
+            "log": true
         },
         {
             "name": "Launch currently open script",
