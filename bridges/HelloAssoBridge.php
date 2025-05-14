@@ -30,14 +30,6 @@ class HelloAssoBridge extends BridgeAbstract
         return $this->orgname ? $this->orgname . ' - ' . static::NAME : static::NAME;
     }
 
-    public function getDescription()
-    {
-        if (!is_null($this->getInput('search'))) {
-            return 'Latest torrents for "' . $this->getInput('search') . '"';
-        }
-        return parent::getDescription();
-    }
-
     public function collectData()
     {
         $html = getSimpleHTMLDOM($this->getURI());
