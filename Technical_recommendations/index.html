@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Technical_recommendations/index.html">Technical recommendations</a></h1>
                 <span class="ModifiedDate">
-            April 14, 2025 at 3:55 AM        </span>
+            May 17, 2025 at 11:18 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/09_Technical_recommendations/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -111,7 +111,7 @@
         <h2><a id="general-recommendations" href="#general-recommendations" class="Permalink" aria-hidden="true" title="Permalink">#</a>General recommendations</h2>
 <h2><a id="test-a-site-before-building-a-bridge" href="#test-a-site-before-building-a-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Test a site before building a bridge</h2>
 <p>Some sites make use of anti-bot mechanisms (e.g.: by using JavaScript) in which case they work fine in regular browsers,
-but not in the PHP environment.</p>
+but not in the PHP environment. RSS-Bridge Docker container by default resorts to using libcurl-impersonate, which helps mitigating anti-bot mechanisms.</p>
 <p>To check if a site works with RSS-Bridge, create a new bridge using the
 <a href="../Bridge_API/BridgeAbstract.html#template">template</a>
 and load a valid URL (not the base URL!).</p>
