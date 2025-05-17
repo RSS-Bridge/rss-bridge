@@ -3,7 +3,7 @@
 ## Test a site before building a bridge
 
 Some sites make use of anti-bot mechanisms (e.g.: by using JavaScript) in which case they work fine in regular browsers,
-but not in the PHP environment.
+but not in the PHP environment. RSS-Bridge Docker container by default resorts to using libcurl-impersonate, which helps mitigating anti-bot mechanisms.
 
 To check if a site works with RSS-Bridge, create a new bridge using the 
 [template](../05_Bridge_API/02_BridgeAbstract.md#template)

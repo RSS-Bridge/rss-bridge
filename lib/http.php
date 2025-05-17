@@ -66,6 +66,8 @@ final class CurlHttpClient implements HttpClient
 {
     public function request(string $url, array $config = []): Response
     {
+        $ch = curl_init($url);
+
         $defaults = [
             'useragent' => null,
             'timeout' => 5,
@@ -77,13 +79,27 @@ final class CurlHttpClient implements HttpClient
             'max_filesize' => null,
             'max_redirections' => 5,
         ];
+
+        // if curl-impersonate is not detected, use some basic defaults
+        if (curl_version()['ssl_version'] != 'BoringSSL') {
+            // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
+            $defaults['headers'] = [
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language' => 'en-US,en;q=0.5',
+                'Upgrade-Insecure-Requests' => '1',
+                'Sec-Fetch-Dest' => 'document',
+                'Sec-Fetch-Mode' => 'navigate',
+                'Sec-Fetch-Site' => 'none',
+                'Sec-Fetch-User' => '?1',
+                'TE' => 'trailers',
+            ];
+            $defaults['useragent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0';
+
+            curl_setopt($ch, CURLOPT_HEADER, false);
+        }
+
         $config = array_merge($defaults, $config);
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, $config['max_redirections']);
-        curl_setopt($ch, CURLOPT_HEADER, false);
         $httpHeaders = [];
         foreach ($config['headers'] as $name => $value) {
             $httpHeaders[] = sprintf('%s: %s', $name, $value);
@@ -92,6 +108,9 @@ final class CurlHttpClient implements HttpClient
         if ($config['useragent']) {
             curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
         }
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, $config['max_redirections']);
         curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
         curl_setopt($ch, CURLOPT_ENCODING, '');
         curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
