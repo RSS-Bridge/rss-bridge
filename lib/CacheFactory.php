@@ -92,6 +92,7 @@ class CacheFactory
                 if (empty($port)) {
                     throw new \Exception('"port" param is not set for ' . $section);
                 }
+                $port = (string) $port;
                 if (!ctype_digit($port)) {
                     throw new \Exception('"port" param is invalid for ' . $section);
                 }
