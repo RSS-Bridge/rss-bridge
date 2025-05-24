@@ -8,7 +8,7 @@ on:
 
 jobs:
   phpcs:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         php-versions: ['7.4']
@@ -21,7 +21,7 @@ jobs:
       - run: phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p
 
   phpcompatibility:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         php-versions: ['7.4']
@@ -36,7 +36,7 @@ jobs:
       - run: ~/.composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p
 
   executable_php_files_check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - run: |
