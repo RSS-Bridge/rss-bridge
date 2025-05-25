@@ -1,39 +1,49 @@
 <?php
 
-class PaulGrahamBridge extends BridgeAbstract {
+class PaulGrahamBridge extends BridgeAbstract
+{
     const NAME = 'Paul Graham Essays';
     const URI = 'https://www.paulgraham.com/articles.html';
     const DESCRIPTION = 'Returns the latest Paul Graham essays in display order';
     const MAINTAINER = 'Claire (for Stéphane)';
     const CACHE_TIMEOUT = 3600;
 
-    public function collectData() {
+    public function collectData()
+    {
         $html = getSimpleHTMLDOM(self::URI);
 
-	// Navigate to the right TD
-	// /html/body/table/tbody/tr/td[3]
+    // Navigate to the right TD
+    // /html/body/table/tbody/tr/td[3]
         $tables = $html->find('body table');
-        if (!isset($tables[0])) return;
+        if (!isset($tables[0])) {
+            return;
+        }
 
         $tds = $tables[0]->find('td');
-        if (!isset($tds[2])) return;
+        if (!isset($tds[2])) {
+            return;
+        }
 
         $contentTd = $tds[2];
 
         // Find all inner tables (each one holds a single essay link)
-	$essayTables = $contentTd->find('table');
-	if (!isset($essayTables[1])) return;
+        $essayTables = $contentTd->find('table');
+        if (!isset($essayTables[1])) {
+            return;
+        }
 
-	$essayTable = $essayTables[1];
-	
-	// /html/body/table/tbody/tr/td[3]/table[2]/tbody/tr[2]/td/font/a
+        $essayTable = $essayTables[1];
 
-	$links = $essayTable->find('font');
+    // /html/body/table/tbody/tr/td[3]/table[2]/tbody/tr[2]/td/font/a
+
+        $links = $essayTable->find('font');
 
         $essayLinks = [];
         foreach ($links as $t) {
             $link = $t->find('a', 0);
-            if (!$link) continue;
+            if (!$link) {
+                continue;
+            }
 
             $href = trim($link->href);
             $title = trim($link->plaintext);
