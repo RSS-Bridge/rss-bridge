@@ -60,7 +60,7 @@ class EpicGamesFreeBridge extends BridgeAbstract
                 'enclosures' => array_map(fn($item) => $item['url'], $element['keyImages']),
                 'timestamp' => strtotime($element['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate']),
                 'title' => $element['title'],
-                'url' => parent::getURI() . $this->getInput('locale') . '/p/' . $element['urlSlug'],
+                'uri' => parent::getURI() . $this->getInput('locale') . '/p/' . $element['productSlug'],
             ];
             $this->items[] = $item;
         }
