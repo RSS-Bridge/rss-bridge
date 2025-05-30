@@ -27,7 +27,7 @@ class EpicGamesFreeBridge extends BridgeAbstract
                 'Türkçe' => 'tr',
                 '简体中文' => 'zh-CN',
                 '繁體中文' => 'zh-Hant',
-             ],
+            ],
             'title' => 'Language for game information',
             'defaultValue' => 'en-US',
         ],
@@ -51,16 +51,21 @@ class EpicGamesFreeBridge extends BridgeAbstract
 
         $data = $json['data']['Catalog']['searchStore']['elements'];
         foreach ($data as $element) {
-            if (!isset($element['promotions']['promotionalOffers'][0])) {
+            $promo = $element['promotions']['promotionalOffers'][0]['promotionalOffers'][0] ?? false;
+            if (
+                !$promo ||
+                $promo['discountSetting']['discountType'] !== 'PERCENTAGE' ||
+                $promo['discountSetting']['discountPercentage'] !== 0
+            ) {
                 continue;
             }
             $item = [
                 'author' => $element['seller']['name'],
                 'content' => $element['description'],
                 'enclosures' => array_map(fn($item) => $item['url'], $element['keyImages']),
-                'timestamp' => strtotime($element['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate']),
+                'timestamp' => strtotime($promo['startDate']),
                 'title' => $element['title'],
-                'url' => parent::getURI() . $this->getInput('locale') . '/p/' . $element['urlSlug'],
+                'uri' => parent::getURI() . $this->getInput('locale') . '/p/' . $element['productSlug'],
             ];
             $this->items[] = $item;
         }
