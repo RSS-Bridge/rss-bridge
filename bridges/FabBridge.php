@@ -10,7 +10,7 @@ class FabBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = static::URI . "/i/listings/search?is_discounted=1&is_free=1";
+        $url = static::URI . '/i/listings/search?is_discounted=1&is_free=1';
 
         $header = [
             'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0',
