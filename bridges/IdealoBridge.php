@@ -35,6 +35,16 @@ class IdealoBridge extends BridgeAbstract
         ]
     ];
 
+    private $headers = [
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0',
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language: fr-FR,fr;q=0.8,en-US;q=0.5,en;q=0.3'
+    ];
+    private $options = [
+        CURLOPT_TRANSFER_ENCODING => 1,
+        CURLOPT_ACCEPT_ENCODING => 'gzip, deflate, br'
+    ];
+
     public function getIcon()
     {
         return 'https://cdn.idealo.com/storage/ids-assets/ico/favicon.ico';
@@ -53,10 +63,7 @@ class IdealoBridge extends BridgeAbstract
 
         // The cache does not contain the title of the bridge, we must get it and save it in the cache
         if ($product === null) {
-            $header = [
-                'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15'
-            ];
-            $html = getSimpleHTMLDOM($link, $header);
+            $html = getSimpleHTMLDOM($link, $this->headers, $this->options);
             $product = $html->find('.oopStage-title', 0)->find('span', 0)->plaintext;
             $this->saveCacheValue($keyTITLE, $product);
         }
@@ -123,13 +130,8 @@ class IdealoBridge extends BridgeAbstract
     }
     public function collectData()
     {
-        // Needs header with user-agent to function properly.
-        $header = [
-            'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15'
-        ];
-
         $link = $this->getInput('Link');
-        $html = getSimpleHTMLDOM($link, $header);
+        $html = getSimpleHTMLDOM($link, $this->headers, $this->options);
 
         // Get Productname
         $titleobj = $html->find('.oopStage-title', 0);
