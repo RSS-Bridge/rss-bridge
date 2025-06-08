@@ -32,8 +32,20 @@ class GoComicsBridge extends BridgeAbstract
     {
         $link = $this->getURI();
         $landingpage = getSimpleHTMLDOM($link);
-
-        $link = $landingpage->find('div[data-post-url]', 0)->getAttribute('data-post-url');
+        $element = $landingpage->find('div[data-post-url]', 0);
+        if ($element) {
+            $link = $element->getAttribute('data-post-url');
+        } else { // fallback for comics without data-post-url (assumes daily comic)
+            $nextcomiclink = $landingpage->find('a[class*="ComicNavigation_controls__button_previous__"]', 0)->href;
+            preg_match('/(\d{4}\/\d{2}\/\d{2})/', $nextcomiclink, $nclmatches);
+            if (!empty($nclmatches[1])) {
+                $nextdate = new DateTime($nclmatches[1]);
+                $nextdate = $nextdate->modify('+1 day')->format('Y/m/d');
+                $link = $link . '/' . $nextdate;
+            } else {
+                throw new \Exception('Could not find the first comic URL. Please create a new GitHub issue.');
+            }
+        }
 
         for ($i = 0; $i < $this->getInput('limit'); $i++) {
             $html = getSimpleHTMLDOM($link);
