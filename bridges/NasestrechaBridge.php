@@ -2,23 +2,30 @@
 
 /**
  *
- * NaseStrecha.cz is a specialized Czech news and advice portal focusing on roofs, construction, and home improvement, offering reliable expert guidance on roofing materials, insulation, and energy-saving techniques nasestrecha.cz . It is run by the team behind the Strechy-Solar-Remeslo trade fair and includes up-to-date news, practical tips, and industry events
+ * NaseStrecha.cz is a specialized Czech news and advice portal focusing on roofs, construction, and home improvement, offering reliable expert guidance on roofing materials, insulation, and energy-saving techniques nasestrecha.cz . It is run by the team behind the Strechy-Solar-Remeslo trade fair and includes up-to-date news, practical tips, and industry events..
  *
-*/
+ */
 
 class NasestrechaBridge extends BridgeAbstract
 {
     const NAME = 'Nasestrecha Bridge';
     const URI = 'https://www.nasestrecha.cz/';
-    const DESCRIPTION = 'Articles from Nasestrecha.cz';
+    const DESCRIPTION = 'Articles from Nasestrecha.cz news site - Czech Republic / Spolehlivé informace pro Vaší střechu i stavbu';
     const MAINTAINER = 'pprenghyorg';
 
     // Only Articles are supported
     const PARAMETERS = [
-        'Articles' => [
+        'Articles, news and reviews from from construction and housing' => [
         ],
     ];
 
+    /**
+     * Fetches and processes data based on the selected context.
+     *
+     * This function retrieves the HTML content for the specified context's URI,
+     * resolves relative links within the content, and then delegates the data
+     * extraction to the appropriate method (currently only `collectNews`).
+     */
     public function collectData()
     {
         $html = getSimpleHTMLDOM($this->getURI());
@@ -27,7 +34,7 @@ class NasestrechaBridge extends BridgeAbstract
 
         // Router
         switch ($this->queriedContext) {
-            case 'Articles':
+            case 'Articles, news and reviews from from construction and housing':
                 $this->collectNews($html);
                 break;
         }
@@ -44,7 +51,7 @@ class NasestrechaBridge extends BridgeAbstract
 
         // URI Router
         switch ($this->queriedContext) {
-            case 'Articles':
+            case 'Articles, news and reviews from from construction and housing':
                 $uri .= 'clanky/';
                 break;
         }
@@ -56,7 +63,7 @@ class NasestrechaBridge extends BridgeAbstract
      * Returns the name for the bridge.
      *
      * @return string The Name.
-     */    
+     */
     public function getName()
     {
         $name = static::NAME;
@@ -64,7 +71,7 @@ class NasestrechaBridge extends BridgeAbstract
         $name .= ($this->queriedContext) ? ' - ' . $this->queriedContext : '';
 
         switch ($this->queriedContext) {
-            case 'Articles':
+            case 'Articles, news and reviews from from construction and housing':
                 break;
         }
 
@@ -83,7 +90,6 @@ class NasestrechaBridge extends BridgeAbstract
      */
     private function fixDate($date)
     {
-
         $df = $this->parseDateTimeFromString($date);
 
         return date_format($df, 'U');
@@ -103,7 +109,6 @@ class NasestrechaBridge extends BridgeAbstract
         $images = [];
 
         foreach ($elements as $img) {
-
             $images[] = $img->src;
         }
 
@@ -125,7 +130,6 @@ class NasestrechaBridge extends BridgeAbstract
             or returnServerError('No articles found! Layout might have changed!');
 
         foreach ($articles as $article) {
-
             $item = [];
 
             $item['uri'] = $this->extractNewsUri($article);
@@ -284,5 +288,4 @@ class NasestrechaBridge extends BridgeAbstract
     }
 
     #endregion
-
 }
