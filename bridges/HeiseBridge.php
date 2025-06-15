@@ -138,7 +138,7 @@ class HeiseBridge extends FeedExpander
         }
         // abort on heise+ articles
         if ($sessioncookie == '' && str_starts_with($item['title'], 'heise+ |')) {
-            $item['uri'] = 'https://archive.is/'.$item['uri'];
+            $item['uri'] = 'https://archive.is/' . $item['uri'];
             return $item;
         }
 
