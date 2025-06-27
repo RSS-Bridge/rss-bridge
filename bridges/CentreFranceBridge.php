@@ -193,8 +193,12 @@ class CentreFranceBridge extends BridgeAbstract
             $item['uid'] = $uid;
         }
 
+        if (!isset($item['content'])) {
+            $item['content'] = '';
+        }
+
         // If the article is a "grand format", we use another parsing strategy
-        if (($item['content'] ?? '') === '' && $html->find('article') !== []) {
+        if ($item['content'] === '' && $html->find('article') !== []) {
             $articleContent = $html->find('article > section');
             foreach ($articleContent as $contentPart) {
                 if ($contentPart->find('#journo') !== []) {
