@@ -109,7 +109,7 @@ class CentreFranceBridge extends BridgeAbstract
                     continue;
                 }
 
-                $articleTitle .= $articleTitleDOMElement->innertext;
+                $articleTitle .= $articleTitleDOMElement->text();
                 break;
             }
 
