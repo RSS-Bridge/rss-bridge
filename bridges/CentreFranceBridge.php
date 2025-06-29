@@ -72,15 +72,9 @@ class CentreFranceBridge extends BridgeAbstract
         $newspaperUrl = 'https://www.' . $this->getInput('newspaper') . '/' . $localitySlug . '/';
         $html = getSimpleHTMLDOM($newspaperUrl);
 
-        // Articles are detected through their titles
-        foreach ($html->find('.c-titre') as $articleTitleDOMElement) {
-            $articleLinkDOMElement = $articleTitleDOMElement->find('a', 0);
-
-            // Ignore articles in the « Les + partagés » block
-            if (strpos($articleLinkDOMElement->id, 'les_plus_partages') !== false) {
-                continue;
-            }
-
+        // Articles are detected through a standard tag
+        foreach ($html->find('article') as $articleDOMElement) {
+            $articleLinkDOMElement = $articleDOMElement->find('a', 0);
             $articleURI = $articleLinkDOMElement->href;
 
             // If the URI has already been processed, ignore it
@@ -96,7 +90,7 @@ class CentreFranceBridge extends BridgeAbstract
             $articleTitle = '';
 
             // If article is reserved for subscribers
-            if ($articleLinkDOMElement->find('span.premium-picto', 0)) {
+            if ($articleLinkDOMElement->find('span.premium-icon', 0)) {
                 if ($this->getInput('remove-reserved-for-subscribers-articles') === true) {
                     continue;
                 }
@@ -104,18 +98,22 @@ class CentreFranceBridge extends BridgeAbstract
                 $articleTitle .= '🔒 ';
             }
 
-            $articleTitleDOMElement = $articleLinkDOMElement->find('span[data-tb-title]', 0);
-            if ($articleTitleDOMElement === null) {
-                continue;
-            }
-
             if ($limit > 0 && count($this->items) === $limit) {
                 break;
             }
 
-            $articleTitle .= $articleLinkDOMElement->find('span[data-tb-title]', 0)->innertext;
-            $articleFullURI = urljoin('https://www.' . $this->getInput('newspaper') . '/', $articleURI);
+            // Loop through each possible title class name
+            for ($i = 1; $i <= 3; $i++) {
+                $articleTitleDOMElement = $articleLinkDOMElement->find('.typo-card-title-' . $i, 0);
+                if (!$articleTitleDOMElement instanceof \simple_html_dom_node) {
+                    continue;
+                }
 
+                $articleTitle .= $articleTitleDOMElement->text();
+                break;
+            }
+
+            $articleFullURI = urljoin('https://www.' . $this->getInput('newspaper') . '/', $articleURI);
             $item = [
                 'title' => $articleTitle,
                 'uri' => $articleFullURI,
@@ -184,7 +182,7 @@ class CentreFranceBridge extends BridgeAbstract
 
         $articleTags = $html->find('#content>div.flex+div.grid section>.bg-gray-light>a.border-gray-dark');
         if (is_array($articleTags)) {
-            $item['categories'] = array_map(static fn ($articleTag) => $articleTag->innertext, $articleTags);
+            $item['categories'] = array_map(static fn ($articleTag) => html_entity_decode($articleTag->innertext), $articleTags);
         }
 
         $explode = explode('_', $uri);
@@ -193,6 +191,10 @@ class CentreFranceBridge extends BridgeAbstract
         $uid = rtrim($string, '/');
         if (is_numeric($uid)) {
             $item['uid'] = $uid;
+        }
+
+        if (!isset($item['content'])) {
+            $item['content'] = '';
         }
 
         // If the article is a "grand format", we use another parsing strategy
