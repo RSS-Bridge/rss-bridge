@@ -36,6 +36,9 @@ class ExplosmBridge extends BridgeAbstract
             $html = getSimpleHTMLDOM($url);
 
             $element = $html->find('[class*=ComicImage]', 0);
+            if(!$element) {
+                break; // skip, if element was not found
+            }
             $date    = $element->find('[class^=Author__Right] p', 0)->plaintext;
             $author  = str_replace('by ', '', $element->find('[class^=Author__Right] p', 1)->plaintext);
             $image   = $element->find('img', 0)->src;
