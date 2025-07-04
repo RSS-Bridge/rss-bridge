@@ -59,7 +59,7 @@ class EpicGamesFreeBridge extends BridgeAbstract
             ) {
                 continue;
             }
-            $slug = $element['productSlug'] ?? $element['catalogNs']['mappings'][0]['pageSlug'] ?? null;
+            $slug = $element['catalogNs']['mappings'][0]['pageSlug'] ?? null;
             if ($slug !== null) {
                 $uri = parent::getURI() . $this->getInput('locale') . '/p/' . $slug;
             } else {
