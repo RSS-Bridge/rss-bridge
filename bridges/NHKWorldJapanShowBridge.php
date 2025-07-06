@@ -58,8 +58,9 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
 
     public function getName()
     {
-        if (!is_null($this->getInput('show'))) {
-            return $this->getInput('show') . ' - NHK World-Japan Shows';
+        if (($this->getInput('show')) && ($this->getInput('language'))) {
+            $html = getSimpleHTMLDOMCached($this->getURI());
+            return $html->find('meta[property="og:title"]', 0)->content;
         }
 
         return parent::getName();
