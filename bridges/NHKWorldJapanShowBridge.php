@@ -118,4 +118,18 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
             throw new \Exception('Could not find the episodes for this show. Please create a new GitHub issue if this is unexpected.');
         }
     }
+
+    public function detectParameters($url)
+    {
+        $params = [];
+        $regex = '/^(https?:\/\/)?(www3\.)?nhk\.or\.jp\/nhkworld\/(?<language>[a-z]{2})\/shows\/(?<show>[a-zA-Z0-9_-]+)\/?$/';
+
+        if (preg_match($regex, $url, $matches) > 0) {
+            $params['language'] = $matches['language'];
+            $params['show'] = $matches['show'];
+            return $params;
+        }
+
+        return null;
+    }
 }
