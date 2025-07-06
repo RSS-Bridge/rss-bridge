@@ -60,7 +60,7 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
     {
         if (($this->getInput('show')) && ($this->getInput('language'))) {
             $html = getSimpleHTMLDOMCached($this->getURI());
-            return $html->find('meta[property="og:title"]', 0)->content;
+            return html_entity_decode($html->find('meta[property="og:title"]', 0)->content, ENT_QUOTES, 'UTF-8');
         }
 
         return parent::getName();
