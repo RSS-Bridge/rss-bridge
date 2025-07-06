@@ -12,9 +12,9 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
             'show' => [
                 'name' => 'Name of Show',
                 'type' => 'text',
-                'exampleValue' => 'ramenjapan',
+                'exampleValue' => 'catseye',
                 'required' => true,
-                'title' => 'Enter the name of the show as it appears in the URL, e.g. "ramenjapan" for https://www3.nhk.or.jp/nhkworld/en/shows/ramenjapan/'
+                'title' => 'Enter the name of the show as it appears in the URL, e.g. "catseye" for https://www3.nhk.or.jp/nhkworld/en/shows/catseye/'
             ],
             'language' => [
                 'name' => 'language',
