@@ -1,6 +1,6 @@
 <?php
 
-class YouTubeCommunityTabBridge extends BridgeAbstract
+class YouTubePostsTabBridge extends BridgeAbstract
 {
     const NAME = 'YouTube Posts Tab Bridge';
     const URI = 'https://www.youtube.com';
