@@ -29,7 +29,8 @@
         "ext-libxml": "*",
         "ext-simplexml": "*",
         "ext-dom": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-filter": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
