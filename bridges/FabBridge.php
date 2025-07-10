@@ -10,6 +10,16 @@ class FabBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $responseheaders = get_headers(static::URI);
+
+        $csrf = "";
+        foreach($responseheaders as $entry) {
+            if (str_contains($entry, "Cookie")) {
+                $csrf = explode(":", $entry)[1];
+                $csrf = explode(";", $csrf)[0];
+            }
+        }
+        
         $url = static::URI . '/i/listings/search?is_discounted=1&is_free=1';
 
         $header = [
@@ -17,7 +27,8 @@ class FabBridge extends BridgeAbstract
             'Accept: application/json, text/plain, */*',
             'Accept-Language: en',
             'Accept-Encoding: gzip, deflate, br, zstd',
-            'Referer: ' . static::URI
+            'Referer: ' . static::URI,
+            'Cookie: ' . $csrf,
         ];
 
         $json = getContents($url, $header);
