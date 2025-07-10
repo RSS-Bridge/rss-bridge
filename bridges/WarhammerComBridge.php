@@ -10,7 +10,7 @@ class WarhammerComBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = static::URI . "/api/search/news/";
+        $url = static::URI . '/api/search/news/';
 
         $header = [
             'Content-Type: application/json',
@@ -28,7 +28,6 @@ class WarhammerComBridge extends BridgeAbstract
         $json = json_decode($json);
 
         foreach ($json->news as $article) {
-
             $articleurl = static::URI . $article->uri;
 
             $fullarticle = getSimpleHTMLDOMCached($articleurl);
