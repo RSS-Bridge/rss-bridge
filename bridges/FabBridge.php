@@ -10,7 +10,7 @@ class FabBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = static::URI . '/limited-time-free';
+        $url = static::URI . '/i/blades/free_content_blade';
 
         $header = [
             'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0',
@@ -20,21 +20,19 @@ class FabBridge extends BridgeAbstract
             'Referer: ' . static::URI
         ];
 
-        $html = getSimpleHTMLDOM($url, $header);
-        $json = $html->find('#js-json-data-prefetched-data');
-        $json = Json::decode($json[0]->innertext);
-        $json = $json['/i/blades/free_content_blade'];
+        $json = getContents($url, $header);
+        $json = json_decode($json);
 
-        foreach ($json['tiles'] as $tile) {
-            $item = $tile['listing'];
-            $thumbnail = $item['thumbnails'][0]['mediaUrl'];
-            $itemurl = static::URI . '/listings/' . $item->uid;
-            
+        foreach ($json->tiles as $item) {
+            $thumbnail = $item->listing->thumbnails[0]->mediaUrl;
+            $itemurl = static::URI . '/listings/' . $item->listing->uid;
+
             $this->items[] = [
-                'title' => $item['title'],
-                'author' => $item['user']['sellerName'],
+                'title' => $item->listing->title,
+                'author' => $item->listing->user->sellerName,
                 'uri' => $itemurl,
-                'content' => '<a href="' . $itemurl . '"><img src="' . $thumbnail . '"></a>' . $item['description']
+                'timestamp' => strtotime($item->listing->lastUpdatedAt),
+                'content' => '<a href="' . $itemurl . '"><img src="' . $thumbnail . '"></a>' . $item->listing->description,
             ];
         }
     }
