@@ -10,6 +10,7 @@ class FabBridge extends BridgeAbstract
 
     public function collectData()
     {
+
         $responseheaders = get_headers(static::URI);
 
         $csrf = "";
@@ -27,8 +28,8 @@ class FabBridge extends BridgeAbstract
             'Accept: application/json, text/plain, */*',
             'Accept-Language: en',
             'Accept-Encoding: gzip, deflate, br, zstd',
-            'Referer: ' . static::URI,
             'Cookie: ' . $csrf,
+            'Referer: ' . static::URI
         ];
 
         $json = getContents($url, $header);

@@ -31,25 +31,33 @@ class GoComicsBridge extends BridgeAbstract
     public function collectData()
     {
         $link = $this->getURI();
+        $landingpage = getSimpleHTMLDOM($link);
+        $element = $landingpage->find('div[data-post-url]', 0);
+        if ($element) {
+            $link = $element->getAttribute('data-post-url');
+        } else { // fallback for comics without data-post-url (assumes daily comic)
+            $nextcomiclink = $landingpage->find('a[class*="ComicNavigation_controls__button_previous__"]', 0)->href;
+            preg_match('/(\d{4}\/\d{2}\/\d{2})/', $nextcomiclink, $nclmatches);
+            if (!empty($nclmatches[1])) {
+                $nextdate = new DateTime($nclmatches[1]);
+                $nextdate = $nextdate->modify('+1 day')->format('Y/m/d');
+                $link = $link . '/' . $nextdate;
+            } else {
+                throw new \Exception('Could not find the first comic URL. Please create a new GitHub issue.');
+            }
+        }
 
         for ($i = 0; $i < $this->getInput('limit'); $i++) {
             $html = getSimpleHTMLDOM($link);
-            // get json data from the first page
-            $json = $html->find('div[class^="ShowComicViewer_showComicViewer__comic__"] script[type="application/ld+json"]', 0)->innertext;
-            $data = json_decode($json, false);
+
+            $imagelink = $html->find('meta[property="og:image"]', 0)->content;
+            $parts = explode('/', $link);
+            $date = DateTime::createFromFormat('Y/m/d', implode('/', array_slice($parts, -3)));
+            $title = $html->find('meta[property="og:title"]', 0)->content;
+            preg_match('/by (.*?) for/', $title, $authormatches);
+            $author = $authormatches[1] ?? 'GoComics';
 
             $item = [];
-
-            $author = $data->author->name;
-            $imagelink = $data->contentUrl;
-            $date = $data->datePublished;
-            $title = $data->name . ' - GoComics';
-
-            // get a permlink for this day's comic if there isn't one specified
-            if ($link === $this->getURI()) {
-                $link = $this->getURI() . '/' . DateTime::createFromFormat('F j, Y', $date)->format('Y/m/d');
-            }
-
             $item['id'] = $imagelink;
             $item['uri'] = $link;
             $item['author'] = $author;
@@ -57,7 +65,7 @@ class GoComicsBridge extends BridgeAbstract
             if ($this->getInput('date-in-title') === true) {
                 $item['title'] = $title;
             }
-            $item['timestamp'] = DateTime::createFromFormat('F j, Y', $date)->setTime(0, 0, 0)->getTimestamp();
+            $item['timestamp'] = $date->setTime(0, 0, 0)->getTimestamp();
             $item['content'] = '<img src="' . $imagelink . '" />';
 
             $link = rtrim(self::URI, '/') . $html->find('a[class*="ComicNavigation_controls__button_previous__"]', 0)->href;
