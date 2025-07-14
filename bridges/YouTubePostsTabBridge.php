@@ -72,7 +72,11 @@ class YouTubePostsTabBridge extends BridgeAbstract
 
         $json = $this->extractJson($html->find('html', 0)->innertext);
 
-        $this->feedName = $json->header->c4TabbedHeaderRenderer->title;
+        $this->feedName = $json->header->c4TabbedHeaderRenderer->title
+            ?? $json->header->pageHeaderRenderer->pageTitle
+            ?? $json->metadata->channelMetadataRenderer->title
+            ?? $json->microformat->microformatDataRenderer->title
+            ?? '';
 
         if ($this->hasPostsTab($json) === false) {
             returnServerError('Channel does not have a posts tab');
