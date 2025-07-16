@@ -43,6 +43,17 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
                     'Tiếng Việt' => 'vi'
                 ],
                 'defaultValue' => 'en'
+            ],
+            'embedoption' => [
+                'name' => 'Embed option',
+                'type' => 'list',
+                'title' => 'Choose to embed the NHK World Japan video player, a static thumbnail, or no embed for each show episode',
+                'values' => [
+                    'Embed Player' => 'embed',
+                    'Thumbnail' => 'thumb',
+                    'None' => 'none'
+                ],
+                'defaultValue' => 'embed'
             ]
         ]
     ];
@@ -82,27 +93,34 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
                 $author = $program['title_clean'] ?? '';
                 $description = $program['description'] ?? '';
                 $url = $program['url'];
+                $vod_id = $program['vod_id'];
+                $iframeurl = self::URI . '/nhkworld/common/player/tv/vod/world/player/?opid=' . $vod_id;
                 $movielength = $program['movie_lengh'] ?? 'Unknown length';
                 $onair = $program['onair'] ?? round(microtime(true) * 1000);
                 $vod_to = $program['vod_to'] ?? round(microtime(true) * 1000);
 
-                $thumbUrl = '';
-                if (isset($program['image'])) {
-                    $thumbUrl = self::URI . $program['image'];
-                    ;
-                    $thumbnailHtml = "<img src=\"$thumbUrl\" alt=\"Thumbnail\" /><br>";
-                } else {
-                    $thumbnailHtml = '';
+                switch ($this->getInput('embedoption')) {
+                    case 'embed':
+                        $embedhtml = '<iframe src="' . $iframeurl . '" width="640" height="360" frameborder="0" allowfullscreen referrerpolicy="no-referrer"></iframe><br><br>';
+                        break;
+                    case 'thumb':
+                        $embedhtml = '<img src="' . self::URI . $program['image'] . '" alt="Video thumbnail"><br><br>';
+                        break;
+                    default:
+                        $embedhtml = '';
                 }
 
                 $dt = new DateTime('@' . ($onair / 1000));
                 $dt->setTimezone(new DateTimeZone('UTC'));
-                $broadcastDate = $dt->format('F j, Y');
+                $broadcastdate = $dt->format('F j, Y');
 
-                $description .= '<br>';
+                $description .= '<br><br>';
                 $description .= 'Length: ' . $movielength . '<br>';
-                $description .= 'Broadcast: ' . $broadcastDate . ' UTC / Available until ' . date('F j, Y', $vod_to / 1000) . '<br>';
-                $description .= $thumbnailHtml;
+                $description .= 'Broadcast: ' . $broadcastdate . ' UTC / Available until ' . date('F j, Y', $vod_to / 1000) . '<br><br>';
+                $description .= $embedhtml;
+
+                $description .= '<a href="' . $iframeurl . '" referrerpolicy="no-referrer">Watch on direct video player</a>';
+                $description .= '<br><a href="' . self::URI . $url . '" referrerpolicy="no-referrer">Watch on NHK World-Japan player</a>';
 
                 $item = [];
                 $item['uri'] = self::URI . $url;
