@@ -152,7 +152,7 @@ class GolemBridge extends FeedExpander
             $img->src = $img->getAttribute('data-src-full');
         }
 
-        foreach ($content->find('p, h1, h2, h3, pre, img[src*="."], iframe, video') as $element) {
+        foreach ($content->find('p, h1, h2, h3, pre, img[src*="."], div[class*="golem_tablediv"], iframe, video') as $element) {
             $item .= $element;
         }
 
