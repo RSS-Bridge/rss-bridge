@@ -10,7 +10,7 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
     const PARAMETERS = [
         [
             'show' => [
-                'name' => 'Name of Show',
+                'name' => 'Name of show',
                 'type' => 'text',
                 'exampleValue' => 'catseye',
                 'required' => true,
@@ -47,9 +47,9 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
             'embedoption' => [
                 'name' => 'Embed option',
                 'type' => 'list',
-                'title' => 'Choose to embed the NHK World Japan video player, a static thumbnail, or no embed for each show episode',
+                'title' => 'Choose to embed the NHK World-Japan video player, a static thumbnail, or no embedding for each episode',
                 'values' => [
-                    'Embed Player' => 'embed',
+                    'Embed video player' => 'embed',
                     'Thumbnail' => 'thumb',
                     'None' => 'none'
                 ],
