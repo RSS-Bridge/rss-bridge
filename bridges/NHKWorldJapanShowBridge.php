@@ -58,6 +58,123 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
         ]
     ];
 
+    protected static $labels = [
+        'length' => [
+            'ar' => 'المدة:',
+            'bn' => 'দৈর্ঘ্য:',
+            'en' => 'Length:',
+            'my' => 'အချိန်အရှည်:',
+            'zh' => '时长:',
+            'zt' => '時長:',
+            'fr' => 'Durée:',
+            'hi' => 'अवधि:',
+            'id' => 'Durasi:',
+            'ko' => '재생 시간:',
+            'fa' => 'مدت زمان:',
+            'pt' => 'Duração:',
+            'ru' => 'Длительность:',
+            'es' => 'Duración:',
+            'sw' => 'Urefu:',
+            'th' => 'ความยาว:',
+            'tr' => 'Süre:',
+            'uk' => 'Тривалість:',
+            'ur' => 'دورانیہ:',
+            'vi' => 'Thời lượng:'
+        ],
+        'broadcast' => [
+            'ar' => 'بث:',
+            'bn' => 'প্রচার:',
+            'en' => 'Broadcast:',
+            'my' => 'ထုတ်လွှင့်မှု:',
+            'zh' => '播出:',
+            'zt' => '播放:',
+            'fr' => 'Diffusion:',
+            'hi' => 'प्रसारण:',
+            'id' => 'Siaran:',
+            'ko' => '방송:',
+            'fa' => 'پخش:',
+            'pt' => 'Transmissão:',
+            'ru' => 'Трансляция:',
+            'es' => 'Emisión:',
+            'sw' => 'Matangazo:',
+            'th' => 'ออกอากาศ:',
+            'tr' => 'Yayın:',
+            'uk' => 'Трансляція:',
+            'ur' => 'نشریات:',
+            'vi' => 'Phát sóng:'
+        ],
+        'availableuntil' => [
+            'ar' => 'متاح حتى:',
+            'bn' => 'পর্যন্ত উপলব্ধ:',
+            'en' => 'Available until:',
+            'my' => 'ရရှိနိုင်သည်:',
+            'zh' => '可用至:',
+            'zt' => '可用至:',
+            'fr' => 'Disponible jusqu’au:',
+            'hi' => 'उपलब्ध है:',
+            'id' => 'Tersedia hingga:',
+            'ko' => '이용 가능:',
+            'fa' => 'در دسترس تا:',
+            'pt' => 'Disponível até:',
+            'ru' => 'Доступно до:',
+            'es' => 'Disponible hasta:',
+            'sw' => 'Inapatikana hadi:',
+            'th' => 'ใช้งานได้จนถึง:',
+            'tr' => 'Kullanılabilir:',
+            'uk' => 'Доступно до:',
+            'ur' => 'دستیاب ہے:',
+            'vi' => 'Có sẵn đến:'
+        ],
+        'watchdirectly' => [
+            'ar' => 'شاهد مباشرة على مشغل الفيديو',
+            'bn' => 'সরাসরি ভিডিও প্লেয়ারে দেখুন',
+            'en' => 'Watch on direct video player',
+            'my' => 'တိုက်ရိုက်ဗီဒီယိုပလေယာတွင်ကြည့်ပါ',
+            'zh' => '在直接视频播放器上观看',
+            'zt' => '在直接视频播放器上观看',
+            'fr' => 'Regarder sur le lecteur vidéo direct',
+            'hi' => 'प्रत्यक्ष वीडियो प्लेयर पर देखें',
+            'id' => 'Tonton di pemutar video langsung',
+            'ko' => '직접 비디오 플레이어에서 시청하기',
+            'fa' => 'مشاهده در پخش کننده ویدیویی مستقیم',
+            'pt' => 'Assista no reprodutor de vídeo direto',
+            'ru' => 'Смотреть на прямом видеоплеере',
+            'es' => 'Ver en reproductor de video directo',
+            'sw' => 'Tazama kwenye mchezaji wa video moja kwa moja',
+            'th' => 'ดูบนเครื่องเล่นวิดีโอโดยตรง',
+            'tr' => 'Doğrudan video oynatıcıda izle',
+            'uk' => 'Дивитися на прямому відеоплеєрі',
+            'ur' => 'براہ راست ویڈیو پلیئر پر دیکھیں',
+            'vi' => 'Xem trên trình phát video trực tiếp'
+        ],
+        'watchonplayer' => [
+            'ar' => 'شاهد على مشغل NHK World-Japan',
+            'bn' => 'NHK World-Japan প্লেয়ারে দেখুন',
+            'en' => 'Watch on NHK World-Japan player',
+            'my' => 'NHK World-Japan ပလေယာတွင်ကြည့်ပါ',
+            'zh' => '在NHK World-Japan播放器上观看',
+            'zt' => '在NHK World-Japan播放器上观看',
+            'fr' => 'Regarder sur le lecteur NHK World-Japan',
+            'hi' => 'NHK World-Japan प्लेयर पर देखें',
+            'id' => 'Tonton di pemutar NHK World-Japan',
+            'ko' => 'NHK World-Japan 플레이어에서 시청하기',
+            'fa' => 'مشاهده در پخش کننده NHK World-Japan',
+            'pt' => 'Assista no reprodutor NHK World-Japan',
+            'ru' => 'Смотреть на плеере NHK World-Japan',
+            'es' => 'Ver en reproductor de NHK World-Japan',
+            'sw' => 'Tazama kwenye mchezaji wa NHK World-Japan',
+            'th' => 'ดูบนเครื่องเล่น NHK World-Japan',
+            'tr' => 'NHK World-Japan oynatıcısında izle',
+            'uk' => 'Дивитися на плеєрі NHK World-Japan',
+            'ur' => 'NHK World-Japan پلیئر پر دیکھیں',
+            'vi' => 'Xem trên trình phát NHK World-Japan'
+        ]
+    ];
+
+    protected static $rtlLanguages = [
+        'ar','fa','ur'
+    ];
+
     public function getURI()
     {
         if (($this->getInput('show')) && ($this->getInput('language'))) {
@@ -86,6 +203,8 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
     {
         $json = getContents('https://api.nhkworld.jp/nwapi/vodesdlist/v7b/program/' . $this->getInput('show') . '/' . $this->getInput('language') . '/all/all.json');
         $data = json_decode($json, true);
+        $serverLocale = setlocale(LC_TIME, 0);
+        $isEnglishLocale = (in_array($serverLocale, ['C', 'POSIX'])) || preg_match('/^en_/', $serverLocale) || strpos($serverLocale, 'English') !== false;
 
         if (isset($data['data']['episodes']) && is_array($data['data']['episodes'])) {
             foreach ($data['data']['episodes'] as $program) {
@@ -112,15 +231,20 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
 
                 $dt = new DateTime('@' . ($onair / 1000));
                 $dt->setTimezone(new DateTimeZone('UTC'));
-                $broadcastdate = $dt->format('F j, Y');
+                $broadcastdate = ($this->getInput('language') === 'en' && $isEnglishLocale) ? $dt->format('F j, Y') : $dt->format('Y-m-d');
+                $voddate = ($this->getInput('language') === 'en' && $isEnglishLocale) ? date('F j, Y', $vod_to / 1000) : date('Y-m-d', $vod_to / 1000);
+                $spantag = '<span dir="' . (in_array($this->getInput('language'), self::$rtlLanguages) ? 'rtl' : 'ltr') . '">';
 
+                $description = $spantag . $description;
                 $description .= '<br><br>';
-                $description .= 'Length: ' . $movielength . '<br>';
-                $description .= 'Broadcast: ' . $broadcastdate . ' UTC / Available until ' . date('F j, Y', $vod_to / 1000) . '<br><br>';
+                $description .= $this->getLocaleString('length') . ' ' . $movielength . '<br>';
+                $description .= $this->getLocaleString('broadcast') . ' ' . $broadcastdate . ' UTC <br> ' . $this->getLocaleString('availableuntil') . ' ' . $voddate . '<br><br>';
+
                 $description .= $embedhtml;
 
-                $description .= '<a href="' . $iframeurl . '" referrerpolicy="no-referrer">Watch on direct video player</a>';
-                $description .= '<br><a href="' . self::URI . $url . '" referrerpolicy="no-referrer">Watch on NHK World-Japan player</a>';
+                $description .= '<a href="' . $iframeurl . '" referrerpolicy="no-referrer">' . $this->getLocaleString('watchdirectly') . '</a>';
+                $description .= '<br><a href="' . self::URI . $url . '" referrerpolicy="no-referrer">' . $this->getLocaleString('watchonplayer') . '</a>';
+                $description .= '</span>';
 
                 $item = [];
                 $item['uri'] = self::URI . $url;
@@ -149,5 +273,19 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
         }
 
         return null;
+    }
+
+    protected function getLocaleString($string)
+    {
+        $language = $this->getInput('language');
+        if (isset(self::$labels[$string][$language])) {
+            return self::$labels[$string][$language];
+        }
+
+        if (isset(self::$labels[$string]['en'])) {
+            return self::$labels[$string]['en'];
+        }
+
+        return '';
     }
 }
