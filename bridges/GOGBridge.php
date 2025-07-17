@@ -9,20 +9,19 @@ class GOGBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $values = getContents('https://www.gog.com/games/ajax/filtered?limit=25&sort=new');
+        $values = getContents('https://catalog.gog.com/v1/catalog?limit=48&order=desc%3AstoreReleaseDate');
         $decodedValues = json_decode($values);
 
         $limit = 0;
         foreach ($decodedValues->products as $game) {
             $item = [];
-            $item['author'] = $game->developer . ' / ' . $game->publisher;
+            $item['author'] = implode(', ', $game->developers) . ' / ' . implode(', ', $game->publishers);
             $item['title'] = $game->title;
             $item['id'] = $game->id;
-            $item['uri'] = self::URI . $game->url;
+            $item['uri'] = $game->storeLink;
             $item['content'] = $this->buildGameContentPage($game);
-            $item['timestamp'] = $game->globalReleaseDate;
 
-            foreach ($game->gallery as $image) {
+            foreach ($game->screenshots as $image) {
                 $item['enclosures'][] = $image . '.jpg';
             }
 
@@ -42,18 +41,10 @@ class GOGBridge extends BridgeAbstract
         $gameDescriptionValue = json_decode($gameDescriptionText);
 
         $content = 'Genres: ';
-        $content .= implode(', ', $game->genres);
+        $content .= implode(', ', array_column($game->genres, 'name'));
 
         $content .= '<br />Supported Platforms: ';
-        if ($game->worksOn->Windows) {
-            $content .= 'Windows ';
-        }
-        if ($game->worksOn->Mac) {
-            $content .= 'Mac ';
-        }
-        if ($game->worksOn->Linux) {
-            $content .= 'Linux ';
-        }
+        $content .= implode(', ', $game->operatingSystems);
 
         $content .= '<br />' . $gameDescriptionValue->description->full;
 
