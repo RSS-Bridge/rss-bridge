@@ -89,7 +89,8 @@ class ZeitBridge extends FeedExpander
             $article->find(
                 'aside, .visually-hidden, .carousel-container, #tickaroo-liveblog, .zplus-badge,
                 .article-heading__container--podcast, .podcast-player__image, div[data-paywall],
-                .js-embed-consent, script, nav, .article-flexible-toc__subheading-link, .faq-link'
+                .js-embed-consent, script, nav, .article-flexible-toc__subheading-link, .faq-link,
+                .zoner-article-magazinbox'
             ) as $bad
         ) {
             $bad->remove();
