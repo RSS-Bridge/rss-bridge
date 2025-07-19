@@ -119,6 +119,11 @@ class ZeitBridge extends FeedExpander
         }
 
         $item['content'] = '';
+        // advertorial marker
+        $advert = $article->find('.advertorial-marker', 0);
+        if ($advert) {
+            $item['content'] .= $advert;
+        }
 
         // summary
         $summary = $article->find('.summary');
