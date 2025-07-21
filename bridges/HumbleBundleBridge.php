@@ -49,8 +49,8 @@ class HumbleBundleBridge extends BridgeAbstract
             array_unshift($item['categories'], explode(':', $element['tile_name'])[0]);
             array_unshift($item['categories'], $element['tile_stamp']);
 
-            $this->createChild($dom, $body, 'img', args: ['src' => $element['tile_logo']]);
-            $this->createChild($dom, $body, 'img', args: ['src' => $element['high_res_tile_image']]);
+            $this->createChild($dom, $body, 'img', null, ['src' => $element['tile_logo']]);
+            $this->createChild($dom, $body, 'img', null, ['src' => $element['high_res_tile_image']]);
             $this->createChild($dom, $body, 'h2', $element['short_marketing_blurb']);
             $this->createChild($dom, $body, 'p', $element['detailed_marketing_blurb']);
 
@@ -96,12 +96,12 @@ class HumbleBundleBridge extends BridgeAbstract
                 array_push($seen, $name);
 
                 $element = $json['tier_item_data'][$name];
-                $head = $this->createChild($dom, $body, 'h3', args: ['id' => $name]);
+                $head = $this->createChild($dom, $body, 'h3', null, ['id' => $name]);
                 $head_link = $this->createChild($dom, $head, 'a', $element['human_name'], ['id' => $name]);
                 $li = $this->createChild($dom, $toc_tier, 'li');
                 $this->createChild($dom, $li, 'a', $element['human_name'], ['href' => "#$name"]);
-                $this->createChild($dom, $body, 'img', args: ['src' => $element['resolved_paths']['featured_image']]);
-                $this->createChild($dom, $body, 'img', args: ['src' => $element['resolved_paths']['preview_image']]);
+                $this->createChild($dom, $body, 'img', null, ['src' => $element['resolved_paths']['featured_image']]);
+                $this->createChild($dom, $body, 'img', null, ['src' => $element['resolved_paths']['preview_image']]);
                 $this->createChild($dom, $body, 'br');
                 if ($element['description_text']) {
                     $body->appendChild(str_get_html($element['description_text'])->root);
