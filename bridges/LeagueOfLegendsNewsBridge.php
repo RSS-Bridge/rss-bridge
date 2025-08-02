@@ -98,7 +98,7 @@ class LeagueOfLegendsNewsBridge extends BridgeAbstract
 
         if ($onlyPatchNotes) {
             return $url . '/tags/patch-notes';
-        } else if ($category === 'all') {
+        } elseif ($category === 'all') {
             return $url;
         }
 

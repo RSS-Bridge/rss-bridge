@@ -85,7 +85,7 @@ function html_find_seo_metadata($html)
             $element = null;
             if ($field === 'canonical') {
                 $element = $html->find('link[rel=canonical]');
-            } else if ($field === 'time') {
+            } elseif ($field === 'time') {
                 $element = $html->find('time[datetime]');
             } else {
                 $element = $html->find("meta[property=$field], meta[name=$field]");
@@ -96,7 +96,7 @@ function html_find_seo_metadata($html)
                 $field_value = '';
                 if ($field === 'canonical') {
                     $field_value = $element->href;
-                } else if ($field === 'time') {
+                } elseif ($field === 'time') {
                     $field_value = $element->datetime;
                 } else {
                     $field_value = $element->content;
@@ -104,7 +104,7 @@ function html_find_seo_metadata($html)
                 if (!empty($field_value)) {
                     if ($field === 'article:author:first_name' || $field === 'profile:first_name') {
                         $author_first_name = $field_value;
-                    } else if ($field === 'article:author:last_name' || $field === 'profile:last_name') {
+                    } elseif ($field === 'article:author:last_name' || $field === 'profile:last_name') {
                         $author_last_name = $field_value;
                     } else {
                         $item[$property] = $field_value;
@@ -230,7 +230,7 @@ function html_find_seo_metadata($html)
                         }
                     }
                 // JSON item that holds an ld+json Author object (or a variant)
-                } else if ($ldjson_is_of_type($json, $ldjson_author_types)) {
+                } elseif ($ldjson_is_of_type($json, $ldjson_author_types)) {
                     if (isset($json['@id']) && isset($json['name'])) {
                         $ldjson_author_mappings[$json['@id']] = $json['name'];
                     }

@@ -1,4 +1,5 @@
 <?php
+
 abstract class WhiteHouseBridge extends BridgeAbstract
 {
     // This is the core scraping logic that will be shared by all White House bridges.
@@ -23,13 +24,13 @@ abstract class WhiteHouseBridge extends BridgeAbstract
             if ($dateElement && !empty($dateElement->datetime)) {
                 $item['timestamp'] = strtotime($dateElement->datetime);
             }
-            
+
             // Add categories from the meta tags for better filtering
             $categories = [];
-            foreach($article->find('div.taxonomy-category a') as $categoryLink) {
+            foreach ($article->find('div.taxonomy-category a') as $categoryLink) {
                 $categories[] = trim($categoryLink->plaintext);
             }
-            if(!empty($categories)) {
+            if (!empty($categories)) {
                 $item['categories'] = $categories;
             }
 

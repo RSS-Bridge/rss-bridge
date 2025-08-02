@@ -527,7 +527,7 @@ HEREDOC;
         // This permit to keep the existing Feed to work
         if ($order == $this->i8n('context-hot')) {
             $sortBy = 'temp';
-        } else if ($order == $this->i8n('context-new')) {
+        } elseif ($order == $this->i8n('context-new')) {
             $sortBy = 'new';
         }
 

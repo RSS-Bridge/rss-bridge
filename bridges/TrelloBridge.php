@@ -658,7 +658,7 @@ class TrelloBridge extends BridgeAbstract
         if (preg_match($regex, $url, $matches) > 0) {
             if ($matches[2] == 'b') {
                 $context = 'Board';
-            } else if ($matches[2] == 'c') {
+            } elseif ($matches[2] == 'c') {
                 $context = 'Card';
             }
             return [

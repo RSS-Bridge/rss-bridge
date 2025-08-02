@@ -65,7 +65,7 @@ class YorushikaBridge extends BridgeAbstract
         $categories = [];
         if ($this->queriedContext == 'All categories') {
             array_push($categories, 'all');
-        } else if ($this->queriedContext == 'Only selected categories') {
+        } elseif ($this->queriedContext == 'Only selected categories') {
             if ($this->getInput('yorushika')) {
                 array_push($categories, 'ヨルシカ');
             }

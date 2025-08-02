@@ -1,5 +1,6 @@
 <?php
-require_once 'WhiteHouseBridge.php';
+
+require_once __DIR__ . '/../lib/WhiteHouseBridge.php';
 
 class WhiteHousePresidentialActionsBridge extends WhiteHouseBridge
 {

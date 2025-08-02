@@ -85,7 +85,7 @@ class FindfeedAction implements ActionInterface
     {
         if (isset($bridge::PARAMETERS[$context][$key]['name'])) {
             $name = $bridge::PARAMETERS[$context][$key]['name'];
-        } else if (isset($bridge::PARAMETERS['global'][$key]['name'])) {
+        } elseif (isset($bridge::PARAMETERS['global'][$key]['name'])) {
             $name = $bridge::PARAMETERS['global'][$key]['name'];
         } else {
             $name = 'Variable "' . $key . '" (No name provided)';
