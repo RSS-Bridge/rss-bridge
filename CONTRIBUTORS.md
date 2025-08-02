@@ -183,6 +183,7 @@
 * [shutosg](https://github.com/shutosg)
 * [simon816](https://github.com/simon816)
 * [Simounet](https://github.com/Simounet)
+* [sij-ai](https://github.com/sij-ai)
 * [somini](https://github.com/somini)
 * [SpangleLabs](https://github.com/SpangleLabs)
 * [SqrtMinusOne](https://github.com/SqrtMinusOne)
