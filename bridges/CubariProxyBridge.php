@@ -15,7 +15,7 @@ class CubariProxyBridge extends BridgeAbstract
                 'MangAventure' => 'mangadventure',
                 'MangaDex' => 'mangadex',
                 'MangaKatana' => 'mangakatana',
-                'MangaSee' => 'mangasee',
+                'WeebCentral' => 'weebcentral',
             ]
         ],
         'series' => [
