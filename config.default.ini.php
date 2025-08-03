@@ -23,7 +23,7 @@
 ;enabled_bridges[] = Twitch
 ;enabled_bridges[] = XPathBridge
 ;enabled_bridges[] = Youtube
-;enabled_bridges[] = YouTubePostsTabBridge
+;enabled_bridges[] = YouTubeCommunityTabBridge
 enabled_bridges[] = *
 
 timezone = "UTC"
