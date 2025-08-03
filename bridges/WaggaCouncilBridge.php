@@ -1,6 +1,7 @@
 <?php
 
-class WaggaCouncilBridge extends BridgeAbstract {
+class WaggaCouncilBridge extends BridgeAbstract
+{
     const NAME = 'Wagga Wagga Council';
     const URI = 'https://news.wagga.nsw.gov.au/';
     const DESCRIPTION = 'Wagga Wagga Council updates';
@@ -25,12 +26,14 @@ class WaggaCouncilBridge extends BridgeAbstract {
         ]
     ];
 
-    public function getURI(): string {
+    public function getURI(): string
+    {
         $section = $this->getInput('section') ?: 'council';
         return urljoin(self::URI, $section);
     }
 
-    public function collectData(): void {
+    public function collectData(): void
+    {
         $html = getSimpleHTMLDOM($this->getURI());
 
         foreach ($html->find('div.container') as $container) {
@@ -64,18 +67,18 @@ class WaggaCouncilBridge extends BridgeAbstract {
                         '.article__badge',
                         'p.text-muted',
                     ];
-                    
+
                     foreach ($selectorsToRemove as $sel) {
                         foreach ($article->find($sel) as $el) {
                             $el->outertext = '';
                         }
                     }
-            
+
                     foreach ($article->find('iframe') as $iframe) {
                         $src = $iframe->getAttribute('src');
                         $iframe->outertext = '<p><a href="' . htmlspecialchars($src) . '">Embedded content: ' . htmlspecialchars($src) . '</a></p>';
                     }
-                    
+
                     // Enhance list rendering
                     foreach ($article->find('ul') as $ul) {
                         $ul->style = 'margin-left: 1em; padding-left: 1em;';
