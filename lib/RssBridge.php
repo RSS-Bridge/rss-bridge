@@ -23,11 +23,11 @@ final class RssBridge
         $handler = $this->container[$actionName];
 
         $middlewares = [
+            new BasicAuthMiddleware(),
             new CacheMiddleware($this->container['cache']),
             new ExceptionMiddleware($this->container['logger']),
             new SecurityMiddleware(),
             new MaintenanceMiddleware(),
-            new BasicAuthMiddleware(),
             new TokenAuthenticationMiddleware(),
         ];
         $action = function ($req) use ($handler) {
