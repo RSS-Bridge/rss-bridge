@@ -126,7 +126,7 @@ class AnnasArchiveBridge extends BridgeAbstract
             return;
         }
 
-        $elements = $list->find('.w-full > .mb-4 > div');
+        $elements = $list->find('#aarecord-list > div');
         foreach ($elements as $element) {
             // stop added entries once partial match list starts
             if (str_contains($element->innertext, 'partial match')) {
