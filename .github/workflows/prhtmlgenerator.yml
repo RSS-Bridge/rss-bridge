@@ -15,7 +15,7 @@ jobs:
       - name: Check number of bridges
         id: check_bridges
         run: |
-          PR=${{github.event.number}};
+          PR=${{ github.event.number || 'none' }};
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
           bridgeamount=$(cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq | wc -l);
           echo "BRIDGES=$bridgeamount" >> "$GITHUB_OUTPUT"
@@ -39,7 +39,7 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Check out rss-bridge
         run: |
-          PR=${{github.event.number}};
+          PR=${{ github.event.number || 'none' }};
           wget -O requirements.txt https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester-requirements.txt;
           wget https://raw.githubusercontent.com/$GITHUB_REPOSITORY/${{ github.event.pull_request.base.ref }}/.github/prtester.py;
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
@@ -65,7 +65,7 @@ jobs:
         id: testrun
         run: |
           mkdir results;
-          python prtester.py --artifacts-base-url "https://${{ github.repository_owner }}.github.io/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}/prs/${{ github.event.number }}";
+          python prtester.py --artifacts-base-url "https://${{ github.repository_owner }}.github.io/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}/prs/${{ github.event.number || 'none' }}";
           body="$(cat comment.txt)";
           body="${body//'%'/'%25'}";
           body="${body//$'\n'/'%0A'}";
@@ -114,14 +114,14 @@ jobs:
           name: tests
       - name: Move tests
         run: |
-          DIRECTORY="$GITHUB_WORKSPACE/prs/${{ github.event.number }}"
+          DIRECTORY="$GITHUB_WORKSPACE/prs/${{ github.event.number || 'none' }}"
           rm -rf $DIRECTORY
           mkdir -p $DIRECTORY
           cd $DIRECTORY
           mv -f $GITHUB_WORKSPACE/*.html .
       - name: Commit and push generated tests
         run: |
-          export COMMIT_MESSAGE="Added tests for PR ${{github.event.number}}"
+          export COMMIT_MESSAGE="Added tests for PR ${{ github.event.number || 'none' }}"
           git add .
           git commit -m "$COMMIT_MESSAGE" || exit 0
           git push
