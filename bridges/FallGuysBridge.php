@@ -37,13 +37,14 @@ class FallGuysBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::getURI());
+        $newsData = self::requestJsonData(self::getURI(), false);
 
-        $data = json_decode($html->find('#__NEXT_DATA__', 0)->innertext);
+        foreach ($newsData->props->pageProps->newsList as $newsItem) {
+            $newsItemUrl = self::getURI() . '/' . $newsItem->slug;
+            $newsItemTitle = $newsItem->header->title;
 
-        foreach ($data->props->pageProps->newsList as $newsItem) {
             $headerDescription = property_exists($newsItem->header, 'description') ? $newsItem->header->description : '';
-            $headerImage = $newsItem->header->image->src;
+            $headerImage = $newsItem->newsLandingConfig->options[0]->image->src->url;
 
             $contentImages = [$headerImage];
 
@@ -52,67 +53,79 @@ class FallGuysBridge extends BridgeAbstract
             <p><img src="{$headerImage}"></p>
             HTML;
 
-            foreach ($newsItem->content->items as $contentItem) {
-                if (property_exists($contentItem, 'articleCopy')) {
-                    if (property_exists($contentItem->articleCopy, 'title')) {
-                        $title = $contentItem->articleCopy->title;
+            try {
+                $newsItemData = self::requestJsonData($newsItemUrl, true);
+            } catch (\Exception $e) {
+                $this->logger->error(sprintf('Failed to request data for news item "%s" (%s)', $newsItemTitle, $newsItemUrl), ['e' => $e]);
+                $newsItemData = null;
+            }
+            if (!$newsItemData) {
+                $this->logger->error(sprintf('Failed to parse json data for news item "%s" (%s)', $newsItemTitle, $newsItemUrl));
+            } else {
+                foreach ($newsItemData->props->pageProps->pageData->content->items as $contentItem) {
+                    if (property_exists($contentItem, 'articleCopy')) {
+                        if (property_exists($contentItem->articleCopy, 'title')) {
+                            $title = $contentItem->articleCopy->title;
+
+                            $content .= <<<HTML
+                            <h2>{$title}</h2>
+                            HTML;
+                        }
+
+                        $text = $contentItem->articleCopy->copy;
 
                         $content .= <<<HTML
-                        <h2>{$title}</h2>
+                        <p>{$text}</p>
                         HTML;
-                    }
+                    } elseif (property_exists($contentItem, 'articleImage')) {
+                        $image = $contentItem->articleImage->imageSrc;
 
-                    $text = $contentItem->articleCopy->copy;
+                        if ($image != $headerImage) {
+                            $contentImages[] = $image;
 
-                    $content .= <<<HTML
-                    <p>{$text}</p>
-                    HTML;
-                } elseif (property_exists($contentItem, 'articleImage')) {
-                    $image = $contentItem->articleImage->imageSrc;
+                            $content .= <<<HTML
+                            <p><img src="{$image}"></p>
+                            HTML;
+                        }
+                    } elseif (property_exists($contentItem, 'embeddedVideo')) {
+                        $mediaOptions = $contentItem->embeddedVideo->mediaOptions;
+                        $mainContentOptions = $contentItem->embeddedVideo->mainContentOptions;
 
-                    if ($image != $headerImage) {
-                        $contentImages[] = $image;
+                        if (count($mediaOptions) == count($mainContentOptions)) {
+                            for ($i = 0; $i < count($mediaOptions); $i++) {
+                                if (property_exists($mediaOptions[$i], 'youtubeVideo')) {
+                                    $videoUrl = 'https://youtu.be/' . $mediaOptions[$i]->youtubeVideo->contentId;
+                                    $image = $mainContentOptions[$i]->image->src ?? '';
 
-                        $content .= <<<HTML
-                        <p><img src="{$image}"></p>
-                        HTML;
-                    }
-                } elseif (property_exists($contentItem, 'embeddedVideo')) {
-                    $mediaOptions = $contentItem->embeddedVideo->mediaOptions;
-                    $mainContentOptions = $contentItem->embeddedVideo->mainContentOptions;
+                                    $content .= '<p>';
 
-                    if (count($mediaOptions) == count($mainContentOptions)) {
-                        for ($i = 0; $i < count($mediaOptions); $i++) {
-                            if (property_exists($mediaOptions[$i], 'youtubeVideo')) {
-                                $videoUrl = 'https://youtu.be/' . $mediaOptions[$i]->youtubeVideo->contentId;
-                                $image = $mainContentOptions[$i]->image->src ?? '';
+                                    if ($image != $headerImage) {
+                                        $contentImages[] = $image;
 
-                                $content .= '<p>';
-
-                                if ($image != $headerImage) {
-                                    $contentImages[] = $image;
+                                        $content .= <<<HTML
+                                        <a href="{$videoUrl}"><img src="{$image}"></a><br>
+                                        HTML;
+                                    }
 
                                     $content .= <<<HTML
-                                    <a href="{$videoUrl}"><img src="{$image}"></a><br>
+                                    <i>(Video: <a href="{$videoUrl}">{$videoUrl}</a>)</i>
                                     HTML;
+
+                                    $content .= '</p>';
                                 }
-
-                                $content .= <<<HTML
-                                <i>(Video: <a href="{$videoUrl}">{$videoUrl}</a>)</i>
-                                HTML;
-
-                                $content .= '</p>';
                             }
                         }
+                    } else {
+                        $this->logger->warning(sprintf('Unsupported content item in news item "%s" (%s)', $newsItemTitle, $newsItemUrl));
                     }
                 }
             }
 
             $item = [
-                'uid' => $newsItem->_id,
-                'uri' => self::getURI() . '/' . $newsItem->_slug,
-                'title' => $newsItem->_title,
-                'timestamp' => $newsItem->lastModified,
+                'uid' => $newsItem->id,
+                'uri' => $newsItemUrl,
+                'title' => $newsItemTitle,
+                'timestamp' => $newsItem->activeDate,
                 'content' => $content,
                 'enclosures' => $contentImages,
             ];
@@ -130,5 +143,13 @@ class FallGuysBridge extends BridgeAbstract
     public function getIcon()
     {
         return self::BASE_URI . '/favicon.ico';
+    }
+
+    private function requestJsonData(string $url, bool $useCache)
+    {
+        $html = $useCache ? getSimpleHTMLDOMCached($url) : getSimpleHTMLDOM($url);
+        $jsonElement = $html->find('#__NEXT_DATA__', 0);
+        $json = $jsonElement ? $jsonElement->innertext : null;
+        return json_decode($json);
     }
 }
