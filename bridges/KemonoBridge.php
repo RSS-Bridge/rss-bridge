@@ -24,6 +24,11 @@ class KemonoBridge extends BridgeAbstract
             'name' => 'User ID/Name',
             'exampleValue' => '9069743', # Thomas Joy
             'required' => true,
+        ],
+        'q' => [
+            'name' => 'Search query',
+            'exampleValue' => 'classic',
+            'required' => false,
         ]
     ]];
 
@@ -33,13 +38,17 @@ class KemonoBridge extends BridgeAbstract
     {
         $api = parent::getURI() . 'api/v1/';
         $url = $api . $this->getInput('service') . '/user/' . $this->getInput('user');
+
+        $api_response = getContents($url . '/profile');
+        $profile = Json::decode($api_response);
+        $this->title = ucfirst($profile['name']);
+
+        if ($this->getInput('q')) {
+            $url .= '?q=' . urlencode($this->getInput('q'));
+        }
         $api_response = getContents($url);
         $json = Json::decode($api_response);
 
-        $url .= '/profile';
-        $api_response = getContents($url);
-        $profile = Json::decode($api_response);
-        $this->title = ucfirst($profile['name']);
 
         foreach ($json as $element) {
             $item = [];
