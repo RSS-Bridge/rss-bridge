@@ -145,7 +145,7 @@ class FallGuysBridge extends BridgeAbstract
         return self::BASE_URI . '/favicon.ico';
     }
 
-    private function requestJsonData(string $url, bool $useCache): mixed
+    private function requestJsonData(string $url, bool $useCache)
     {
         $html = $useCache ? getSimpleHTMLDOMCached($url) : getSimpleHTMLDOM($url);
         $jsonElement = $html->find('#__NEXT_DATA__', 0);
