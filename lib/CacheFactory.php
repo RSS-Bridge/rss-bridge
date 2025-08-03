@@ -12,7 +12,7 @@ class CacheFactory
         $this->logger = $logger;
     }
 
-    public function create(string $name = null): CacheInterface
+    public function create(?string $name = null): CacheInterface
     {
         $cacheNames = [];
         foreach (scandir(PATH_LIB_CACHES) as $file) {

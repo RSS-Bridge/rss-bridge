@@ -45,7 +45,7 @@ class FileCache implements CacheInterface
         return $default;
     }
 
-    public function set($key, $value, int $ttl = null): void
+    public function set($key, $value, ?int $ttl = null): void
     {
         $item = [
             'key'           => $key,

@@ -23,7 +23,7 @@ class ArrayCache implements CacheInterface
         return $default;
     }
 
-    public function set(string $key, $value, int $ttl = null): void
+    public function set(string $key, $value, ?int $ttl = null): void
     {
         $this->data[$key] = [
             'key'           => $key,

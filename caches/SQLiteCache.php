@@ -77,7 +77,7 @@ class SQLiteCache implements CacheInterface
         return $default;
     }
 
-    public function set(string $key, $value, int $ttl = null): void
+    public function set(string $key, $value, ?int $ttl = null): void
     {
         $cacheKey = $this->createCacheKey($key);
         $blob = serialize($value);
