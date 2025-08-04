@@ -27,7 +27,13 @@ class SubitoBridge extends BridgeAbstract
     {
         $url = $this->getInput('url');
 
-        $dom = getSimpleHTMLDOMCached($url);
+        $headers = [
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/141.0',
+                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language: it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3'
+        ];
+
+        $dom = getSimpleHTMLDOMCached($url, $CACHE_TIMEOUT, $headers);
 
         $json = $dom->getElementById('__NEXT_DATA__');
         $data = json_decode($json->innertext());
