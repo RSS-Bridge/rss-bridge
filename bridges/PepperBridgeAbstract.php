@@ -62,7 +62,8 @@ class PepperBridgeAbstract extends BridgeAbstract
             foreach ($list as $deal) {
                 // Get the JSON Data stored as vue
                 $jsonDealData = $this->getDealJsonData($deal);
-                $dealMeta = Json::decode($deal->find('div[class=js-vue2]', 1)->getAttribute('data-vue2'));
+                // DEPRECATED : website does not show this info in the deal list anymore
+                // $dealMeta = Json::decode($deal->find('div[class=js-vue3]', 1)->getAttribute('data-vue3'));
 
                 $item = [];
                 $item['uri'] = $this->getDealURI($jsonDealData);
@@ -77,7 +78,10 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $this->getHTMLTitle($jsonDealData)
                     . $this->getPrice($jsonDealData)
                     . $this->getDiscount($jsonDealData)
-                    . $this->getShipsFrom($dealMeta)
+                    /*
+                     * DEPRECATED : the list does not show this info anymore
+                     * . $this->getShipsFrom($dealMeta)
+                     */
                     . $this->getShippingCost($jsonDealData)
                     . $this->getSource($jsonDealData)
                     . $this->getDealLocation($jsonDealData)
@@ -354,7 +358,7 @@ HEREDOC;
      */
     private function getDealJsonData($deal)
     {
-        $data = Json::decode($deal->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
+        $data = Json::decode($deal->find('div[class=js-vue3]', 0)->getAttribute('data-vue3'));
         return $data;
     }
 
@@ -419,7 +423,7 @@ HEREDOC;
     private function getImage($deal)
     {
         // Get thread Image JSON content
-        $content = Json::decode($deal->find('div[class=js-vue2]', 0)->getAttribute('data-vue2'));
+        $content = Json::decode($deal->find('div[class=js-vue3]', 0)->getAttribute('data-vue3'));
         //return '<img src="' . $content['props']['threadImageUrl'] . '"/>';
         return '<img src="' . $this->i8n('image-host') . $content['props']['thread']['mainImage']['path'] . '/'
             . $content['props']['thread']['mainImage']['name'] . '/re/202x202/qt/70/'
@@ -429,6 +433,7 @@ HEREDOC;
     /**
      * Get the originating country from a Deal if it exists
      * @return string String of the deal originating country
+     * DEPRECATED : the deal on the result list does not contain this info anymore
      */
     private function getShipsFrom($dealMeta)
     {

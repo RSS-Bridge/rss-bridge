@@ -48,7 +48,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract
                            . $pwnCount . ' breached accounts';
             $item['dateAdded'] = $breach['AddedDate'];
             $item['breachDate'] = $breach['BreachDate'];
-            $item['uri'] = self::URI . '/PwnedWebsites#' . $breach['Name'];
+            $item['uri'] = self::URI . '/breach/' . $breach['Name'];
 
             $item['content'] = '<p>' . $breach['Description'] . '</p>';
             $item['content'] .= '<p>' . $this->breachType($breach) . '</p>';

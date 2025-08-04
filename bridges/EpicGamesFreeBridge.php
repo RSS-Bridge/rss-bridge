@@ -59,13 +59,20 @@ class EpicGamesFreeBridge extends BridgeAbstract
             ) {
                 continue;
             }
+            $slug = $element['catalogNs']['mappings'][0]['pageSlug'] ?? null;
+            if ($slug !== null) {
+                $uri = parent::getURI() . $this->getInput('locale') . '/p/' . $slug;
+            } else {
+                // slug not found, show the root promos page
+                $uri = parent::getURI() . $this->getInput('locale') . '/free-games';
+            }
             $item = [
                 'author' => $element['seller']['name'],
                 'content' => $element['description'],
                 'enclosures' => array_map(fn($item) => $item['url'], $element['keyImages']),
                 'timestamp' => strtotime($promo['startDate']),
                 'title' => $element['title'],
-                'uri' => parent::getURI() . $this->getInput('locale') . '/p/' . $element['productSlug'],
+                'uri' => $uri,
             ];
             $this->items[] = $item;
         }

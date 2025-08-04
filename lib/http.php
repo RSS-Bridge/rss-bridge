@@ -227,7 +227,7 @@ final class Request
         return $this->get[$key] ?? $default;
     }
 
-    public function server(string $key, string $default = null): ?string
+    public function server(string $key, ?string $default = null): ?string
     {
         return $this->server[$key] ?? $default;
     }

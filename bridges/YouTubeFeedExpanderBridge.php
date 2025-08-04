@@ -38,12 +38,7 @@ class YouTubeFeedExpanderBridge extends FeedExpander
     {
         if ($this->getInput('channel') != null) {
             $html = getSimpleHTMLDOMCached($this->getURI());
-            $scriptRegex = '/var ytInitialData = (.*?);<\/script>/';
-            $result = preg_match($scriptRegex, $html, $matches);
-            if (isset($matches[1])) {
-                $json = json_decode($matches[1]);
-                return $json->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
-            }
+            return $html->find('[itemprop="thumbnailUrl"]', 0)->href;
         }
         return parent::getIcon();
     }

@@ -122,5 +122,5 @@ jobs:
         run: |
           export COMMIT_MESSAGE="Added tests for PR ${{github.event.number}}"
           git add .
-          git commit -m "$COMMIT_MESSAGE"
+          git commit -m "$COMMIT_MESSAGE" || exit 0
           git push

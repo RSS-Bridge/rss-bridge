@@ -138,6 +138,7 @@ class HeiseBridge extends FeedExpander
         }
         // abort on heise+ articles
         if ($sessioncookie == '' && str_starts_with($item['title'], 'heise+ |')) {
+            $item['uri'] = 'https://archive.is/' . $item['uri'];
             return $item;
         }
 
@@ -162,7 +163,7 @@ class HeiseBridge extends FeedExpander
         // remove unwanted stuff
         foreach (
             $article->find('figure.branding, figure.a-inline-image, a-ad, div.ho-text, a-img,
-            .a-toc__list, a-collapse, .opt-in__description, .opt-in__footnote') as $element
+            .a-toc__list, a-collapse, .opt-in__description, .opt-in__footnote, .notice-banner__text, .notice-banner__link') as $element
         ) {
             $element->remove();
         }

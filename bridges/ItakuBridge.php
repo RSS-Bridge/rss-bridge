@@ -443,7 +443,7 @@ class ItakuBridge extends BridgeAbstract
         return $data['owner'];
     }
 
-    private function getPost($id, array $metadata = null)
+    private function getPost($id, ?array $metadata = null)
     {
         if (isset($metadata) && count($metadata['gallery_images']) < $metadata['num_images']) {
             $metadata = null; //force re-fetch of metadata
@@ -515,7 +515,7 @@ class ItakuBridge extends BridgeAbstract
         ];
     }
 
-    private function getCommission($id, array $metadata = null)
+    private function getCommission($id, ?array $metadata = null)
     {
         $url = self::URI . '/api/commissions/' . $id . '/?format=json';
         $uri = self::URI . '/commissions/' . $id;

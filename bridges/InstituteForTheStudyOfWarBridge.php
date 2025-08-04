@@ -39,7 +39,7 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
         list($date_string, $user) = explode('-', $date_span->innertext);
         $date = DateTime::createFromFormat('F d, Y', trim($date_string));
 
-        $html = getSimpleHTMLDOMCached(self::URI . $uri);
+        $html = getSimpleHTMLDOMCached(self::URI . $uri, 60 * 60 * 24 * 7);
         $content = $html->find('[property=content:encoded]', 0)->innertext;
 
         $enclosures = [];
