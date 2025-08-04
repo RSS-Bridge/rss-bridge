@@ -46,7 +46,7 @@ Requires minimum PHP 7.4.
 * `TwitchBridge`: [Fetches videos from channel](https://rss-bridge.org/bridge01/#bridge-TwitchBridge)
 * `XPathBridge`: [Scrape out a feed using XPath expressions](https://rss-bridge.org/bridge01/#bridge-XPathBridge)
 * `YoutubeBridge`: [Fetches videos by username/channel/playlist/search](https://rss-bridge.org/bridge01/#bridge-YoutubeBridge)
-* `YouTubeCommunityTabBridge`: [Fetches posts from a channel's community tab](https://rss-bridge.org/bridge01/#bridge-YouTubeCommunityTabBridge)
+* `YouTubeCommunityTabBridge`: [Fetches posts from a channel's Posts tab](https://rss-bridge.org/bridge01/#bridge-YouTubeCommunityTabBridge)
 
 ## Tutorial
 
