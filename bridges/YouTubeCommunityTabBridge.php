@@ -72,10 +72,10 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
 
         $json = $this->extractJson($html->find('html', 0)->innertext);
 
-        $this->feedName = $json->header->c4TabbedHeaderRenderer->title;
-        $this->feedName ??= $json->header->pageHeaderRenderer->pageTitle;
-        $this->feedName ??= $json->metadata->channelMetadataRenderer->title;
-        $this->feedName ??= $json->microformat->microformatDataRenderer->title;
+        $this->feedName = $json->header->c4TabbedHeaderRenderer->title ?? null;
+        $this->feedName ??= $json->header->pageHeaderRenderer->pageTitle ?? null;
+        $this->feedName ??= $json->metadata->channelMetadataRenderer->title ?? null;
+        $this->feedName ??= $json->microformat->microformatDataRenderer->title ?? null;
         $this->feedName ??= '';
 
         if ($this->hasPostsTab($json) === false) {
