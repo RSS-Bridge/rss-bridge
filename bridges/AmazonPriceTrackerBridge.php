@@ -2,7 +2,7 @@
 
 class AmazonPriceTrackerBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'captn3m0, sal0max';
+    const MAINTAINER = 'captn3m0, sal0max, bagnacauda';
     const NAME = 'Amazon Price Tracker';
     const URI = 'https://www.amazon.com/';
     const CACHE_TIMEOUT = 3600; // 1h
@@ -13,7 +13,7 @@ class AmazonPriceTrackerBridge extends BridgeAbstract
         'asin' => [
             'name'          => 'ASIN',
             'required'      => true,
-            'exampleValue'  => 'B071GB1VMQ',
+            'exampleValue'  => 'B0923XT6K7',
             // https://stackoverflow.com/a/12827734
             'pattern'       => 'B[\dA-Z]{9}|\d{9}(X|\d)',
         ],
@@ -169,19 +169,23 @@ EOT;
 
     private function scrapePriceTwister($html)
     {
-        $str = $html->find('.twister-plus-buying-options-price-data', 0);
+        $json = $html->find('.twister-plus-buying-options-price-data', 0);
+        if ($json == null) {
+            return null;
+        }
 
-        $data = json_decode($str->innertext, true);
-        if (count($data) === 1) {
-            $data = $data[0];
+        $data = json_decode($json->innertext, true);
+        foreach ($data as $key => $value) {
+            $value = $value[0];
             return [
-                'displayPrice' => $data['displayPrice'],
-                'currency' => $data['currency'],
-                'shipping' => '0',
+                'displayPrice' => $value['displayPrice'],
+                'price' => $value['priceAmount'],
+                'currency' => $value['currencySymbol'],
+                'shipping' => null,
             ];
         }
 
-        return false;
+        return null;
     }
 
     private function scrapePriceGeneric($html)
@@ -206,9 +210,21 @@ EOT;
         }
 
         $priceString = str_replace(str_split(self::WHITESPACE), '', $priceDiv->plaintext);
-        preg_match('/(\d+\.\d{0,2})/', $priceString, $matches);
+        $price = null;
+        $priceFound = false;
 
-        $price = $matches[0] ?? null;
+    // find longest repeated string
+        for ($offset = 0; $offset < strlen($priceString); $offset++) {
+            for ($length = 1; substr_count($priceString, substr($priceString, $offset, $length + 1)) >= 2; $length++) {
+                $priceFound = true;
+            }
+
+            if ($priceFound) {
+                $price = substr($priceString, $offset, $length);
+                break;
+            }
+        }
+
         $currency = str_replace($price, '', $priceString);
 
         if ($price != null && $currency != null) {
@@ -216,7 +232,7 @@ EOT;
                 'price'     => $price,
                 'displayPrice'  => null,
                 'currency'  => $currency,
-                'shipping'  => '0'
+                'shipping'  => null
             ];
         }
         return $default;
@@ -227,7 +243,7 @@ EOT;
         $html = $this->getHtml();
         $this->title = $this->getTitle($html);
         $image = $this->getImage($html);
-        $data = $this->scrapePriceGeneric($html);
+        $data = $this->scrapePriceTwister($html) ?? $this->scrapePriceGeneric($html);
 
         // render
         $content = '';
@@ -236,7 +252,7 @@ EOT;
             $price = sprintf('%s %s', $data['price'], $data['currency']);
         }
         $content .= sprintf('%s<br>Price: %s', $image, $price);
-        if ($data['shipping'] !== '0') {
+        if ($data['shipping'] !== null) {
             $content .= sprintf('<br>Shipping: %s %s</br>', $data['shipping'], $data['currency']);
         }
 
