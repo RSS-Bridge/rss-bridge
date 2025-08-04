@@ -76,8 +76,8 @@ class SubitoBridge extends BridgeAbstract
             $query_img = '';
             foreach ($dom->find('script[type=application/ld+json]') as $json) {
                 $ld_json = json_decode($json->innertext());
-                if (property_exists($ld_json, '@graph') && count($ld_json->{'@graph'}) > 0) {
-                    $query_img = explode('?', $ld_json?->{'@graph'}[0]?->contentUrl)[1]; // i pick the first query string, to use for all images
+                if (property_exists($ld_json, '@graph') && count($ld_json->{'@graph'}) > 0 && property_exists($ld_json->{'@graph'}[0], 'contentUrl')) {
+                    $query_img = explode('?', $ld_json->{'@graph'}[0]->contentUrl)[1]; // i pick the first query string, to use for all images
                     break;
                 }
             }
