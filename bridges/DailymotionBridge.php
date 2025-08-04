@@ -129,8 +129,9 @@ class DailymotionBridge extends BridgeAbstract
 
     private function getPlaylistTitle($id)
     {
-        $html = getSimpleHTMLDOM(self::URI . 'playlist/' . $id);
-        return $html->find('meta[property=og:title]', 0)->getAttribute('content');
+        $apiJson = getContents($this->apiUrl . '/playlist/' . $this->getInput('p'));
+        $apiData = json_decode($apiJson, true);
+        return $apiData['name'];
     }
 
     private function getApiUrl()
