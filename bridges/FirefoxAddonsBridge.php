@@ -58,13 +58,13 @@ class FirefoxAddonsBridge extends BridgeAbstract
             }
 
             $item['content'] = <<<EOD
-<strong>Release Notes</strong>
+<p><strong>Release Notes</strong></p>
 <p>{$releaseNotes}</p>
-<strong>Compatibility</strong>
+<p><strong>Compatibility</strong></p>
 <p>{$compatibility}</p>
-<strong>License</strong>
+<p><strong>License</strong></p>
 <p>{$license}</p>
-<strong>Download</strong>
+<p><strong>Download</strong></p>
 <p><a href="{$downloadlink}">{$xpiFilename}</a> ($size)</p>
 EOD;
 
