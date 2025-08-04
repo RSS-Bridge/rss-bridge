@@ -48,7 +48,7 @@ class GoComicsBridge extends BridgeAbstract
         }
 
         for ($i = 0; $i < $this->getInput('limit'); $i++) {
-            $html = getSimpleHTMLDOM($link);
+            $html = getSimpleHTMLDOMCached($link, 86400);
 
             $imagelink = $html->find('meta[property="og:image"]', 0)->content;
             $parts = explode('/', $link);
