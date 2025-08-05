@@ -321,12 +321,22 @@ The sqlite files (db, wal and shm) are not writeable.
 
     rm cache/*
 
-### How to create a new bridge from scratch
+### How to create a completely new bridge
+
+New code files MUST have `declare(strict_types=1);` at the top of file:
+
+```php
+<?php
+
+declare(strict_types=1);
+```
 
 Create the new bridge in e.g. `bridges/BearBlogBridge.php`:
 
 ```php
 <?php
+
+declare(strict_types=1);
 
 class BearBlogBridge extends BridgeAbstract
 {
