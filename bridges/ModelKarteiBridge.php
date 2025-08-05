@@ -22,7 +22,7 @@ class ModelKarteiBridge extends BridgeAbstract
     {
         $model_id = preg_replace('/[^0-9]/', '', $this->getInput('model_id'));
         if (empty($model_id)) {
-            returnServerError('Invalid model ID');
+            throwServerException('Invalid model ID');
         }
 
         $html = getSimpleHTMLDOM(self::URI . 'sedcards/model/' . $model_id . '/');
@@ -34,7 +34,7 @@ class ModelKarteiBridge extends BridgeAbstract
 
         $itemlist = $html->find('#photoList .photoPreview');
         if (!$itemlist) {
-            returnServerError('No gallery');
+            throwServerException('No gallery');
         }
 
         foreach ($itemlist as $idx => $element) {

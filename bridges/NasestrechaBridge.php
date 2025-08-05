@@ -127,7 +127,7 @@ class NasestrechaBridge extends BridgeAbstract
     {
         // Check if page contains articles
         $articles = $html->find('.post')
-            or returnServerError('No articles found! Layout might have changed!');
+            or throwServerException('No articles found! Layout might have changed!');
 
         foreach ($articles as $article) {
             $item = [];
@@ -153,7 +153,7 @@ class NasestrechaBridge extends BridgeAbstract
     {
         // Return URI of the article
         $element = $article->find('.thumbnail', 0)
-            or returnServerError('Anchor not found!');
+            or throwServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -168,7 +168,7 @@ class NasestrechaBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('div.post__info', 0)->find('span', 0)
-            or returnServerError('Date not found!');
+            or throwServerException('Date not found!');
 
         $date = trim(explode('|', $element->plaintext)[0]);
 
@@ -186,7 +186,7 @@ class NasestrechaBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('p.post__text', 0)
-            or returnServerError('Description not found!');
+            or throwServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -201,7 +201,7 @@ class NasestrechaBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('a.post__title', 0)
-            or returnServerError('Title not found!');
+            or throwServerException('Title not found!');
 
         return $element->plaintext;
     }

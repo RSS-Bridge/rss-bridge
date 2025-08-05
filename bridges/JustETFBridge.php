@@ -167,7 +167,7 @@ class JustETFBridge extends BridgeAbstract
     private function collectNews($html)
     {
         $articles = $html->find('div.newsTopArticle')
-            or returnServerError('No articles found! Layout might have changed!');
+            or throwServerException('No articles found! Layout might have changed!');
 
         foreach ($articles as $article) {
             $item = [];
@@ -184,7 +184,7 @@ class JustETFBridge extends BridgeAbstract
                 $html = getSimpleHTMLDOMCached($uri);
 
                 $fullArticle = $html->find('div.article', 0)
-                    or returnServerError('No content found! Layout might have changed!');
+                    or throwServerException('No content found! Layout might have changed!');
 
                 defaultLinkTo($fullArticle, static::URI);
 
@@ -203,7 +203,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractNewsUri($article)
     {
         $element = $article->find('a', 0)
-            or returnServerError('Anchor not found!');
+            or throwServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -211,7 +211,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractNewsDate($article)
     {
         $element = $article->find('div.subheadline', 0)
-            or returnServerError('Date not found!');
+            or throwServerException('Date not found!');
 
         $date = trim(explode('|', $element->plaintext)[0]);
 
@@ -221,7 +221,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractNewsDescription($article)
     {
         $element = $article->find('span.newsText', 0)
-            or returnServerError('Description not found!');
+            or throwServerException('Description not found!');
 
         $element->find('a', 0)->onclick = '';
 
@@ -231,7 +231,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractNewsTitle($article)
     {
         $element = $article->find('h3', 0)
-            or returnServerError('Title not found!');
+            or throwServerException('Title not found!');
 
         return $element->plaintext;
     }
@@ -239,7 +239,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractFullArticleContent($article)
     {
         $element = $article->find('div.article_body', 0)
-            or returnServerError('Article body not found!');
+            or throwServerException('Article body not found!');
 
         // Remove teaser image
         $element->find('img.teaser-img', 0)->outertext = '';
@@ -266,7 +266,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractFullArticleAuthor($article)
     {
         $element = $article->find('span[itemprop=name]', 0)
-            or returnServerError('Author not found!');
+            or throwServerException('Author not found!');
 
         return $element->plaintext;
     }
@@ -291,7 +291,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractProfileDate($html)
     {
         $element = $html->find('div.infobox div.vallabel', 0)
-            or returnServerError('Date not found!');
+            or throwServerException('Date not found!');
 
         $date = trim(explode("\r\n", $element->plaintext)[1]);
 
@@ -301,7 +301,7 @@ class JustETFBridge extends BridgeAbstract
     private function extractProfileTitle($html)
     {
         $element = $html->find('span.h1', 0)
-            or returnServerError('Title not found!');
+            or throwServerException('Title not found!');
 
         return $element->plaintext;
     }
@@ -314,12 +314,12 @@ class JustETFBridge extends BridgeAbstract
         // - Quote
 
         $strategy = $html->find('div.tab-container div.col-sm-6 p', 0)
-            or returnServerError('Investment Strategy not found!');
+            or throwServerException('Investment Strategy not found!');
 
         // Description requires a bit of cleanup due to lack of propper identification
 
         $description = $html->find('div.headline', 5)
-            or returnServerError('Description container not found!');
+            or throwServerException('Description container not found!');
 
         $description = $description->parent();
 
@@ -328,7 +328,7 @@ class JustETFBridge extends BridgeAbstract
         }
 
         $quote = $html->find('div.infobox div.val', 0)
-            or returnServerError('Quote not found!');
+            or throwServerException('Quote not found!');
 
         $quote_html = '<strong>Quote</strong><br><p>' . $quote . '</p>';
         $strategy_html = '';
@@ -350,7 +350,7 @@ class JustETFBridge extends BridgeAbstract
         // Use ISIN + WKN as author
         // Notice: "identfier" is not a typo [sic]!
         $element = $html->find('span.identfier', 0)
-            or returnServerError('Author not found!');
+            or throwServerException('Author not found!');
 
         return $element->plaintext;
     }

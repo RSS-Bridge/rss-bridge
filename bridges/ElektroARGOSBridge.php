@@ -160,7 +160,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('.com-news-feature-prerex') or
-            returnServerError('No articles found! Layout might have changed!');
+            throwServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -189,7 +189,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('.com-news-common-prerex') or
-            returnServerError('No articles found! Layout might have changed!');
+            throwServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -225,7 +225,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('.com-news-common-prerex') or
-            returnServerError('No articles found! Layout might have changed!');
+            throwServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -273,7 +273,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Return URI of the article
         $element = $article->find('a', 0) or
-            returnServerError('Anchor not found!');
+            throwServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -307,7 +307,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('div.com-news-common-prerex__date', 0) or
-            returnServerError('Date not found!');
+            throwServerException('Date not found!');
 
         return $element->plaintext;
     }
@@ -322,7 +322,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('ul.ws-product-information__piece-description', 0)->find('li', 0) or
-            returnServerError('Description not found!');
+            throwServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -337,7 +337,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 0) or
-            returnServerError('Description not found!');
+            throwServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -352,7 +352,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 1) or
-            returnServerError('Description not found!');
+            throwServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -454,7 +454,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('img', 0) or
-            returnServerError('Title not found!');
+            throwServerException('Title not found!');
 
         return $element->alt;
     }
@@ -469,7 +469,7 @@ class ElektroARGOSBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('div.com-news-common-prerex__right-box', 0)->find('h3', 0)
-            or returnServerError('Title not found!');
+            or throwServerException('Title not found!');
 
         return $element->plaintext;
     }

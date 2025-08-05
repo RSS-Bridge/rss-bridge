@@ -117,7 +117,7 @@ class OtrkeyFinderBridge extends BridgeAbstract
         // Do we need to check the running time?
         if ($minTime != 0 || $maxTime != 0) {
             if ($maxTime > 0 && $maxTime < $minTime) {
-                returnClientError('The minimum running time must be less than the maximum running time.');
+                throwClientException('The minimum running time must be less than the maximum running time.');
             }
 
             preg_match(self::FILENAME_REGEX, $file, $matches);

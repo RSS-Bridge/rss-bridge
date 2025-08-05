@@ -108,7 +108,7 @@ class MangaDexBridge extends BridgeAbstract
         switch ($this->queriedContext) {
             case 'Title Chapters':
                 preg_match(self::TITLE_REGEX, $this->getInput('url'), $matches)
-                or returnClientError('Invalid URL Parameter');
+                or throwClientException('Invalid URL Parameter');
                 $this->feedURI = self::URI . 'title/' . $matches['uuid'];
                 $params['order[readableAt]'] = 'desc';
                 if (!$this->getInput('external')) {
@@ -129,7 +129,7 @@ class MangaDexBridge extends BridgeAbstract
                 $uri = self::API_ROOT . 'chapter';
                 break;
             default:
-                returnServerError('Unimplemented Context (getAPI)');
+                throwServerException('Unimplemented Context (getAPI)');
         }
 
         // Remove null keys
@@ -180,7 +180,7 @@ class MangaDexBridge extends BridgeAbstract
         if ($content['result'] == 'ok') {
             $content = $content['data'];
         } else {
-            returnServerError('Could not retrieve API results');
+            throwServerException('Could not retrieve API results');
         }
 
         switch ($this->queriedContext) {
@@ -191,7 +191,7 @@ class MangaDexBridge extends BridgeAbstract
                 $this->getChapters($content);
                 break;
             default:
-                returnServerError('Unimplemented Context (collectData)');
+                throwServerException('Unimplemented Context (collectData)');
         }
     }
 
@@ -257,7 +257,7 @@ class MangaDexBridge extends BridgeAbstract
                 $header = [ 'Content-Type: application/json' ];
                 $pages = json_decode(getContents($api_uri, $header), true);
                 if ($pages['result'] != 'ok') {
-                    returnServerError('Could not retrieve API results');
+                    throwServerException('Could not retrieve API results');
                 }
 
                 if ($this->getInput('images') == 'saver') {

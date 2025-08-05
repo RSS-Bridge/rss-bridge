@@ -80,7 +80,7 @@ class StockFilingsBridge extends FeedExpander
         if ($rssFeedUrl) {
             parent::collectExpandableDatas($rssFeedUrl);
         } else {
-            returnClientError('Could not find RSS Feed URL. Are you sure you used a valid CIK?');
+            throwClientException('Could not find RSS Feed URL. Are you sure you used a valid CIK?');
         }
     }
 }

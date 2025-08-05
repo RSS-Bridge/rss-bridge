@@ -59,7 +59,7 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
             if (preg_match('/artikel_id_(\d+)/', $article->id, $match)) {
                 $articleIDs[] = $match[1];
             } else {
-                returnServerError('Couldn\'t determine article ID from index page.');
+                throwServerException('Couldn\'t determine article ID from index page.');
             }
         }
 

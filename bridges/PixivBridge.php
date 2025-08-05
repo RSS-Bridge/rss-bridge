@@ -131,7 +131,7 @@ class PixivBridge extends BridgeAbstract
                     . '/profile/top';
                 break;
             default:
-                returnClientError('Invalid Context');
+                throwClientException('Invalid Context');
         }
         return $uri;
     }
@@ -279,7 +279,7 @@ class PixivBridge extends BridgeAbstract
             if (
                 !(strlen($proxy) > 0 && preg_match('/https?:\/\/.*/', $proxy))
             ) {
-                returnServerError('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
+                throwServerException('Invalid proxy_url value set. The proxy must include the HTTP/S at the beginning of the url.');
             }
         }
 

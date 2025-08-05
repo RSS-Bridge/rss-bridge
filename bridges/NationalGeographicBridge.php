@@ -75,7 +75,7 @@ class NationalGeographicBridge extends BridgeAbstract
             case self::TOPIC_LATEST_STORIES:
                 return $this->collectLatestStories();
             default:
-                returnServerError('Unknown topic: "' . $this->topicName . '"');
+                throwServerException('Unknown topic: "' . $this->topicName . '"');
         }
     }
 

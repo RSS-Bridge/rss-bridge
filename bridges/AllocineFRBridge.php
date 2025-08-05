@@ -57,7 +57,7 @@ class AllocineFRBridge extends BridgeAbstract
             if (array_key_exists($category, $categories)) {
                 return static::URI . $this->getLastSeasonURI($categories[$category]);
             } else {
-                returnClientError('Emission inconnue');
+                throwClientException('Emission inconnue');
             }
         }
 

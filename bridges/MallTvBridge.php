@@ -29,7 +29,7 @@ class MallTvBridge extends BridgeAbstract
 
         $scriptLdJson = $html->find('script[type="application/ld+json"]', 0)->innertext;
         if (!preg_match('/[\'"]uploadDate[\'"]\s*:\s*[\'"](\d{4}-\d{2}-\d{2})[\'"]/', $scriptLdJson, $match)) {
-            returnServerError('Could not get date from MALL.TV detail page');
+            throwServerException('Could not get date from MALL.TV detail page');
         }
 
         return strtotime($match[1]);
@@ -40,7 +40,7 @@ class MallTvBridge extends BridgeAbstract
         $url = $this->getInput('url');
 
         if (!preg_match('/^https:\/\/www\.mall\.tv\/[a-z0-9-]+(\/[a-z0-9-]+)?\/?$/', $url)) {
-            returnServerError('Invalid url');
+            throwServerException('Invalid url');
         }
 
         $html = getSimpleHTMLDOM($url);

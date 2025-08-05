@@ -166,7 +166,7 @@ class MoinMoinBridge extends BridgeAbstract
     private function splitSections($html)
     {
         $content = $html->find('div#page', 0)->innertext
-            or returnServerError('Unable to find <div id="page"/>!');
+            or throwServerException('Unable to find <div id="page"/>!');
 
         $sections = [];
 

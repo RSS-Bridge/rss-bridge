@@ -81,24 +81,24 @@ class XenForoBridge extends BridgeAbstract
         );
 
         if ($this->threadurl === false) {
-            returnClientError('The URL you provided is invalid!');
+            throwClientException('The URL you provided is invalid!');
         }
 
         $urlparts = parse_url($this->threadurl, PHP_URL_SCHEME);
 
         // Scheme must be "http" or "https"
         if (preg_match('/http[s]{0,1}/', parse_url($this->threadurl, PHP_URL_SCHEME)) == false) {
-            returnClientError('The URL you provided doesn\'t specify a valid scheme (http or https)!');
+            throwClientException('The URL you provided doesn\'t specify a valid scheme (http or https)!');
         }
 
         // Path cannot be root (../)
         if (parse_url($this->threadurl, PHP_URL_PATH) === '/') {
-            returnClientError('The URL you provided doesn\'t link to a valid thread (root path)!');
+            throwClientException('The URL you provided doesn\'t link to a valid thread (root path)!');
         }
 
         // XenForo adds a thread ID to the URL, like "...-thread.454934283". It must be present
         if (preg_match('/.+\.\d+[\/]{0,1}/', parse_URL($this->threadurl, PHP_URL_PATH)) == false) {
-            returnClientError('The URL you provided doesn\'t link to a valid thread (ID missing)!');
+            throwClientException('The URL you provided doesn\'t link to a valid thread (ID missing)!');
         }
 
         // We want to start at the first page in the thread. XenForo uses "../page-n" syntax
@@ -121,13 +121,13 @@ class XenForoBridge extends BridgeAbstract
         } elseif ($mainContent = $html->find('div[class~="p-body"]', 0)) {
             $this->version = self::XENFORO_VERSION_2;
         } else {
-            returnServerError('This forum is currently not supported!');
+            throwServerException('This forum is currently not supported!');
         }
 
         switch ($this->version) {
             case self::XENFORO_VERSION_1:
                 $titleBar = $mainContent->find('div.titleBar > h1', 0)
-                    or returnServerError('Error finding title bar!');
+                    or throwServerException('Error finding title bar!');
 
                 $this->title = $titleBar->plaintext;
 
@@ -139,7 +139,7 @@ class XenForoBridge extends BridgeAbstract
 
             case self::XENFORO_VERSION_2:
                 $titleBar = $mainContent->find('div[class~="p-title"] h1', 0)
-                    or returnServerError('Error finding title bar!');
+                    or throwServerException('Error finding title bar!');
 
                 $this->title = $titleBar->plaintext;
                 $this->extractThreadPostsV2($html, $this->threadurl);
@@ -166,7 +166,7 @@ class XenForoBridge extends BridgeAbstract
 
         // Posts are contained in an "ol"
         $messageList = $html->find('#messageList > li')
-            or returnServerError('Error finding message list!');
+            or throwServerException('Error finding message list!');
 
         foreach ($messageList as $post) {
             if (!isset($post->attr['id'])) { // Skip ads
@@ -252,7 +252,7 @@ class XenForoBridge extends BridgeAbstract
         $lang = $html->find('html', 0)->lang;
 
         $messageList = $html->find('div[class~="block-body"] article')
-            or returnServerError('Error finding message list!');
+            or throwServerException('Error finding message list!');
 
         foreach ($messageList as $post) {
             if (!isset($post->attr['id'])) { // Skip ads

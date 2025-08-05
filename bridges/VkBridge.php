@@ -526,17 +526,17 @@ class VkBridge extends BridgeAbstract
             $uri = urljoin(self::URI, $headers['location'][0]);
 
             if (str_contains($uri, '/429.html')) {
-                throw new RateLimitException();
+                throwRateLimitException();
             }
 
             if (!preg_match('#^https?://vk.com/#', $uri)) {
-                returnServerError('Unexpected redirect location: ' . $uri);
+                throwServerException('Unexpected redirect location: ' . $uri);
             }
 
             $redirects++;
         }
 
-        returnServerError('Too many redirects, while retreving content from VK');
+        throwServerException('Too many redirects, while retreving content from VK');
     }
 
     protected function appendVideo($video_title, $video_link, $previewImg, &$content_suffix)

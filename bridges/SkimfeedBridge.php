@@ -562,7 +562,7 @@ class SkimfeedBridge extends BridgeAbstract
     private function extractFeed($html, $author)
     {
         $articles = $html->find('li')
-            or returnServerError('Could not find articles!');
+            or throwServerException('Could not find articles!');
 
         if (
             count($articles) === 1
@@ -575,7 +575,7 @@ class SkimfeedBridge extends BridgeAbstract
 
         foreach ($articles as $article) {
             $anchor = $article->find('a', 0)
-                or returnServerError('Could not find anchor!');
+                or throwServerException('Could not find anchor!');
 
             $item = [];
 
@@ -600,13 +600,13 @@ class SkimfeedBridge extends BridgeAbstract
     private function extractHotTopics($html)
     {
         $topics = $html->find('#popbox ul li')
-            or returnServerError('Could not find topics!');
+            or throwServerException('Could not find topics!');
 
         $limit = $this->getInput('limit') ?: -1;
 
         foreach ($topics as $topic) {
             $anchor = $topic->find('a', 0)
-                or returnServerError('Could not find anchor!');
+                or throwServerException('Could not find anchor!');
 
             $item = [];
 
@@ -624,11 +624,11 @@ class SkimfeedBridge extends BridgeAbstract
     private function extractCustomFeed($html)
     {
         $boxes = $html->find('#boxx .boxes')
-            or returnServerError('Could not find boxes!');
+            or throwServerException('Could not find boxes!');
 
         foreach ($boxes as $box) {
             $anchor = $box->find('span.boxtitles a', 0)
-                or returnServerError('Could not find box anchor!');
+                or throwServerException('Could not find box anchor!');
 
             $author = '<a href="' . $anchor->href . '">' . trim($anchor->plaintext) . '</a>';
             $uri    = $anchor->href;
@@ -667,11 +667,11 @@ class SkimfeedBridge extends BridgeAbstract
         $html = getSimpleHTMLDOMCached(static::URI);
 
         if (!$this->isCompatible($html)) {
-            returnServerError('Skimfeed version is not compatible!');
+            throwServerException('Skimfeed version is not compatible!');
         }
 
         $boxes = $html->find('#boxx .boxes')
-            or returnServerError('Could not find boxes!');
+            or throwServerException('Could not find boxes!');
 
         // begin of 'channel' list
         $message = <<<EOD
@@ -686,7 +686,7 @@ EOD;
 
         foreach ($boxes as $box) {
             $anchor = $box->find('span.boxtitles a', 0)
-                or returnServerError('Could not find box anchor!');
+                or throwServerException('Could not find box anchor!');
 
             $title  = trim($anchor->plaintext);
             $uri    = $anchor->href;
@@ -723,11 +723,11 @@ EOD;
         $html = getSimpleHTMLDOMCached(static::URI);
 
         if (!$this->isCompatible($html)) {
-            returnServerError('Skimfeed version is not compatible!');
+            throwServerException('Skimfeed version is not compatible!');
         }
 
         $channels = $html->find('#menubar a')
-            or returnServerError('Could not find channels!');
+            or throwServerException('Could not find channels!');
 
         // begin of 'tech_channel' list
         $message = <<<EOD
@@ -759,11 +759,11 @@ EOD;
             $channel_html = getSimpleHTMLDOMCached(static::URI . $uri);
 
             $boxes = $channel_html->find('#boxx .boxes')
-                or returnServerError('Could not find boxes!');
+                or throwServerException('Could not find boxes!');
 
             foreach ($boxes as $box) {
                 $anchor = $box->find('span.boxtitles a', 0)
-                    or returnServerError('Could not find box anchor!');
+                    or throwServerException('Could not find box anchor!');
 
                 $boxtitle   = trim($anchor->plaintext);
                 $boxuri     = $anchor->href;

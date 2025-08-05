@@ -31,7 +31,7 @@ class UrlebirdBridge extends BridgeAbstract
                 $url = 'https://urlebird.com/hash/' . substr($this->getInput('query'), 1) . '/';
                 break;
             default:
-                returnServerError('Please, enter valid username or hashtag!');
+                throwServerException('Please, enter valid username or hashtag!');
                 break;
         }
 

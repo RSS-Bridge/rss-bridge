@@ -16,7 +16,7 @@ class LinuxBlogBridge extends BridgeAbstract
         $articles = $dom->find('ul.display-posts-listing li.listing-item');
 
         if (!$articles) {
-            returnServerError('Failed to retrieve articles');
+            throwServerException('Failed to retrieve articles');
         }
 
         foreach ($articles as $article) {

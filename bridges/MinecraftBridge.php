@@ -21,7 +21,7 @@ class MinecraftBridge extends BridgeAbstract
         $articles = json_decode($json);
 
         if ($articles === null) {
-            returnServerError('Failed to decode JSON content.');
+            throwServerException('Failed to decode JSON content.');
         }
 
         foreach ($articles->article_grid as $article) {

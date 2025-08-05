@@ -20,7 +20,7 @@ class SIMARBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM($this->getURI());
         $e_home = $html->find('#home', 0)
-            or returnServerError('Invalid site structure');
+            or throwServerException('Invalid site structure');
 
         foreach ($e_home->find('span') as $element) {
             $item = [];
@@ -34,7 +34,7 @@ class SIMARBridge extends BridgeAbstract
 
         if ($this->getInput('interventions')) {
             $e_main1 = $html->find('#menu1', 0)
-                or returnServerError('Invalid site structure');
+                or throwServerException('Invalid site structure');
 
             foreach ($e_main1->find('a') as $element) {
                 $item = [];

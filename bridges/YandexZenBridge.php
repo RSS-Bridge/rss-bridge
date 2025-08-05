@@ -47,7 +47,7 @@ class YandexZenBridge extends BridgeAbstract
             $channelName = $matches['channelName'];
             $channelAPIURL = self::_BASE_API_URL_WITH_CHANNEL_NAME . $channelName;
         } else {
-            returnClientError(<<<EOT
+            throwClientException(<<<EOT
 Invalid channel URL provided.
 The channel\'s URL must be in one of these two forms:
 - https://dzen.ru/dream_faity_diy

@@ -87,7 +87,7 @@ class CVEDetailsBridge extends BridgeAbstract
 
         $vendor = $html->find('#contentdiv h1 > a', 0);
         if ($vendor == null) {
-            returnServerError('Invalid Vendor ID ' . $this->getInput('vendor_id') . ' or Product ID ' . $this->getInput('product_id'));
+            throwServerException('Invalid Vendor ID ' . $this->getInput('vendor_id') . ' or Product ID ' . $this->getInput('product_id'));
         }
         $this->vendor = $vendor->innertext;
 

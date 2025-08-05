@@ -36,7 +36,7 @@ class CastorusBridge extends BridgeAbstract
         $title = $activity->find('a', 0);
 
         if (!$title) {
-            returnServerError('Cannot find title!');
+            throwServerException('Cannot find title!');
         }
 
         return trim($title->plaintext);
@@ -48,7 +48,7 @@ class CastorusBridge extends BridgeAbstract
         $url = $activity->find('a', 0);
 
         if (!$url) {
-            returnServerError('Cannot find url!');
+            throwServerException('Cannot find url!');
         }
 
         return self::URI . $url->href;
@@ -62,7 +62,7 @@ class CastorusBridge extends BridgeAbstract
         $nodes = $activity->find('*');
 
         if (!$nodes) {
-            returnServerError('Cannot find nodes!');
+            throwServerException('Cannot find nodes!');
         }
 
         foreach ($nodes as $node) {
@@ -78,7 +78,7 @@ class CastorusBridge extends BridgeAbstract
         $price = $activity->find('span', 1);
 
         if (!$price) {
-            returnServerError('Cannot find price!');
+            throwServerException('Cannot find price!');
         }
 
         return $price->innertext;
@@ -92,13 +92,13 @@ class CastorusBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM(self::URI);
 
         if (!$html) {
-            returnServerError('Could not load data from ' . self::URI . '!');
+            throwServerException('Could not load data from ' . self::URI . '!');
         }
 
         $activities = $html->find('div#activite > li');
 
         if (!$activities) {
-            returnServerError('Failed to find activities!');
+            throwServerException('Failed to find activities!');
         }
 
         foreach ($activities as $activity) {

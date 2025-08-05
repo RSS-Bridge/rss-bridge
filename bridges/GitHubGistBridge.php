@@ -56,7 +56,7 @@ class GitHubGistBridge extends BridgeAbstract
         $html = defaultLinkTo($html, $this->getURI());
 
         $fileinfo = $html->find('[class~="file-info"]', 0)
-            or returnServerError('Could not find file info!');
+            or throwServerException('Could not find file info!');
 
         $this->filename = $fileinfo->plaintext;
 
@@ -68,18 +68,18 @@ class GitHubGistBridge extends BridgeAbstract
 
         foreach ($comments as $comment) {
             $uri = $comment->find('a[href*=#gistcomment]', 0)
-                or returnServerError('Could not find comment anchor!');
+                or throwServerException('Could not find comment anchor!');
 
             $title = $comment->find('h3', 0);
 
             $datetime = $comment->find('[datetime]', 0)
-                or returnServerError('Could not find comment datetime!');
+                or throwServerException('Could not find comment datetime!');
 
             $author = $comment->find('a.author', 0)
-                or returnServerError('Could not find author name!');
+                or throwServerException('Could not find author name!');
 
             $message = $comment->find('[class~="comment-body"]', 0)
-                or returnServerError('Could not find comment body!');
+                or throwServerException('Could not find comment body!');
 
             $item = [];
 

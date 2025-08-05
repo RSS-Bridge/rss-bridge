@@ -21,7 +21,7 @@ class StorytelBridge extends BridgeAbstract
         $url = $this->getInput('url');
 
         if (!preg_match('/^https:\/\/www\.storytel\.com/', $url)) {
-            returnServerError('Invalid URL: Only Storytel URLs are allowed.');
+            throwServerException('Invalid URL: Only Storytel URLs are allowed.');
         }
 
         $html = getSimpleHTMLDOM($url);

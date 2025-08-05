@@ -65,7 +65,7 @@ class RutubeBridge extends BridgeAbstract
     private function getJSONData($html)
     {
         $jsonDataRegex = '/window.reduxState = (.*);/';
-        preg_match($jsonDataRegex, $html, $matches) or returnServerError('Could not find reduxState');
+        preg_match($jsonDataRegex, $html, $matches) or throwServerException('Could not find reduxState');
         $map = [
             '\x26' => '&',
             '\x3c' => '<',

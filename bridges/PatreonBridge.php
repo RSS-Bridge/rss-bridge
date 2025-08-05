@@ -25,7 +25,7 @@ class PatreonBridge extends BridgeAbstract
         if (preg_match($regex, $html->save(), $matches) > 0) {
             $campaign_id = $matches[1];
         } else {
-            returnServerError('Could not find campaign ID');
+            throwServerException('Could not find campaign ID');
         }
 
         $query = [

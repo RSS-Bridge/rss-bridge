@@ -40,7 +40,7 @@ class FunkBridge extends BridgeAbstract
                 }
                 break;
             default:
-                returnServerError('Unknown context!');
+                throwServerException('Unknown context!');
         }
     }
 

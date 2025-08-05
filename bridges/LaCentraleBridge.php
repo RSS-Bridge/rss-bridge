@@ -420,7 +420,7 @@ class LaCentraleBridge extends BridgeAbstract
             !empty($this->getInput('distance'))
             && is_null($this->getInput('location'))
         ) {
-            returnClientError('You need a place ("CP ou département") to search arround.');
+            throwClientException('You need a place ("CP ou département") to search arround.');
         }
 
         $params = [

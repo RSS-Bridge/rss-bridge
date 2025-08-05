@@ -48,7 +48,7 @@ class SoundCloudBridge extends BridgeAbstract
         $this->feedIcon = $res->avatar_url;
 
         $apiItems = $this->getUserItems($res->id, $this->getInput('t'))
-            or returnServerError('No results for ' . $this->getInput('t'));
+            or throwServerException('No results for ' . $this->getInput('t'));
 
         $hasTrackObject = ['all', 'reposts', 'likes'];
 
@@ -131,7 +131,7 @@ HTML;
 
         // Extract widget JS filenames from player page
         if (preg_match_all($this->widgetRegex, $playerHTML, $matches) == false) {
-            returnServerError('Unable to find widget JS URL.');
+            throwServerException('Unable to find widget JS URL.');
         }
 
         $clientID = '';
@@ -150,7 +150,7 @@ HTML;
         }
 
         if (empty($clientID)) {
-            returnServerError('Unable to find client ID.');
+            throwServerException('Unable to find client ID.');
         }
     }
 

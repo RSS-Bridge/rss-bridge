@@ -32,7 +32,7 @@ class WiredBridge extends FeedExpander
     {
         $feed = $this->getInput('feed');
         if (empty($feed) || !ctype_alpha(str_replace('-', '', $feed))) {
-            returnClientError('Invalid feed, please check the "feed" parameter.');
+            throwClientException('Invalid feed, please check the "feed" parameter.');
         }
 
         $feed_url = $this->getURI() . 'feed/';

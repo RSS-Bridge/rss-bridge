@@ -40,7 +40,7 @@ class FeedExpanderExampleBridge extends FeedExpander
                 parent::collectExpandableDatas('http://segfault.linuxmint.com/feed/atom/');
                 break;
             default:
-                returnClientError('Unknown version ' . $this->getInput('version') . '!');
+                throwClientException('Unknown version ' . $this->getInput('version') . '!');
         }
     }
 }

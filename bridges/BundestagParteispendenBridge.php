@@ -30,7 +30,7 @@ URI;
 
         // Build the URL from the first anchor element. The list is sorted by year, descending, so the first element is the current year.
         $firstAnchor = $html->find('a', 0)
-            or returnServerError('Could not find the proper HTML element.');
+            or throwServerException('Could not find the proper HTML element.');
 
         $url = $firstAnchor->href;
 
@@ -38,7 +38,7 @@ URI;
         $html = getSimpleHTMLDOMCached($url, self::CACHE_TIMEOUT);
 
         $rows = $html->find('table.table > tbody > tr')
-            or returnServerError('Could not find the proper HTML elements.');
+            or throwServerException('Could not find the proper HTML elements.');
 
         foreach ($rows as $row) {
             $item = $this->generateItemFromRow($row);

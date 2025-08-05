@@ -194,7 +194,7 @@ class Vk2Bridge extends BridgeAbstract
     public function collectData()
     {
         if ($this->cache->get($this->rateLimitCacheKey)) {
-            throw new RateLimitException();
+            throwRateLimitException();
         }
 
         $u = $this->getInput('u');
@@ -229,7 +229,7 @@ class Vk2Bridge extends BridgeAbstract
         }
 
         if (is_null($ownerId)) {
-            returnServerError('Could not detect owner id');
+            throwServerException('Could not detect owner id');
         }
 
         $r = $this->api('wall.get', [
@@ -304,7 +304,7 @@ class Vk2Bridge extends BridgeAbstract
     {
         $access_token = $this->getOption('access_token');
         if (!$access_token) {
-            returnServerError('You cannot run VK API methods without access_token');
+            throwServerException('You cannot run VK API methods without access_token');
         }
         $params['v'] = '5.131';
         $r = json_decode(
@@ -322,7 +322,7 @@ class Vk2Bridge extends BridgeAbstract
                 // if that limit is hit, VK returns error 29
                 $this->cache->set($this->rateLimitCacheKey, true, 60 * 30);
             }
-            returnServerError('API returned error: ' . $r['error']['error_msg'] . ' (' . $r['error']['error_code'] . ')');
+            throwServerException('API returned error: ' . $r['error']['error_msg'] . ' (' . $r['error']['error_code'] . ')');
         }
         return $r;
     }
