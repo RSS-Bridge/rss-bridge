@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/How_to_create_a_new_bridge.html">How to create a new bridge</a></h1>
                 <span class="ModifiedDate">
-            August 5, 2025 at 11:44 AM        </span>
+            August 5, 2025 at 12:06 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/01_How_to_create_a_new_bridge.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,51 +108,35 @@
             </div>
 
     <div class="s-content">
-        <p>Create a new file in the <code>bridges/</code> folder (see <a href="../For_Developers/Folder_structure.html">Folder structure</a>).</p>
-<p>The file name must be named according to following specification:</p>
-<ul>
-<li>It starts with the full name of the site</li>
-<li>All white-space must be removed</li>
-<li>The first letter of a word is written in upper-case, unless the site name is specified otherwise (example: Freenews, not FreeNews, because the site is named ‘Freenews’)</li>
-<li>The first character must be upper-case</li>
-<li>The file name must end with ‘Bridge’</li>
-<li>The file type must be PHP, written in <strong>small</strong> letters (seriously!) “.php”</li>
-</ul>
-<p><strong>Examples:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Site</th>
-<th>Filename</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Wikipedia</td>
-<td><strong>Wikipedia</strong>Bridge.php</td>
-</tr>
-<tr>
-<td>Facebook</td>
-<td><strong>Facebook</strong>Bridge.php</td>
-</tr>
-<tr>
-<td>GitHub</td>
-<td><strong>GitHub</strong>Bridge.php</td>
-</tr>
-<tr>
-<td>Freenews</td>
-<td><strong>Freenews</strong>Bridge.php</td>
-</tr>
-</tbody>
-</table>
-<p>The file must start with the PHP tags and end with an empty line. The closing tag <code>?&gt;</code> is <a href="http://php.net/basic-syntax.instruction-separation" class="Link--external" rel="noopener noreferrer">omitted</a>.</p>
-<p><strong>Example:</strong></p>
+        <h1><a id="how-to-create-a-completely-new-bridge" href="#how-to-create-a-completely-new-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>How to create a completely new bridge</h1>
+<p>New code files MUST have <code>declare(strict_types=1);</code> at the top of file:</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-	<span class="hljs-comment">// PHP code here</span>
-<span class="hljs-comment">// This line is empty (just imagine it!)</span>
+
+<span class="hljs-keyword">declare</span>(strict_types=<span class="hljs-number">1</span>);
 </code></pre>
-<p>The next step is to extend one of the base classes.
-Refer to one of an base classes listed on the <a href="index.html">Bridge API</a> page.</p>
+<p>Create the new bridge in e.g. <code>bridges/BearBlogBridge.php</code>:</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+
+<span class="hljs-keyword">declare</span>(strict_types=<span class="hljs-number">1</span>);
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BearBlogBridge</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BridgeAbstract</span>
+</span>{
+    <span class="hljs-keyword">const</span> NAME = <span class="hljs-string">'BearBlog (bearblog.dev)'</span>;
+
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
+    </span>{
+        $dom = getSimpleHTMLDOM(<span class="hljs-string">'https://herman.bearblog.dev/blog/'</span>);
+        <span class="hljs-keyword">foreach</span> ($dom-&gt;find(<span class="hljs-string">'.blog-posts li'</span>) <span class="hljs-keyword">as</span> $li) {
+            $a = $li-&gt;find(<span class="hljs-string">'a'</span>, <span class="hljs-number">0</span>);
+            <span class="hljs-keyword">$this</span>-&gt;items[] = [
+                <span class="hljs-string">'title'</span> =&gt; $a-&gt;plaintext,
+                <span class="hljs-string">'uri'</span> =&gt; <span class="hljs-string">'https://herman.bearblog.dev'</span> . $a-&gt;href,
+            ];
+        }
+    }
+}
+</code></pre>
+<p>Learn more in <a href="https://rss-bridge.github.io/rss-bridge/Bridge_API/index.html" class="Link--external" rel="noopener noreferrer">bridge api</a>.</p>
     </div>
 
         <nav>
