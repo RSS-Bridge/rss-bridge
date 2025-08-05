@@ -48,20 +48,20 @@ class SeznamZpravyBridge extends BridgeAbstract
 
                 $html = getSimpleHTMLDOMCached($url . $this->getInput('author'), $ONE_DAY);
                 $mainBreadcrumbs = $html->find($selectors['breadcrumbs'], 0)
-                or returnServerError('Could not get breadcrumbs for: ' . $this->getURI());
+                or throwServerException('Could not get breadcrumbs for: ' . $this->getURI());
 
                 $author = $mainBreadcrumbs->last_child()->plaintext
-                or returnServerError('Could not get author for: ' . $this->getURI());
+                or throwServerException('Could not get author for: ' . $this->getURI());
 
                 $this->feedName = $author . ' - Seznam Zprávy';
 
                 $articles = $html->find($selectors['articleList'])
-                or returnServerError('Could not find articles for: ' . $this->getURI());
+                or throwServerException('Could not find articles for: ' . $this->getURI());
 
                 foreach ($articles as $article) {
                     // Get article URL
                     $titleLink = $article->find($selectors['articleTitle'], 0)
-                    or returnServerError('Could not find title for: ' . $this->getURI());
+                    or throwServerException('Could not find title for: ' . $this->getURI());
                     $articleURL = $titleLink->href;
 
                     $articleContentHTML = getSimpleHTMLDOMCached($articleURL, $ONE_DAY);
@@ -71,9 +71,9 @@ class SeznamZpravyBridge extends BridgeAbstract
 
                     // Article text content
                     $contentElem = $articleContentHTML->find($selectors['articleContent'], 0)
-                    or returnServerError('Could not get article content for: ' . $articleURL);
+                    or throwServerException('Could not get article content for: ' . $articleURL);
                     $contentParagraphs = $contentElem->find($selectors['articleParagraphs'])
-                    or returnServerError('Could not find paragraphs for: ' . $articleURL);
+                    or throwServerException('Could not find paragraphs for: ' . $articleURL);
 
                     // If the article has an image, put that image at the start
                     $contentInitialValue = isset($articleImageElem) ? $articleImageElem->outertext : '';
@@ -83,7 +83,7 @@ class SeznamZpravyBridge extends BridgeAbstract
 
                     // Article categories
                     $breadcrumbsElem = $articleContentHTML->find($selectors['breadcrumbs'], 0)
-                        or returnServerError('Could not find breadcrumbs for: ' . $articleURL);
+                        or throwServerException('Could not find breadcrumbs for: ' . $articleURL);
                     $breadcrumbs = $breadcrumbsElem->children();
                     $numBreadcrumbs = count($breadcrumbs);
                     $categories = [];
@@ -96,7 +96,7 @@ class SeznamZpravyBridge extends BridgeAbstract
 
                     // Article date & time
                     $articleTimeElem = $article->find($selectors['articleTime'], 0)
-                    or returnServerError('Could not find article time for: ' . $articleURL);
+                    or throwServerException('Could not find article time for: ' . $articleURL);
                     $articleTime = $articleTimeElem->plaintext;
 
                     $articleDMElem = $article->find($selectors['articleDM'], 0);

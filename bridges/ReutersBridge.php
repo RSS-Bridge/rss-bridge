@@ -355,7 +355,7 @@ class ReutersBridge extends BridgeAbstract
                 return $base_url . 'articles-by-section-alias-or-id-v1?query=' . $json_query;
                 break;
         }
-        returnServerError('unsupported endpoint');
+        throwServerException('unsupported endpoint');
     }
 
     private function addStories($title, $content, $timestamp, $author, $url, $category)

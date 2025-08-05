@@ -109,7 +109,7 @@ class PepperBridgeAbstract extends BridgeAbstract
 
         // Show an error message if we can't find the thread ID in the URL sent by the user
         if ($threadSearch !== 1) {
-            returnClientError($this->i8n('thread-error'));
+            throwClientException($this->i8n('thread-error'));
         }
         $threadID = $matches[1];
 

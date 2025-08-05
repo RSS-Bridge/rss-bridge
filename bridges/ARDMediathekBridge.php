@@ -65,7 +65,7 @@ class ARDMediathekBridge extends BridgeAbstract
 
         $pathComponents = explode('/', $this->getInput('path'));
         if (empty($pathComponents)) {
-            returnClientError('Path may not be empty');
+            throwClientException('Path may not be empty');
         }
         if (count($pathComponents) < 2) {
             $showID = $pathComponents[0];

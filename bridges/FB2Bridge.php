@@ -85,13 +85,13 @@ class FB2Bridge extends BridgeAbstract
             $pageInfo = $this->getPageInfos($page, $cookies);
 
             if ($pageInfo['userId'] === null) {
-                returnClientError(
+                throwClientException(
                     <<<EOD
 Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
 EOD
                 );
             } elseif ($pageInfo['userId'] == -1) {
-                returnClientError(
+                throwClientException(
                     <<<EOD
 This page is not accessible without being logged in.
 EOD

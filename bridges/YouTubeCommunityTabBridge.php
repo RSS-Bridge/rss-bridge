@@ -79,7 +79,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
         $this->feedName ??= '';
 
         if ($this->hasPostsTab($json) === false) {
-            returnServerError('Channel does not have a posts tab');
+            throwServerException('Channel does not have a posts tab');
         }
 
         $posts = $this->getPosts($json);
@@ -156,13 +156,13 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
     private function extractJson($html)
     {
         if (!preg_match($this->jsonRegex, $html, $parts)) {
-            returnServerError('Failed to extract data from page');
+            throwServerException('Failed to extract data from page');
         }
 
         $data = json_decode($parts[1]);
 
         if ($data === false) {
-            returnServerError('Failed to decode extracted data');
+            throwServerException('Failed to decode extracted data');
         }
 
         return $data;

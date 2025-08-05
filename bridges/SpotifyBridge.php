@@ -108,7 +108,7 @@ class SpotifyBridge extends BridgeAbstract
             if ($e->getCode() === 429) {
                 $retryAfter = $e->response->getHeader('Retry-After') ?? (60 * 5);
                 $this->cache->set($cacheKey, true, $retryAfter);
-                throw new RateLimitException(sprintf('Rate limited by spotify, try again in %s seconds', $retryAfter));
+                throwRateLimitException(sprintf('Rate limited by spotify, try again in %s seconds', $retryAfter));
             }
             throw $e;
         }

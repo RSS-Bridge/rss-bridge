@@ -50,7 +50,7 @@ class CNETBridge extends SitemapBridge
         }
 
         if (empty($links)) {
-            returnClientError('Failed to retrieve article list');
+            throwClientException('Failed to retrieve article list');
         }
 
         foreach ($links as $article_uri) {

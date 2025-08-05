@@ -112,7 +112,7 @@ class FlickrBridge extends BridgeAbstract
                 break;
 
             default:
-                returnClientError('Invalid context: ' . $this->queriedContext);
+                throwClientException('Invalid context: ' . $this->queriedContext);
         }
 
         $model_json = $this->extractJsonModel($html);

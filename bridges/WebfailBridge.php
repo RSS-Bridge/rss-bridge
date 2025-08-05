@@ -61,7 +61,7 @@ class WebfailBridge extends BridgeAbstract
                 $this->extractArticle($html);
                 break;
             default:
-                returnClientError('Unknown type: ' . $type);
+                throwClientException('Unknown type: ' . $type);
         }
     }
 

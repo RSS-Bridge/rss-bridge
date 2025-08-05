@@ -98,7 +98,7 @@ class GlassdoorBridge extends BridgeAbstract
     private function collectBlogData($html, $limit)
     {
         $posts = $html->find('div.post')
-            or returnServerError('Unable to find blog posts!');
+            or throwServerException('Unable to find blog posts!');
 
         foreach ($posts as $post) {
             $item = [];
@@ -121,7 +121,7 @@ class GlassdoorBridge extends BridgeAbstract
     private function collectReviewData($html, $limit)
     {
         $reviews = $html->find('#ReviewsFeed li[id^="empReview]')
-            or returnServerError('Unable to find reviews!');
+            or throwServerException('Unable to find reviews!');
 
         foreach ($reviews as $review) {
             $item = [];
@@ -163,7 +163,7 @@ class GlassdoorBridge extends BridgeAbstract
                 FILTER_FLAG_PATH_REQUIRED
             )
         ) {
-            returnClientError('The specified URL is invalid!');
+            throwClientException('The specified URL is invalid!');
         }
 
         $uri = filter_var($uri, FILTER_SANITIZE_URL);
@@ -189,7 +189,7 @@ class GlassdoorBridge extends BridgeAbstract
         ];
 
         if (!in_array($parts[1], $allowed_strings)) {
-            returnClientError('Please specify a URL pointing to the companies review page!');
+            throwClientException('Please specify a URL pointing to the companies review page!');
         }
 
         return $uri;

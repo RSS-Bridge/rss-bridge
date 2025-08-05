@@ -67,7 +67,7 @@ class SensCritiqueBridge extends BridgeAbstract
     private function extractDataFromList($list)
     {
         if ($list === null) {
-            returnClientError('Cannot extract data from list');
+            throwClientException('Cannot extract data from list');
         }
 
         foreach ($list->find('div[data-testid="product-list-item"]') as $movie) {

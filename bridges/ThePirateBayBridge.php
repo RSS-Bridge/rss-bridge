@@ -134,7 +134,7 @@ class ThePirateBayBridge extends BridgeAbstract
                 $query = sprintf('/q.php?q=user:%s', rawurlencode($keyword));
                 break;
             default:
-                returnClientError('Impossible');
+                throwClientException('Impossible');
         }
         $api = 'https://apibay.org';
         $json = getContents($api . $query);

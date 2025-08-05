@@ -75,14 +75,14 @@ class YoutubeBridge extends BridgeAbstract
     {
         $cacheKey = 'youtube_rate_limit';
         if ($this->cache->get($cacheKey)) {
-            throw new RateLimitException();
+            throwRateLimitException();
         }
         try {
             $this->collectDataInternal();
         } catch (HttpException $e) {
             if ($e->getCode() === 429) {
                 $this->cache->set($cacheKey, true, 60 * 16);
-                throw new RateLimitException();
+                throwRateLimitException();
             }
             throw $e;
         }
@@ -142,7 +142,7 @@ class YoutubeBridge extends BridgeAbstract
                     // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
                     $this->fetchItemsFromFromJsonData($jsonData);
                 } else {
-                    returnServerError('Unable to get data from YouTube');
+                    throwServerException('Unable to get data from YouTube');
                 }
             } else {
                 // Fetch the xml feed
@@ -192,7 +192,7 @@ class YoutubeBridge extends BridgeAbstract
             $this->feeduri = $url_listing;
             $this->feedName = 'Search: ' . $search;
         } else {
-            returnClientError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
+            throwClientException("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
         }
     }
 
@@ -233,7 +233,7 @@ class YoutubeBridge extends BridgeAbstract
             }
         }
         if (!$videoSecondaryInfo) {
-            returnServerError('Could not find videoSecondaryInfoRenderer. Error at: ' . $videoId);
+            throwServerException('Could not find videoSecondaryInfoRenderer. Error at: ' . $videoId);
         }
 
         $description = $videoSecondaryInfo->attributedDescription->content ?? '';

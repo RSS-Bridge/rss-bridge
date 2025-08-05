@@ -72,14 +72,14 @@ class CachetBridge extends BridgeAbstract
     {
         $ping = getContents(urljoin($this->getURI(), '/api/v1/ping'));
         if (!$this->validatePing($ping)) {
-            returnClientError('Provided URI is invalid!');
+            throwClientException('Provided URI is invalid!');
         }
 
         $url = urljoin($this->getURI(), '/api/v1/incidents?sort=id&order=desc');
         $incidents = getContents($url);
         $incidents = json_decode($incidents);
         if ($incidents === null) {
-            returnClientError('/api/v1/incidents returned no valid json');
+            throwClientException('/api/v1/incidents returned no valid json');
         }
 
         usort($incidents->data, function ($a, $b) {

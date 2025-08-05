@@ -19,7 +19,7 @@ final class UsenixBridge extends BridgeAbstract
             $this->collectLoginOnlineItems();
             return;
         }
-        returnClientError('Illegal Context');
+        throwClientException('Illegal Context');
     }
 
     private function collectLoginOnlineItems(): void

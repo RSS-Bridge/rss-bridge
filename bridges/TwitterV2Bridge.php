@@ -192,7 +192,7 @@ EOD
                 . $this->getInput('u'), $authHeaders, $params);
 
                 if (isset($user->errors)) {
-                    returnServerError('Requested username can\'t be found.');
+                    throwServerException('Requested username can\'t be found.');
                 }
 
                 // Set default params
@@ -258,7 +258,7 @@ EOD
                 break;
 
             default:
-                returnServerError('Invalid query context !');
+                throwServerException('Invalid query context !');
         }
 
         if (
@@ -267,13 +267,13 @@ EOD
         ) {
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
-                    returnServerError('No results for this query.');
+                    throwServerException('No results for this query.');
                     // fall-through
                 case 'By username':
-                    returnServerError('Requested username cannnot be found.');
+                    throwServerException('Requested username cannnot be found.');
                     // fall-through
                 case 'By list ID':
-                    returnServerError('Requested list cannnot be found');
+                    throwServerException('Requested list cannnot be found');
                     // fall-through
             }
         }

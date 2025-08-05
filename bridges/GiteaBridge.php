@@ -188,7 +188,7 @@ class GiteaBridge extends BridgeAbstract
     protected function collectReleasesData($html)
     {
         $releases = $html->find('#release-list > li')
-            or returnServerError('Unable to find releases');
+            or throwServerException('Unable to find releases');
 
         foreach ($releases as $release) {
             $this->items[] = [
@@ -203,7 +203,7 @@ class GiteaBridge extends BridgeAbstract
     protected function collectTagsData($html)
     {
         $tags = $html->find('table#tags-table > tbody > tr')
-            or returnServerError('Unable to find tags');
+            or throwServerException('Unable to find tags');
 
         foreach ($tags as $tag) {
             $this->items[] = [
@@ -216,7 +216,7 @@ class GiteaBridge extends BridgeAbstract
     protected function collectCommitsData($html)
     {
         $commits = $html->find('#commits-table tbody tr')
-            or returnServerError('Unable to find commits');
+            or throwServerException('Unable to find commits');
 
         foreach ($commits as $commit) {
             $this->items[] = [
@@ -232,7 +232,7 @@ class GiteaBridge extends BridgeAbstract
     protected function collectIssuesData($html)
     {
         $issues = $html->find('.issue.list li')
-            or returnServerError('Unable to find issues');
+            or throwServerException('Unable to find issues');
 
         foreach ($issues as $issue) {
             $uri = $issue->find('a', 0)->href;
@@ -259,7 +259,7 @@ class GiteaBridge extends BridgeAbstract
     protected function collectSingleIssueOrPrData($html)
     {
         $comments = $html->find('.comment')
-            or returnServerError('Unable to find comments');
+            or throwServerException('Unable to find comments');
 
         foreach ($comments as $comment) {
             if (
@@ -293,7 +293,7 @@ class GiteaBridge extends BridgeAbstract
     protected function collectPullRequestsData($html)
     {
         $issues = $html->find('.issue.list li')
-            or returnServerError('Unable to find pull requests');
+            or throwServerException('Unable to find pull requests');
 
         foreach ($issues as $issue) {
             $uri = $issue->find('a', 0)->href;

@@ -187,7 +187,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
         // Fetch the elements from the article pages.
         if ($use_article_pages) {
             if (empty($article_page_content_selector)) {
-                returnClientError('`Article selector` is required when `Load article page` is enabled');
+                throwClientException('`Article selector` is required when `Load article page` is enabled');
             }
 
             foreach (array_keys($entry_elements) as $uri) {
@@ -307,7 +307,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
 
         $entryElements = $page->find($entry_selector);
         if (empty($entryElements)) {
-            returnClientError('No entry elements for entry selector');
+            throwClientException('No entry elements for entry selector');
         }
 
         // Extract URIs with the associated entry element
@@ -327,7 +327,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
         }
 
         if (empty($links_with_elements)) {
-            returnClientError('The provided URL selector matches some elements, but they do not 
+            throwClientException('The provided URL selector matches some elements, but they do not 
                 contain links.');
         }
 
@@ -335,7 +335,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
         $filtered_urls = $this->filterUrlList(array_keys($links_with_elements), $url_pattern, $limit);
 
         if (empty($filtered_urls)) {
-            returnClientError('No results for URL pattern');
+            throwClientException('No results for URL pattern');
         }
 
         $items = [];
@@ -359,7 +359,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
         $article_content = $entry_html->find($content_selector, 0);
 
         if (is_null($article_content)) {
-            returnClientError('Could not get article content at URL: ' . $entry_url);
+            throwClientException('Could not get article content at URL: ' . $entry_url);
         }
 
         $article_content = defaultLinkTo($article_content, $entry_url);
@@ -370,7 +370,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
     {
         $date = date_parse_from_format($format, $timeStr);
         if ($date['error_count'] != 0) {
-            returnClientError('Error while parsing time string');
+            throwClientException('Error while parsing time string');
         }
 
         $timestamp = mktime(
@@ -383,7 +383,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
         );
 
         if ($timestamp == false) {
-            returnClientError('Error while creating timestamp');
+            throwClientException('Error while creating timestamp');
         }
 
         return $timestamp;

@@ -339,14 +339,14 @@ class LeBonCoinBridge extends BridgeAbstract
             && !is_null($range_max)
             && $range_min > $range_max
         ) {
-            returnClientError('Min-' . $field . ' must be lower than max-' . $field . '.');
+            throwClientException('Min-' . $field . ' must be lower than max-' . $field . '.');
         }
 
         if (
             !is_null($range_min)
             && is_null($range_max)
         ) {
-            returnClientError('Max-' . $field . ' is needed when min-' . $field . ' is setted (range).');
+            throwClientException('Max-' . $field . ' is needed when min-' . $field . ' is setted (range).');
         }
 
         return [

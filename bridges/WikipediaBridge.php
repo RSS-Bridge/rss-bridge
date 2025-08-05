@@ -113,7 +113,7 @@ class WikipediaBridge extends BridgeAbstract
         $function = 'getContents' . ucfirst(strtolower($this->getInput('language')));
 
         if (!method_exists($this, $function)) {
-            returnServerError('A function to get the contents for your language is missing (\'' . $function . '\')!');
+            throwServerException('A function to get the contents for your language is missing (\'' . $function . '\')!');
         }
 
         /*
@@ -205,13 +205,13 @@ class WikipediaBridge extends BridgeAbstract
         $content_html = getSimpleHTMLDOMCached($uri);
 
         if (!$content_html) {
-            returnServerError('Could not load site: ' . $uri . '!');
+            throwServerException('Could not load site: ' . $uri . '!');
         }
 
         $content = $content_html->find('#mw-content-text', 0);
 
         if (!$content) {
-            returnServerError('Could not find content in page: ' . $uri . '!');
+            throwServerException('Could not find content in page: ' . $uri . '!');
         }
 
         // Let's remove a couple of things from the article

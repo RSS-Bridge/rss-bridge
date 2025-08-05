@@ -26,7 +26,7 @@ class GoogleSearchBridge extends BridgeAbstract
         // todo: wrap this in try..catch because 429 too many requests happens a lot
         $dom = getSimpleHTMLDOM($this->getURI(), ['Accept-language: en-US']);
         if (!$dom) {
-            returnServerError('No results for this query.');
+            throwServerException('No results for this query.');
         }
         $result = $dom->find('div[id=res]', 0);
 

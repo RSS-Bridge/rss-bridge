@@ -87,29 +87,32 @@ $html = getSimpleHTMLDOMCached('your URI', 86400); // Duration 24h
 
 [Defined in lib/contents.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/contents.php)
 
-# returnClientError
-The `returnClientError` function aborts execution of the current bridge
-and returns the given error message with error code **400**:
+# throwClientException($message = '')
+The `throwClientException` function aborts execution of the current bridge.
 
 ```PHP
-returnClientError('Your error message')
+throwClientException('Bad user input')
 ```
 
 Use this function when the user provided invalid parameter or a required parameter is missing.
 
 [Defined in lib/utils.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php)
 
-# returnServerError
-The `returnServerError` function aborts execution of the current bridge and returns the given error message with error code **500**:
+# throwServerException($message = '')
+The `throwServerException` function aborts execution of the current bridge.
 
 ```PHP
-returnServerError('Your error message')
+throwServerException('Received empty reply from thirdparty api')
 ```
 
 Use this function when a problem occurs that has nothing to do with the parameters provided by the user.
 (like: Host service gone missing, empty data received, etc...)
 
 [Defined in lib/utils.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php)
+
+# throwRateLimitException($message = '')
+
+Throws a `RateLimitException` which produces an HTTP 429 response.
 
 # defaultLinkTo
 Automatically replaces any relative URL in a given string or DOM object

@@ -98,7 +98,7 @@ class BugzillaBridge extends BridgeAbstract
 
         // Array of comments is here
         if (!isset($json['bugs'][$this->bugid]['comments'])) {
-            returnClientError('Cannot find REST endpoint');
+            throwClientException('Cannot find REST endpoint');
         }
 
         foreach ($json['bugs'][$this->bugid]['comments'] as $comment) {
@@ -131,7 +131,7 @@ class BugzillaBridge extends BridgeAbstract
 
         // Array of changesets which contain an array of changes
         if (!isset($json['bugs']['0']['history'])) {
-            returnClientError('Cannot find REST endpoint');
+            throwClientException('Cannot find REST endpoint');
         }
 
         foreach ($json['bugs']['0']['history'] as $changeset) {

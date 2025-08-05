@@ -24,7 +24,7 @@ class StreamCzBridge extends BridgeAbstract
 
         $validUrl = '/^(https:\/\/www.stream.cz\/[a-z0-9-]+)(\/[a-z0-9-]+-\d+)?$/';
         if (!preg_match($validUrl, $url, $match)) {
-            returnServerError('Invalid url');
+            throwServerException('Invalid url');
         }
 
         $fixedUrl = $match[1];
@@ -35,25 +35,25 @@ class StreamCzBridge extends BridgeAbstract
 
         $scriptElement = $html->find('body script', -1);
         if (null === $scriptElement) {
-            returnServerError('Could not find metadata element on the page');
+            throwServerException('Could not find metadata element on the page');
         }
         $json = extractFromDelimiters($scriptElement->innertext, 'data : ', 'logs : ');
         if (false === $json) {
-            returnServerError('Could not extract metadata from the page');
+            throwServerException('Could not extract metadata from the page');
         }
         $data = json_decode(trim($json, ",\t\n\r\0\x0B"), true);
         if (false === $data) {
-            returnServerError('Could not parse metadata on the page');
+            throwServerException('Could not parse metadata on the page');
         }
 
         $showData = $data['fetchable']['tag']['show']['data'];
         if (!is_array($showData)) {
-            returnServerError('Show not found in metadata');
+            throwServerException('Show not found in metadata');
         }
         $this->feedName = $showData['name'];
         $episodes = $showData['allEpisodesConnection']['edges'];
         if (!is_array($episodes)) {
-            returnServerError('Episodes not found in metadata');
+            throwServerException('Episodes not found in metadata');
         }
         foreach ($episodes as $episode) {
             if (!$episode['node']) {

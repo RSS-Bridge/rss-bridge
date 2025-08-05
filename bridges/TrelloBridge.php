@@ -616,7 +616,7 @@ class TrelloBridge extends BridgeAbstract
                 $data = $this->queryAPI('cards/' . $this->getInput('c'), $apiParams);
                 break;
             default:
-                returnClientError('Invalid context');
+                throwClientException('Invalid context');
         }
 
         $this->feedName = $data->name;

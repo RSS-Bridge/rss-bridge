@@ -71,7 +71,7 @@ class ARDAudiothekBridge extends BridgeAbstract
 
         $pathComponents = explode('/', $path);
         if (empty($pathComponents)) {
-            returnClientError('Path may not be empty');
+            throwClientException('Path may not be empty');
         }
         if (count($pathComponents) < 2) {
             $showID = $pathComponents[0];

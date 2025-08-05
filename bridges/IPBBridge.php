@@ -44,7 +44,7 @@ class IPBBridge extends FeedExpander
         switch (parse_url($this->getInput('uri'), PHP_URL_PATH)) {
             case null:
             case '/index.php':
-                returnClientError('Provided URI is invalid!');
+                throwClientException('Provided URI is invalid!');
                 break;
             default:
                 break;
@@ -75,7 +75,7 @@ class IPBBridge extends FeedExpander
                 $this->collectForum($html);
                 break;
             default:
-                returnClientError('Unknown type!');
+                throwClientException('Unknown type!');
                 break;
         }
     }
@@ -106,7 +106,7 @@ class IPBBridge extends FeedExpander
                 $this->collectForumTable($html);
                 break;
             default:
-                returnClientError('Unknown forum format!');
+                throwClientException('Unknown forum format!');
                 break;
         }
     }
@@ -159,7 +159,7 @@ class IPBBridge extends FeedExpander
                 $this->collectTopicHistory($html, $limit, 'collectTopicDiv');
                 break;
             default:
-                returnClientError('Unknown topic format!');
+                throwClientException('Unknown topic format!');
                 break;
         }
     }
@@ -168,7 +168,7 @@ class IPBBridge extends FeedExpander
     {
         // Make sure the callback is valid!
         if (!method_exists($this, $callback)) {
-            returnServerError('Unknown function (\'' . $callback . '\')!');
+            throwServerException('Unknown function (\'' . $callback . '\')!');
         }
 
         $next = null; // Holds the URI of the next page

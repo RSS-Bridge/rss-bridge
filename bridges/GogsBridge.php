@@ -141,7 +141,7 @@ class GogsBridge extends BridgeAbstract
     protected function collectCommitsData($html)
     {
         $commits = $html->find('#commits-table tbody tr')
-            or returnServerError('Unable to find commits');
+            or throwServerException('Unable to find commits');
 
         foreach ($commits as $commit) {
             $this->items[] = [
@@ -157,7 +157,7 @@ class GogsBridge extends BridgeAbstract
     protected function collectIssuesData($html)
     {
         $issues = $html->find('.issue.list li')
-            or returnServerError('Unable to find issues');
+            or throwServerException('Unable to find issues');
 
         foreach ($issues as $issue) {
             $uri = $issue->find('a', 0)->href;
@@ -185,7 +185,7 @@ class GogsBridge extends BridgeAbstract
     protected function collectSingleIssueData($html)
     {
         $comments = $html->find('.comments .comment')
-            or returnServerError('Unable to find comments');
+            or throwServerException('Unable to find comments');
 
         foreach ($comments as $comment) {
             $this->items[] = [
@@ -203,7 +203,7 @@ class GogsBridge extends BridgeAbstract
     protected function collectReleasesData($html)
     {
         $releases = $html->find('#release-list li')
-            or returnServerError('Unable to find releases');
+            or throwServerException('Unable to find releases');
 
         foreach ($releases as $release) {
             $this->items[] = [

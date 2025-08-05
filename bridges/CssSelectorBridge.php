@@ -217,7 +217,7 @@ class CssSelectorBridge extends BridgeAbstract
         $links = $page->find($url_selector);
 
         if (empty($links)) {
-            returnClientError('No results for URL selector');
+            throwClientException('No results for URL selector');
         }
 
         $link_to_item = [];
@@ -245,13 +245,13 @@ class CssSelectorBridge extends BridgeAbstract
         }
 
         if (empty($link_to_item)) {
-            returnClientError('The provided URL selector matches some elements, but they do not contain links.');
+            throwClientException('The provided URL selector matches some elements, but they do not contain links.');
         }
 
         $links = $this->filterUrlList(array_keys($link_to_item), $url_pattern, $limit);
 
         if (empty($links)) {
-            returnClientError('No results for URL pattern');
+            throwClientException('No results for URL pattern');
         }
 
         $items = [];
@@ -274,7 +274,7 @@ class CssSelectorBridge extends BridgeAbstract
     protected function expandEntryWithSelector($entry_url, $content_selector, $content_cleanup = null, $title_cleanup = null, $title_default = null)
     {
         if (empty($content_selector)) {
-            returnClientError('Please specify a content selector');
+            throwClientException('Please specify a content selector');
         }
 
         $entry_html = getSimpleHTMLDOMCached($entry_url);

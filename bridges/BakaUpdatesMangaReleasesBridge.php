@@ -94,7 +94,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract
         // content is an unstructured pile of divs, ugly to parse
         $cols = $html->find('div#main_content div.row > div.text');
         if (!$cols) {
-            returnServerError('No releases');
+            throwServerException('No releases');
         }
 
         $rows = array_slice(

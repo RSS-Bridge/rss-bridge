@@ -152,7 +152,7 @@ class AnidexBridge extends BridgeAbstract
             }
         }
         if (empty($results) && empty($this->getInput('q'))) {
-            returnServerError('No results from Anidex: ' . $search_url);
+            throwServerException('No results from Anidex: ' . $search_url);
         }
 
         //Process each item individually

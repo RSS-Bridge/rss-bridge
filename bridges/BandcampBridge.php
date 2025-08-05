@@ -123,7 +123,7 @@ class BandcampBridge extends BridgeAbstract
                 $json = json_decode($content);
 
                 if ($json->ok !== true) {
-                    returnServerError('Invalid response');
+                    throwServerException('Invalid response');
                 }
 
                 foreach ($json->items as $entry) {
@@ -165,7 +165,7 @@ class BandcampBridge extends BridgeAbstract
 
                 $regex = '/band_id=(\d+)/';
                 if (preg_match($regex, $html, $matches) == false) {
-                    returnServerError('Unable to find band ID on: ' . $this->getURI());
+                    throwServerException('Unable to find band ID on: ' . $this->getURI());
                 }
                 $band_id = $matches[1];
 
@@ -196,7 +196,7 @@ class BandcampBridge extends BridgeAbstract
                     case 'By album':
                         $regex = '/album=(\d+)/';
                         if (preg_match($regex, $html, $matches) == false) {
-                            returnServerError('Unable to find album ID on: ' . $this->getURI());
+                            throwServerException('Unable to find album ID on: ' . $this->getURI());
                         }
                         $album_id = $matches[1];
 

@@ -42,7 +42,7 @@ class Formula1Bridge extends BridgeAbstract
             'locale: en'
         ]));
         if (property_exists($json, 'error')) {
-            returnServerError($json->message);
+            throwServerException($json->message);
         }
         $list = $json->items;
 

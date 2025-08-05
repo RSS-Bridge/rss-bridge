@@ -61,7 +61,7 @@ class ZonebourseBridge extends BridgeAbstract
         $articles = $dom->find('table#newsScreener tbody tr');
 
         if (!$articles) {
-            returnServerError('Failed to retrieve news content');
+            throwServerException('Failed to retrieve news content');
         }
 
         foreach ($articles as $article) {

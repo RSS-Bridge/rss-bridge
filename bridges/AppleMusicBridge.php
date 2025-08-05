@@ -71,7 +71,7 @@ class AppleMusicBridge extends BridgeAbstract
         $result = $json->results;
 
         if (!is_array($result) || count($result) == 0) {
-            returnServerError('There is no artist with id "' . $this->getInput('artist') . '".');
+            throwServerException('There is no artist with id "' . $this->getInput('artist') . '".');
         }
 
         return $result;

@@ -154,7 +154,7 @@ class BlueskyBridge extends BridgeAbstract
             //valid DID
             $did = $user_id;
         } else {
-            returnClientError('Invalid ATproto handle or DID provided.');
+            throwClientException('Invalid ATproto handle or DID provided.');
         }
 
         $filter = $this->getInput('feed_filter') ?: 'posts_and_author_threads';

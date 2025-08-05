@@ -85,7 +85,7 @@ class SitemapBridge extends CssSelectorBridge
         $links = $this->sitemapXmlToList($sitemap_xml, $url_pattern, empty($limit) ? 10 : $limit);
 
         if (empty($links) && empty($this->sitemapXmlToList($sitemap_xml))) {
-            returnClientError('Could not retrieve URLs with Timestamps from Sitemap: ' . $sitemap_url);
+            throwClientException('Could not retrieve URLs with Timestamps from Sitemap: ' . $sitemap_url);
         }
 
         foreach ($links as $link) {
@@ -117,7 +117,7 @@ class SitemapBridge extends CssSelectorBridge
                     $url = urljoin($url, '/sitemap.xml');
                     return $sitemap;
                 } else {
-                    returnClientError('Failed to locate Sitemap from /robots.txt or /sitemap.xml. Try setting it manually.');
+                    throwClientException('Failed to locate Sitemap from /robots.txt or /sitemap.xml. Try setting it manually.');
                 }
             }
             $url = $matches[1];

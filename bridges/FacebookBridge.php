@@ -155,7 +155,7 @@ class FacebookBridge extends BridgeAbstract
                 break;
 
             default:
-                returnClientError('Unknown context: "' . $this->queriedContext . '"!');
+                throwClientException('Unknown context: "' . $this->queriedContext . '"!');
         }
 
         $limit = $this->getInput('limit') ?: -1;
@@ -184,7 +184,7 @@ class FacebookBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($touchURI, $header);
 
         if (!$this->isPublicGroup($html)) {
-            returnClientError('This group is not public! RSS-Bridge only supports public groups!');
+            throwClientException('This group is not public! RSS-Bridge only supports public groups!');
         }
 
         defaultLinkTo($html, substr(self::URI, 0, strlen(self::URI) - 1));
@@ -192,7 +192,7 @@ class FacebookBridge extends BridgeAbstract
         $this->groupName = $this->extractGroupName($html);
 
         $posts = $html->find('div.story_body_container')
-            or returnServerError('Failed finding posts!');
+            or throwServerException('Failed finding posts!');
 
         foreach ($posts as $post) {
             $item = [];
@@ -224,7 +224,7 @@ class FacebookBridge extends BridgeAbstract
 
             return explode('/', $urlparts['path'])[2];
         } elseif (strpos($group, '/') !== false) {
-            returnClientError('The group you provided is invalid: ' . $group);
+            throwClientException('The group you provided is invalid: ' . $group);
         } else {
             return $group;
         }
@@ -246,7 +246,7 @@ class FacebookBridge extends BridgeAbstract
             $provided_host !== $facebook_host
             && 'www.' . $provided_host !== $facebook_host
         ) {
-            returnClientError('The host you provided is invalid! Received "'
+            throwClientException('The host you provided is invalid! Received "'
                 . $provided_host
                 . '", expected "'
                 . $facebook_host
@@ -268,7 +268,7 @@ class FacebookBridge extends BridgeAbstract
     private function extractGroupName($html)
     {
         $ogtitle = $html->find('._de1', 0)
-            or returnServerError('Unable to find group title!');
+            or throwServerException('Unable to find group title!');
 
         return html_entity_decode($ogtitle->plaintext, ENT_QUOTES);
     }
@@ -276,7 +276,7 @@ class FacebookBridge extends BridgeAbstract
     private function extractGroupPostURI($post)
     {
         $elements = $post->find('a')
-            or returnServerError('Unable to find URI!');
+            or throwServerException('Unable to find URI!');
 
         foreach ($elements as $anchor) {
             // Find the one that is a permalink
@@ -292,7 +292,7 @@ class FacebookBridge extends BridgeAbstract
     private function extractGroupPostContent($post)
     {
         $content = $post->find('div._5rgt', 0)
-            or returnServerError('Unable to find user content!');
+            or throwServerException('Unable to find user content!');
 
         $context_text = $content->innertext;
         if ($content->next_sibling() !== null) {
@@ -304,7 +304,7 @@ class FacebookBridge extends BridgeAbstract
     private function extractGroupPostAuthor($post)
     {
         $element = $post->find('h3 a', 0)
-            or returnServerError('Unable to find author information!');
+            or throwServerException('Unable to find author information!');
 
         return $element->plaintext;
     }
@@ -334,7 +334,7 @@ class FacebookBridge extends BridgeAbstract
     private function extractGroupPostTitle($post)
     {
         $element = $post->find('h3', 0)
-            or returnServerError('Unable to find title!');
+            or throwServerException('Unable to find title!');
 
         if (strpos($element->plaintext, 'shared') === false) {
             $content = strip_tags($this->extractGroupPostContent($post));
@@ -370,14 +370,14 @@ class FacebookBridge extends BridgeAbstract
                 !array_key_exists('path', $urlparts)
                 || $urlparts['path'] === '/'
             ) {
-                returnClientError('The URL you provided doesn\'t contain the user name!');
+                throwClientException('The URL you provided doesn\'t contain the user name!');
             }
 
             return explode('/', $urlparts['path'])[1];
         } else {
             // First character cannot be a forward slash
             if (strpos($user, '/') === 0) {
-                returnClientError('Remove leading slash "/" from the username!');
+                throwClientException('Remove leading slash "/" from the username!');
             }
 
             return $user;
@@ -572,7 +572,7 @@ EOD;
         $loginForm = $html->find('._585r', 0);
 
         if ($loginForm != null) {
-            returnServerError('You must be logged in to view this page. This is not supported by RSS-Bridge.');
+            throwServerException('You must be logged in to view this page. This is not supported by RSS-Bridge.');
         }
 
         $mainColumn = $html->find('#pagelet_timeline_main_column');

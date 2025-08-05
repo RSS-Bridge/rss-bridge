@@ -41,7 +41,7 @@ class ShanaprojectBridge extends BridgeAbstract
         $html = $this->loadSeasonAnimeList();
 
         $animes = $html->find('div.header_display_box_info')
-            or returnServerError('Could not find anime headers!');
+            or throwServerException('Could not find anime headers!');
 
         $min_episodes = $this->getInput('min_episodes') ?: 0;
         $min_total_episodes = $this->getInput('min_total_episodes') ?: 0;
@@ -89,7 +89,7 @@ class ShanaprojectBridge extends BridgeAbstract
         $html = defaultLinkTo($html, self::URI . '/seasons');
 
         $season = $html->find('div.follows_menu > a', 1)
-            or returnServerError('Could not find \'Season Anime List\'!');
+            or throwServerException('Could not find \'Season Anime List\'!');
 
         $html = getSimpleHTMLDOM($season->href);
 
@@ -104,7 +104,7 @@ class ShanaprojectBridge extends BridgeAbstract
     private function extractAnimeTitle($anime)
     {
         $title = $anime->find('a', 0)
-            or returnServerError('Could not find anime title!');
+            or throwServerException('Could not find anime title!');
         return trim($title->innertext);
     }
 
@@ -112,7 +112,7 @@ class ShanaprojectBridge extends BridgeAbstract
     private function extractAnimeUri($anime)
     {
         $uri = $anime->find('a', 0)
-            or returnServerError('Could not find anime URI!');
+            or throwServerException('Could not find anime URI!');
         return $uri->href;
     }
 
@@ -144,7 +144,7 @@ class ShanaprojectBridge extends BridgeAbstract
     private function extractAnimeEpisodeInformation($anime)
     {
         $episode = $anime->find('div.header_info_episode', 0)
-            or returnServerError('Could not find anime episode information!');
+            or throwServerException('Could not find anime episode information!');
 
         $retVal = preg_replace('/\r|\n/', ' ', $episode->plaintext);
         $retVal = preg_replace('/\s+/', ' ', $retVal);
@@ -162,7 +162,7 @@ class ShanaprojectBridge extends BridgeAbstract
             return $matches[1];
         }
 
-        returnServerError('Could not extract background image!');
+        throwServerException('Could not extract background image!');
     }
 
     // Builds an URI to search for a specific anime (subber is left empty)
