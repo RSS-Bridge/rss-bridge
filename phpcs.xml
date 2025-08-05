@@ -39,6 +39,8 @@
     <properties>
       <property name="forbiddenFunctions" type="array">
         <element key="sizeof" value="count"/>
+        <element key="returnClientError" value="throwClientException"/>
+        <element key="returnServerError" value="throwServerException"/>
       </property>
     </properties>
   </rule>
