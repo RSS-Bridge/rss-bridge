@@ -1,31 +1,36 @@
-Create a new file in the `bridges/` folder (see [Folder structure](../04_For_Developers/03_Folder_structure.md)).
+# How to create a completely new bridge
 
-The file name must be named according to following specification:
-* It starts with the full name of the site
-* All white-space must be removed
-* The first letter of a word is written in upper-case, unless the site name is specified otherwise (example: Freenews, not FreeNews, because the site is named 'Freenews')
-* The first character must be upper-case
-* The file name must end with 'Bridge'
-* The file type must be PHP, written in **small** letters (seriously!) ".php"
-
-**Examples:**
-
-Site | Filename
------|---------
-Wikipedia | **Wikipedia**Bridge.php
-Facebook | **Facebook**Bridge.php
-GitHub | **GitHub**Bridge.php
-Freenews | **Freenews**Bridge.php
-
-The file must start with the PHP tags and end with an empty line. The closing tag `?>` is [omitted](http://php.net/basic-syntax.instruction-separation). 
-
-**Example:**
+New code files MUST have `declare(strict_types=1);` at the top of file:
 
 ```php
 <?php
-	// PHP code here
-// This line is empty (just imagine it!)
+
+declare(strict_types=1);
 ```
 
-The next step is to extend one of the base classes.
-Refer to one of an base classes listed on the [Bridge API](../05_Bridge_API/index.md) page.
+Create the new bridge in e.g. `bridges/BearBlogBridge.php`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+class BearBlogBridge extends BridgeAbstract
+{
+    const NAME = 'BearBlog (bearblog.dev)';
+
+    public function collectData()
+    {
+        $dom = getSimpleHTMLDOM('https://herman.bearblog.dev/blog/');
+        foreach ($dom->find('.blog-posts li') as $li) {
+            $a = $li->find('a', 0);
+            $this->items[] = [
+                'title' => $a->plaintext,
+                'uri' => 'https://herman.bearblog.dev' . $a->href,
+            ];
+        }
+    }
+}
+```
+
+Learn more in [bridge api](https://rss-bridge.github.io/rss-bridge/Bridge_API/index.html).
