@@ -36,11 +36,10 @@ final class Configuration
         }
 
         if (file_exists(__DIR__ . '/../DEBUG')) {
-            // The debug mode has been moved to config. Preserve existing installs which has this DEBUG file.
-            self::setConfig('system', 'enable_debug_mode', true);
             $debug = trim(file_get_contents(__DIR__ . '/../DEBUG'));
-            if ($debug) {
-                self::setConfig('system', 'debug_mode_whitelist', explode("\n", str_replace("\r", '', $debug)));
+            if ($debug === '') {
+                self::setConfig('system', 'env', 'dev');
+                self::setConfig('cache', 'type', 'array');
             }
         }
 
@@ -82,8 +81,8 @@ final class Configuration
             }
         }
 
-        if (Debug::isEnabled()) {
-            self::setConfig('cache', 'type', 'array');
+        if (!in_array(self::getConfig('system', 'env'), ['dev', 'prod'])) {
+            self::throwConfigError('system', 'env', 'Must be dev or prod');
         }
 
         if (!is_array(self::getConfig('system', 'enabled_bridges'))) {
@@ -95,13 +94,6 @@ final class Configuration
             || !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC))
         ) {
             self::throwConfigError('system', 'timezone');
-        }
-
-        if (!is_bool(self::getConfig('system', 'enable_debug_mode'))) {
-            self::throwConfigError('system', 'enable_debug_mode', 'Is not a valid Boolean');
-        }
-        if (!is_array(self::getConfig('system', 'debug_mode_whitelist') ?: [])) {
-            self::throwConfigError('system', 'debug_mode_whitelist', 'Is not a valid array');
         }
 
         if (!is_string(self::getConfig('proxy', 'url'))) {
@@ -199,6 +191,8 @@ final class Configuration
 
     private static function throwConfigError($section, $key, $message = '')
     {
-        throw new \Exception("Config [$section] => [$key] is invalid. $message");
+        http_response_code(500);
+        print ("Config [$section] => [$key] is invalid. $message");
+        exit(1);
     }
 }

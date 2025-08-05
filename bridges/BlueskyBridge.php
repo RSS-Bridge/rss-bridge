@@ -178,10 +178,8 @@ class BlueskyBridge extends BridgeAbstract
             $postDisplayName = e($postDisplayName);
             $postUri = $item['uri'];
 
-            if (Debug::isEnabled()) {
-                $url = explode('/', $post['post']['uri']);
-                $this->logger->debug('https://bsky.app/profile/' . $url[2] . '/post/' . $url[4]);
-            }
+            $url = explode('/', $post['post']['uri']);
+            $this->logger->debug('https://bsky.app/profile/' . $url[2] . '/post/' . $url[4]);
 
             $description = '';
             $description .= '<p>';
@@ -612,9 +610,9 @@ class BlueskyBridge extends BridgeAbstract
     private function getAuthorFeed($did, $filter)
     {
         $uri = 'https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=' . urlencode($did) . '&filter=' . urlencode($filter) . '&limit=30';
-        if (Debug::isEnabled()) {
-            $this->logger->debug($uri);
-        }
+
+        $this->logger->debug($uri);
+
         $response = json_decode(getContents($uri), true);
         return $response;
     }
