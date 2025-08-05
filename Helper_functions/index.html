@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Helper_functions/index.html">Helper functions</a></h1>
                 <span class="ModifiedDate">
-            August 5, 2025 at 10:52 AM        </span>
+            August 5, 2025 at 11:44 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/06_Helper_functions/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -203,20 +203,21 @@ This function allows to specify the cache duration with the second parameter.</p
 <pre><code class="language-PHP">$html = getSimpleHTMLDOMCached('your URI', 86400); // Duration 24h
 </code></pre>
 <p><a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/contents.php" class="Link--external" rel="noopener noreferrer">Defined in lib/contents.php</a></p>
-<h1><a id="returnclienterror" href="#returnclienterror" class="Permalink" aria-hidden="true" title="Permalink">#</a>returnClientError</h1>
-<p>The <code>returnClientError</code> function aborts execution of the current bridge
-and returns the given error message with error code <strong>400</strong>:</p>
-<pre><code class="language-PHP">returnClientError('Your error message')
+<h1><a id="throwclientexception-message" href="#throwclientexception-message" class="Permalink" aria-hidden="true" title="Permalink">#</a>throwClientException($message = ‘’)</h1>
+<p>The <code>throwClientException</code> function aborts execution of the current bridge.</p>
+<pre><code class="language-PHP">throwClientException('Bad user input')
 </code></pre>
 <p>Use this function when the user provided invalid parameter or a required parameter is missing.</p>
 <p><a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php" class="Link--external" rel="noopener noreferrer">Defined in lib/utils.php</a></p>
-<h1><a id="returnservererror" href="#returnservererror" class="Permalink" aria-hidden="true" title="Permalink">#</a>returnServerError</h1>
-<p>The <code>returnServerError</code> function aborts execution of the current bridge and returns the given error message with error code <strong>500</strong>:</p>
-<pre><code class="language-PHP">returnServerError('Your error message')
+<h1><a id="throwserverexception-message" href="#throwserverexception-message" class="Permalink" aria-hidden="true" title="Permalink">#</a>throwServerException($message = ‘’)</h1>
+<p>The <code>throwServerException</code> function aborts execution of the current bridge.</p>
+<pre><code class="language-PHP">throwServerException('Received empty reply from thirdparty api')
 </code></pre>
 <p>Use this function when a problem occurs that has nothing to do with the parameters provided by the user.
 (like: Host service gone missing, empty data received, etc…)</p>
 <p><a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php" class="Link--external" rel="noopener noreferrer">Defined in lib/utils.php</a></p>
+<h1><a id="throwratelimitexception-message" href="#throwratelimitexception-message" class="Permalink" aria-hidden="true" title="Permalink">#</a>throwRateLimitException($message = ‘’)</h1>
+<p>Throws a <code>RateLimitException</code> which produces an HTTP 429 response.</p>
 <h1><a id="defaultlinkto" href="#defaultlinkto" class="Permalink" aria-hidden="true" title="Permalink">#</a>defaultLinkTo</h1>
 <p>Automatically replaces any relative URL in a given string or DOM object
 (i.e. the one returned by <a href="#getsimplehtmldom">getSimpleHTMLDOM</a>) with an absolute URL.</p>
