@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Developers/index.html">For Developers</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Developers/Debug_mode.html">Debug mode</a></h1>
                 <span class="ModifiedDate">
-            August 5, 2025 at 12:06 PM        </span>
+            August 7, 2025 at 4:38 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/04_For_Developers/05_Debug_mode.md" target="_blank">
                 Edit on GitHub            </a>
@@ -108,24 +108,28 @@
             </div>
 
     <div class="s-content">
-        <h1 align="center">Warning!</h1>
-<p>Enabling debug mode on a public server may result in malicious clients retrieving sensitive data about your server and possibly gaining access to it.
-Do not enable debug mode on a public server, unless you understand the implications of your doing!</p>
-<hr />
-<p>Debug mode enables error reporting and prevents loading data from the cache (data is still written to the cache).
-To enable debug mode, set in <code>config.ini.php</code>:</p>
-<pre><code>enable_debug_mode = true
+        <p>Debug mode has been removed.</p>
+<p>If you want to disable caching you can set cache type to array (in-memory cache):</p>
+<pre><code class="hljs ini"><span class="hljs-section">[cache]</span>
+
+<span class="hljs-comment">; Cache type: file, sqlite, memcached, array, null</span>
+<span class="hljs-attr">type</span> = <span class="hljs-string">"array"</span>
 </code></pre>
-<p>Allow only explicit ip addresses:</p>
-<pre><code>debug_mode_whitelist[] = 127.0.0.1
-debug_mode_whitelist[] = 192.168.1.10
+<p>Alternatively, you can comment out the cache middleware in <code>lib/RssBridge.php</code>:</p>
+<pre><code class="hljs diff">diff --git a/lib/RssBridge.php b/lib/RssBridge.php
+index d16f1d89..da3df8be 100644
+<span class="hljs-comment">--- a/lib/RssBridge.php</span>
+<span class="hljs-comment">+++ b/lib/RssBridge.php</span>
+@@ -24,7 +24,7 @@ final class RssBridge
+
+         $middlewares = [
+             new BasicAuthMiddleware(),
+<span class="hljs-deletion">-            new CacheMiddleware($this-&gt;container['cache']),</span>
+<span class="hljs-addition">+            //new CacheMiddleware($this-&gt;container['cache']),</span>
+             new ExceptionMiddleware($this-&gt;container['logger']),
+             new SecurityMiddleware(),
+             new MaintenanceMiddleware(),
 </code></pre>
-<p><em>Notice</em>:</p>
-<ul>
-<li>An empty file enables debug mode for anyone!</li>
-<li>The bridge whitelist still applies! (debug mode does <strong>not</strong> enable all bridges)</li>
-</ul>
-<p>RSS-Bridge will give you a visual feedback when debug mode is enabled.</p>
     </div>
 
         <nav>
