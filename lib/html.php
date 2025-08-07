@@ -15,19 +15,15 @@ function render(string $template, array $context = []): string
             'level' => 'info',
         ];
     }
-    if (Debug::isEnabled()) {
-        $debugModeWhitelist = Configuration::getConfig('system', 'debug_mode_whitelist') ?: [];
-        if ($debugModeWhitelist === []) {
-            $context['messages'][] = [
-                'body' => 'Warning : Debug mode is active from any location, make sure only you can access RSS-Bridge.',
-                'level' => 'error'
-            ];
-        } else {
-            $context['messages'][] = [
-                'body' => 'Warning : Debug mode is active from your IP address, your requests will bypass the cache.',
-                'level' => 'warning'
-            ];
-        }
+    if (Configuration::getConfig('system', 'env') === 'dev') {
+        $context['messages'][] = [
+            'body' => 'System environment: dev',
+            'level' => 'error'
+        ];
+        $context['messages'][] = [
+            'body' => sprintf('Cache type: %s', Configuration::getConfig('cache', 'type')),
+            'level' => 'info'
+        ];
     }
     $context['page'] = render_template($template, $context);
     return render_template('base.html.php', $context);

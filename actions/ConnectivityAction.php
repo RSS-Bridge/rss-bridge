@@ -22,8 +22,8 @@ class ConnectivityAction implements ActionInterface
 
     public function __invoke(Request $request): Response
     {
-        if (!Debug::isEnabled()) {
-            return new Response('This action is only available in debug mode!', 403);
+        if (Configuration::getConfig('system', 'env') !== 'dev') {
+            return new Response('This action is only available in dev environment!', 403);
         }
 
         $bridgeName = $request->get('bridge');

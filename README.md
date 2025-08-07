@@ -369,14 +369,6 @@ enabled_bridges[] = TwitchBridge
 enabled_bridges[] = GettrBridge
 ```
 
-### How to enable debug mode
-
-The 
-[debug mode](https://rss-bridge.github.io/rss-bridge/For_Developers/Debug_mode.html)
-disables the majority of caching operations.
-
-    enable_debug_mode = true
-
 ### How to switch to memcached as cache backend
 
 ```
