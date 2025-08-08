@@ -59,7 +59,7 @@ class ImgsedBridge extends BridgeAbstract
                 $this->collectTaggeds();
             }
         } catch (HttpException $e) {
-            throw new \Exception(sprintf('Unable to find user `%s`', $username));
+            throwClientException(sprintf('Unable to find user `%s`', $username));
         }
     }
 

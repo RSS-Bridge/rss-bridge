@@ -61,7 +61,7 @@ class TelegramBridge extends BridgeAbstract
 
             $messages = $dom->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
             if (!$channelTitle && !$messages) {
-                throw new \Exception('Unable to find channel. The channel is non-existing or non-public.');
+                throwClientException('Unable to find channel. The channel is non-existing or non-public.');
             }
 
             foreach (array_reverse($messages) as $message) {
