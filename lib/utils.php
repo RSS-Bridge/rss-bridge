@@ -242,9 +242,16 @@ function create_random_string(int $bytes = 16): string
     return bin2hex(openssl_random_pseudo_bytes($bytes));
 }
 
+/**
+ * Thrown by bridges to indicate user failure. Will not be logged.
+ */
+final class ClientException extends \Exception
+{
+}
+
 function throwClientException(string $message = '')
 {
-    throw new \Exception($message, 400);
+    throw new ClientException($message, 400);
 }
 
 function throwServerException(string $message = '')
