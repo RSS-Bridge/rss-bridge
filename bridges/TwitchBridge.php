@@ -93,7 +93,7 @@ EOD;
         $response = $this->apiRequest($query, $variables);
         $data = $response->data;
         if ($data->user === null) {
-            throw new \Exception(sprintf('Unable to find channel `%s`', $channel));
+            throwClientException(sprintf('Unable to find channel `%s`', $channel));
         }
 
         $user = $data->user;

@@ -290,7 +290,7 @@ class TwitterClient
         $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         if (isset($response->errors)) {
             // Grab the first error message
-            throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
+            throwClientException(sprintf('From twitter api: "%s"', $response->errors[0]->message));
         }
         $userInfo = $response->data->user;
         $this->data[$screenName] = $userInfo;
@@ -423,7 +423,7 @@ class TwitterClient
         $response = Json::decode(getContents($url, $this->createHttpHeaders()), false);
         if (isset($response->errors)) {
             // Grab the first error message
-            throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
+            throwClientException(sprintf('From twitter api: "%s"', $response->errors[0]->message));
         }
         $listInfo = $response->data->user_by_screen_name->list;
         $this->data[$screenName . '-' . $listSlug] = $listInfo;
