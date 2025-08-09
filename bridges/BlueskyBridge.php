@@ -596,14 +596,20 @@ class BlueskyBridge extends BridgeAbstract
     private function resolveHandle($handle)
     {
         $uri = 'https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=' . urlencode($handle);
-        $response = json_decode(getContents($uri), true);
+        $response = $this->cache->get($uri) ?? json_decode(getContents($uri), true);
+        if (isset($response['did'])) {
+            $this->cache->set($uri, $response, 7 * 24 * 60 * 60);
+        }
         return $response['did'];
     }
 
     private function getProfile($did)
     {
         $uri = 'https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=' . urlencode($did);
-        $response = json_decode(getContents($uri), true);
+        $response = $this->cache->get($uri) ?? json_decode(getContents($uri), true);
+        if ($response['did'] === $did ?? false) {
+            $this->cache->set($uri, $response);
+        }
         return $response;
     }
 
