@@ -15,7 +15,8 @@ class CybernewsBridge extends BridgeAbstract
             'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
         ];
 
-        $sitemapXml = getContents(self::URI . '/news-sitemap.xml', $header);
+        $sitemapUrl = self::URI . '/news-sitemap.xml';
+        $sitemapXml = getContents($sitemapUrl, $header);
         if (!$sitemapXml) {
             throwServerException('Could not retrieve Cybernews sitemap');
         }
