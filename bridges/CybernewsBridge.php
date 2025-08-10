@@ -11,7 +11,11 @@ class CybernewsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $sitemapXml = getContents(self::URI . '/news-sitemap.xml');
+        $header = [
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
+        ];
+
+        $sitemapXml = getContents($url, $header);
         if (!$sitemapXml) {
             throwServerException('Could not retrieve Cybernews sitemap');
         }
