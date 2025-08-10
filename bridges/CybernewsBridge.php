@@ -1,6 +1,7 @@
 <?php
 
-class CybernewsBridge extends BridgeAbstract {
+class CybernewsBridge extends BridgeAbstract
+{
     const NAME = 'Cybernews';
     const URI = 'https://cybernews.com';
     const DESCRIPTION = 'Fetches the latest news from Cybernews';
@@ -8,7 +9,8 @@ class CybernewsBridge extends BridgeAbstract {
     const CACHE_TIMEOUT = 3600; // 1 hour
     const MAX_ARTICLES = 5;
 
-    public function collectData() {
+    public function collectData()
+    {
         $sitemapXml = getContents(self::URI . '/news-sitemap.xml');
         if (!$sitemapXml) {
             throwServerException('Could not retrieve Cybernews sitemap');
@@ -65,7 +67,8 @@ class CybernewsBridge extends BridgeAbstract {
         }
     }
 
-    private function fetchFullArticle($url) {
+    private function fetchFullArticle($url)
+    {
         $html = getSimpleHTMLDOMCached($url);
         if (!$html) {
             return 'Failed to fetch article content';
