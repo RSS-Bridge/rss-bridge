@@ -173,7 +173,7 @@ class BlueskyBridge extends BridgeAbstract
             $item['author'] = $this->fallbackAuthor($post['post']['author'], 'display');
 
             $postAuthorDID = $post['post']['author']['did'];
-            $postAuthorHandle = $post['post']['author']['handle'] !== 'handle.invalid' ? '<i>@' . $post['post']['author']['handle'] . '</i> ' : '';
+            $postAuthorHandle = $post['post']['author']['handle'] !== 'handle.invalid' ? '<i>@' . $post['post']['author']['handle'] . '</i>' : '';
             $postDisplayName = $post['post']['author']['displayName'] ?? '';
             $postDisplayName = e($postDisplayName);
             $postUri = $item['uri'];
@@ -340,7 +340,7 @@ class BlueskyBridge extends BridgeAbstract
                 } else {
                     $replyPostRecord = $replyPost['record'];
                     $replyPostAuthorDID = $replyPost['author']['did'];
-                    $replyPostAuthorHandle = $replyPost['author']['handle'] !== 'handle.invalid' ? '<i>@' . $replyPost['author']['handle'] . '</i> ' : '';
+                    $replyPostAuthorHandle = $replyPost['author']['handle'] !== 'handle.invalid' ? '<i>@' . $replyPost['author']['handle'] . '</i>' : '';
                     $replyPostDisplayName = $replyPost['author']['displayName'] ?? '';
                     $replyPostDisplayName = e($replyPostDisplayName);
                     $replyPostUri = self::URI . '/profile/' . $this->fallbackAuthor($replyPost['author'], 'url') . '/post/' . explode('app.bsky.feed.post/', $replyPost['uri'])[1];
@@ -528,8 +528,9 @@ class BlueskyBridge extends BridgeAbstract
             $postType = isset($postRecord['reply']) ? 'reply' : 'post';
             $description .= "Replying to <b>$postDisplayName</b> $postAuthorHandle's <a href=\"$postUri\">$postType</a>:<br>";
         } else {
-            // aaa @aaa.com posted:
-            $description .= "<b>$postDisplayName</b> $postAuthorHandle <a href=\"$postUri\">posted</a>:<br>";
+            // aaa @aaa.com posted/replied:
+            $postType = isset($postRecord['reply']) ? 'replied' : 'posted';
+            $description .= "<b>$postDisplayName</b> $postAuthorHandle <a href=\"$postUri\">$postType</a>:<br>";
         }
         $description .= $this->textToDescription($postRecord);
         return $description;
@@ -555,9 +556,19 @@ class BlueskyBridge extends BridgeAbstract
         //use "Post by A, replying to B, quoting C" instead of post contents
         $title = '';
         if (isset($post['reason']) && str_contains($post['reason']['$type'], 'reasonRepost')) {
-            $title .= 'Repost by ' . $this->fallbackAuthor($post['reason']['by'], 'display') . ', post by ' . $this->fallbackAuthor($post['post']['author'], 'display');
+            $title .= 'Repost by ' . $this->fallbackAuthor($post['reason']['by'], 'display');
+            if (isset($post['reply'])) {
+                $title .= ', reply by ';
+            } else {
+                $title .= ', post by ';
+            }
+            $title .= $this->fallbackAuthor($post['post']['author'], 'display');
         } else {
-            $title .= 'Post by ' . $this->fallbackAuthor($post['post']['author'], 'display');
+            if (isset($post['reply'])) {
+                $title .= 'Reply by ' . $this->fallbackAuthor($post['post']['author'], 'display');
+            } else {
+                $title .= 'Post by ' . $this->fallbackAuthor($post['post']['author'], 'display');
+            }
         }
 
         if (isset($post['reply'])) {
