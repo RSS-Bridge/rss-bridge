@@ -21,8 +21,6 @@ class CybernewsBridge extends BridgeAbstract
             throwServerException('Failed to parse Cybernews sitemap');
         }
 
-        $articleCount = 0;
-
         foreach ($sitemap->url as $entry) {
             $url     = trim((string) $entry->loc);
             $lastmod = trim((string) $entry->lastmod);
@@ -61,7 +59,7 @@ class CybernewsBridge extends BridgeAbstract
                 'content'    => $this->fetchFullArticle($url),
             ];
 
-            if (++$articleCount >= self::MAX_ARTICLES) {
+            if (count($this->items) >= self::MAX_ARTICLES) {
                 break;
             }
         }
