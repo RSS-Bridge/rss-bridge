@@ -1,46 +1,51 @@
 <?php
+declare(strict_types=1);
 
 class CybernewsBridge extends BridgeAbstract
 {
-    const NAME = 'Cybernews';
-    const URI = 'https://cybernews.com';
-    const DESCRIPTION = 'Fetches the latest news from Cybernews';
-    const MAINTAINER = 'tillcash';
+    const NAME          = 'Cybernews';
+    const URI           = 'https://cybernews.com';
+    const DESCRIPTION   = 'Fetches the latest news from Cybernews';
+    const MAINTAINER    = 'tillcash';
     const CACHE_TIMEOUT = 3600; // 1 hour
-    const MAX_ARTICLES = 5;
+    const MAX_ARTICLES  = 5;
 
     public function collectData()
     {
         $sitemapXml = getContents(self::URI . '/news-sitemap.xml');
+
         if (!$sitemapXml) {
-            throwServerException('Could not retrieve Cybernews sitemap');
+            throwServerException('Unable to retrieve Cybernews sitemap');
         }
 
         $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA);
+
         if (!$sitemap) {
-            throwServerException('Failed to parse Cybernews sitemap');
+            throwServerException('Unable to parse Cybernews sitemap');
         }
 
         foreach ($sitemap->url as $entry) {
-            $url     = trim((string) $entry->loc);
-            $lastmod = trim((string) $entry->lastmod);
+            $url        = trim((string) $entry->loc);
+            $lastmod    = trim((string) $entry->lastmod);
 
             if (!$url) {
                 continue;
             }
 
-            $pathParts = explode('/', trim(parse_url($url, PHP_URL_PATH), '/'));
-            $category  = isset($pathParts[0]) && $pathParts[0] !== '' ? $pathParts[0] : '';
+            $pathParts  = explode('/', trim(parse_url($url, PHP_URL_PATH), '/'));
+            $category   = isset($pathParts[0]) && $pathParts[0] !== '' ? $pathParts[0] : '';
 
-            // Skip non-English versions of articles?
-            if (in_array($category, ['nl', 'de'])) {
+            // Skip non-English versions
+            if (in_array($category, ['nl', 'de'], true)) {
                 continue;
             }
 
             $namespaces = $entry->getNamespaces(true);
             $title      = '';
+
             if (isset($namespaces['news'])) {
                 $news = $entry->children($namespaces['news'])->news;
+
                 if ($news) {
                     $title = trim((string) $news->title);
                 }
@@ -65,16 +70,18 @@ class CybernewsBridge extends BridgeAbstract
         }
     }
 
-    private function fetchFullArticle($url)
+    private function fetchFullArticle(string $url): string
     {
         $html = getSimpleHTMLDOMCached($url);
+
         if (!$html) {
-            return 'Failed to fetch article content';
+            return 'Unable to fetch article content';
         }
 
         $article = $html->find('article', 0);
+
         if (!$article) {
-            return 'Failed to parse article content';
+            return 'Unable to parse article content';
         }
 
         // Remove unnecessary elements
@@ -86,6 +93,7 @@ class CybernewsBridge extends BridgeAbstract
             'div.a-wrapper',
             'div.embed_youtube',
         ];
+
         foreach ($removeSelectors as $selector) {
             foreach ($article->find($selector) as $element) {
                 $element->outertext = '';
