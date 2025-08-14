@@ -25,22 +25,40 @@ class PcGamerBridge extends BridgeAbstract
             $articleHtml = getSimpleHTMLDOMCached($item['uri']);
 
             // Relying on meta tags ought to be more reliable.
-            $item['title'] = $articleHtml->find('meta[name=parsely-title]', 0)->content;
+            $item['title'] = $articleHtml->find('meta[property=og:title]', 0)->content;
             $item['content'] = html_entity_decode($articleHtml->find('meta[name=description]', 0)->content);
-            $item['author'] = $articleHtml->find('meta[name=parsely-author]', 0)->content;
 
-            $imageUrl = $articleHtml->find('meta[name=parsely-image-url]', 0);
+            // TODO: parsely-author is no longer available, but it is in the application/ld+json
+            $item['author'] = $articleHtml->find('a[rel=author]', 0)->innertext;
+
+            $imageUrl = $articleHtml->find('meta[property=og:image]', 0);
             if ($imageUrl) {
                 $item['enclosures'][] = $imageUrl->content;
             }
 
-            /* I don't know why every article has two extra tags, but because
-            one matches another common tag, "guide," it needs to be removed. */
-            $item['categories'] = array_diff(
-                explode(',', $articleHtml->find('meta[name=parsely-tags]', 0)->content),
-                ['van_buying_guide_progressive', 'serversidehawk']
+            /*
+            Tags in mrf:tags are semicolon-delimited and each begins with a label and a ':'
+            Example:
+                "region:US;articleType:News;channel:Gaming software;"
+            Find the tag, replace ; with \n, remove the label prefixes, then explode by newline.
+            */
+            $item['categories'] = array_unique(
+                explode(
+                    PHP_EOL,
+                    preg_replace(
+                        '/^[^:]+:/m',
+                        '',
+                        preg_replace(
+                            '/;/',
+                            PHP_EOL,
+                            $articleHtml->find('meta[property=mrf:tags]', 0)->content
+                        )
+                    )
+                )
             );
+
             $item['timestamp'] = strtotime($articleHtml->find('meta[name=pub_date]', 0)->content);
+
             $this->items[] = $item;
         }
     }
