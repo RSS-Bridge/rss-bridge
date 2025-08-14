@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class SubitoBridge extends BridgeAbstract
 {
     const NAME = 'Subito';
@@ -33,7 +35,7 @@ class SubitoBridge extends BridgeAbstract
                 'Accept-Language: it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3'
         ];
 
-        $dom = getSimpleHTMLDOMCached($url, $this::CACHE_TIMEOUT, $headers);
+        $dom = getSimpleHTMLDOMCached($url, self::CACHE_TIMEOUT, $headers);
 
         $json = $dom->getElementById('__NEXT_DATA__');
         $data = json_decode($json->innertext());
