@@ -115,8 +115,11 @@ class ModrinthBridge extends BridgeAbstract
     }
 
     // Converts lists like `foo, bar, baz` to `["foo", "bar", "baz"]`
-    protected function parseInputList($input): ?string 
+    protected function parseInputList($input): ?string
     {
+        if (empty($input)) {
+            return null;
+        }
         $items = array_filter(array_map('trim', explode(',', $input)));
         return $items ? json_encode($items) : null; // return nothing if string is empty
     }
