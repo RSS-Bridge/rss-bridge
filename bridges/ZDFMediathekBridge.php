@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class ZDFMediathekBridge extends BridgeAbstract
 {
     const NAME = 'ZDF-Mediathek Bridge';
