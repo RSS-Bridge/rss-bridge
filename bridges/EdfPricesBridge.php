@@ -88,12 +88,9 @@ class EdfPricesBridge extends BridgeAbstract
         $tablePrices = $html
                             ->find('#grille-tarifaire-et-prix-du-kwh-du-tarif-reglemente-edf-en-option-base', 0)
                             ->nextSibling()
-                            ->nextSibling()
                             ->nextSibling();
 
-        $prices = $tablePrices->find('.table--stripped tbody tr');
-        // last element is useless because part of another table
-        array_pop($prices);
+        $prices = $tablePrices->find('.table tbody tr');
 
         // price per kWh is same for all powers
         if ($prices && count($prices) === 9) {
@@ -122,12 +119,9 @@ class EdfPricesBridge extends BridgeAbstract
         $tablePrices = $html
                             ->find('#grille-tarifaire-et-prix-du-kwh-du-tarif-reglemente-edf-en-option-heures-pleines-heures-creuses', 0)
                             ->nextSibling()
-                            ->nextSibling()
                             ->nextSibling();
 
-        $prices = $tablePrices->find('.table--stripped tbody tr');
-        // last element is useless because part of another table
-        array_pop($prices);
+        $prices = $tablePrices->find('.table tbody tr');
 
         // price per kWh is same for all powers
         if ($prices && count($prices) === 8) {
@@ -158,14 +152,14 @@ class EdfPricesBridge extends BridgeAbstract
     private function ejp(simple_html_dom $html, string $contractUri, int $power): void
     {
         $tablePrices = $html
-                            ->find('#grille-tarifaire-et-prix-du-kwh-du-tarif-reglemente-edf-en-option-ejp', 0)
+                            ->find('#ejp', 0)
+                            ->nextSibling()
+                            ->nextSibling()
                             ->nextSibling()
                             ->nextSibling()
                             ->nextSibling();
 
-        $prices = $tablePrices->find('.table--stripped tbody tr');
-        // last element is useless because part of another table
-        array_pop($prices);
+        $prices = $tablePrices->find('.table tbody tr');
 
         // price per kWh is same for all powers
         if ($prices && count($prices) === 5) {
@@ -190,13 +184,11 @@ class EdfPricesBridge extends BridgeAbstract
 
     private function addSubscriptionPowerInfo(simple_html_dom_node $tablePrices, string $contractUri, int $power, int $numberOfPrices): void
     {
-        $prices = $tablePrices->find('.table--stripped tbody tr');
-        // last element is useless because part of another table
-        array_pop($prices);
+        $prices = $tablePrices->find('.table tbody tr');
 
-        // 7 contracts for tempo: 6, 9, 12, 15, 18, 30 and 36 kVA
+        // 8 contracts for tempo: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
         // 9 contracts for base: 3, 6, 9, 12, 15, 18, 24, 30 and 36 kVA
-        // 7 contracts for HPHC: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
+        // 8 contracts for HPHC: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
         // 5 contracts for EJP: 9, 12, 15, 18 and 36 kVA
         if ($prices && count($prices) === $numberOfPrices) {
             $powerFound = false;
