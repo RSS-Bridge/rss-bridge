@@ -43,7 +43,7 @@ class SamMobileUpdateBridge extends BridgeAbstract
             $item['uri'] = $uri;
             $item['title'] = $title;
             $item['author'] = self::MAINTAINER;
-            $item['date'] = $td[2];
+            $item['timestamp'] = (new DateTime($td[2]->innertext))->getTimestamp();
             $item['content'] = $text;
             $item['uid'] = hash('sha256', $item['title']);
 
