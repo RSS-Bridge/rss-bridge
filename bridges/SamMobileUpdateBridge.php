@@ -31,7 +31,7 @@ class SamMobileUpdateBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($uri);
 
         $elementsDom = $html->find('.main-content-item__content.main-content-item__content-md table tbody tr');
-        
+
         foreach ($elementsDom as $elementDom) {
             $item = [];
 
@@ -39,7 +39,7 @@ class SamMobileUpdateBridge extends BridgeAbstract
 
             $title = 'Security patch: ' . $td[2] . ' - Android version: ' . $td[3] . ' - PDA: ' . $td[4];
             $text = 'Model: ' . $td[0] . '<br>Country/Carrier: ' . $td[1] . '<br>Security patch: ' . $td[2] . '<br>OS version: Android ' . $td[3] . '<br>PDA: ' . $td[4];
-            
+
             $item['uri'] = $uri;
             $item['title'] = $title;
             $item['author'] = self::MAINTAINER;
