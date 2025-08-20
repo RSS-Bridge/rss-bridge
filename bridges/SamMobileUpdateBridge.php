@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class SamMobileUpdateBridge extends BridgeAbstract
 {
     const NAME = 'SamMobile updates';
