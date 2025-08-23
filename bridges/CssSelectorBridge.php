@@ -302,7 +302,7 @@ class CssSelectorBridge extends BridgeAbstract
             $article_content = defaultLinkTo($article_content, $entry_url);
             $article_content = $this->cleanArticleContent($article_content, $content_cleanup);
             $item['content'] = $article_content;
-        } else if (!empty($item['content'])) {
+        } elseif (!empty($item['content'])) {
             $item['content'] .= '<br /><p><em>Could not extract full content, selector may need to be updated.</em></p>';
         }
 

@@ -317,7 +317,7 @@ class Vk2Bridge extends BridgeAbstract
         if (isset($r['error']) && !in_array($r['error']['error_code'], $expected_error_codes)) {
             if ($r['error']['error_code'] == 6) {
                 $this->cache->set($this->rateLimitCacheKey, true, 5);
-            } else if ($r['error']['error_code'] == 29) {
+            } elseif ($r['error']['error_code'] == 29) {
                 // wall.get has limit of 5000 requests per day
                 // if that limit is hit, VK returns error 29
                 $this->cache->set($this->rateLimitCacheKey, true, 60 * 30);
