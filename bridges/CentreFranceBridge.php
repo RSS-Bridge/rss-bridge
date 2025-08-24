@@ -104,17 +104,12 @@ class CentreFranceBridge extends BridgeAbstract
 
             // Loop through each possible title class name
             for ($i = 1; $i <= 3; $i++) {
-                $articleTitleDOMElements = $articleLinkDOMElement->find('.typo-card-heading-' . $i);
-                if ($articleTitleDOMElements === []) {
-                    continue;
-                }
-
-                foreach ($articleTitleDOMElements as &$articleTitleDOMElement) {
+                foreach ($articleLinkDOMElement->find('.typo-card-heading-' . $i) as $articleTitleDOMElement) {
                     if ($articleTitleDOMElement->hasClass('font-sans')) {
                         continue;
                     }
 
-                    $articleTitle = $articleTitleDOMElement->text();
+                    $articleTitle .= $articleTitleDOMElement->text();
                     break 2;
                 }
             }
