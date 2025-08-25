@@ -82,7 +82,7 @@ class GolemBridge extends FeedExpander
             // URI without RSS feed reference
             $item['uri'] = $articlePage->find('head meta[name="twitter:url"]', 0)->content;
 
-            $categories = $articlePage->find('ul.tags__list li');
+            $categories = $articlePage->find('div.go-tag-list__tags a.go-tag');
             foreach ($categories as $category) {
                 $trimmedcategories[] = trim(html_entity_decode($category->plaintext));
             }
@@ -131,7 +131,7 @@ class GolemBridge extends FeedExpander
 
         // delete known bad elements
         foreach (
-            $article->find('div[id*="adtile"], #job-market, #seminars, iframe,
+            $article->find('div[id*="adtile"], #job-market, #seminars, iframe, .go-article-header__title, .go-article-header__kicker,
                         .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block, .go-vh') as $bad
         ) {
             $bad->remove();
@@ -159,7 +159,7 @@ class GolemBridge extends FeedExpander
             $img->src = $img->getAttribute('data-src-full');
         }
 
-        foreach ($article->find('p, h1, h2, h3, pre, img[src*="."], div[class*="golem_tablediv"], iframe, video') as $element) {
+        foreach ($article->find('div.go-article-header__intro, p, h1, h2, h3, pre, img[src*="."], div[class*="golem_tablediv"], iframe, video') as $element) {
             $item .= $element;
         }
 
