@@ -132,7 +132,7 @@ class GolemBridge extends FeedExpander
         // delete known bad elements
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe,
-                        .gbox_affiliate, div.toc') as $bad
+                        .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block') as $bad
         ) {
             $bad->remove();
         }
@@ -154,14 +154,12 @@ class GolemBridge extends FeedExpander
             $item .= $element;
         }
 
-        $content = $article->find('div.formatted', 0);
-
         // full image quality
-        foreach ($content->find('img[data-src-full][src*="."]') as $img) {
+        foreach ($article->find('img[data-src-full][src*="."]') as $img) {
             $img->src = $img->getAttribute('data-src-full');
         }
 
-        foreach ($content->find('p, h1, h2, h3, pre, img[src*="."], div[class*="golem_tablediv"], iframe, video') as $element) {
+        foreach ($article->find('p, h1, h2, h3, pre, img[src*="."], div[class*="golem_tablediv"], iframe, video') as $element) {
             $item .= $element;
         }
 
