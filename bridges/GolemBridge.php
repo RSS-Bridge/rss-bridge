@@ -154,7 +154,7 @@ class GolemBridge extends FeedExpander
             $item .= $element;
         }
 
-        $content = $article->find('div.formatted', 0);
+        $content = $article->find('article.go-article', 0);
 
         // full image quality
         foreach ($content->find('img[data-src-full][src*="."]') as $img) {
