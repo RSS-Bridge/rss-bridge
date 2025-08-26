@@ -29,6 +29,12 @@ class KemonoBridge extends BridgeAbstract
             'name' => 'Search query',
             'exampleValue' => 'classic',
             'required' => false,
+        ],
+        'limit' => [
+            'name' => 'Number of posts',
+            'type' => 'number',
+            'exampleValue' => '15',
+            'required' => false,
         ]
     ]];
 
@@ -55,6 +61,12 @@ class KemonoBridge extends BridgeAbstract
         // First, get the list of post IDs
         $api_response = getContents($url, $headers);
         $posts_list = Json::decode($api_response);
+        
+        // Limit the number of posts to fetch (if specified)
+        $limit = $this->getInput('limit');
+        if (!empty($limit)) {
+            $posts_list = array_slice($posts_list, 0, intval($limit));
+        }
         
         // Then fetch detailed information for each post
         foreach ($posts_list as $post_summary) {
