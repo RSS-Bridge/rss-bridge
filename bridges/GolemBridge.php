@@ -72,16 +72,18 @@ class GolemBridge extends FeedExpander
 
         while ($uri) {
             if (isset($urls[$uri])) {
-                // Prevent forever a loop
+                // Prevent loop in navigation links
                 break;
             }
             $urls[$uri] = true;
 
             $articlePage = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT, static::HEADERS);
+            $articlePage = defaultLinkTo($articlePage, $uri);
 
             // URI without RSS feed reference
             $item['uri'] = $articlePage->find('head meta[name="twitter:url"]', 0)->content;
 
+            // extract categories
             if (!array_key_exists('categories', $item)) {
                 $categories = $articlePage->find('div.go-tag-list__tags a.go-tag');
                 foreach ($categories as $category) {
@@ -97,11 +99,7 @@ class GolemBridge extends FeedExpander
             // next page
             $nextUri = $articlePage->find('li.go-pagination__item--next>a', 0);
             if ($nextUri) {
-                $nextUri = $nextUri->href;
-                if (str_starts_with($nextUri, '/')) {
-                    $nextUri = substr($nextUri, 1);
-                }
-                $uri = static::URI . $nextUri;
+                $uri = $nextUri->href;
             } else {
                 $uri = null;
             }
