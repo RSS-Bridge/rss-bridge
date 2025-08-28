@@ -56,16 +56,24 @@ class AllegroBridge extends BridgeAbstract
 
     public function getURI()
     {
-        return $this->getInput('url') ?? parent::getURI();
-    }
+        $url = $this->getInput('url');
+        if (!$url) {
+            return parent::getURI();
+        }
 
-    public function collectData()
-    {
         # make sure we order by the most recently listed offers
         $url = preg_replace('/([?&])order=[^&]+(&|$)/', '$1', $this->getInput('url'));
         $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'order=n';
 
-        $html = getContents($url, [], [CURLOPT_COOKIE => $this->getInput('cookie')]);
+        # do not return related listings if no exact matches are found
+        $url .= '&strategy=NO_FALLBACK';
+
+        return $url;
+    }
+
+    public function collectData()
+    {
+        $html = getContents($this->getURI(), [], [CURLOPT_COOKIE => $this->getInput('cookie')]);
 
         $storeData = null;
         if (preg_match('/<script[^>]*>\s*(\{\s*?"__listing_StoreState".*\})\s*<\/script>/i', $html, $match)) {
