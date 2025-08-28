@@ -162,11 +162,6 @@ class GolemBridge extends FeedExpander
             foreach ($header->find('p, figure') as $element) {
                 $item .= $element;
             }
-
-            // full image quality
-            foreach ($article->find('img[data-src-full][src*="."]') as $img) {
-                $img->src = $img->getAttribute('data-src-full');
-            }
         }
 
         foreach (
