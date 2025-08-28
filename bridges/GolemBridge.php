@@ -82,25 +82,35 @@ class GolemBridge extends FeedExpander
             // URI without RSS feed reference
             $item['uri'] = $articlePage->find('head meta[name="twitter:url"]', 0)->content;
 
-            $categories = $articlePage->find('div.go-tag-list__tags a.go-tag');
-            foreach ($categories as $category) {
-                $trimmedcategories[] = trim(html_entity_decode($category->plaintext));
-            }
-            if (isset($trimmedcategories)) {
-                $item['categories'] = array_unique($trimmedcategories);
+            if (!array_key_exists('categories', $item)) {
+                $categories = $articlePage->find('div.go-tag-list__tags a.go-tag');
+                foreach ($categories as $category) {
+                    $trimmedcategories[] = trim(html_entity_decode($category->plaintext));
+                }
+                if (isset($trimmedcategories)) {
+                    $item['categories'] = array_unique($trimmedcategories);
+                }
             }
 
-            $item['content'] .= $this->extractContent($articlePage);
+            $item['content'] .= $this->extractContent($articlePage, $item['content']);
 
             // next page
-            $nextUri = $articlePage->find('link[rel="next"]', 0);
-            $uri = $nextUri ? static::URI . $nextUri->href : null;
+            $nextUri = $articlePage->find('li.go-pagination__item--next>a', 0);
+            if ($nextUri) {
+                $nextUri = $nextUri->href;
+                if (str_starts_with($nextUri, '/')) {
+                    $nextUri = substr($nextUri, 1);
+                }
+                $uri = static::URI . $nextUri;
+            } else {
+                $uri = null;
+            }
         }
 
         return $item;
     }
 
-    private function extractContent($page)
+    private function extractContent($page, $prevcontent)
     {
         $item = '';
 
@@ -150,17 +160,21 @@ class GolemBridge extends FeedExpander
         }
 
         $header = $article->find('header', 0);
-        foreach ($header->find('p, figure') as $element) {
-            $item .= $element;
-        }
+        if (isset($header)) {
+            foreach ($header->find('p, figure') as $element) {
+                $item .= $element;
+            }
 
-        // full image quality
-        foreach ($article->find('img[data-src-full][src*="."]') as $img) {
-            $img->src = $img->getAttribute('data-src-full');
+            // full image quality
+            foreach ($article->find('img[data-src-full][src*="."]') as $img) {
+                $img->src = $img->getAttribute('data-src-full');
+            }
         }
 
         foreach ($article->find('div.go-article-header__intro, p, h1, h2, h3, pre, img[src*="."], div[class*="golem_tablediv"], iframe, video') as $element) {
-            $item .= $element;
+            if (!str_contains($prevcontent, $element)) {
+                $item .= $element;
+            }
         }
 
         return $item;
