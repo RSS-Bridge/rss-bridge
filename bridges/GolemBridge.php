@@ -139,10 +139,10 @@ class GolemBridge extends FeedExpander
             }
         }
 
-        // delete known bad elements
+        // delete known bad elements and unwanted gallery images
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe, .go-article-header__title, .go-article-header__kicker,
-                        .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block, .go-vh') as $bad
+                        .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block, .go-vh, .go-gallery .[data-active="false"]') as $bad
         ) {
             $bad->remove();
         }
@@ -171,7 +171,10 @@ class GolemBridge extends FeedExpander
             }
         }
 
-        foreach ($article->find('div.go-article-header__intro, p, h1, h2, h3, pre, img[src*="."], div[class*="golem_tablediv"], iframe, video') as $element) {
+        foreach (
+            $article->find('div.go-article-header__intro, p, h1, h2, h3, pre, .go-media img[src*="."], .go-media figcaption,
+                    div[class*="golem_tablediv"], iframe, video') as $element
+        ) {
             if (!str_contains($prevcontent, $element)) {
                 $item .= $element;
             }
