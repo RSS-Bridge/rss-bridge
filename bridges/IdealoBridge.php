@@ -119,11 +119,11 @@ class IdealoBridge extends BridgeAbstract
         // In case there is no old Price, then show no trend
         if ($OldPrice === null || $OldPrice == 0) {
             $trend = '';
-        } else if ($NewPrice > $OldPrice) {
+        } elseif ($NewPrice > $OldPrice) {
             $trend = '&#x2197;';
-        } else if ($NewPrice == $OldPrice) {
+        } elseif ($NewPrice == $OldPrice) {
             $trend = '&#x27A1;';
-        } else if ($NewPrice < $OldPrice) {
+        } elseif ($NewPrice < $OldPrice) {
             $trend = '&#x2198;';
         }
         return $trend;
@@ -159,11 +159,11 @@ class IdealoBridge extends BridgeAbstract
             $PriceNew = $ActualNewPrice->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyNEW, $PriceNew);
-        } else if ($altPrice) {
+        } elseif ($altPrice) {
             // Get price from first List item if no New/used Buttons available
             $PriceNew = trim($altPrice->plaintext);
             $this->saveCacheValue($KeyNEW, $PriceNew);
-        } else if (($ActualNewPrice === null || $altPrice === null) && $ActualUsedPrice !== null) {
+        } elseif (($ActualNewPrice === null || $altPrice === null) && $ActualUsedPrice !== null) {
             // In case there is no actual New Price and a Used Price exists, then delete the previous value in the cache
             $this->cache->delete($this->getShortName() . '_' . $KeyNEW);
         }
@@ -173,7 +173,7 @@ class IdealoBridge extends BridgeAbstract
             $PriceUsed = $ActualUsedPrice->find('strong', 0)->plaintext;
             // Save current price
             $this->saveCacheValue($KeyUSED, $PriceUsed);
-        } else if ($ActualUsedPrice === null && ($ActualNewPrice !== null || $altPrice !== null)) {
+        } elseif ($ActualUsedPrice === null && ($ActualNewPrice !== null || $altPrice !== null)) {
             // In case there is no actual Used Price and a New Price exists, then delete the previous value in the cache
             $this->cache->delete($this->getShortName() . '_' . $KeyUSED);
         }
