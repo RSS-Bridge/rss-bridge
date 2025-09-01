@@ -115,8 +115,8 @@ class GolemBridge extends FeedExpander
         $article = $page->find('article', 0);
 
         //built youtube iframes
-        foreach ($article->find('.embedcontent') as &$embedcontent) {
-            $ytscript = $embedcontent->find('script', 0);
+        foreach ($article->find('.go-embed-container') as &$embedcontent) {
+            $ytscript = $page->find('script', 14);
             if (preg_match('/(www.youtube.com.*?)\"/', $ytscript->innertext, $link)) {
                 $link = 'https://' . str_replace('\\', '', $link[1]);
                 $embedcontent->innertext .= <<<EOT
@@ -141,7 +141,7 @@ class GolemBridge extends FeedExpander
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe, .go-article-header__title, .go-article-header__kicker, .go-label--sponsored,
                         .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block, .go-vh, .go-paywall, .go-index-link, .go-pagination__list,
-                        .go-gallery .[data-active="false"]') as $bad
+                        .go-gallery .[data-active="false"], .go-article-header__series') as $bad
         ) {
             $bad->remove();
         }
