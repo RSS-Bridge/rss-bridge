@@ -41,6 +41,7 @@ class IdealoBridge extends BridgeAbstract
         'Accept-Language: fr-FR,fr;q=0.8,en-US;q=0.5,en;q=0.3'
     ];
     private $options = [
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_TRANSFER_ENCODING => 1,
         CURLOPT_ACCEPT_ENCODING => 'gzip, deflate, br'
     ];
