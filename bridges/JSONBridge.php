@@ -22,6 +22,20 @@ class JSONBridge extends BridgeAbstract
             'title' => 'Paste the cookie value from your browser if needed',
             'required' => false,
         ],
+        'feed_uri' => [
+            'name' => 'JMESPath: feed\'s base URI',
+            'type' => 'text',
+            'required' => false,
+            'exampleValue' => 'join(``, search_query, `.html`])',
+            'title' => 'Optional: JMESPath expression for the feed\'s own URI, e.g. a HTML page that renders the JSON. Corresponds to getURI() function.',
+        ],
+        'feed_name' => [
+            'name' => 'JMESPath: feed\'s name',
+            'type' => 'text',
+            'required' => false,
+            'exampleValue' => 'search_query',
+            'title' => 'Optional: JMESPath expression for the feed\'s title. Corresponds to getName() function.',
+        ],
         'root' => [
             'name' => 'JMESPath: items selector',
             'type' => 'text',
@@ -34,13 +48,13 @@ class JSONBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => 'id',
-            'title' => 'JMESPath expression for a unique ID per item)',
+            'title' => 'JMESPath expression for a unique ID per item.',
         ],
         'uri' => [
             'name' => 'JMESPath (per item): URL',
             'type' => 'text',
             'required' => true,
-            'exampleValue' => 'thumb.url',
+            'exampleValue' => 'item.url',
             'title' => 'JMESPath expression for the item link (e.g. a product or article URL). Use join() to build the URL if needed.',
         ],
         'title' => [
@@ -58,13 +72,34 @@ class JSONBridge extends BridgeAbstract
             'title' => 'Optional: JMESPath expression for description text. You can use join() to concatenate fields.',
         ],
         'image' => [
-            'name' => 'JMESPath (per item): Image URL',
+            'name' => 'JMESPath (per item): Image URI',
             'type' => 'text',
             'required' => false,
             'exampleValue' => 'thumb.url',
             'title' => 'Optional: JMESPath expression for an image URL to add as an enclosure',
         ],
     ]];
+
+    private $name;
+    private $feed_uri;
+
+    public function getName()
+    {
+        if (isset($this->name)) {
+            return $this->name;
+        }
+
+        return parent::getName();
+    }
+
+    public function getURI()
+    {
+        if (isset($this->feed_uri)) {
+            return $this->feed_uri;
+        }
+
+        return parent::getURI();
+    }
 
     public function collectData()
     {
@@ -116,6 +151,8 @@ class JSONBridge extends BridgeAbstract
             // Optional
             $content = $this->extract($it, $this->getInput('content'), 'content', $idx);
             $image   = $this->extract($it, $this->getInput('image'), 'image', $idx);
+            $name    = $this->extract($it, $this->getInput('name'), 'name', $idx);
+            $feed_uri    = $this->extract($it, $this->getInput('feed_uri'), 'feed_uri', $idx);
 
             $this->items[] = [
               'uid'        => (string)$id,
