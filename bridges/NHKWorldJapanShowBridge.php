@@ -219,7 +219,8 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
 
                 switch ($this->getInput('embedoption')) {
                     case 'embed':
-                        $embedhtml = '<iframe src="' . $iframeurl . '" width="640" height="360" frameborder="0" allowfullscreen referrerpolicy="no-referrer">' . '<img src="' . self::URI . $program['image'] . '" alt="Video thumbnail" width="640" height="360"></iframe><br><br>';
+                        $embedhtml = '<iframe src="' . $iframeurl . '" width="640" height="360" frameborder="0" allowfullscreen referrerpolicy="no-referrer">';
+                        $embedhtml .= '<img src="' . self::URI . $program['image'] . '" alt="Video thumbnail" width="640" height="360"></iframe><br><br>';
                         break;
                     case 'thumb':
                         $embedhtml = '<img src="' . self::URI . $program['image'] . '" alt="Video thumbnail"><br><br>';
