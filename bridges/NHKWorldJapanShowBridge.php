@@ -204,8 +204,6 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
     {
         $json = getContents('https://api.nhkworld.jp/nwapi/vodesdlist/v7b/program/' . $this->getInput('show') . '/' . $this->getInput('language') . '/all/all.json');
         $data = json_decode($json, true);
-        $serverLocale = setlocale(LC_TIME, 0);
-        $isEnglishLocale = (in_array($serverLocale, ['C', 'POSIX'])) || preg_match('/^en_/', $serverLocale) || strpos($serverLocale, 'English') !== false;
 
         if (isset($data['data']['episodes']) && is_array($data['data']['episodes'])) {
             foreach ($data['data']['episodes'] as $program) {
@@ -232,8 +230,8 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
 
                 $dt = new DateTime('@' . ($onair / 1000));
                 $dt->setTimezone(new DateTimeZone('UTC'));
-                $broadcastdate = ($this->getInput('language') === 'en' && $isEnglishLocale) ? $dt->format('F j, Y') : $dt->format('Y-m-d');
-                $voddate = ($this->getInput('language') === 'en' && $isEnglishLocale) ? date('F j, Y', $vod_to / 1000) : date('Y-m-d', $vod_to / 1000);
+                $broadcastdate = ($this->getInput('language') === 'en') ? $dt->format('F j, Y') : $dt->format('Y-m-d');
+                $voddate = ($this->getInput('language') === 'en') ? date('F j, Y', $vod_to / 1000) : date('Y-m-d', $vod_to / 1000);
                 $spantag = '<span dir="' . (in_array($this->getInput('language'), self::$rtlLanguages) ? 'rtl' : 'ltr') . '">';
 
                 $description = $spantag . $description;
