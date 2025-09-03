@@ -12,7 +12,13 @@ class JSONBridge extends BridgeAbstract {
             'name' => 'JSON URL',
             'type' => 'text',
             'required' => true,
+            'exampleValue' => 'https://example.com/json/',
             'title' => 'The URL returning a JSON document (array or object)',
+        ],
+        'cookie' => [
+            'name' => 'The complete cookie value',
+            'title' => 'Paste the cookie value from your browser if needed',
+            'required' => false,
         ],
         'root' => [
             'name' => 'JMESPath: items selector',
@@ -59,7 +65,13 @@ class JSONBridge extends BridgeAbstract {
     ]];
 
   public function collectData() {
-        $raw  = getContents($this->getInput('url'));
+        if ($this->getInput('cookie')) {
+            $raw  = getContents($this->getInput('url'), [], [CURLOPT_COOKIE => $this->getInput('cookie')]);
+        }
+        else {
+            $raw  = getContents($this->getInput('url'));
+        }
+
         $json = json_decode($raw, true);
         if ($json === null) {
             returnServerError('Invalid JSON');
