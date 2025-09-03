@@ -1,13 +1,15 @@
 <?php
+
 use JmesPath\Env as JmesPath;
 
-class JSONBridge extends BridgeAbstract {
+class JSONBridge extends BridgeAbstract
+{
     const NAME = 'Generic JSON (JMESPath) Bridge';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge';
     const DESCRIPTION = 'Build feeds from JSON via JMESPath selectors (with expressions)';
     const MAINTAINER = 'wrobelda';
 
-  const PARAMETERS = [[
+    const PARAMETERS = [[
         'url' => [
             'name' => 'JSON URL',
             'type' => 'text',
@@ -64,27 +66,27 @@ class JSONBridge extends BridgeAbstract {
         ],
     ]];
 
-  public function collectData() {
+    public function collectData()
+    {
         if ($this->getInput('cookie')) {
             $raw  = getContents($this->getInput('url'), [], [CURLOPT_COOKIE => $this->getInput('cookie')]);
-        }
-        else {
+        } else {
             $raw  = getContents($this->getInput('url'));
         }
 
         $json = json_decode($raw, true);
         if ($json === null) {
-            returnServerError('Invalid JSON');
+            throwServerException('Invalid JSON');
         }
 
         // root must be array or a single object
         try {
             $items = JmesPath::search($this->getInput('root'), $json);
         } catch (\Throwable $e) {
-            returnServerError('JMESPath error in "root": ' . $e->getMessage());
+            throwServerException('JMESPath error in "root": ' . $e->getMessage());
         }
         if (!is_array($items)) {
-            returnServerError('Root JMESPath must return an array or an object');
+            throwServerException('Root JMESPath must return an array or an object');
         }
 
         // If it's an associative array (single object), wrap it; if it's a list, use as-is
@@ -92,35 +94,35 @@ class JSONBridge extends BridgeAbstract {
 
         foreach ($list as $idx => $it) {
             if (!is_array($it)) {
-                returnServerError("Item #$idx is not an object/assoc array");
+                throwServerException("Item #$idx is not an object/assoc array");
             }
 
             // Required
             $id = $this->extract($it, $this->getInput('id'), 'id', $idx);
             if ($id === null || $id === '') {
-                returnServerError("Required 'id' missing or not scalar for item #$idx");
+                throwServerException("Required 'id' missing or not scalar for item #$idx");
             }
 
             $uri = $this->extract($it, $this->getInput('uri'), 'uri', $idx);
             if ($uri === null || $uri === '') {
-                returnServerError("Required 'uri' missing or not scalar for item #$idx");
+                throwServerException("Required 'uri' missing or not scalar for item #$idx");
             }
 
             $title = $this->extract($it, $this->getInput('title'), 'title', $idx);
             if ($title === null || $title === '') {
-                returnServerError("Required 'title' missing or not scalar for item #$idx");
+                throwServerException("Required 'title' missing or not scalar for item #$idx");
             }
 
             // Optional
             $content = $this->extract($it, $this->getInput('content'), 'content', $idx);
-            $image   = $this->extract($it, $this->getInput('image'),   'image',   $idx);
+            $image   = $this->extract($it, $this->getInput('image'), 'image', $idx);
 
             $this->items[] = [
-                'uid'        => (string)$id,
-                'uri'        => (string)$uri,
-                'title'      => (string)$title,
-                'content'    => $content ?? '',
-                'enclosures' => $image ? [$image . '#.image'] : [],
+              'uid'        => (string)$id,
+              'uri'        => (string)$uri,
+              'title'      => (string)$title,
+              'content'    => $content ?? '',
+              'enclosures' => $image ? [$image . '#.image'] : [],
             ];
         }
     }
@@ -130,12 +132,15 @@ class JSONBridge extends BridgeAbstract {
      * - Throws server error on JMESPath syntax/runtime errors.
      * - Returns scalar string or null (if expr empty or result non-scalar/empty).
      */
-    private function extract(array $context, ?string $expr, string $param, int $idx): ?string {
-        if (!$expr) return null; // caller decides if required
+    private function extract(array $context, ?string $expr, string $param, int $idx): ?string
+    {
+        if (!$expr) {
+            return null; // caller decides if required
+        }
         try {
             $res = JmesPath::search($expr, $context);
         } catch (\Throwable $e) {
-            returnServerError("JMESPath error in '$param' for item #$idx: " . $e->getMessage());
+            throwServerException("JMESPath error in '$param' for item #$idx: " . $e->getMessage());
         }
         return (is_scalar($res) && $res !== '') ? (string)$res : null;
     }
