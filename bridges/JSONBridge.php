@@ -12,7 +12,7 @@ class JSONBridge extends BridgeAbstract {
             'name' => 'JSON URL',
             'type' => 'text',
             'required' => true,
-            'exampleValue' => 'https://example.com/json/',
+            'exampleValue' => 'https://registry.npmjs.org/react/latest',
             'title' => 'The URL returning a JSON document (array or object)',
         ],
         'cookie' => [
