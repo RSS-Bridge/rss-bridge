@@ -41,7 +41,7 @@ class JSONBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => 'thumb.url',
-            'title' => 'JMESPath expression for the item link (e.g. a product or article URL)',
+            'title' => 'JMESPath expression for the item link (e.g. a product or article URL). Use join() to build the URL if needed.',
         ],
         'title' => [
             'name' => 'JMESPath (per item): Title',
