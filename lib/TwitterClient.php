@@ -238,7 +238,7 @@ class TwitterClient
                     throw $e;
                 }
             }
-        } else if ($operation == 'By list ID') {
+        } elseif ($operation == 'By list ID') {
             $id = $query['listId'];
         } else {
             throw new \Exception('Unknown operation to make list tweets');
