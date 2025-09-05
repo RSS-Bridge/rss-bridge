@@ -128,9 +128,10 @@ class GitlabIssueBridge extends BridgeAbstract
 
                 // TODO fix invalid timestamps (fdroid bot)
                 $item['timestamp'] = $comment->created_at ?? $comment->updated_at ?? $comment->last_edited_at;
-                $author = $comment->author ?? $comment->last_edited_by;
-                $item['author'] = '<img src="' . $author->avatar_url . '" width=24></img> <a href="https://' .
-                    $this->getInput('h') . $author->path . '">' . $author->name . ' @' . $author->username . '</a>';
+                $author = $comment->author ?? $comment->last_edited_by ?? null;
+                if ($author !== null) {
+                    $item['author'] = $author->name . ' @' . $author->username;
+                }
 
                 $content = '';
                 if ($comment->system) {
@@ -151,7 +152,11 @@ class GitlabIssueBridge extends BridgeAbstract
                         $content = $comment->note_html;
                     }
                 }
-                $item['title'] = $author->name . " $content";
+
+                if ($author !== null) {
+                    $item['title'] = $author->name . ' ';
+                }
+                $item['title'] .= $content;
 
                 $content = $this->fixImgSrc($comment->note_html);
                 $item['content'] = defaultLinkTo($content, 'https://' . $this->getInput('h') . '/');
@@ -227,9 +232,14 @@ class GitlabIssueBridge extends BridgeAbstract
 
         $authors = $description_html->find('.issuable-meta a.author-link, .merge-request a.author-link');
         $editors = $description_html->find('.edited-text a.author-link');
+
         if ($authors === [] && $editors === []) {
             return null;
         }
+
+        $authors = array_map(fn($author): string => $author->plaintext, $authors);
+        $editors = array_map(fn($author): string => $author->plaintext, $editors);
+
         $author_str = implode(' ', $authors);
         if ($editors) {
             $author_str .= ', ' . implode(' ', $editors);
