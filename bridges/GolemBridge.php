@@ -94,15 +94,16 @@ class GolemBridge extends FeedExpander
                 }
             }
 
-            $item['content'] .= $this->extractContent($articlePage, $item['content']);
-
             // next page
-            $nextUri = $articlePage->find('li.go-pagination__item--next>a', 0);
+            $nextUri = $articlePage->find('li.go-pagination__item--next a', 0);
             if ($nextUri) {
                 $uri = $nextUri->href;
             } else {
                 $uri = null;
             }
+
+            // Only extract the content (and remove content) after all pre-processing is done
+            $item['content'] .= $this->extractContent($articlePage, $item['content']);
         }
 
         return $item;
