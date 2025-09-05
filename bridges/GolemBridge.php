@@ -141,7 +141,7 @@ class GolemBridge extends FeedExpander
         // delete known bad elements and unwanted gallery images
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe, .go-article-header__title, .go-article-header__kicker, .go-label--sponsored,
-                        .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block, .go-vh, .go-paywall, .go-index-link, .go-pagination__list,
+                        .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block, .go-vh, .go-paywall, .go-index, .go-pagination__list,
                         .go-gallery .[data-active="false"], .go-article-header__series') as $bad
         ) {
             $bad->remove();
