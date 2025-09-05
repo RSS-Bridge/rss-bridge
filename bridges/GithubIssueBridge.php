@@ -162,10 +162,18 @@ class GithubIssueBridge extends BridgeAbstract
     private function extractIssueComments($issue)
     {
         $items = [];
-        $title = $issue->find('.gh-header-title', 0)->plaintext;
-        $issueNbr = trim(
-            substr($issue->find('.gh-header-number', 0)->plaintext, 1)
-        );
+
+        $titleElem = $issue->find('.gh-header-title', 0);
+        $title = $titleElem !== null ? $titleElem->plaintext : '';
+
+        $numberElem = $issue->find('.gh-header-number', 0);
+        if ($numberElem !== null) {
+            $issueNbr = trim(
+                substr($numberElem->plaintext, 1)
+            );
+        } else {
+            $issueNbr = '';
+        }
 
         $comments = $issue->find(
             '.comment, .TimelineItem-badge'
