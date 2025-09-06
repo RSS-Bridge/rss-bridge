@@ -4,8 +4,8 @@ class KemonoBridge extends BridgeAbstract
 {
     const NAME = 'Kemono';
     const MAINTAINER = 'phantop';
-    const URI = 'https://kemono.su/';
-    const DESCRIPTION = 'Returns posts from Kemono.';
+    const URI = 'https://kemono.cr/';
+    const DESCRIPTION = 'Returns posts from Kemono and Coomer.';
     const PARAMETERS = [[
         'service' => [
             'name' => 'Content service',
@@ -18,6 +18,11 @@ class KemonoBridge extends BridgeAbstract
                 'Boosty' => 'boosty',
                 'Gumroad' => 'gumroad',
                 'SubscribeStar' => 'subscribestar',
+                'DLSite' => 'dlsite',
+
+                'OnlyFans' => 'onlyfans',
+                'Fansly' => 'fansly',
+                'CandFans' => 'candfans',
             ]
         ],
         'user' => [
@@ -29,57 +34,67 @@ class KemonoBridge extends BridgeAbstract
             'name' => 'Search query',
             'exampleValue' => 'classic',
             'required' => false,
-        ]
+        ],
+        'limit' => self::LIMIT,
     ]];
 
-    private $title;
+    private $author;
+
+    private function isCoomer()
+    {
+        return str_contains($this->getInput('service'), 'fans');
+    }
+
+    private function baseURI()
+    {
+        if ($this->isCoomer()) {
+            return 'https://coomer.st/';
+        }
+        return parent::getURI();
+    }
+
+    private function getJson(string $endpoint)
+    {
+        $api = $this->baseURI() . 'api/v1/' . $this->getInput('service');
+        $url = $api . $this->getInput('service') . '/user/' . $this->getInput('user');
+        $header = [ 'Accept: text/css' ]; // Required by API
+
+        $api_response = getContents("$api$endpoint", $header);
+        return Json::decode($api_response);
+    }
 
     public function collectData()
     {
-        $api = parent::getURI() . 'api/v1/';
-        $url = $api . $this->getInput('service') . '/user/' . $this->getInput('user');
+        $user = '/user/' . $this->getInput('user');
+        $profile = $this->getJson("$user/profile");
+        $this->author = ucfirst($profile['name']);
 
-        $api_response = getContents($url . '/profile');
-        $profile = Json::decode($api_response);
-        $this->title = ucfirst($profile['name']);
+        $json = $this->getJson("$user/posts?q=" . urlencode($this->getInput('q')));
+        $elements = array_slice($json, 0, $this->getInput('limit'));
 
-        if ($this->getInput('q')) {
-            $url .= '?q=' . urlencode($this->getInput('q'));
-        }
-        $api_response = getContents($url);
-        $json = Json::decode($api_response);
+        foreach ($elements as $element) {
+            $element = $this->getJson($user . '/post/' . $element['id']);
+            $post = $element['post'];
 
-
-        foreach ($json as $element) {
-            $item = [];
-            $item['author'] = $this->title;
-            $item['content'] = $element['content'];
-            $item['timestamp'] = strtotime($element['published']);
-            $item['title'] = $element['title'];
-            $item['uid'] = $element['id'];
-            $item['uri'] = $this->getURI() . '/post/' . $item['uid'];
-
-            if ($element['tags']) {
-                $tags = $element['tags'];
-                if (is_array($tags)) {
-                    $item['categories'] = $tags;
-                } else {
-                    $tags = preg_replace('/^{/', '', $tags);
-                    $tags = preg_replace('/}$/', '', $tags);
-                    $tags = preg_replace('/"/', '', $tags);
-                    $item['categories'] = explode(',', $tags);
-                }
-            }
+            $item = [
+                'author' => $this->author,
+                'categories' => $post['tags'],
+                'content' => $post['content'],
+                'timestamp' => strtotime($post['published']),
+                'title' => $post['title'],
+                'uid' => $post['id'],
+                'uri' => $this->getURI() . '/post/' . $post['id'],
+            ];
 
             $item['enclosures'] = [];
-            if (array_key_exists('url', $element['embed'])) {
-                $item['enclosures'][] = $element['embed']['url'];
+            if (array_key_exists('url', $post['embed'])) {
+                $item['enclosures'][] = $post['embed']['url'];
             }
-            if (array_key_exists('path', $element['file'])) {
-                $element['attachments'][] = $element['file'];
+            if (array_key_exists('path', $post['file'])) {
+                $element['attachments'][] = $post['file'];
             }
             foreach ($element['attachments'] as $file) {
-                $item['enclosures'][] = parent::getURI() . $file['path'];
+                $item['enclosures'][] = $this->baseURI() . $file['path'];
             }
 
             $this->items[] = $item;
@@ -89,15 +104,15 @@ class KemonoBridge extends BridgeAbstract
     public function getName()
     {
         $name = parent::getName();
-        if (isset($this->title)) {
-            $name .= ' - ' . $this->title;
+        if (isset($this->author)) {
+            $name .= ' - ' . $this->author;
         }
         return $name;
     }
 
     public function getURI()
     {
-        $uri = parent::getURI() . $this->getInput('service') . '/user/' . $this->getInput('user');
+        $uri = $this->baseURI() . $this->getInput('service') . '/user/' . $this->getInput('user');
         return $uri;
     }
 }
