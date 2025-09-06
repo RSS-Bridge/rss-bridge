@@ -6,6 +6,23 @@ class MinecraftBridge extends BridgeAbstract
     const URI = 'https://www.minecraft.net';
     const DESCRIPTION = 'Catch up on the latest Minecraft articles';
     const MAINTAINER = 'tillcash';
+    const PARAMETERS = [
+        [
+            'category' => [
+                'type' => 'list',
+                'name' => 'Category',
+                'values' => [
+                    'All' => 'all',
+                    'Deep Dives' => 'Deep Dives',
+                    'News' => 'News',
+                    'Marketplace' => 'Marketplace',
+                    'Merch' => 'Merch',
+                ],
+                'title' => 'Choose article category',
+                'defaultValue' => 'all',
+            ]
+        ]
+    ];
 
     public function getIcon()
     {
@@ -25,11 +42,13 @@ class MinecraftBridge extends BridgeAbstract
         }
 
         foreach ($articles->article_grid as $article) {
+            if ($article->primary_category !== $this->getInput('category') && $this->getInput('category') !== 'all') continue;
             $this->items[] = [
                 'title' => $article->default_tile->title,
                 'uid' => $article->article_url,
                 'uri' => self::URI . $article->article_url,
                 'content' => $article->default_tile->sub_header,
+                'categories' => [$article->primary_category],
             ];
         }
     }
