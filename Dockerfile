@@ -27,6 +27,8 @@ RUN set -xe && \
       curl \
       # for patching libcurl-impersonate
       patchelf \
+      # for installing jmespath.php
+      composer \
       && \
     # install curl-impersonate library
     curlimpersonate_version=1.0.0rc2 && \
@@ -53,7 +55,11 @@ RUN set -xe && \
     tar xaf "$archive" -C /usr/local/lib/curl-impersonate && \
     patchelf --set-soname libcurl.so.4 /usr/local/lib/curl-impersonate/libcurl-impersonate.so && \
     rm "$archive" && \
-    apt-get purge --assume-yes curl patchelf && \
+    # install jmespath.php using composer
+    mkdir /app && composer require mtdowling/jmespath.php --no-scripts --no-plugins --no-interaction --working-dir=/app && chown -R --no-dereference www-data:www-data /app && \
+    # cleanup buildtime dependencies
+    composer clear-cache && \
+    apt-get purge --assume-yes curl patchelf composer && \
     rm -rf /var/lib/apt/lists/*
 
 ENV LD_PRELOAD /usr/local/lib/curl-impersonate/libcurl-impersonate.so
