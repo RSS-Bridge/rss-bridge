@@ -42,7 +42,9 @@ class MinecraftBridge extends BridgeAbstract
         }
 
         foreach ($articles->article_grid as $article) {
-            if ($article->primary_category !== $this->getInput('category') && $this->getInput('category') !== 'all') continue;
+            if ($article->primary_category !== $this->getInput('category') && $this->getInput('category') !== 'all') {
+                continue;
+            }
             $this->items[] = [
                 'title' => $article->default_tile->title,
                 'uid' => $article->article_url,
