@@ -79,7 +79,7 @@ class ModrinthBridge extends BridgeAbstract
     {
         $apiUrl = 'https://api.modrinth.com/v2/project';
         $projectName = $this->getInput('name');
-        $url = "{$apiUrl}/${projectName}/version";
+        $url = sprintf('%s/%s/version', $apiUrl, $projectName);
 
         $queryTable = [
             'loaders' => $this->parseInputList($this->getInput('loaders')),
