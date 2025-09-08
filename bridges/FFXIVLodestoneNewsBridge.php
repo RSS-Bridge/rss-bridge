@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class FFXIVLodestoneNewsBridge extends BridgeAbstract
 {
     const NAME = 'FFXIV Lodestone News';
