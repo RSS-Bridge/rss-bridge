@@ -51,6 +51,7 @@ class MinecraftBridge extends BridgeAbstract
                 'uri' => self::URI . $article->article_url,
                 'content' => $article->default_tile->sub_header,
                 'categories' => [$article->primary_category],
+                'enclosures' => isset($article->image) ? [$article->image] : [],
             ];
         }
     }
