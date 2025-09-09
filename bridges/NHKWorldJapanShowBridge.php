@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class NHKWorldJapanShowBridge extends BridgeAbstract
 {
     const NAME = 'NHK World-Japan Show Bridge';
