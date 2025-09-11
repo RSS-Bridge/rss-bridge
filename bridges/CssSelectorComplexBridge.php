@@ -446,7 +446,7 @@ class CssSelectorComplexBridge extends BridgeAbstract
                 $time = $time_element->innertext;
             }
 
-            $this->parseTimeStrAsTimestamp($time, $time_format);
+            $time = $this->parseTimeStrAsTimestamp($time, $time_format);
         }
 
         $article_content = $this->cleanArticleContent($article_content, $content_cleanup, $remove_styling);
