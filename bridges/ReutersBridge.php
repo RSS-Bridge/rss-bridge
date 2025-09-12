@@ -94,6 +94,7 @@ class ReutersBridge extends BridgeAbstract
                     ],
                     'Technology' => [
                         'Technology' => 'tech',
+                        'Artificial Intelligence' => '/technology/artificial-intelligence',
                         'Disrupted' => '/technology/disrupted',
                         'Reuters Momentum' => '/technology/reuters-momentum',
                     ],
