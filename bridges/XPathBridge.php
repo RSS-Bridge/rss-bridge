@@ -12,10 +12,11 @@ class XPathBridge extends XPathAbstract
 
             'url' => [
                 'name' => 'Enter web page URL',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 You can specify any website URL which serves data suited for display in RSS feeds
 (for example a news blog).
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => 'https://news.blizzard.com/en-en',
                 'defaultValue' => 'https://news.blizzard.com/en-en',
                 'required' => true
@@ -23,12 +24,13 @@ EOL, 'type' => 'text',
 
             'item' => [
                 'name' => 'Item selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 Enter an XPath expression matching a list of dom nodes, each node containing one
 feed article item in total (usually a surrounding &lt;div&gt; or &lt;span&gt; tag). This will
 be the context nodes for all of the following expressions. This expression usually
 starts with a single forward slash.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article',
                 'defaultValue' => '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article',
                 'required' => true
@@ -36,11 +38,12 @@ EOL, 'type' => 'text',
 
             'title' => [
                 'name' => 'Item title selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 This expression should match a node contained within each article item node
 containing the article headline. It should start with a dot followed by two
 forward slashes, referring to any descendant nodes of the article item node.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => './/div/div[2]/h2',
                 'defaultValue' => './/div/div[2]/h2',
                 'required' => true
@@ -48,12 +51,13 @@ EOL, 'type' => 'text',
 
             'content' => [
                 'name' => 'Item description selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 This expression should match a node contained within each article item node
 containing the article content or description. It should start with a dot
 followed by two forward slashes, referring to any descendant nodes of the
 article item node.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => './/div[@class="ArticleListItem-description"]/div[@class="h6"]',
                 'defaultValue' => './/div[@class="ArticleListItem-description"]/div[@class="h6"]',
                 'required' => false
@@ -61,7 +65,7 @@ EOL, 'type' => 'text',
 
             'raw_content' => [
                 'name' => 'Use raw item description',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
                 Whether to use the raw item description or to replace certain characters with
                 special significance in HTML by HTML entities (using the PHP function htmlspecialchars).
                 EOL,
@@ -72,13 +76,14 @@ EOL, 'type' => 'text',
 
             'uri' => [
                 'name' => 'Item URL selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 This expression should match a node's attribute containing the article URL
 (usually the href attribute of an &lt;a&gt; tag). It should start with a dot
 followed by two forward slashes, referring to any descendant nodes of
 the article item node. Attributes can be selected by prepending an @ char
 before the attributes name.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => './/a[@class="ArticleLink ArticleLink"]/@href',
                 'defaultValue' => './/a[@class="ArticleLink ArticleLink"]/@href',
                 'required' => false
@@ -86,24 +91,26 @@ EOL, 'type' => 'text',
 
             'author' => [
                 'name' => 'Item author selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 This expression should match a node contained within each article item
 node containing the article author's name. It should start with a dot
 followed by two forward slashes, referring to any descendant nodes of
 the article item node.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'required' => false
             ],
 
             'timestamp' => [
                 'name' => 'Item date selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 This expression should match a node or node's attribute containing the
 article timestamp or date (parsable by PHP's strtotime function). It
 should start with a dot followed by two forward slashes, referring to
 any descendant nodes of the article item node. Attributes can be
 selected by prepending an @ char before the attributes name.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp',
                 'defaultValue' => './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp',
                 'required' => false
@@ -111,13 +118,14 @@ EOL, 'type' => 'text',
 
             'enclosures' => [
                 'name' => 'Item image selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 This expression should match a node's attribute containing an article
 image URL (usually the src attribute of an &lt;img&gt; tag or a style
 attribute). It should start with a dot followed by two forward slashes,
 referring to any descendant nodes of the article item node. Attributes
 can be selected by prepending an @ char before the attributes name.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => './/div[@class="ArticleListItem-image"]/@style',
                 'defaultValue' => './/div[@class="ArticleListItem-image"]/@style',
                 'required' => false
@@ -125,7 +133,7 @@ EOL, 'type' => 'text',
 
             'categories' => [
                 'name' => 'Item category selector',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 This expression should match a node or node's attribute contained
 within each article item node containing the article category. This
 could be inside &lt;div&gt; or &lt;span&gt; tags or sometimes be hidden
@@ -133,7 +141,8 @@ in a data attribute. It should start with a dot followed by two
 forward slashes, referring to any descendant nodes of the article
 item node. Attributes can be selected by prepending an @ char
 before the attributes name.
-EOL, 'type' => 'text',
+EOL,
+                'type' => 'text',
                 'exampleValue' => './/div[@class="ArticleListItem-label"]',
                 'defaultValue' => './/div[@class="ArticleListItem-label"]',
                 'required' => false
@@ -141,12 +150,13 @@ EOL, 'type' => 'text',
 
             'fix_encoding' => [
                 'name' => 'Fix encoding',
-                'title' => <<<"EOL"
+                'title' => <<<'EOL'
 Check this to fix feed encoding by invoking PHP's utf8_decode
 function on all extracted texts. Try this in case you see "broken" or
 "weird" characters in your feed where you'd normally expect umlauts
 or any other non-ascii characters.
-EOL, 'type' => 'checkbox',
+EOL,
+                'type' => 'checkbox',
                 'required' => false
             ],
 
@@ -157,36 +167,36 @@ EOL, 'type' => 'checkbox',
      * Source Web page URL (should provide either HTML or XML content)
      * @return string
      */
-    protected function getSourceUrl()
+    protected function getSourceUrl(): string
     {
-        return $this->encodeUri($this->getInput('url'));
+        return $this->encodeUri($this->getInput('url') ?? '');
     }
 
     /**
      * XPath expression for extracting the feed items from the source page
      * @return string
      */
-    protected function getExpressionItem()
+    protected function getExpressionItem(): string
     {
-        return urldecode($this->getInput('item'));
+        return urldecode($this->getInput('item') ?? '');
     }
 
     /**
      * XPath expression for extracting an item title from the item context
      * @return string
      */
-    protected function getExpressionItemTitle()
+    protected function getExpressionItemTitle(): string
     {
-        return urldecode($this->getInput('title'));
+        return urldecode($this->getInput('title') ?? '');
     }
 
     /**
      * XPath expression for extracting an item's content from the item context
      * @return string
      */
-    protected function getExpressionItemContent()
+    protected function getExpressionItemContent(): string
     {
-        return urldecode($this->getInput('content'));
+        return urldecode($this->getInput('content') ?? '');
     }
 
     /**
@@ -202,27 +212,27 @@ EOL, 'type' => 'checkbox',
      * XPath expression for extracting an item link from the item context
      * @return string
      */
-    protected function getExpressionItemUri()
+    protected function getExpressionItemUri(): string
     {
-        return urldecode($this->getInput('uri'));
+        return urldecode($this->getInput('uri') ?? '');
     }
 
     /**
      * XPath expression for extracting an item author from the item context
      * @return string
      */
-    protected function getExpressionItemAuthor()
+    protected function getExpressionItemAuthor(): string
     {
-        return urldecode($this->getInput('author'));
+        return urldecode($this->getInput('author') ?? '');
     }
 
     /**
      * XPath expression for extracting an item timestamp from the item context
      * @return string
      */
-    protected function getExpressionItemTimestamp()
+    protected function getExpressionItemTimestamp(): string
     {
-        return urldecode($this->getInput('timestamp'));
+        return urldecode($this->getInput('timestamp') ?? '');
     }
 
     /**
@@ -230,18 +240,18 @@ EOL, 'type' => 'checkbox',
      * images or movies) from the item context
      * @return string
      */
-    protected function getExpressionItemEnclosures()
+    protected function getExpressionItemEnclosures(): string
     {
-        return urldecode($this->getInput('enclosures'));
+        return urldecode($this->getInput('enclosures') ?? '');
     }
 
     /**
      * XPath expression for extracting an item category from the item context
      * @return string
      */
-    protected function getExpressionItemCategories()
+    protected function getExpressionItemCategories(): string
     {
-        return urldecode($this->getInput('categories'));
+        return urldecode($this->getInput('categories') ?? '');
     }
 
     /**
@@ -260,6 +270,7 @@ EOL, 'type' => 'checkbox',
      */
     private function encodeUri($uri)
     {
+        $uri = $uri ?? '';
         if (
             strpos($uri, 'https%3A%2F%2F') === 0
             || strpos($uri, 'http%3A%2F%2F') === 0
