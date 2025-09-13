@@ -19,7 +19,7 @@ class InvestorsObserverBridge extends BridgeAbstract
             throwServerException('Unable to retrieve sitemap');
         }
 
-        $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA);
+        $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA | LIBXML_NONET);
 
         if (!$sitemap) {
             throwServerException('Unable to parse sitemap');
