@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class TicketioBridge extends BridgeAbstract
 {
     const NAME = 'Ticket.io Bridge';
