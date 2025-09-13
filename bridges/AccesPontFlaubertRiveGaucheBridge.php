@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class AccesPontFlaubertRiveGaucheBridge extends BridgeAbstract
 {
 		const NAME = 'Rouen avancement accès Pont Flaubert - rive gauche';
