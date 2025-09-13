@@ -7,18 +7,19 @@ class SkyArteBridge extends BridgeAbstract
     const NAME          = 'Sky Arte | Mostre ed eventi';
     const URI           = 'https://arte.sky.it';
     const MAINTAINER    = 'tillcash';
-    const CACHE_TIMEOUT = 60 * 60 * 6; // 6 hour
+    const CACHE_TIMEOUT = 60 * 60 * 6; // 6 hours
     const MAX_ARTICLES  = 5;
 
     public function collectData()
     {
         $sitemapUrl = self::URI . '/sitemap-mostre-eventi.xml';
+
         $sitemapXml = getContents($sitemapUrl);
         if (!$sitemapXml) {
             throwServerException('Unable to fetch sitemap');
         }
 
-        $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA);
+        $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA | LIBXML_NONET);
         if (!$sitemap) {
             throwServerException('Unable to parse sitemap');
         }
@@ -55,8 +56,7 @@ class SkyArteBridge extends BridgeAbstract
 
     private function getJson(string $url): ?array
     {
-        $html = getSimpleHTMLDOMCached($url, 259200); // 3 days
-
+        $html = getSimpleHTMLDOMCached($url, 259200); // 3 days cache
         if (!$html) {
             return null;
         }
@@ -67,6 +67,7 @@ class SkyArteBridge extends BridgeAbstract
         }
 
         $decoded = json_decode($script->innertext, true);
+
         return is_array($decoded) ? $decoded : null;
     }
 
@@ -77,14 +78,15 @@ class SkyArteBridge extends BridgeAbstract
         $info  = $props['info'] ?? [];
 
         $event = [
-            'title'      => $card['title']['typography']['text'] ?? '(untitled)',
-            'content'    => '',
+            'title' => $card['title']['typography']['text'] ?? '(untitled)',
+            'content' => '',
             'categories' => [],
             'enclosures' => [],
         ];
 
         // Artist & Curators
         $artist = $info['artist']['text'] ?? '';
+
         $curators = [];
         if (!empty($info['curators']) && is_array($info['curators'])) {
             foreach ($info['curators'] as $c) {
@@ -95,28 +97,32 @@ class SkyArteBridge extends BridgeAbstract
         // Location, Dates, Categories
         $location = '';
         $dates = '';
+
         if (!empty($card['informations']) && is_array($card['informations'])) {
             foreach ($card['informations'] as $block) {
                 $icon = $block['iconRight']['Icon'] ?? '';
                 if ($icon === 'SvgLocation') {
                     $location = $block['textRight']['text'] ?? '';
                 }
+
                 if ($icon === 'SvgEventEmpty') {
                     $dates = $block['textRight']['text'] ?? '';
                 }
+
                 if (!empty($block['badge']['label']['text'])) {
                     $event['categories'][] = $block['badge']['label']['text'];
                 }
             }
         }
 
-        // Enclosure
+        // Enclosure (image)
         if (!empty($card['image']['src'])) {
             $event['enclosures'][] = $card['image']['src'];
         }
 
-        // HTML content
+        // HTML content building
         $content = '';
+
         if ($artist) {
             $content .= '<p><strong>Artista:</strong> ' . htmlspecialchars($artist) . '</p>';
         }
@@ -141,6 +147,7 @@ class SkyArteBridge extends BridgeAbstract
         }
 
         $event['content'] = $content;
+
         return $event;
     }
 }
