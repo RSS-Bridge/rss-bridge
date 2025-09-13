@@ -5,11 +5,11 @@ class CdactionBridge extends BridgeAbstract {
     const URI = 'https://cdaction.pl';
     const DESCRIPTION = 'Fetches the latest posts from given category.';
     const MAINTAINER = 'tomaszkane';
-    const PARAMETERS = array( array(
-        'category' => array(
+    const PARAMETERS = [[
+        'category' => [
             'name' => 'Kategoria',
             'type' => 'list',
-            'values' => array(
+            'values' => [
                 'Najnowsze (wszystkie)' => 'feed',
                 'Newsy' => 'newsy',
                 'Recenzje' => 'recenzje',
@@ -18,9 +18,9 @@ class CdactionBridge extends BridgeAbstract {
                 'Retro' => 'retro',
                 'Technologie' => 'technologie',
                 'Na luzie' => 'na-luzie',
-            )
-        ))
-    );
+            ],
+        ]]
+    ];
 
     public function collectData() {
         $feedUrl = $this->getURI() . '/' . $this->getInput('category');
@@ -48,7 +48,7 @@ class CdactionBridge extends BridgeAbstract {
         $nodes = $dom->find('a.article-link');
         foreach ($nodes as $node) {
             $item = [];
-            $item['uri'] = $node->attr['href']; //$this->getURI() . '/' . $this->getInput('category') . '/' . $element;
+            $item['uri'] = $node->attr['href'];
             $item['title'] = trim($node->find('h3', 0)?->plaintext);
             $item['timestamp'] = trim($node->find('.meta .date', 0)->plaintext) ? : null;
             $item['author'] = trim($node->find('.author-name', 0)?->plaintext ?? '', " \n\r\t\v\0\"") ? : null;
