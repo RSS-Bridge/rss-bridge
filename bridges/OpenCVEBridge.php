@@ -302,10 +302,10 @@ class OpenCVEBridge extends BridgeAbstract
             if ($score >= $critical_thr) {
                 $importance = 'CRITICAL';
                 $class = 'cvss-crit-color';
-            } else if ($score >= $high_thr) {
+            } elseif ($score >= $high_thr) {
                 $importance = 'HIGH';
                 $class = 'cvss-high-color';
-            } else if ($score >= $medium_thr) {
+            } elseif ($score >= $medium_thr) {
                 $importance = 'MEDIUM';
                 $class = 'cvss-medium-color';
             } else {
