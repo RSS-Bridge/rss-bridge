@@ -74,8 +74,8 @@ class SkyArteBridge extends BridgeAbstract
     private function parseEventData(array $json): array
     {
         $props = $json['props']['pageProps']['data'] ?? [];
-        $card = $props['card'] ?? [];
-        $info = $props['info'] ?? [];
+        $card  = $props['card'] ?? [];
+        $info  = $props['info'] ?? [];
 
         $event = [
             'title' => $card['title']['typography']['text'] ?? '(untitled)',
