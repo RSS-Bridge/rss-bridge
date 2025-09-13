@@ -13,7 +13,7 @@ class SkyArteBridge extends BridgeAbstract
     public function collectData()
     {
         $sitemapUrl = self::URI . '/sitemap-mostre-eventi.xml';
- 
+
         $sitemapXml = getContents($sitemapUrl);
         if (!$sitemapXml) {
             throwServerException('Unable to fetch sitemap');
