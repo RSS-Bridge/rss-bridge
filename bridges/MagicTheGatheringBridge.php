@@ -30,12 +30,13 @@ class MagicTheGatheringBridge extends BridgeAbstract
         ]
     ];
 
-    public function collectData() {
+    public function collectData() 
+    {
         $url = static::URI . $this->getInput('category');
 
         $dom = getSimpleHTMLDOM($url);
 
-        foreach($dom->find('article') as $article) {
+        foreach ($dom->find('article') as $article) {
             $title = $article->find('h3', 0)->innertext;
             $author = $article->find('a', 2)->innertext;
             $articleurl = 'https://magic.wizards.com' . $article->find('a', 1)->href;
