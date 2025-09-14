@@ -30,7 +30,7 @@ class MagicTheGatheringBridge extends BridgeAbstract
         ]
     ];
 
-    public function collectData() 
+    public function collectData()
     {
         $url = static::URI . $this->getInput('category');
 
