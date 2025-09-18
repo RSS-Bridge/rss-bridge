@@ -42,7 +42,8 @@ class KemonoBridge extends BridgeAbstract
 
     private function isCoomer()
     {
-        return str_contains($this->getInput('service'), 'fans');
+        $haystack = $this->getInput('service') ?? '';
+        return str_contains($haystack, 'fans');
     }
 
     private function baseURI()
@@ -112,7 +113,10 @@ class KemonoBridge extends BridgeAbstract
 
     public function getURI()
     {
-        $uri = $this->baseURI() . $this->getInput('service') . '/user/' . $this->getInput('user');
+        $service = $this->getInput('service');
+        $user = $this->getInput('user');
+
+        $uri = $this->baseURI() . $service . '/user/' . $user;
         return $uri;
     }
 }
