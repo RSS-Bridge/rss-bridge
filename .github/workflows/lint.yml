@@ -31,8 +31,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
       - run: composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-      - run: composer global require dealerdirect/phpcodesniffer-composer-installer
-      - run: composer global require phpcompatibility/php-compatibility
+      - run: composer global require dealerdirect/phpcodesniffer-composer-installer phpcompatibility/php-compatibility
       - run: ~/.composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p
 
   executable_php_files_check:
