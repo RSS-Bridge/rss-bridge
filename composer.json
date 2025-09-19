@@ -52,5 +52,10 @@
         "test": "./vendor/bin/phpunit",
         "lint": "./vendor/bin/phpcs --parallel=2 --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./",
         "compat": "./vendor/bin/phpcs --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p ./"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
     }
 }
