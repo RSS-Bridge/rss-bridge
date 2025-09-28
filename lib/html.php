@@ -238,10 +238,9 @@ function defaultLinkTo($dom, $url)
  * ]
  *
  * @param string $srcset Content of srcset html attribute
- * @param bool $return_largest_url Instead of returning an array, return URL for the largest entry
- * @return array|string Content of srcset attribute as { size => url } array, or largest entry URL if requested
+ * @return array Content of srcset attribute as { size => url } array
  */
-function parseSrcset(string $srcset, bool $return_largest_url = false)
+function parseSrcset(string $srcset)
 {
     // The srcset format is more tricky to parse that it seems:
     //   URLs may contain commas, and space after comma is not mandatory, so the following is valid:
@@ -263,20 +262,28 @@ function parseSrcset(string $srcset, bool $return_largest_url = false)
             }
         }
     }
-    if ($return_largest_url) {
-        $largest_image_url = null;
-        $largest_image_size = -1;
-        foreach ($entries as $size => $url) {
-            $size_int = intval(substr($size, 0, strlen($size) - 1));
-            if ($size_int > $largest_image_size) {
-                $largest_image_size = $size_int;
-                $largest_image_url = $url;
-            }
+    return $entries;
+}
+
+/**
+ * Parse a srcset HTML attribute value and return the URL of the largest image
+ *
+ * @param string $srcset Content of srcset html attribute
+ * @return string Largest image URL
+ */
+function parseSrcsetLargestImageUrl(string $srcset)
+{
+    $largest_image_url = null;
+    $largest_image_size = -1;
+    $entries = parseSrcset($srcset);
+    foreach ($entries as $size => $url) {
+        $size_int = intval(substr($size, 0, strlen($size) - 1));
+        if ($size_int > $largest_image_size) {
+            $largest_image_size = $size_int;
+            $largest_image_url = $url;
         }
-        return $largest_image_url;
-    } else {
-        return $entries;
     }
+    return $largest_image_url;
 }
 
 /**
@@ -302,13 +309,13 @@ function convertLazyLoading($dom)
         if (!empty($img->getAttribute('data-src'))) {
             $img->src = $img->getAttribute('data-src');
         } elseif (!empty($img->getAttribute('data-srcset'))) {
-            $img->src = parseSrcset($img->getAttribute('data-srcset'));
+            $img->src = parseSrcsetLargestImageUrl($img->getAttribute('data-srcset'));
         } elseif (!empty($img->getAttribute('data-lazy-src'))) {
             $img->src = $img->getAttribute('data-lazy-src');
         } elseif (!empty($img->getAttribute('data-orig-file'))) {
             $img->src = $img->getAttribute('data-orig-file');
         } elseif (!empty($img->getAttribute('srcset'))) {
-            $img->src = parseSrcset($img->getAttribute('srcset'));
+            $img->src = parseSrcsetLargestImageUrl($img->getAttribute('srcset'));
         } else {
             continue; // Proceed to next element without removing attributes
         }
