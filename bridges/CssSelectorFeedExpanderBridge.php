@@ -56,6 +56,18 @@ class CssSelectorFeedExpanderBridge extends CssSelectorBridge
         $thumbnail_as_header = $this->getInput('thumbnail_as_header');
         $limit = $this->getInput('limit');
 
+        $this->collectDataInternal($url, $content_selector, $content_cleanup, $dont_expand_metadata, $discard_thumbnail, $thumbnail_as_header, $limit);
+    }
+
+    protected function collectDataInternal(
+        $url,
+        $content_selector,
+        $content_cleanup = null,
+        $dont_expand_metadata = false,
+        $discard_thumbnail = false,
+        $thumbnail_as_header = false,
+        $limit = 5
+    ) {
         $feedParser = new FeedParser();
         $xml = getContents($url);
         $source_feed = $feedParser->parseFeed($xml);
