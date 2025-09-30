@@ -66,7 +66,7 @@ class AppleMusicBridge extends BridgeAbstract
         }
 
         $url = 'https://itunes.apple.com/lookup?id=' . $this->getInput('artist') . '&entity=album&limit=' . $limit . '&sort=recent';
-        $html = getSimpleHTMLDOM($url);
+        $html = getContents($url);
         $json = json_decode($html);
         $result = $json->results;
 
