@@ -117,14 +117,16 @@ class GolemBridge extends FeedExpander
 
         //built youtube iframes
         foreach ($article->find('.go-embed-container') as &$embedcontent) {
-            $ytscript = $page->find('script', 14);
-            if (preg_match('/(www.youtube.com.*?)\"/', $ytscript->innertext, $link)) {
-                $link = 'https://' . str_replace('\\', '', $link[1]);
-                $embedcontent->innertext .= <<<EOT
-                    <iframe width="560" height="315" src="$link" title="YouTube video player" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
-                EOT;
+            foreach ($page->find('script') as $ytscript) {
+                if (preg_match('/(www.youtube.com.*?)\"/', $ytscript->innertext, $link)) {
+                    $link = 'https://' . str_replace('\\', '', $link[1]);
+                    $embedcontent->innertext .= <<<EOT
+                        <iframe width="560" height="315" src="$link" title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+                    EOT;
+                    break;
+                }
             }
         }
 
