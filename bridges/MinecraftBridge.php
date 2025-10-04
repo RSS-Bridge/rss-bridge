@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class MinecraftBridge extends BridgeAbstract
 {
     const NAME = 'Minecraft';
@@ -31,28 +33,41 @@ class MinecraftBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = getContents(
-            'https://www.minecraft.net/content/minecraftnet/language-masters/en-us/_jcr_content.articles.page-1.json'
-        );
+        $json = getContents('https://www.minecraft.net/content/minecraftnet/language-masters/en-us/_jcr_content.articles.page-1.json');
 
-        $articles = json_decode($json);
-
-        if ($articles === null) {
-            throwServerException('Failed to decode JSON content.');
+        $data = json_decode($json);
+        if ($data === null || empty($data->article_grid)) {
+            throwServerException('Invalid or empty content');
         }
 
-        foreach ($articles->article_grid as $article) {
-            if ($article->primary_category !== $this->getInput('category') && $this->getInput('category') !== 'all') {
+        $category = $this->getInput('category');
+
+        foreach ($data->article_grid as $article) {
+            if ($category !== 'all' && $category !== $article->primary_category) {
                 continue;
             }
+
+            $imageUrl = $this->getEncodedImageUrl($article->default_tile->image->imageURL);
+
             $this->items[] = [
-                'title' => $article->default_tile->title,
+                'title' => trim($article->default_tile->title),
                 'uid' => $article->article_url,
-                'uri' => self::URI . $article->article_url,
+                'uri' => urljoin(self::URI, $article->article_url),
                 'content' => $article->default_tile->sub_header,
                 'categories' => [$article->primary_category],
-                'enclosures' => [self::URI . $article->default_tile->image->imageURL],
+                'enclosures' => $imageUrl ? [$imageUrl] : [],
             ];
         }
+    }
+
+    private function getEncodedImageUrl(string $path): ?string
+    {
+        $path = explode('/', ltrim($path, '/'));
+        $path = array_map('rawurlencode', $path);
+        $path = implode('/', $path);
+
+        $url = urljoin(self::URI, $path);
+
+        return filter_var($url, FILTER_VALIDATE_URL) ? $url : null;
     }
 }
