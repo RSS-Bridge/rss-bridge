@@ -33,7 +33,7 @@ class StavebninyDEKBridge extends BridgeAbstract
             case 'Topic':
                 $this->collectTopic($html);
                 break;
-            }
+        }
     }
 
     /**
@@ -56,7 +56,7 @@ class StavebninyDEKBridge extends BridgeAbstract
             case 'Topic':
                 $uri .= 'pobocka-praha-hostivar/akce/temata/';
                 break;
-            }
+        }
 
         return $uri;
     }
@@ -93,7 +93,6 @@ class StavebninyDEKBridge extends BridgeAbstract
                 break;
             case 'Topic':
                 break;
-                
         }
 
         return $name;
@@ -148,7 +147,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('.com-news-feature-prerex') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -177,7 +176,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('.com-news-common-prerex') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -192,7 +191,7 @@ class StavebninyDEKBridge extends BridgeAbstract
             // Parse time
             $newsDate = $this->extractDate($article);
             // Remove prefix
-            $newsDate = str_replace("zveřejněno: ", "", $newsDate);
+            $newsDate = str_replace('zveřejněno: ', '', $newsDate);
             // Fix date
             $item['timestamp'] = $this->fixDate($newsDate);
             // Add images
@@ -213,7 +212,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('.com-news-common-prerex') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -228,7 +227,7 @@ class StavebninyDEKBridge extends BridgeAbstract
             // Parse time
             $newsDate = $this->extractDate($article);
             // Remove prefix
-            $newsDate = str_replace("zveřejněno: ", "", $newsDate);
+            $newsDate = str_replace('zveřejněno: ', '', $newsDate);
             // Fix date
             $item['timestamp'] = $this->fixDate($newsDate);
             // Add images
@@ -247,7 +246,6 @@ class StavebninyDEKBridge extends BridgeAbstract
      */
     private function extractEventUri($article)
     {
-
         return $article->href;
     }
 
@@ -262,7 +260,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Return URI of the article
         $element = $article->find('a', 0) or
-            returnServerError('Anchor not found!');
+            returnServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -296,10 +294,9 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('div.com-news-common-prerex__date', 0) or
-            returnServerError('Date not found!');
+            returnServerException('Date not found!');
 
         return $element->plaintext;
-
     }
 
     /**
@@ -312,7 +309,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('ul.ws-product-information__piece-description', 0)->find('li', 0) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -327,7 +324,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 0) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -342,7 +339,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 1) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -444,7 +441,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('img', 0) or
-            returnServerError('Title not found!');
+            returnServerException('Title not found!');
 
         return $element->alt;
     }
@@ -459,7 +456,7 @@ class StavebninyDEKBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('div.com-news-common-prerex__right-box', 0)->find('h3', 0)
-            or returnServerError('Title not found!');
+            or returnServerException('Title not found!');
 
         return $element->plaintext;
     }
@@ -601,14 +598,14 @@ class StavebninyDEKBridge extends BridgeAbstract
      */
     private function removeCzechDiacritics(string $text): string
     {
-        $czech = array(
+        $czech = [
             'á', 'č', 'ď', 'é', 'ě', 'í', 'ň', 'ó', 'ř', 'š', 'ť', 'ú', 'ů', 'ý', 'ž',
             'Á', 'Č', 'Ď', 'É', 'Ě', 'Í', 'Ň', 'Ó', 'Ř', 'Š', 'Ť', 'Ú', 'Ů', 'Ý', 'Ž'
-        );
-        $ascii = array(
+        ];
+        $ascii = [
             'a', 'c', 'd', 'e', 'e', 'i', 'n', 'o', 'r', 's', 't', 'u', 'u', 'y', 'z',
             'A', 'C', 'D', 'E', 'E', 'I', 'N', 'O', 'R', 'S', 'T', 'U', 'U', 'Y', 'Z'
-        );
+        ];
 
         return str_replace($czech, $ascii, $text);
     }
@@ -616,11 +613,10 @@ class StavebninyDEKBridge extends BridgeAbstract
     // endregion
 
     /**
-     * 
+     * formatTitleFromURI
     */
     private function formatTitleFromURI(string $uri): string
     {
-    
         // get last part of the URI
         $title = basename($uri);
 
@@ -641,6 +637,4 @@ class StavebninyDEKBridge extends BridgeAbstract
 
         return trim((string)$title);
     }
-
 }
-

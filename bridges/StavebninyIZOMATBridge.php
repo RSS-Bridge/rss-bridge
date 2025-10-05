@@ -35,7 +35,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
             case 'Promo':
                 $this->collectPromo($html);
                 break;
-            }
+        }
     }
 
     /**
@@ -58,7 +58,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
             case 'Promo':
                 $uri .= '/';
                 break;
-            }
+        }
 
         return $uri;
     }
@@ -95,7 +95,6 @@ class StavebninyIZOMATBridge extends BridgeAbstract
                 break;
             case 'Promo':
                 break;
-                
         }
 
         return $name;
@@ -153,7 +152,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('.col-12.col-md-6') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -177,7 +176,6 @@ class StavebninyIZOMATBridge extends BridgeAbstract
             $imgset[] = $this->extractNewsIMG($article);
             $item['enclosures'] = $imgset;
             $this->items[] = $item;
-
         }
     }
 
@@ -191,7 +189,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('div.col-12.col-md-6') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -207,7 +205,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
 
             // Add title
             $item['title'] = $this->extractBlogTitle($article);
-            
+
             // Add content
             $item['content'] = $this->extractBlogDescription($article);
 
@@ -218,7 +216,6 @@ class StavebninyIZOMATBridge extends BridgeAbstract
 
             // Add to rss query
             $this->items[] = $item;
-
         }
     }
 
@@ -232,7 +229,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('div.product-wrap') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -257,7 +254,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
 
             // Add to rss query
             $this->items[] = $item;
-*/            
+*/
         }
     }
 
@@ -347,10 +344,9 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('div.blog-article__date', 0) or
-            returnServerError('Date not found!');
+            returnServerException('Date not found!');
 
         return $element->plaintext;
-
     }
 
     /**
@@ -363,7 +359,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 0) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -378,7 +374,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('p.blog-article__text', 0) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -393,7 +389,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 1) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -495,7 +491,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('a.blog-article__link', 0) or
-            returnServerError('Title not found!');
+            returnServerException('Title not found!');
 
         return $element->innertext;
     }
@@ -510,7 +506,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('a.blog-article__link', 0) or
-            returnServerError('Title not found!');
+            returnServerException('Title not found!');
 
         return $element->innertext;
     }
@@ -525,7 +521,7 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('div.com-news-common-prerex__right-box', 0)->find('h3', 0)
-            or returnServerError('Title not found!');
+            or returnServerException('Title not found!');
 
         return $element->plaintext;
     }
@@ -667,14 +663,14 @@ class StavebninyIZOMATBridge extends BridgeAbstract
      */
     private function removeCzechDiacritics(string $text): string
     {
-        $czech = array(
+        $czech = [
             'á', 'č', 'ď', 'é', 'ě', 'í', 'ň', 'ó', 'ř', 'š', 'ť', 'ú', 'ů', 'ý', 'ž',
             'Á', 'Č', 'Ď', 'É', 'Ě', 'Í', 'Ň', 'Ó', 'Ř', 'Š', 'Ť', 'Ú', 'Ů', 'Ý', 'Ž'
-        );
-        $ascii = array(
+        ];
+        $ascii = [
             'a', 'c', 'd', 'e', 'e', 'i', 'n', 'o', 'r', 's', 't', 'u', 'u', 'y', 'z',
             'A', 'C', 'D', 'E', 'E', 'I', 'N', 'O', 'R', 'S', 'T', 'U', 'U', 'Y', 'Z'
-        );
+        ];
 
         return str_replace($czech, $ascii, $text);
     }
@@ -682,11 +678,10 @@ class StavebninyIZOMATBridge extends BridgeAbstract
     // endregion
 
     /**
-     * 
+     * formatTitleFromURI
     */
     private function formatTitleFromURI(string $uri): string
     {
-    
         // get last part of the URI
         $title = basename($uri);
 
@@ -725,6 +720,4 @@ class StavebninyIZOMATBridge extends BridgeAbstract
         // Comparing with !== false ensures returning an actual boolean true/false value.
         return filter_var($url, FILTER_VALIDATE_URL) !== false;
     }
-
 }
-

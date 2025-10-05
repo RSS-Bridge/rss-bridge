@@ -137,7 +137,7 @@ class MakroBridge extends BridgeAbstract
     {
         // Check if page contains articles
         $articles = $html->find('.catalog')
-            or returnServerError('No articles found! Layout might have changed!');
+            or returnServerException('No articles found! Layout might have changed!');
 
         foreach ($articles as $article) {
             $item = [];
@@ -169,7 +169,7 @@ class MakroBridge extends BridgeAbstract
     {
         // Check if page contains articles
         $articles = $html->find('.catalog')
-            or returnServerError('No articles found! Layout might have changed!');
+            or returnServerException('No articles found! Layout might have changed!');
 
         foreach ($articles as $article) {
             $item = [];
@@ -201,7 +201,7 @@ class MakroBridge extends BridgeAbstract
     {
         // Return URI of the article
         $element = $article->find('a', 0)
-            or returnServerError('Anchor not found!');
+            or returnServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -216,7 +216,7 @@ class MakroBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('div.post__info', 0)->find('span', 0)
-            or returnServerError('Date not found!');
+            or returnServerException('Date not found!');
 
         $date = trim(explode('|', $element->plaintext)[0]);
 
@@ -234,7 +234,7 @@ class MakroBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.catalog-content', 0)->find('span', 1)
-            or returnServerError('Title not found!');
+            or returnServerException('Title not found!');
 
         return $element->innertext;
     }
@@ -249,7 +249,7 @@ class MakroBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('span.catalog-title', 0)->find('strong', 0)
-            or returnServerError('Title not found!');
+            or returnServerException('Title not found!');
 
         return $element->plaintext;
     }

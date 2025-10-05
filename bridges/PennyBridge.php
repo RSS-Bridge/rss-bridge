@@ -145,7 +145,7 @@ class PennyBridge extends BridgeAbstract
 
         // Check if page contains articles and split by class
         $javascript = $html->find('script') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Loop through the javascript to find the JSON data. The JSON data is in the form of a string, so we need to decode it
         foreach ($javascript as $script) {
@@ -170,7 +170,7 @@ class PennyBridge extends BridgeAbstract
 
         // Check if page contains articles and split by class
         $articles = $html->find('.ws-product-item-base') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -232,7 +232,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Check if page contains articles and split by class
         $articles = $html->find('div.ws-column.col-12.flex-column.col-sm-6.col-md-3') or
-            returnServerError('No articles found! Layout might have changed!');
+            returnServerException('No articles found! Layout might have changed!');
 
         // Articles loop
         foreach ($articles as $article) {
@@ -265,7 +265,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Return URI of the article
         $element = $article->find('.ws-product-tile__link', 0) or
-            returnServerError('Anchor not found!');
+            returnServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -299,7 +299,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('div.post__info', 0)->find('span', 0) or
-            returnServerError('Date not found!');
+            returnServerException('Date not found!');
 
         $date = trim(explode('|', $element->plaintext)[0]);
 
@@ -317,7 +317,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('ul.ws-product-information__piece-description', 0)->find('li', 0) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -332,7 +332,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 0) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -347,7 +347,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.ws-product-price-validity', 0)->find('div', 1) or
-            returnServerError('Description not found!');
+            returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -457,7 +457,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('span.show-sr-and-print', 0) or
-            returnServerError('Title not found!');
+            returnServerException('Title not found!');
 
         return $element->plaintext;
     }
@@ -472,7 +472,7 @@ class PennyBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('div.ws-text', 0) or
-            returnServerError('Title not found!');
+            returnServerException('Title not found!');
 
         // Element empty check
         if ($element == null) {

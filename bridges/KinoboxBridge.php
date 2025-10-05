@@ -55,7 +55,7 @@ class KinoboxBridge extends BridgeAbstract
      * Returns the name for the bridge.
      *
      * @return string The Name.
-     */    
+     */
     public function getName()
     {
         $name = static::NAME;
@@ -82,7 +82,6 @@ class KinoboxBridge extends BridgeAbstract
      */
     private function fixDate($date)
     {
-
         // Define the regular expression pattern.
         // It matches any character that is NOT (^):
         // - a digit (0-9)
@@ -137,10 +136,9 @@ class KinoboxBridge extends BridgeAbstract
     {
         // Check if page contains articles
         $articles = $html->find('ol.ArticlesPagingListContainer_grid__OzyvS', 0)->find('li')
-            or returnServerError('No articles found! Layout might have changed!');
+            or returnServerException('No articles found! Layout might have changed!');
 
         foreach ($articles as $article) {
-
             $item = [];
 
             // get uri of product
@@ -156,8 +154,6 @@ class KinoboxBridge extends BridgeAbstract
 
             // collect sources into rss article
             $this->items[] = $item;
-
-
         }
     }
 
@@ -171,7 +167,7 @@ class KinoboxBridge extends BridgeAbstract
     {
         // Return URI of the article
         $element = $article->find('a', 0)
-            or returnServerError('Anchor not found!');
+            or returnServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -186,7 +182,7 @@ class KinoboxBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('.Space_container__MY8CT', 0)
-            or returnServerError('Date not found!');
+            or returnServerException('Date not found!');
 
         // Format date
         return $this->fixDate($element->plaintext);
@@ -202,7 +198,7 @@ class KinoboxBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('strong', 0)
-            or returnServerError('Description not found!');
+            or returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -217,7 +213,7 @@ class KinoboxBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('strong', 0)
-            or returnServerError('Title not found!');
+            or returnServerException('Title not found!');
 
         return $element->plaintext;
     }
@@ -304,6 +300,4 @@ class KinoboxBridge extends BridgeAbstract
     }
 
     #endregion
-
 }
-

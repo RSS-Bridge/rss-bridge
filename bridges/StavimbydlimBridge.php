@@ -53,7 +53,7 @@ class StavimbydlimBridge extends BridgeAbstract
      * Returns the name for the bridge.
      *
      * @return string The Name.
-     */    
+     */
     public function getName()
     {
         $name = static::NAME;
@@ -80,7 +80,6 @@ class StavimbydlimBridge extends BridgeAbstract
      */
     private function fixDate($date)
     {
-
         $df = $this->parseDateTimeFromString($date);
 
         return date_format($df, 'U');
@@ -100,7 +99,6 @@ class StavimbydlimBridge extends BridgeAbstract
         $images = [];
 
         foreach ($elements as $img) {
-
             $images[] = $img->src;
         }
 
@@ -119,10 +117,9 @@ class StavimbydlimBridge extends BridgeAbstract
     {
         // Check if page contains articles
         $articles = $html->find('.post.type-post.status-publish.format-standard')
-            or returnServerError('No articles found! Layout might have changed!');
+            or returnServerException('No articles found! Layout might have changed!');
 
         foreach ($articles as $article) {
-
             $item = [];
 
             $item['uri'] = $this->extractNewsUri($article);
@@ -134,10 +131,9 @@ class StavimbydlimBridge extends BridgeAbstract
             $item['enclosures'] = $this->extractImages($article);
             // Add timestamp
             $item['timestamp'] = $this->extractNewsDate($article);
-            
+
             // collect sources into rss article
             $this->items[] = $item;
-
         }
     }
 
@@ -151,7 +147,7 @@ class StavimbydlimBridge extends BridgeAbstract
     {
         // Return URI of the article
         $element = $article->find('a', 0)
-            or returnServerError('Anchor not found!');
+            or returnServerException('Anchor not found!');
 
         return $element->href;
     }
@@ -166,7 +162,7 @@ class StavimbydlimBridge extends BridgeAbstract
     {
         // Check if date is set
         $element = $article->find('time.entry-date.published', 0)
-            or returnServerError('Date not found!');
+            or returnServerException('Date not found!');
 
         // Format date
         return $this->fixDate($element->plaintext);
@@ -182,7 +178,7 @@ class StavimbydlimBridge extends BridgeAbstract
     {
         // Extract description
         $element = $article->find('div.entry-summary', 0)->find('p', 0)
-            or returnServerError('Description not found!');
+            or returnServerException('Description not found!');
 
         return $element->innertext;
     }
@@ -197,7 +193,7 @@ class StavimbydlimBridge extends BridgeAbstract
     {
         // Extract title
         $element = $article->find('a', 0)
-            or returnServerError('Title not found!');
+            or returnServerException('Title not found!');
 
         return $element->plaintext;
     }
@@ -284,6 +280,4 @@ class StavimbydlimBridge extends BridgeAbstract
     }
 
     #endregion
-
 }
-
