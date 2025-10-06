@@ -1,6 +1,13 @@
 <?php
 
-// TODO: dokumentace
+/**
+ * Kinobox.cz is a Czech multimedia / film-related website combining several functions:
+ * A film / audiovisual database listing films, TV shows, series, and profiles of creators (actors, directors, crew)
+ * An online film magazine / news site, publishing reviews, articles, interviews, tips, trailers etc.
+ * A search tool for streaming / VOD availability, i.e. helping users find where particular films or series are available online
+ * A video / trailer library including trailers, original video content, and other audiovisual materials
+ * Community / user functions: registered users can rate works, add comments, join discussions, maintain watchlists, etc.
+*/
 // TODO: přepsat funkci na datum... musí najít v textu
 // TODO: odstranit nepotrebne funkce
 

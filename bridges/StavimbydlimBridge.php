@@ -1,7 +1,12 @@
 <?php
 
-// TODO: dokumentace
-// TODO: unused functions
+/**
+ *
+ * this code downloads the HTML page with articles from Stavimbydlim website (https://www.stavimbydlim.cz/).
+ * StavímBydlím is a Czech online magazine / portal focused on construction, housing, home improvement, and related topics.
+ * The site publishes articles, guides, and advice on building houses, renovation, home technologies, garden topics, etc.
+ *
+ */
 
 class StavimbydlimBridge extends BridgeAbstract
 {

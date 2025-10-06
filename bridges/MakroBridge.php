@@ -1,10 +1,10 @@
 <?php
 
 /**
- *
- * this code downloads the HTML page with articles from Nasestrecha website (https://www.nasestrecha.cz/), parses it, extracts key information
- *  about each article (title, link, date, description, images), and formats it into a structured form,
- *  likely for further processing, such as creating an RSS feed.
+ * Makro (Czech Republic) is a chain of cash-and-carry wholesale stores, serving primarily business customers
+ * (e.g. small retailers, gastronomy / catering, HoReCa, institutional buyers).
+ * It operates under the larger METRO AG / Metro / Makro group (a German-based wholesale/retail conglomerate).
+ * In Czechia, Makro is known for a wide assortment of both food and non-food goods.
  *
  */
 

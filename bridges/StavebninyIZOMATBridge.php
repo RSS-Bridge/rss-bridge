@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * IZOMAT is a Czech company / network of “stavebniny” (building supplies / building materials) that provides
+ * materials for construction and reconstruction.
+ * They operate both as a brick-and-mortar network (physical branches / stores) and an e-shop (online shop).
+ */
+
 // TODO: dokumentace
 // TODO: datum u clanku
 // TODO: odstranit nadbytecny parametr - topic

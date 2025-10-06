@@ -2,9 +2,9 @@
 
 /**
  *
- * this code downloads the HTML page with product news from Penny Market website (https://www.penny.cz), parses it, extracts key information
- *  about each article (title, link, date, description, images), and formats it into a structured form,
- *  likely for further processing, such as creating an RSS feed.
+ * PENNY Market (in Czech: PENNY Market Česká republika) is a retail chain / grocery store brand operating in the Czech Republic. The website penny.cz is the official Czech online presence of PENNY.
+ * The site is intended for Czech customers: it is in Czech language and shows Czech product offers, prices in Czech koruna (Kč), local promotions, etc.
+ * The homepage highlights weekly promotional offers (sale items) (“Naše akční letáková nabídka”) — e.g. spaghetti, cheese, mandarins, etc.
  */
 
 class PennyBridge extends BridgeAbstract
