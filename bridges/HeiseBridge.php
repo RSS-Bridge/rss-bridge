@@ -178,7 +178,7 @@ class HeiseBridge extends FeedExpander
 
         // remove unwanted stuff
         foreach (
-            $article->find('figure.branding, figure.a-inline-image, a-ad, div.ho-text, a-img,
+            $article->find('figure.branding, figure.a-inline-image, a-ad, div.ho-text, a-img, .opt-in__title,
             .a-toc__list, a-collapse, .opt-in__description, .opt-in__footnote, .opt-in__bg-image, .notice-banner__text, .notice-banner__link, .ad, .ad--inread') as $element
         ) {
             $element->remove();
