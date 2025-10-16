@@ -22,7 +22,7 @@ class TldrTechBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Tech' => 'tech',
-                    'Web Dev' => 'webdev',
+                    'Dev' => 'dev',
                     'AI' => 'ai',
                     'Information Security' => 'infosec',
                     'Product Management' => 'product',
@@ -31,6 +31,10 @@ class TldrTechBridge extends BridgeAbstract
                     'Design' => 'design',
                     'Marketing' => 'marketing',
                     'Founders' => 'founders',
+                    'Fintech' => 'fintech',
+                    'Data' => 'data',
+                    'IT' => 'it',
+                    'Hardware' => 'hardware',
                 ],
                 'defaultValue' => 'tech'
             ]
