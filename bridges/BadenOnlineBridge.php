@@ -49,7 +49,7 @@ class BadenOnlineBridge extends BridgeAbstract
                         'blaulicht' => 'blaulicht',
                     ],
                 ],
-            'defaultValue' => 'achern',
+                'defaultValue' => 'achern',
             ],
         ],
     ];
