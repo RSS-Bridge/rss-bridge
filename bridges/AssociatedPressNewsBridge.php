@@ -215,7 +215,7 @@ EOD;
 
                 if ($media['type'] === 'YouTube') {
                     $div->outertext = <<<EOD
-	<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315">
+	<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315" referrerpolicy="strict-origin">
 	</iframe>
 EOD;
                 }
@@ -251,7 +251,7 @@ EOD;
         if ($video['type'] === 'YouTube') {
             $url = 'https://www.youtube.com/embed/' . $video['externalId'];
             $html = <<<EOD
-<iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen referrerpolicy="strict-origin"></iframe>
 EOD;
         } else {
             $html = <<<EOD
