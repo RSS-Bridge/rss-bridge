@@ -37,7 +37,7 @@ class GenshinImpactBridge extends BridgeAbstract
             if (preg_match($exp_youtube, $article_html, $matches)) {
                 // Replace the YouTube embed with a YouTube link
                 $yt_embed = $article_html->find('div[class="ttr-video-frame"]', 0);
-                $yt_link = sprintf('<a href="https://youtube.com/watch?v=%1$s">https://youtube.com/watch?v=%1$s</a>', $matches[1]);
+                $yt_link = sprintf('<a href="https://www.youtube.com/watch?v=%1$s">https://www.youtube.com/watch?v=%1$s</a>', $matches[1]);
                 $article_html = str_replace($yt_embed, $yt_link, $article_html);
             }
             $item = [];
