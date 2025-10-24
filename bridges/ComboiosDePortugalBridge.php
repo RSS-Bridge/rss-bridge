@@ -41,7 +41,7 @@ class ComboiosDePortugalBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = file_get_contents(self::URI . '/bei/getContentsList?path=PWA/Homepage/Avisos&order=dateModified:desc&categoryId=' . $this->getInput('category'));
+        $json = getContents(self::URI . '/bei/getContentsList?path=PWA/Homepage/Avisos&order=dateModified:desc&categoryId=' . $this->getInput('category'));
 
         $data = Json::decode($json);
         
