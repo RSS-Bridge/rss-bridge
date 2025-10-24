@@ -8,7 +8,7 @@ class ComboiosDePortugalBridge extends BridgeAbstract
     const URI = 'https://www.cp.pt';
     const DESCRIPTION = 'Comboios de Portugal | Avisos';
     const MAINTAINER = 'FJSFerreira';
-    
+
     const PARAMETERS = [
         [
             'language' => [
@@ -44,9 +44,8 @@ class ComboiosDePortugalBridge extends BridgeAbstract
         $json = getContents(self::URI . '/bei/getContentsList?path=PWA/Homepage/Avisos&order=dateModified:desc&categoryId=' . $this->getInput('category'));
 
         $data = Json::decode($json);
-        
-        foreach ($data['item'] as $entry)
-        {
+
+        foreach ($data['item'] as $entry) {
             $item = [];
 
             // language defaults to portuguese
