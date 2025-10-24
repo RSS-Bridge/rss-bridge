@@ -65,6 +65,7 @@ class CssSelectorBridge extends BridgeAbstract
         ]
     ];
 
+    protected $headers = [];
     protected $feedName = '';
     protected $homepageUrl = '';
 
@@ -97,7 +98,7 @@ class CssSelectorBridge extends BridgeAbstract
         $thumbnail_as_header = $this->getInput('thumbnail_as_header');
         $limit = $this->getInput('limit') ?? 10;
 
-        $html = defaultLinkTo(getSimpleHTMLDOM($this->homepageUrl), $this->homepageUrl);
+        $html = defaultLinkTo(getSimpleHTMLDOM($this->homepageUrl, self::CACHE_TIMEOUT, $this->headers), $this->homepageUrl);
         $this->feedName = $this->titleCleanup($this->getPageTitle($html), $title_cleanup);
         $items = $this->htmlFindEntries($html, $url_selector, $url_pattern, $limit, $content_cleanup);
 
@@ -154,7 +155,7 @@ class CssSelectorBridge extends BridgeAbstract
     protected function getPageTitle($page)
     {
         if (is_string($page)) {
-            $page = getSimpleHTMLDOMCached($page);
+            $page = getSimpleHTMLDOMCached($page, self::CACHE_TIMEOUT, $this->headers);
         }
         $title = html_entity_decode($page->find('title', 0)->plaintext);
         return $title;
@@ -211,7 +212,7 @@ class CssSelectorBridge extends BridgeAbstract
     protected function htmlFindEntries($page, $url_selector, $url_pattern = '', $limit = 0, $content_cleanup = null)
     {
         if (is_string($page)) {
-            $page = getSimpleHTMLDOM($page);
+            $page = getSimpleHTMLDOM($page, self::CACHE_TIMEOUT, $this->headers);
         }
 
         $links = $page->find($url_selector);
@@ -277,7 +278,7 @@ class CssSelectorBridge extends BridgeAbstract
             throwClientException('Please specify a content selector');
         }
 
-        $entry_html = getSimpleHTMLDOMCached($entry_url);
+        $entry_html = getSimpleHTMLDOMCached($entry_url, self::CACHE_TIMEOUT, $this->headers);
         $item = html_find_seo_metadata($entry_html);
 
         if (empty($item['uri'])) {
