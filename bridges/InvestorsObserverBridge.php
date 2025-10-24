@@ -13,36 +13,25 @@ class InvestorsObserverBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $sitemapXml = getContents(self::URI . '/news-sitemap.xml');
+        $urls = get_sitemap(self::URI . '/news-sitemap.xml');
 
-        if (!$sitemapXml) {
-            throwServerException('Unable to retrieve sitemap');
-        }
+        foreach ($urls as $entry) {
+            $title = null;
+            $pubDate = null;
 
-        $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA | LIBXML_NONET);
-
-        if (!$sitemap) {
-            throwServerException('Unable to parse sitemap');
-        }
-
-        foreach ($sitemap->url as $entry) {
-            $url     = trim((string) $entry->loc);
-            $lastmod = trim((string) $entry->lastmod);
+            $url     = trim((string) $entry['loc']);
+            $lastmod = trim((string) $entry['lastmod']);
 
             if (!$url) {
                 continue;
             }
 
-            $namespaces = $entry->getNamespaces(true);
-            $title      = '';
-            $pubDate    = null;
-
-            if (isset($namespaces['news'])) {
-                $news = $entry->children($namespaces['news'])->news;
+            if (isset($entry['news'])) {
+                $news = $entry['news'];
 
                 if ($news) {
-                    $title = trim((string) $news->title);
-                    $pubDate = trim((string) $news->publication_date);
+                    $title = trim((string) $news['title']);
+                    $pubDate = trim((string) $news['publication_date']);
                 }
             }
 

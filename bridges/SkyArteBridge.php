@@ -12,14 +12,11 @@ class SkyArteBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $doc = new \DOMDocument();
-        $doc->loadXML(getContents('https://arte.sky.it/sitemap-mostre-eventi.xml'));
+        $urls = get_sitemap('https://arte.sky.it/sitemap-mostre-eventi.xml');
 
         $count = 0;
-        foreach ($doc->getElementsByTagName('url') as $url) {
-            $loc = $url->getElementsByTagName('loc')->item(0)->nodeValue;
-
-            $lastmod = $url->getElementsByTagName('lastmod')->item(0)->nodeValue;
+        foreach ($urls as $url) {
+            $loc = $url['loc'];
 
             if (!$loc) {
                 continue;
@@ -36,7 +33,7 @@ class SkyArteBridge extends BridgeAbstract
                 'title'      => $event['title'],
                 'uri'        => $loc,
                 'uid'        => $loc,
-                'timestamp'  => $lastmod,
+                'timestamp'  => $url['lastmod'],
                 'content'    => $event['content'],
                 'categories' => $event['categories'],
                 'enclosures' => $event['enclosures'],
