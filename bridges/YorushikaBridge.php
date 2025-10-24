@@ -112,7 +112,7 @@ class YorushikaBridge extends BridgeAbstract
             if (preg_match($exp_youtube, $art_html, $matches)) {
                 // Replace the YouTube embed with a YouTube link
                 $yt_embed = $art_html->find('iframe[src*="youtube.com"]', 0);
-                $yt_link = sprintf('<a href="https://youtube.com/watch?v=%1$s">https://youtube.com/watch?v=%1$s</a>', $matches[1]);
+                $yt_link = sprintf('<a href="https://www.youtube.com/watch?v=%1$s">https://www.youtube.com/watch?v=%1$s</a>', $matches[1]);
                 $art_html = str_replace($yt_embed, $yt_link, $art_html);
             }
 

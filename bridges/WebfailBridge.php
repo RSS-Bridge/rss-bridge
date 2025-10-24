@@ -126,7 +126,7 @@ class WebfailBridge extends BridgeAbstract
                 . '"></a>';
             } elseif (!is_null($article->find('div.wf-video', 0))) { // Video type
                 $videoId = $this->getVideoId($article->find('div.wf-play', 0)->onclick);
-                $item['uri'] = 'https://youtube.com/watch?v=' . $videoId;
+                $item['uri'] = 'https://www.youtube.com/watch?v=' . $videoId;
                 $item['content'] = '<a href="'
                 . $item['uri']
                 . '"><img src="http://img.youtube.com/vi/'
