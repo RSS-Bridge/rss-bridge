@@ -1,26 +1,58 @@
 <?php
 
+declare(strict_types=1);
+
 class ComboiosDePortugalBridge extends BridgeAbstract
 {
     const NAME = 'CP | Avisos';
-    const BASE_URI = 'https://www.cp.pt';
-    const URI = self::BASE_URI . '/passageiros/pt';
+    const URI = 'https://www.cp.pt';
     const DESCRIPTION = 'Comboios de Portugal | Avisos';
-    const MAINTAINER = 'somini';
+    const MAINTAINER = 'FJSFerreira';
+
+    const PARAMETERS = [
+        [
+            'language' => [
+                'name' => 'Language',
+                'type' => 'list',
+                'values' => [
+                    'Português' => 'pt-PT',
+                    'English' => 'en-US'
+                ],
+                'defaultValue' => 'pt-PT'
+            ],
+            'category' => [
+                'name' => 'Category',
+                'type' => 'list',
+                'values' => [
+                    'All categories' => 0,
+                    'Alfa Pendular' => 50540,
+                    'Intercidades' => 57687,
+                    'Internacional' => 57690,
+                    'Regional' => 57693,
+                    'Turísticos / Históricos' => 57696,
+                    'Urbanos de Coimbra' => 57699,
+                    'Urbanos de Lisboa' => 57702,
+                    'Urbanos do Porto' => 57705
+                ],
+                'defaultValue' => 0
+            ]
+        ]
+    ];
 
     public function collectData()
     {
-        # Do not verify SSL certificate (the server doesn't send the intermediate)
-        # https://github.com/RSS-Bridge/rss-bridge/issues/2397
-        $html = getSimpleHTMLDOM($this->getURI() . '/consultar-horarios/avisos', [], [
-            CURLOPT_SSL_VERIFYPEER => 0,
-        ]);
+        $json = getContents(self::URI . '/bei/getContentsList?path=PWA/Homepage/Avisos&order=dateModified:desc&categoryId=' . $this->getInput('category'));
 
-        foreach ($html->find('.warnings-table a') as $element) {
+        $data = Json::decode($json);
+
+        foreach ($data['item'] as $entry) {
             $item = [];
 
-            $item['title'] = $element->innertext;
-            $item['uri'] = self::BASE_URI . implode('/', array_map('urlencode', explode('/', $element->href)));
+            // language defaults to portuguese
+            $item['title'] = $entry['title'][$this->getInput('language')] ?? $entry['title'][$this->getInput('pt-PT')];
+            $item['uri'] = self::URI . '/pt/detalhe-aviso/' . $entry['friendlyUrlPath'];
+            $item['timestamp'] = $entry['dateModified'];
+            $item['content'] = $entry['description'][$this->getInput('language')] ?? $entry['description'][$this->getInput('pt-PT')];
 
             $this->items[] = $item;
         }
