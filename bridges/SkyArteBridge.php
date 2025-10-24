@@ -12,26 +12,20 @@ class SkyArteBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $sitemapUrl = self::URI . '/sitemap-mostre-eventi.xml';
-
-        $sitemapXml = getContents($sitemapUrl);
-        if (!$sitemapXml) {
-            throwServerException('Unable to fetch sitemap');
-        }
-
-        $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA | LIBXML_NONET);
-        if (!$sitemap) {
-            throwServerException('Unable to parse sitemap');
-        }
+        $doc = new \DOMDocument();
+        $doc->loadXML(getContents('https://arte.sky.it/sitemap-mostre-eventi.xml'));
 
         $count = 0;
-        foreach ($sitemap->url as $entry) {
-            $url = trim((string) $entry->loc);
-            if (!$url) {
+        foreach ($doc->getElementsByTagName('url') as $url) {
+            $loc = $url->getElementsByTagName('loc')->item(0)->nodeValue;
+
+            $lastmod = $url->getElementsByTagName('lastmod')->item(0)->nodeValue;
+
+            if (!$loc) {
                 continue;
             }
 
-            $json = $this->getJson($url);
+            $json = $this->getJson($loc);
             if (!$json) {
                 continue;
             }
@@ -40,9 +34,9 @@ class SkyArteBridge extends BridgeAbstract
 
             $this->items[] = [
                 'title'      => $event['title'],
-                'uri'        => $url,
-                'uid'        => $url,
-                'timestamp'  => trim((string) $entry->lastmod),
+                'uri'        => $loc,
+                'uid'        => $loc,
+                'timestamp'  => $lastmod,
                 'content'    => $event['content'],
                 'categories' => $event['categories'],
                 'enclosures' => $event['enclosures'],
