@@ -1,5 +1,30 @@
 <?php
 
+function get_sitemap(string $url): array
+{
+    $doc = new \DOMDocument();
+    $doc->loadXML(getContents($url));
+    $urls = [];
+
+    foreach ($doc->getElementsByTagName('url') as $url) {
+        $item = [
+            'loc'           => $url->getElementsByTagName('loc')->item(0)->nodeValue ?? null,
+            'lastmod'       => $url->getElementsByTagName('lastmod')->item(0)->nodeValue ?? null,
+            'changefreq'    => $url->getElementsByTagName('changefreq')->item(0)->nodeValue ?? null,
+            'priority'      => $url->getElementsByTagName('priority')->item(0)->nodeValue ?? null,
+        ];
+
+        $news = $url->getElementsByTagNameNS('http://www.google.com/schemas/sitemap-news/0.9', '*');
+        foreach ($news as $element) {
+            $localName = $element->localName;
+            $prefix = $element->prefix;
+            $item[$prefix][$localName] = $element->nodeValue;
+        }
+        $urls[] = $item;
+    }
+    return $urls;
+}
+
 /**
  * Fetch data from an http url
  *

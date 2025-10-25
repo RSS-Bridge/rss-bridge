@@ -342,3 +342,16 @@ Json::decode($json);
 ```
 
 [Defined in lib/utils.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php)
+
+# get_sitemap(string $url): array
+
+Convenience function to fetch urls from xml sitemap.
+
+```php
+$urls = get_sitemap('https://arte.sky.it/sitemap-mostre-eventi.xml');
+
+foreach ($urls as $url) {
+    $loc = $url['loc'];
+    $lastmod = $url['lastmod'];
+}
+```

@@ -13,21 +13,11 @@ class CybernewsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $sitemapUrl = self::URI . '/news-sitemap.xml';
+        $urls = get_sitemap('https://cybernews.com/news-sitemap.xml');
 
-        $sitemapXml = getContents($sitemapUrl);
-        if (!$sitemapXml) {
-            throwServerException('Unable to retrieve Cybernews sitemap');
-        }
-
-        $sitemap = simplexml_load_string($sitemapXml, null, LIBXML_NOCDATA | LIBXML_NONET);
-        if (!$sitemap) {
-            throwServerException('Unable to parse Cybernews sitemap');
-        }
-
-        foreach ($sitemap->url as $entry) {
-            $url     = trim((string) $entry->loc);
-            $lastmod = trim((string) $entry->lastmod);
+        foreach ($urls as $entry) {
+            $url     = $entry['loc'];
+            $lastmod = $entry['lastmod'];
 
             if (!$url) {
                 continue;
@@ -41,13 +31,12 @@ class CybernewsBridge extends BridgeAbstract
             //     continue;
             // }
 
-            $namespaces = $entry->getNamespaces(true);
             $title      = '';
 
-            if (isset($namespaces['news'])) {
-                $news = $entry->children($namespaces['news'])->news;
+            if (isset($entry['news'])) {
+                $news = $entry['news'];
                 if ($news) {
-                    $title = trim((string) $news->title);
+                    $title = trim((string) $news['title']);
                 }
             }
 
