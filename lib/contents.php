@@ -1,6 +1,5 @@
 <?php
 
-
 function get_sitemap(string $url): array
 {
     $doc = new \DOMDocument();
