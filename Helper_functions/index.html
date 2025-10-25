@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Helper_functions/index.html">Helper functions</a></h1>
                 <span class="ModifiedDate">
-            August 7, 2025 at 4:38 PM        </span>
+            October 24, 2025 at 5:09 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/06_Helper_functions/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -419,6 +419,15 @@ Json::encode($array, true, true);
 Json::decode($json);
 </code></pre>
 <p><a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/utils.php" class="Link--external" rel="noopener noreferrer">Defined in lib/utils.php</a></p>
+<h1><a id="get-sitemap-string-url-array" href="#get-sitemap-string-url-array" class="Permalink" aria-hidden="true" title="Permalink">#</a>get_sitemap(string $url): array</h1>
+<p>Convenience function to fetch urls from xml sitemap.</p>
+<pre><code class="hljs php">$urls = get_sitemap(<span class="hljs-string">'https://arte.sky.it/sitemap-mostre-eventi.xml'</span>);
+
+<span class="hljs-keyword">foreach</span> ($urls <span class="hljs-keyword">as</span> $url) {
+    $loc = $url[<span class="hljs-string">'loc'</span>];
+    $lastmod = $url[<span class="hljs-string">'lastmod'</span>];
+}
+</code></pre>
     </div>
 
         <nav>
