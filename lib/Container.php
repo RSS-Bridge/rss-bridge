@@ -25,8 +25,9 @@ class Container implements \ArrayAccess
     }
 
     #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
+        return isset($this->values[$offset]);
     }
 
     public function offsetUnset($offset): void
