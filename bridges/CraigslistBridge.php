@@ -67,12 +67,14 @@ class CraigslistBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($uri);
 
         $results = $html->find('.cl-static-search-result');
+        $queryResultsImages = $this->getQueryResultsImages($html);
 
         // Limit the number of posts
         if ($this->getInput('limit') > 0) {
             $results = array_slice($results, 0, $this->getInput('limit'));
         }
 
+        $i = 0;
         foreach ($results as $post) {
             $item = [];
 
@@ -86,45 +88,44 @@ class CraigslistBridge extends BridgeAbstract
             $location = $post->find('.location', 0)->plaintext ?? '';
             $item['content'] = sprintf('%s %s', $price, $location);
 
-            $images = $this->getImages($itemUri);
+            $images = $queryResultsImages[$i] ?? [];
             if (!empty($images)) {
                 $item['content'] .= '<br>';
-                foreach ($images as $image) {
-                    $imageUri = $image->src;
-                    $item['content'] .= '<img src="' . $imageUri . '">';
-                    $item['enclosures'][] = $imageUri;
+                foreach ($images as $imageUrl) {
+                    $item['content'] .= '<img src="' . $imageUrl . '">';
+                    $item['enclosures'][] = $imageUrl;
                 }
             }
+
+            $i++;
             $this->items[] = $item;
         }
     }
 
-    private function getImages($postUrl): array
+    private function getQueryResultsImages($html): array
     {
-        $html = getSimpleHTMLDOM($postUrl);
-
-        // Try to extract imgList from the page's scripts
-        $imgList = [];
-        foreach ($html->find('script') as $script) {
-            if (preg_match('/var imgList = (\[.*?\]);/s', $script->innertext, $matches)) {
-                $json = $matches[1];
-                $imgList = json_decode($json, true);
-                break;
-            }
-        }
-
         $images = [];
-        if (!empty($imgList)) {
-            foreach ($imgList as $img) {
-                if (isset($img['url'])) {
-                    $image = new stdClass();
-                    $image->src = $img['url'];
-                    $images[] = $image;
+
+        // Find the JSON-LD script tag containing search results
+        $jsonLdScript = $html->find('script#ld_searchpage_results', 0);
+
+        if ($jsonLdScript) {
+            $jsonContent = trim($jsonLdScript->innertext);
+            $jsonData = json_decode($jsonContent);
+
+            if (isset($jsonData->itemListElement) && is_array($jsonData->itemListElement)) {
+                foreach ($jsonData->itemListElement as $item) {
+                    if (isset($item->item->image) && is_array($item->item->image)) {
+                        $productImages = [];
+                        foreach ($item->item->image as $imageUrl) {
+                            $productImages[] = $imageUrl;
+                        }
+                        if (!empty($productImages)) {
+                            $images[] = $productImages;
+                        }
+                    }
                 }
             }
-        } else {
-            // Fallback to DOM search if imgList is not found
-            $images = $html->find('.swipe-wrap img') ?? [];
         }
 
         return $images;
