@@ -115,13 +115,13 @@ class CraigslistBridge extends BridgeAbstract
 
             if (isset($jsonData->itemListElement) && is_array($jsonData->itemListElement)) {
                 foreach ($jsonData->itemListElement as $item) {
-                    if (isset($item->item->image) && is_array($item->item->image)) {
+                    if (isset($item->item->image) && is_array($item->item->image) && isset($item->position)) {
                         $productImages = [];
                         foreach ($item->item->image as $imageUrl) {
                             $productImages[] = $imageUrl;
                         }
                         if (!empty($productImages)) {
-                            $images[] = $productImages;
+                            $images[$item->position] = $productImages;
                         }
                     }
                 }
