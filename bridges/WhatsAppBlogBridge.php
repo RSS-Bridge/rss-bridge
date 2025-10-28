@@ -10,9 +10,13 @@ class WhatsAppBlogBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = file_get_html('https://blog.whatsapp.com/');
+        $html = getSimpleHTMLDOM('https://blog.whatsapp.com/');
 
         $pattern = '/class=\\\\"_aof4\\\\">\\\\u003Cp>(.+?)\\\\u003C.+?Subject=(.+?)&amp;body=(.+?)(http:\\\\\/\\\\\/[^\\s"]+)/i';
+        
+        // WORKING PATTERN! Based on the actual raw HTML structure
+        //$pattern = '/class=\\\\"_aof4\\\\">\\\\u003Cp>(.+?)\\\\u003C/';
+
         preg_match_all($pattern, $html, $matches);
 
         for ($i = 0; $i < count($matches[0]); $i++) {
