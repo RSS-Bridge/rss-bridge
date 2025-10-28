@@ -19,10 +19,10 @@ jobs:
           wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
           bridgeamount=$(cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq | wc -l);
           echo "BRIDGES=$bridgeamount" >> "$GITHUB_OUTPUT"
-      - name: "Check upload token secret RSSTESTER_ACTION is set"
+      - name: "Check upload token secret RSSTESTER_SSH_KEY is set"
         id: check_upload
         run: |
-          echo "WITH_UPLOAD=$([ -n "${{ secrets.RSSTESTER_ACTION }}" ] && echo "true" || echo "false")" >> "$GITHUB_OUTPUT"
+          echo "WITH_UPLOAD=$([ -n "${{ secrets.RSSTESTER_SSH_KEY }}" ] && echo "true" || echo "false")" >> "$GITHUB_OUTPUT"
   test-pr:
     name: Generate HTML
     runs-on: ubuntu-latest
@@ -103,7 +103,7 @@ jobs:
         with:
           repository: "${{ github.repository_owner }}/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}"
           ref: 'main'
-          token:  ${{ secrets.RSSTESTER_ACTION }}
+          ssh-key:  ${{ secrets.RSSTESTER_SSH_KEY }}
       - name: Setup git config
         run: |
           git config --global user.name "GitHub Actions"
