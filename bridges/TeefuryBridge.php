@@ -19,7 +19,7 @@ class TeefuryBridge extends BridgeAbstract
             $titletext = $element->find('p', 0)->innertext;
             $title = trim(explode('<br>', $titletext)[0]);
             $today = date('m/d/Y');
-            $shirtinfo = $element->find('div[data-link*="odad-tee-mens"]', 0);
+            $shirtinfo = $element->find('div[id*="img-color-art"]', 0);
             $uri = self::URI . $shirtinfo->attr['data-link'];
             $item = [];
             $item['uri'] = $uri;
@@ -32,7 +32,6 @@ class TeefuryBridge extends BridgeAbstract
             . '"><img src="'
             . $shirtinfo->find('img', 0)->attr['src']
             . '" /></a>';
-
             $this->items[] = $item;
         }
     }
