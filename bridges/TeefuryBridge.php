@@ -26,13 +26,13 @@ class TeefuryBridge extends BridgeAbstract
             $item['title'] = $title;
             $item['uid'] = $title;
             $item['timestamp'] = $today;
-            $item['content'] = $element->find('p', 0)
+/*            $item['content'] = $element->find('p', 0)
             . '<br><a href="'
             . $uri
             . '"><img src="'
             . $shirtinfo->find('img', 0)->attr['src']
             . '" /></a>';
-
+*/
             $this->items[] = $item;
         }
     }
