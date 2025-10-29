@@ -607,9 +607,9 @@ class BlueskyBridge extends BridgeAbstract
     private function resolveHandle($handle)
     {
         $uri = 'https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=' . urlencode($handle);
-        $response = $this->loadCacheValue($uri) ?? json_decode(getContents($uri), true);
+        $response = $this->cache->get($uri) ?? json_decode(getContents($uri), true);
         if (isset($response['did'])) {
-            $this->saveCacheValue($uri, $response, 604800);
+            $this->cache->set($uri, $response, 604800);
         }
         return $response['did'];
     }
@@ -617,9 +617,9 @@ class BlueskyBridge extends BridgeAbstract
     private function getProfile($did)
     {
         $uri = 'https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=' . urlencode($did);
-        $response = $this->loadCacheValue($uri) ?? json_decode(getContents($uri), true);
+        $response = $this->cache->get($uri) ?? json_decode(getContents($uri), true);
         if ($response['did'] === $did ?? false) {
-            $this->saveCacheValue($uri, $response);
+            $this->cache->set($uri, $response);
         }
         return $response;
     }
