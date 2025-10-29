@@ -140,6 +140,7 @@ class HeiseBridge extends FeedExpander
         // These cause memory leaks in simple_html_dom
         $skipped = [
             'https://www.heise.de/bestenlisten/testsieger/top-10-der-beste-mini-pc-mit-windows-11-im-test-amd-ryzen-dominiert/6cybv8w',
+
             'https://www.heise.de/bestenlisten/testsieger/top-10-der-beste-maehroboter-ohne-begrenzungskabel-mit-kamera-gps-oder-lidar/gb7xhbg',
         ];
         if (in_array($item['uri'], $skipped)) {
