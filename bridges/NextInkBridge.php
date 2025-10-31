@@ -79,7 +79,7 @@ class NextInkBridge extends FeedExpander
                 $url = $url . '?category=' . $category;
             }
             $this->collectArticlesFromHtmlListing($url, $limit);
-        } else if ($feed === 'free') {
+        } elseif ($feed === 'free') {
             // Expand Free RSS feed
             $url = self::URI . 'feed/free';
             $this->collectExpandableDatas($url, $limit);
