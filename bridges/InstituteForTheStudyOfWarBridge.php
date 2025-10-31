@@ -64,7 +64,7 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
             'title' => $title,
             'uid' => $uri,
             'timestamp' => $date->getTimestamp(),
-            'tags' => $tags,
+            'categories' => $tags,
 
         ];
 
