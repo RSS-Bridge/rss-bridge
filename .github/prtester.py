@@ -179,7 +179,7 @@ if __name__ == '__main__':
     parser.add_argument('--artifacts-directory', default=os.getcwd())
     parser.add_argument('--artifacts-base-url', default='')
     parser.add_argument('--title', default='Pull request artifacts')
-    parser.add_argument('--output-file', default=os.getcwd() + '/comment.txt')
+    parser.add_argument('--output-file', default=os.getcwd() + '/comment.md')
     args = parser.parse_args()
     instances = []
     if args.instances:
