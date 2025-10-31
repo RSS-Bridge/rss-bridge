@@ -56,8 +56,8 @@ RUN set -xe && \
     apt-get purge --assume-yes curl patchelf && \
     rm -rf /var/lib/apt/lists/*
 
-ENV LD_PRELOAD /usr/local/lib/curl-impersonate/libcurl-impersonate.so
-ENV CURL_IMPERSONATE chrome131
+ENV LD_PRELOAD=/usr/local/lib/curl-impersonate/libcurl-impersonate.so
+ENV CURL_IMPERSONATE=chrome131
 
 # logs should go to stdout / stderr
 RUN ln -sfT /dev/stderr /var/log/nginx/error.log; \
