@@ -25,8 +25,6 @@ jobs:
   bake:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
       - name: Docker meta
         id: docker_meta
         uses: docker/metadata-action@v5
@@ -61,6 +59,6 @@ jobs:
         with:
           files: |
             ./docker-bake.hcl
-            ${{ steps.docker_meta.outputs.bake-file }}
+            cwd://${{ steps.docker_meta.outputs.bake-file }}
           targets: image-all
           push: ${{ github.event_name != 'pull_request' }}
