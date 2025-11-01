@@ -115,20 +115,29 @@ class GolemBridge extends FeedExpander
 
         $article = $page->find('article', 0);
 
-        //built youtube iframes
+        // extract embeds from script tags (unfortunately no JSON)
+        $embedSrcs = [];
+        foreach ($page->find('script') as $script) {
+            // Ungreedy match to get precisely the snippet of one embed
+            if (preg_match_all('/type:\s*\"Embed(.*)urlPrivacy:/U', $script, $embeds)) {
+                foreach ($embeds[1] as $embed) {
+                    if (preg_match('/src:\s*\"([^\"]+)\"/', $embed, $src)) {
+                        $embedSrcs[] = $src[1];
+                    }
+                }
+            }
+        }
+        // inject the embed into the HTML placeholder
         $placeholders = $article->find('.go-embed-container');
         foreach (range(0, count($placeholders) - 1) as $i) {
-            foreach ($page->find('script') as $ytscript) {
-                if (preg_match_all('/(www.youtube.com.*?)\"/', $ytscript->innertext, $link)) {
-                    if (array_key_exists($i, $link[1]) && array_key_exists($i, $placeholders)) {
-                        $link = 'https://' . str_replace('\\', '', $link[1][$i]);
-                        $placeholders[$i]->innertext .= <<<EOT
-                            <iframe width="560" height="315" src="$link" title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
-                        EOT;
-                        break;
-                    }
+            if (array_key_exists($i, $embedSrcs)) {
+                $src = $embedSrcs[$i];
+                if (preg_match('/youtube(-nocookie)?\.com/', $src, $match)) {
+                    $placeholders[$i]->innertext = <<<EOT
+                    <iframe width="560" height="315" src="$src" title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+                    EOT;
                 }
             }
         }
