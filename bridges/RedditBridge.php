@@ -280,8 +280,7 @@ class RedditBridge extends BridgeAbstract
                     }
                 } elseif (isset($data->media) && $data->media->type == 'youtube.com') {
                     // Youtube link
-                    $item['content'] = $this->createFigureLink($data->url, $data->media->oembed->thumbnail_url, 'YouTube');
-                    //$item['content'] = htmlspecialchars_decode($data->media->oembed->html);
+                    $item['content'] = handleYoutube($data->url);
                 } elseif (explode('.', $data->domain)[0] == 'self') {
                     // Crossposted text post
                     // TODO (optionally?) Fetch content of the original post.

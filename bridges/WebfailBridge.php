@@ -127,11 +127,7 @@ class WebfailBridge extends BridgeAbstract
             } elseif (!is_null($article->find('div.wf-video', 0))) { // Video type
                 $videoId = $this->getVideoId($article->find('div.wf-play', 0)->onclick);
                 $item['uri'] = 'https://www.youtube.com/watch?v=' . $videoId;
-                $item['content'] = '<a href="'
-                . $item['uri']
-                . '"><img src="http://img.youtube.com/vi/'
-                . $videoId
-                . '/0.jpg"></a>';
+                $item['content'] = handleYoutube($videoId);
             } elseif (!is_null($article->find('video[id*=gif-]', 0))) { // Gif type
                 $item['uri'] = $this->getURI() . $article->find('a', 2)->href;
                 $item['content'] = '<video controls src="'

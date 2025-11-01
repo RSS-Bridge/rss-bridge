@@ -35,7 +35,7 @@ class TheDriveBridge extends FeedExpander
             $videoID = $youtubeVideoDiv->getAttribute('data-video-id');
 
             //place <a> around the <div>
-            $youtubeVideoDiv->outertext = '<a href="https://www.youtube.com/watch?v=' . $videoID . '">' . $youtubeVideoDiv->outertext . '</a>';
+            $youtubeVideoDiv->outertext = handleYoutube($videoID);
         }
 
         $item['content'] = $html;
