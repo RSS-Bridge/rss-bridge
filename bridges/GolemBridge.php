@@ -121,11 +121,7 @@ class GolemBridge extends FeedExpander
             foreach ($page->find('script') as $ytscript) {
                 if (preg_match_all('/(www.youtube.com.*?)\"/', $ytscript->innertext, $link)) {
                     $link = 'https://' . str_replace('\\', '', $link[1][$i]);
-                    $placeholders[$i]->innertext .= <<<EOT
-                        <iframe width="560" height="315" src="$link" title="YouTube video player" frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
-                    EOT;
+                    $placeholders[$i]->innertext .= handleYoutube($link);
                     break;
                 }
             }
