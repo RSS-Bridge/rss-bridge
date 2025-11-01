@@ -43,7 +43,7 @@ jobs:
       - name: Build docker image - PR
         run: docker build -t rss-bridge-pr .
       - name: Clear workspace
-        run: rm -r *
+        run: rm -r * .*
       - name: Checkout - Current
         uses: actions/checkout@v5
       - name: Build docker image - Current
@@ -121,7 +121,7 @@ jobs:
   upload-test-results:
     name: Upload to GitHub Pages repository
     runs-on: ubuntu-latest
-    needs: comment-pr
+    needs: test-pr
     if: needs.checks.outputs.WITH_UPLOAD == 'true'
     steps:
       - uses: actions/checkout@v5
