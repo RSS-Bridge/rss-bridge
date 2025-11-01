@@ -4,6 +4,12 @@ on:
   push:
     paths:
     - 'docs/**'
+  pull_request:
+    branches:
+      - 'master'
+    paths:
+      - .github/workflows/**
+      - 'docs/**'
 
 permissions:
   contents: write
@@ -24,6 +30,7 @@ jobs:
     - name: Generate documentation
       run: daux generate
     - name: Deploy same repository 🚀
+      if: ${{ github.event_name != 'pull_request' }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: "static"
