@@ -102,7 +102,13 @@ class EuronewsBridge extends BridgeAbstract
             foreach ($json['@graph'] as $item) {
                 if ($item['@type'] == 'NewsArticle') {
                     if (array_key_exists('author', $item)) {
-                        $author = $item['author']['name'];
+                        if (is_array($item['author'])) {
+                            $author = implode(', ', array_map(function ($e) {
+                                return $e['name'];
+                            }, $item['author']));
+                        } elseif (array_key_exists('name', $item['author'])) {
+                            $author = $item['author']['name'];
+                        }
                     }
                     if (array_key_exists('image', $item)) {
                         $content .= '<figure>';
