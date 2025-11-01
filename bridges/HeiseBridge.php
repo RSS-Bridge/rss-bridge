@@ -213,7 +213,7 @@ class HeiseBridge extends FeedExpander
                 $ytiframe = <<<EOT
                     <iframe width="560" height="315" src="https://$link[0] title="YouTube video player" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    referrerpolicy="strict-origin" allowfullscreen></iframe>
                 EOT;
                 //check if video is in header or article for correct possitioning
                 if (strpos($header->innertext, $link[0])) {

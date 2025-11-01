@@ -543,6 +543,7 @@ EOD;
 	src="{$url}"
 	frameborder="0" 
 	allowfullscreen
+	referrerpolicy="strict-origin"
 >
 </iframe>
 EOD;
