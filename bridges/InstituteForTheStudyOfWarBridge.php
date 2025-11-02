@@ -21,11 +21,6 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 5
-            ],
-            'contents' => [
-                'name' => 'Fetch contents for the articles',
-                'type' => 'checkbox',
-                'defaultValue' => true
             ]
         ]
     ];
@@ -55,9 +50,17 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
         $date = DateTime::createFromFormat('F d, Y', trim($date_p->plaintext));
 
         $tags = array_map(
-            fn($tag) => $tag->plaintext,
+            fn($tag) => html_entity_decode($tag->plaintext, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
             $entry->find('p.tag-cloud-on-cards')
         );
+
+        $html = getSimpleHTMLDOMCached($uri, 60 * 60 * 24 * 14);
+        $content = $html->find('div.dynamic-entry-content', 0);
+
+        $scripts = $content->find('script');
+        foreach ($scripts as $script) {
+            $script->parent->removeChild($script);
+        }
 
         $item = [
             'uri' => $uri,
@@ -65,21 +68,8 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
             'uid' => $uri,
             'timestamp' => $date->getTimestamp(),
             'categories' => $tags,
-
+            'content' => $content->innertext
         ];
-
-        // CloudFlare is very aggressive
-        if ($this->getInput('contents')) {
-            $html = getSimpleHTMLDOMCached($uri, 60 * 60 * 24 * 14);
-            $content = $html->find('div.dynamic-entry-content', 0);
-
-            $scripts = $content->find('script');
-            foreach ($scripts as $script) {
-                $script->parent->removeChild($script);
-            }
-
-            $item['content'] = $content->innertext;
-        }
 
         return $item;
     }
