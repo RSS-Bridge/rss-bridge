@@ -14,51 +14,63 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
             'searchURL' => [
                 'name' => 'Filter URL',
                 'required' => false,
-                'title' => 'Set a filter on https://www.understandingwar.org/publications and copy the URL parameters.'
+                'title' => 'Set a filter on https://www.understandingwar.org/research and copy the URL parameters.'
             ],
+            'limit' => [
+                'name' => 'Limit',
+                'type' => 'number',
+                'required' => true,
+                'defaultValue' => 5
+            ]
         ]
     ];
 
     public function collectData()
     {
         $filter = $this->getInput('searchURL');
-        $html = getSimpleHTMLDOM(self::URI . '/publications?' . $filter);
-        $entries = $html->find('.view-content', 0);
-        foreach ($entries->find('.views-row') as $entry) {
+        $limit = $this->getInput('limit');
+        $html = getSimpleHTMLDOM(self::URI . '/research/?' . $filter);
+        // Yes, a typo
+        $container = $html->find('div[data-name="reaserach_library"]', 0);
+        $entries = $container->find('.research-card-loop-item-3colgrid');
+
+        for ($i = 0; $i < min(count($entries), $limit); $i++) {
+            $entry = $entries[$i];
             $this->items[] = $this->processEntry($entry);
         }
     }
 
     private function processEntry($entry)
     {
-        $h2 = $entry->find('h2', 0);
-        $title = $h2->plaintext;
-        $uri = $h2->find('a', 0)->href;
+        $h3 = $entry->find('h3.research-card-title', 0);
+        $title = $h3->plaintext;
+        $uri = $h3->find('a', 0)->href;
 
-        $date_span = $entry->find('span.datespan', 0);
-        list($date_string, $user) = explode('-', $date_span->innertext);
-        $date = DateTime::createFromFormat('F d, Y', trim($date_string));
+        $date_p = $entry->find('p.research-card-post-date', 0);
+        $date = DateTime::createFromFormat('F d, Y', trim($date_p->plaintext));
 
-        $html = getSimpleHTMLDOMCached(self::URI . $uri, 60 * 60 * 24 * 7);
-        $content = $html->find('[property=content:encoded]', 0)->innertext;
+        $tags = array_map(
+            fn($tag) => html_entity_decode($tag->plaintext, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            $entry->find('p.tag-cloud-on-cards')
+        );
 
-        $enclosures = [];
-        $pdfs_list = $html->find('.field-name-field-pdf-report', 0);
-        if ($pdfs_list != null) {
-            foreach ($pdfs_list->find('.field-item') as $pdf_item) {
-                $a = $pdf_item->find('a', 0);
-                array_push($enclosures, $a->href);
-            }
+        $html = getSimpleHTMLDOMCached($uri, 60 * 60 * 24 * 14);
+        $content = $html->find('div.dynamic-entry-content', 0);
+
+        $scripts = $content->find('script');
+        foreach ($scripts as $script) {
+            $script->parent->removeChild($script);
         }
 
-        return [
-            'uri' => self::URI . $uri,
+        $item = [
+            'uri' => $uri,
             'title' => $title,
             'uid' => $uri,
-            'author' => trim($user),
             'timestamp' => $date->getTimestamp(),
-            'content' => $content,
-            'enclosures' => $enclosures
+            'categories' => $tags,
+            'content' => $content->innertext
         ];
+
+        return $item;
     }
 }
