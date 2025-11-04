@@ -116,28 +116,32 @@ class AppleAppStoreBridge extends BridgeAbstract
 
     private function getJWTToken()
     {
-        $html = $this->getHtml();
-        $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
+        // $html = $this->getHtml();
+        // $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
 
-        if (!$meta || !isset($meta->content)) {
-            throw new \Exception('JWT token not found in page content');
-        }
+        // if (!$meta || !isset($meta->content)) {
+        //     throw new \Exception('JWT token not found in page content');
+        // }
 
-        $decoded_content = urldecode($meta->content);
-        $this->debugLog('Found meta tag content');
+        // $decoded_content = urldecode($meta->content);
+        // $this->debugLog('Found meta tag content');
 
-        try {
-            $decoded_json = Json::decode($decoded_content);
-        } catch (\Exception $e) {
-            throw new \Exception(sprintf('Failed to parse JSON from meta tag: %s', $e->getMessage()));
-        }
+        // try {
+        //     $decoded_json = Json::decode($decoded_content);
+        // } catch (\Exception $e) {
+        //     throw new \Exception(sprintf('Failed to parse JSON from meta tag: %s', $e->getMessage()));
+        // }
 
-        if (!isset($decoded_json['MEDIA_API']['token'])) {
-            throw new \Exception('Token field not found in JSON structure');
-        }
+        // if (!isset($decoded_json['MEDIA_API']['token'])) {
+        //     throw new \Exception('Token field not found in JSON structure');
+        // }
 
-        $token = $decoded_json['MEDIA_API']['token'];
-        $this->debugLog('Successfully extracted JWT token');
+        // $token = $decoded_json['MEDIA_API']['token'];
+        // $this->debugLog('Successfully extracted JWT token');
+        
+        // The above method stopped working, using a hardcoded token for now, "exp": 1769466135 (~Jan 26 2026)
+        // This token is hardcoded in Apple's own JavaScript source code: https://apps.apple.com/assets/index~BDdsLoyyey.js
+        $token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNzYyMjA4NTM1LCJleHAiOjE3Njk0NjYxMzUsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.WlzTtQi3vqVVcYUfRzXBSYEfvOMAFjcEhMuBPiS2gGqDEh5nPswnPkQ_H69FeXKjFsnCHahjSHVtojhNwNVU_g';
         return $token;
     }
 
