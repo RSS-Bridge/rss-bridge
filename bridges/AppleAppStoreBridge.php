@@ -122,11 +122,12 @@ class AppleAppStoreBridge extends BridgeAbstract
 
         // The above method stopped working, using a hardcoded token for now, "exp": 1769466135 (~Jan 26 2026)
         // This token is hardcoded in Apple's own JavaScript source code: https://apps.apple.com/assets/index~BDdsLoyyey.js
-        
-        // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
+
+        // phpcs:disable Generic.Strings.UnnecessaryStringConcat.Found
         $token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.'
             . 'eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNzYyMjA4NTM1LCJleHAiOjE3Njk0NjYxMzUsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.'
             . 'WlzTtQi3vqVVcYUfRzXBSYEfvOMAFjcEhMuBPiS2gGqDEh5nPswnPkQ_H69FeXKjFsnCHahjSHVtojhNwNVU_g';
+        // phpcs:enable Generic.Strings.UnnecessaryStringConcat.Found
 
         $url = $this->makeJsonUrl();
         $this->debugLog(sprintf('Fetching data from API: %s', $url));
