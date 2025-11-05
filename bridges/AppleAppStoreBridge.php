@@ -114,48 +114,26 @@ class AppleAppStoreBridge extends BridgeAbstract
         return getSimpleHTMLDOM($url);
     }
 
-    private function getJWTToken()
+    private function getAppData()
     {
-        // $html = $this->getHtml();
-        // $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
+        // Spoof a call to get the HTML first to mimic browser behavior
+        $url = $this->makeHtmlUrl();
+        $content = getContents($url);
 
-        // if (!$meta || !isset($meta->content)) {
-        //     throw new \Exception('JWT token not found in page content');
-        // }
-
-        // $decoded_content = urldecode($meta->content);
-        // $this->debugLog('Found meta tag content');
-
-        // try {
-        //     $decoded_json = Json::decode($decoded_content);
-        // } catch (\Exception $e) {
-        //     throw new \Exception(sprintf('Failed to parse JSON from meta tag: %s', $e->getMessage()));
-        // }
-
-        // if (!isset($decoded_json['MEDIA_API']['token'])) {
-        //     throw new \Exception('Token field not found in JSON structure');
-        // }
-
-        // $token = $decoded_json['MEDIA_API']['token'];
-        // $this->debugLog('Successfully extracted JWT token');
-        
         // The above method stopped working, using a hardcoded token for now, "exp": 1769466135 (~Jan 26 2026)
         // This token is hardcoded in Apple's own JavaScript source code: https://apps.apple.com/assets/index~BDdsLoyyey.js
         $token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNzYyMjA4NTM1LCJleHAiOjE3Njk0NjYxMzUsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.WlzTtQi3vqVVcYUfRzXBSYEfvOMAFjcEhMuBPiS2gGqDEh5nPswnPkQ_H69FeXKjFsnCHahjSHVtojhNwNVU_g';
-        return $token;
-    }
-
-    private function getAppData()
-    {
-        $token = $this->getJWTToken();
 
         $url = $this->makeJsonUrl();
         $this->debugLog(sprintf('Fetching data from API: %s', $url));
 
         $headers = [
+            'accept: */*',
             'Authorization: Bearer ' . $token,
+            'cache-control: no-cache',
             'Origin: https://apps.apple.com',
-            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer: https://apps.apple.com/',
+            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36w',
         ];
 
         $content = getContents($url, $headers);
