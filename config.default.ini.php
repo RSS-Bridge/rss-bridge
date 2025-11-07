@@ -67,6 +67,12 @@ type = "file"
 ; false = disabled (default)
 custom_timeout = false
 
+[logging]
+
+;log_file_path = "/var/log/rss-bridge.log"
+; DEBUG, INFO, WARNING or ERROR
+;log_file_level = "INFO"
+
 [admin]
 
 ; Advertise an email address where people can reach the administrator.
