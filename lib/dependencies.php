@@ -53,11 +53,11 @@ $container['logger'] = function () {
         $logger->addHandler(new ErrorLogHandler(Logger::INFO));
     }
 
-    $log_file_path  = Configuration::getConfig('logging', 'log_file_path');
-    $log_file_level = Configuration::getConfig('logging', 'log_file_level');
-    if ($log_file_path && $log_file_level) {
-        $level = array_flip(Logger::LEVEL_NAMES)[strtoupper($log_file_level)];
-        $logger->addHandler(new StreamHandler($log_file_path, $level));
+    $file_path  = Configuration::getConfig('logging', 'file_path');
+    $file_level = Configuration::getConfig('logging', 'file_level');
+    if ($file_path && $file_level) {
+        $level = array_flip(Logger::LEVEL_NAMES)[strtoupper($file_level)];
+        $logger->addHandler(new StreamHandler($file_path, $level));
     }
 
     return $logger;

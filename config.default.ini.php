@@ -69,9 +69,9 @@ custom_timeout = false
 
 [logging]
 
-;log_file_path = "/var/log/rss-bridge.log"
+;file_path = "/var/log/rss-bridge.log"
 ; DEBUG, INFO, WARNING or ERROR
-;log_file_level = "INFO"
+;file_level = "INFO"
 
 [admin]
 
