@@ -8,6 +8,29 @@ use PHPUnit\Framework\TestCase;
 
 final class UtilsTest extends TestCase
 {
+    public function setUp(): void
+    {
+        \Configuration::loadConfiguration();
+    }
+
+    public function testConvertLazyLoading()
+    {
+        $html = '<img data-src="foo.png" src="">';
+        $expected = '<img src="foo.png">';
+        $this->assertSame($expected, convertLazyLoading($html));
+    }
+
+    public function testParseSrcSet()
+    {
+        $srcset = 'elva-fairy-480w.jpg 480w, elva-fairy-800w.jpg 800w';
+        $expected = [
+            '480w' => 'elva-fairy-480w.jpg',
+            '800w' => 'elva-fairy-800w.jpg'
+        ];
+        $this->assertSame($expected, parseSrcset($srcset));
+        $this->assertSame('elva-fairy-800w.jpg', parseSrcsetLargestImageUrl($srcset));
+    }
+
     public function testTruncate()
     {
         $this->assertSame('f...', truncate('foo', 1));
