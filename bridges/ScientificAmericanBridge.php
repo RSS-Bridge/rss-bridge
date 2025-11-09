@@ -155,11 +155,11 @@ class ScientificAmericanBridge extends FeedExpander
                     } else {
                         $res .= $block->outertext;
                     }
-                } else if ($block->tag == 'h2') {
+                } elseif ($block->tag == 'h2') {
                     $res .= '<h3>' . $block->innertext . '</h3>';
-                } else if ($block->tag == 'blockquote') {
+                } elseif ($block->tag == 'blockquote') {
                     $res .= $block->outertext;
-                } else if ($block->tag == 'hr' && $block->getAttribute('data-block') == 'sciam/raw_html') {
+                } elseif ($block->tag == 'hr' && $block->getAttribute('data-block') == 'sciam/raw_html') {
                     $res .= '<hr />';
                 }
             }
