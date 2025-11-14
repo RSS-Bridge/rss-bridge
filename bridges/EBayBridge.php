@@ -76,7 +76,7 @@ class EBayBridge extends BridgeAbstract
             $new_listing_label->remove();
         }
 
-        $results = $html->find('ul.srp-results > li.s-item');
+        $results = $html->find('ul.srp-results > li.s-card');
         foreach ($results as $listing) {
             $item = [];
 
@@ -85,14 +85,14 @@ class EBayBridge extends BridgeAbstract
                 return $listing->find($query, 0)->plaintext ?? $altText;
             };
 
-            $item['title'] = $find('.s-item__title');
+            $item['title'] = $find('.s-card__title');
             if (!$item['title']) {
                 // Skip entries where the title cannot be found (for w/e reason).
                 continue;
             }
 
             // It appears there may be more than a single 'subtitle' subclass in the listing. Collate them.
-            $subtitles = $listing->find('.s-item__subtitle');
+            $subtitles = $listing->find('.s-card__subtitle');
             if (is_array($subtitles)) {
                 $subtitle = trim(implode(' ', array_column($subtitles, 'plaintext')));
             } else {
@@ -100,7 +100,7 @@ class EBayBridge extends BridgeAbstract
             }
 
             // Get the listing's link and uid.
-            $itemUri = $listing->find('.s-item__link', 0);
+            $itemUri = $listing->find('.s-card__link', 0);
             if ($itemUri) {
                 $item['uri'] = $itemUri->href;
             }
@@ -109,22 +109,22 @@ class EBayBridge extends BridgeAbstract
             }
 
             // Price should be fetched on its own so we can provide the alt text without complication.
-            $price = $find('.s-item__price', '[NO PRICE]');
+            $price = $find('.s-card__price', '[NO PRICE]');
 
             // Map a list of dynamic variable names to their subclasses within the listing.
             //   This is just a bit of sugar to make this cleaner and more maintainable.
             $propertyMappings = [
-                'additionalPrice'   => '.s-item__additional-price',
-                'discount'          => '.s-item__discount',
-                'shippingFree'      => '.s-item__freeXDays',
-                'localDelivery'     => '.s-item__localDelivery',
-                'logisticsCost'     => '.s-item__logisticsCost',
-                'location'          => '.s-item__location',
-                'obo'               => '.s-item__formatBestOfferEnabled',
-                'sellerInfo'        => '.s-item__seller-info-text',
-                'bids'              => '.s-item__bidCount',
-                'timeLeft'          => '.s-item__time-left',
-                'timeEnd'           => '.s-item__time-end',
+                'additionalPrice'   => '.s-card__additional-price',
+                'discount'          => '.s-card__discount',
+                'shippingFree'      => '.s-card__freeXDays',
+                'localDelivery'     => '.s-card__localDelivery',
+                'logisticsCost'     => '.s-card__logisticsCost',
+                'location'          => '.s-card__location',
+                'obo'               => '.s-card__formatBestOfferEnabled',
+                'sellerInfo'        => '.s-card__seller-info-text',
+                'bids'              => '.s-card__bidCount',
+                'timeLeft'          => '.s-card__time-left',
+                'timeEnd'           => '.s-card__time-end',
             ];
 
             foreach ($propertyMappings as $k => $v) {
@@ -155,7 +155,7 @@ class EBayBridge extends BridgeAbstract
             }
 
             // Acquire the listing's primary image and atach it.
-            $image = $listing->find('.s-item__image-wrapper > img', 0);
+            $image = $listing->find('.s-card__media-wrapper img', 0);
             if ($image) {
                 // Not quite sure why append fragment here
                 $imageUrl = $image->src . '#.image';
