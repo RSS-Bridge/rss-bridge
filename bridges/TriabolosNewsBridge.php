@@ -4,16 +4,64 @@ declare(strict_types=1);
 
 class TriabolosNewsBridge extends BridgeAbstract
 {
+    const CATGEGORIES      = [
+        'Vereinsnachrichten' => 'vereinsnachrichten',
+        'Eilmeldungen'   => 'eilmeldungen',
+        'Neue Mitglieder'      => 'neue mitglieder',
+        'Rennberichte'   => 'rennberichte',
+        'Trainingslager'   => 'trainingslager',
+        'Regionalliga'   => 'regionalliga',
+        'Landesliga'   => 'landesliga',
+        'Kinderschwimmen'   => 'kinderschwimmen',
+        'Jugendsparte'   => 'jugendsparte',
+    ];
     const NAME = 'Triabolos News';
-    const URI = 'https://www.triabolos.de/';
+    const URI = 'https://www.triabolos.de';
     const DESCRIPTION = 'News feed of Hamburg Triathlon club Triabolos';
     const MAINTAINER = 't3sec';
-    //const CACHE_TIMEOUT = 3600;
-    const CACHE_TIMEOUT = 0; // seconds
+    const CACHE_TIMEOUT = 3600; // seconds
+    const PARAMETERS    = [
+        [
+            'category' => [
+                'name' => 'Triabolos news category',
+                'type' => 'list',
+                'values' => self::CATGEGORIES,
+                'defaultValue' => 'Profile',
+                'title' => 'Choose one of the available news categories',
+            ],
+        ],
+    ];
+
+    public function getURI()
+    {
+        if (!is_null($this->getInput('category'))) {
+            return sprintf('%s/news/stories/category/%s', static::URI, rawurlencode($this->getInput('category')));
+        }
+
+        return parent::getURI();
+    }
+
+    public function getDescription()
+    {
+        if (!is_null($this->getInput('category'))) {
+            return sprintf('%s - %s', static::DESCRIPTION, array_search($this->getInput('category'), self::CATGEGORIES));
+        }
+
+        return parent::getDescription();
+    }
+
+    public function getName()
+    {
+        if (!is_null($this->getInput('category'))) {
+            return sprintf('%s - %s', static::NAME, array_search($this->getInput('category'), self::CATGEGORIES));
+        }
+
+        return parent::getName();
+    }
 
     public function collectData()
     {
-        $dom = getSimpleHTMLDOM('https://www.triabolos.de/news/stories/category/vereinsnachrichten');
+        $dom = getSimpleHTMLDOMCached($this->getURI(), 86400);
         foreach ($dom->find('.blog-listing .blog-item') as $li) {
             $a = $li->find('.blog-content .blog-header .blog-title a', 0);
             $time = $li->find('.blog-content .blog-header .blog-intro time', 0);
