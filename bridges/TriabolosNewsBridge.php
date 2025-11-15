@@ -26,7 +26,7 @@ class TriabolosNewsBridge extends BridgeAbstract
                 'name' => 'Triabolos news category',
                 'type' => 'list',
                 'values' => self::CATEGORIES,
-                'defaultValue' => 'Profile',
+                'defaultValue' => 'vereinsnachrichten',
                 'title' => 'Choose one of the available news categories',
             ],
         ],
