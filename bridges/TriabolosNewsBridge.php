@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class TriabolosNewsBridge extends BridgeAbstract
 {
-    const CATGEGORIES      = [
+    const CATEGORIES      = [
         'Vereinsnachrichten' => 'vereinsnachrichten',
         'Eilmeldungen'   => 'eilmeldungen',
         'Neue Mitglieder'      => 'neue mitglieder',
@@ -25,7 +25,7 @@ class TriabolosNewsBridge extends BridgeAbstract
             'category' => [
                 'name' => 'Triabolos news category',
                 'type' => 'list',
-                'values' => self::CATGEGORIES,
+                'values' => self::CATEGORIES,
                 'defaultValue' => 'Profile',
                 'title' => 'Choose one of the available news categories',
             ],
@@ -44,7 +44,7 @@ class TriabolosNewsBridge extends BridgeAbstract
     public function getDescription()
     {
         if (!is_null($this->getInput('category'))) {
-            return sprintf('%s - %s', static::DESCRIPTION, array_search($this->getInput('category'), self::CATGEGORIES));
+            return sprintf('%s - %s', static::DESCRIPTION, array_search($this->getInput('category'), self::CATEGORIES));
         }
 
         return parent::getDescription();
@@ -53,7 +53,7 @@ class TriabolosNewsBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('category'))) {
-            return sprintf('%s - %s', static::NAME, array_search($this->getInput('category'), self::CATGEGORIES));
+            return sprintf('%s - %s', static::NAME, array_search($this->getInput('category'), self::CATEGORIES));
         }
 
         return parent::getName();
