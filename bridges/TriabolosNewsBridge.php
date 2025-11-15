@@ -5,15 +5,16 @@ declare(strict_types=1);
 class TriabolosNewsBridge extends BridgeAbstract
 {
     const CATEGORIES      = [
-        'Vereinsnachrichten' => 'vereinsnachrichten',
-        'Eilmeldungen'   => 'eilmeldungen',
-        'Neue Mitglieder'      => 'neue mitglieder',
-        'Rennberichte'   => 'rennberichte',
-        'Trainingslager'   => 'trainingslager',
-        'Regionalliga'   => 'regionalliga',
-        'Landesliga'   => 'landesliga',
-        'Kinderschwimmen'   => 'kinderschwimmen',
-        'Jugendsparte'   => 'jugendsparte',
+        'Alle' => 'stories',
+        'Vereinsnachrichten' => 'stories/category/vereinsnachrichten',
+        'Eilmeldungen'   => 'stories/category/eilmeldungen',
+        'Neue Mitglieder'      => 'stories/category/neue%20mitglieder',
+        'Rennberichte'   => 'stories/category/rennberichte',
+        'Trainingslager'   => 'stories/category/trainingslager',
+        'Regionalliga'   => 'stories/category/regionalliga',
+        'Landesliga'   => 'stories/category/landesliga',
+        'Kinderschwimmen'   => 'stories/category/kinderschwimmen',
+        'Jugendsparte'   => 'stories/category/jugendsparte',
     ];
     const NAME = 'Triabolos News';
     const URI = 'https://www.triabolos.de';
@@ -26,7 +27,7 @@ class TriabolosNewsBridge extends BridgeAbstract
                 'name' => 'Triabolos news category',
                 'type' => 'list',
                 'values' => self::CATEGORIES,
-                'defaultValue' => 'vereinsnachrichten',
+                'defaultValue' => 'stories',
                 'title' => 'Choose one of the available news categories',
             ],
         ],
@@ -35,7 +36,7 @@ class TriabolosNewsBridge extends BridgeAbstract
     public function getURI()
     {
         if (!is_null($this->getInput('category'))) {
-            return sprintf('%s/news/stories/category/%s', static::URI, rawurlencode($this->getInput('category')));
+            return sprintf('%s/news/%s', static::URI, $this->getInput('category'));
         }
 
         return parent::getURI();
