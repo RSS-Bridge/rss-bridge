@@ -61,7 +61,7 @@ class TriabolosNewsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $dom = getSimpleHTMLDOMCached($this->getURI(), 86400);
+        $dom = getSimpleHTMLDOMCached($this->getURI(), self::CACHE_TIMEOUT);
         foreach ($dom->find('.blog-listing .blog-item') as $li) {
             $a = $li->find('.blog-content .blog-header .blog-title a', 0);
             $time = $li->find('.blog-content .blog-header .blog-intro time', 0);
@@ -73,8 +73,8 @@ class TriabolosNewsBridge extends BridgeAbstract
                 'content' => $content->plaintext,
                 'timestamp' => $time->datetime,
                 'categories' => [$category->plaintext],
-                'enclosure' => is_null($enclosure) ? [] : ['https://www.triabolos.de' . $enclosure->src],
-                'uri' => 'https://www.triabolos.de' . $a->href,
+                'enclosure' => is_null($enclosure) ? [] : [self::URI . $enclosure->src],
+                'uri' => self::URI . $a->href,
             ];
         }
     }
