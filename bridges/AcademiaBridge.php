@@ -46,7 +46,7 @@ class AcademiaBridge extends BridgeAbstract
 
         $url = self::URI . '/Documents/in/' . $topic;
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throwServerException('Invalid topic name');
+            throwServerException('Invalid topic name: ' . $topic);
         }
 
         if ($sort !== 'Newest') {
@@ -60,14 +60,16 @@ class AcademiaBridge extends BridgeAbstract
             throwServerException('Unable to parse content');
         }
 
-        $data = json_decode($json->innertext, true);
-        if (!$data || empty($data['subjectOf'])) {
+        $data = Json::decode($json->innertext);
+
+        $articles = $data['subjectOf'] ?? null;
+        if (!is_array($articles) || empty($articles)) {
             throwServerException('Invalid or empty content');
         }
 
         $summaryByUrl = $this->extractSummaries($dom);
 
-        foreach ($data['subjectOf'] as $article) {
+        foreach ($articles as $article) {
             if (($article['@type'] ?? '') !== 'ScholarlyArticle') {
                 continue;
             }
@@ -77,15 +79,13 @@ class AcademiaBridge extends BridgeAbstract
                 continue;
             }
 
-            $summary = $summaryByUrl[$articleUrl] ?? '';
-
             $this->items[] = [
                 'uri' => $articleUrl,
                 'uid' => $articleUrl,
                 'title' => $article['name'] ?? '',
                 'author' => $article['author']['name'] ?? '',
-                'timestamp' => $article['datePublished'] ?? null,
-                'content' => $summary,
+                'timestamp' => $article['datePublished'] ?? '',
+                'content' => $summaryByUrl[$articleUrl] ?? '',
             ];
         }
     }
@@ -95,13 +95,12 @@ class AcademiaBridge extends BridgeAbstract
         $summaryByUrl = [];
 
         foreach ($dom->find('.work-card-container') as $card) {
-            $titleEl = $card->find('.title a', 0);
-            if (!$titleEl) {
+            $a = $card->find('.title a', 0);
+            if (!$a) {
                 continue;
             }
 
-            $url = $titleEl->href;
-
+            $url = $a->href;
             $complete = $card->find('.complete.hidden', 0);
             $summary = $complete ? trim($complete->plaintext) : '';
 
