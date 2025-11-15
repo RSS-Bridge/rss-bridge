@@ -61,13 +61,15 @@ class AcademiaBridge extends BridgeAbstract
         }
 
         $data = Json::decode($json->innertext);
-        if (empty($data['subjectOf']) || !is_array($data['subjectOf'])) {
+
+        $articles = $data['subjectOf'] ?? null;
+        if (!is_array($articles) || empty($articles)) {
             throwServerException('Invalid or empty content');
         }
 
         $summaryByUrl = $this->extractSummaries($dom);
 
-        foreach ($data['subjectOf'] as $article) {
+        foreach ($articles as $article) {
             if (($article['@type'] ?? '') !== 'ScholarlyArticle') {
                 continue;
             }
