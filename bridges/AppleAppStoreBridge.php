@@ -114,44 +114,31 @@ class AppleAppStoreBridge extends BridgeAbstract
         return getSimpleHTMLDOM($url);
     }
 
-    private function getJWTToken()
-    {
-        $html = $this->getHtml();
-        $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
-
-        if (!$meta || !isset($meta->content)) {
-            throw new \Exception('JWT token not found in page content');
-        }
-
-        $decoded_content = urldecode($meta->content);
-        $this->debugLog('Found meta tag content');
-
-        try {
-            $decoded_json = Json::decode($decoded_content);
-        } catch (\Exception $e) {
-            throw new \Exception(sprintf('Failed to parse JSON from meta tag: %s', $e->getMessage()));
-        }
-
-        if (!isset($decoded_json['MEDIA_API']['token'])) {
-            throw new \Exception('Token field not found in JSON structure');
-        }
-
-        $token = $decoded_json['MEDIA_API']['token'];
-        $this->debugLog('Successfully extracted JWT token');
-        return $token;
-    }
-
     private function getAppData()
     {
-        $token = $this->getJWTToken();
+        // Spoof a call to get the HTML first to mimic browser behavior
+        $url = $this->makeHtmlUrl();
+        $content = getContents($url);
+
+        // The above method stopped working, using a hardcoded token for now, "exp": 1769466135 (~Jan 26 2026)
+        // This token is hardcoded in Apple's own JavaScript source code: https://apps.apple.com/assets/index~BMeKnrDH8T.js
+
+        // phpcs:disable Generic.Strings.UnnecessaryStringConcat.Found
+        $token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.'
+            . 'eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNzYyOTkwMTA3LCJleHAiOjE3NzAyNDc3MDcsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.'
+            . 'IrZxlIHsZBiBLZPw1UZYkyqwbPDPmzcj8U57M3w252i3A4TRzASKx2aGAoXJ0WtuNihmyyopREeVqpJlpjq0fw';
+        // phpcs:enable Generic.Strings.UnnecessaryStringConcat.Found
 
         $url = $this->makeJsonUrl();
         $this->debugLog(sprintf('Fetching data from API: %s', $url));
 
         $headers = [
+            'accept: */*',
             'Authorization: Bearer ' . $token,
+            'cache-control: no-cache',
             'Origin: https://apps.apple.com',
-            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer: https://apps.apple.com/',
+            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36w',
         ];
 
         $content = getContents($url, $headers);
