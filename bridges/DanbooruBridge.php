@@ -4,7 +4,7 @@ class DanbooruBridge extends BridgeAbstract
 {
     const MAINTAINER = 'mitsukarenai, logmanoriginal';
     const NAME = 'Danbooru';
-    const URI = 'http://donmai.us/';
+    const URI = 'https://danbooru.donmai.us/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns images from given page';
 
