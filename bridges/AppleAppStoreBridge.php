@@ -121,12 +121,12 @@ class AppleAppStoreBridge extends BridgeAbstract
         $content = getContents($url);
 
         // The above method stopped working, using a hardcoded token for now, "exp": 1769466135 (~Jan 26 2026)
-        // This token is hardcoded in Apple's own JavaScript source code: https://apps.apple.com/assets/index~BDdsLoyyey.js
+        // This token is hardcoded in Apple's own JavaScript source code: https://apps.apple.com/assets/index~BMeKnrDH8T.js
 
         // phpcs:disable Generic.Strings.UnnecessaryStringConcat.Found
         $token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.'
-            . 'eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNzYyMjA4NTM1LCJleHAiOjE3Njk0NjYxMzUsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.'
-            . 'WlzTtQi3vqVVcYUfRzXBSYEfvOMAFjcEhMuBPiS2gGqDEh5nPswnPkQ_H69FeXKjFsnCHahjSHVtojhNwNVU_g';
+            . 'eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNzYyOTkwMTA3LCJleHAiOjE3NzAyNDc3MDcsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.'
+            . 'IrZxlIHsZBiBLZPw1UZYkyqwbPDPmzcj8U57M3w252i3A4TRzASKx2aGAoXJ0WtuNihmyyopREeVqpJlpjq0fw';
         // phpcs:enable Generic.Strings.UnnecessaryStringConcat.Found
 
         $url = $this->makeJsonUrl();
