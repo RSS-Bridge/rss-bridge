@@ -90,7 +90,8 @@ class KleinanzeigenBridge extends BridgeAbstract
     {
         if ($this->queriedContext === 'By profile') {
             for ($i = 1; $i <= $this->getInput('pages'); $i++) {
-                $html = getSimpleHTMLDOM(self::URI . '/s-bestandsliste.html?userId=' . $this->getInput('userid') . '&pageNum=' . $i . '&sortingField=SORTING_DATE');
+                $html = getSimpleHTMLDOM($this->getURI() . '/s-bestandsliste.html?userId=' . $this->getInput('userid') . '&pageNum=' . $i . '&sortingField=SORTING_DATE');
+                $html = defaultLinkTo($html, $this->getURI());
 
                 $foundItem = false;
                 foreach ($html->find('article.aditem') as $element) {
@@ -106,7 +107,7 @@ class KleinanzeigenBridge extends BridgeAbstract
         if ($this->queriedContext === 'By search') {
             $categoryId = $this->findCategoryId();
             for ($page = 1; $page <= $this->getInput('pages'); $page++) {
-                $searchUrl = self::URI . '/s-suchanfrage.html?' . http_build_query([
+                $searchUrl = $this->getURI() . '/s-suchanfrage.html?' . http_build_query([
                     'keywords' => $this->getInput('query'),
                     'locationStr' => $this->getInput('location'),
                     'locationId' => '',
@@ -119,6 +120,7 @@ class KleinanzeigenBridge extends BridgeAbstract
                 ]);
 
                 $html = getSimpleHTMLDOM($searchUrl);
+                $html = defaultLinkTo($html, $this->getURI());
 
                 // end of list if returned page is not the expected one
                 if ($html->find('.pagination-current', 0)->plaintext != $page) {
@@ -137,7 +139,7 @@ class KleinanzeigenBridge extends BridgeAbstract
         $item = [];
 
         $item['uid'] = $element->getAttribute('data-adid');
-        $item['uri'] = self::URI . $element->getAttribute('data-href');
+        $item['uri'] = $element->getAttribute('data-href');
 
         $item['title'] = $element->find('h2', 0)->plaintext;
         $item['timestamp'] = $element->find('div.aditem-main--top--right', 0)->plaintext;
@@ -150,10 +152,8 @@ class KleinanzeigenBridge extends BridgeAbstract
                 $element->find('img', 0) ? $element->find('img', 0)->getAttribute('src') : ''
             )
         ); //enhance img quality
-        $textContainer = $element->find('div.aditem-main', 0);
-        $textContainer->find('a', 0)->href = self::URI . $textContainer->find('a', 0)->href; // add domain to url
-        $item['content'] = '<img src="' . $imgUrl . '"/>' .
-        $textContainer->outertext;
+
+        $item['content'] = '<img src="' . $imgUrl . '"/>' . $element->find('div.aditem-main', 0)->outertext;
 
         $this->items[] = $item;
     }
@@ -161,7 +161,7 @@ class KleinanzeigenBridge extends BridgeAbstract
     private function findCategoryId()
     {
         if ($this->getInput('category')) {
-            $html = getSimpleHTMLDOM(self::URI . '/s-kategorie-baum.html');
+            $html = getSimpleHTMLDOM($this->getURI() . '/s-kategorie-baum.html');
             foreach ($html->find('a[data-val]') as $element) {
                 $catId = (int)$element->getAttribute('data-val');
                 $catName = $element->plaintext;
