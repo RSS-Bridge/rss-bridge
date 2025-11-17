@@ -14,9 +14,10 @@ You can specify a custom cache timeout for each bridge if
 
 ## How can I make a bridge update more frequently?
 
-You can only do that if you are hosting the RSS-Bridge instance:
-- Lower the bridge ttl: `CACHE_TIMEOUT` constant
-- Enable [`custom_timeout`](../03_For_Hosts/08_Custom_Configuration.md#customtimeout)
+You can adjust the cache TTL value only if you are hosting the RSS-Bridge instance:
+- programmatically, by adjusting the bridge's [`CACHE_TIMEOUT`](../05_Bridge_API/02_BridgeAbstract.md#Step_3_-_Add_general_constants_to_the_class) constant value;
+- by enabling the [`custom_timeout`](../03_For_Hosts/08_Custom_Configuration.md#customtimeout)
+  configuration option and using the bridge with additional [`Cache timeout in seconds`](../03_For_Hosts/07_Customizations.md#Customizable_cache_timeout) parameter.
 
 ## Firefox doesn't show feeds anymore, what can I do?
 

@@ -25,6 +25,10 @@ class ArrayCache implements CacheInterface
 
     public function set(string $key, $value, ?int $ttl = null): void
     {
+        if ($ttl === 0) {
+            return; // TTL is 0, do nothing
+        }
+
         $this->data[$key] = [
             'key'           => $key,
             'value'         => $value,
