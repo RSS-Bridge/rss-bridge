@@ -2,7 +2,7 @@
 
 class AppleAppStoreBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'captn3m0';
+    const MAINTAINER = 'NohamR';
     const NAME = 'Apple App Store';
     const URI = 'https://apps.apple.com/';
     const CACHE_TIMEOUT = 3600; // 1h
@@ -27,7 +27,7 @@ class AppleAppStoreBridge extends BridgeAbstract
                 'Web'   => 'web',
                 'Apple TV'  => 'appletv',
             ],
-            'defaultValue'  => 'iphone',
+            'defaultValue'  => 'mac',
         ],
         'country'   => [
             'name'  => 'Store Country',
@@ -104,14 +104,6 @@ class AppleAppStoreBridge extends BridgeAbstract
         if ($this->getInput('debug')) {
             $this->logger->info(sprintf('[AppleAppStoreBridge] %s', $message));
         }
-    }
-
-    private function getHtml()
-    {
-        $url = $this->makeHtmlUrl();
-        $this->debugLog(sprintf('Fetching HTML from: %s', $url));
-
-        return getSimpleHTMLDOM($url);
     }
 
     private function getAppData()
