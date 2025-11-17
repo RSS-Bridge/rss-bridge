@@ -128,8 +128,13 @@ class AppleAppStoreBridge extends BridgeAbstract
 
         // Find the JWT inside a const assignment, e.g.
         // const SOME_NAME = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.XXXX.YYYY";
+        // Match a const assignment that looks like a JWT
         $tokenMatches = [];
-        if (!preg_match('#const\s+[A-Za-z0-9_$]+\s*=\s*"(eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ\.[^"\\]+)"#', $jsContent, $tokenMatches)) {
+        if (!preg_match(
+            '#const\s+[A-Za-z0-9_$]+\s*=\s*"([A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+)"#',
+            $jsContent,
+            $tokenMatches
+        )) {
             throw new \Exception('Failed to extract JWT token from JS bundle');
         }
 
