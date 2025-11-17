@@ -127,11 +127,12 @@ class AppleAppStoreBridge extends BridgeAbstract
         $jsContent = getContents($jsUrl);
 
         // Find the JWT inside a const assignment, e.g.
-        // const SOME_NAME = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.XXXX.YYYY";
+        // const SOME_NAME = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6.XXXX.YYYY";
         // Match a const assignment that looks like a JWT
+        // eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6 decodes to '{"alg":"ES256","typ":"JWT","kid"'
         $tokenMatches = [];
         if (!preg_match(
-            '#const\s+[A-Za-z0-9_$]+\s*=\s*"([A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+)"#',
+            '~const\s+\w+\s*=\s*[\'"](eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)[\'"]~',
             $jsContent,
             $tokenMatches
         )) {
@@ -139,7 +140,7 @@ class AppleAppStoreBridge extends BridgeAbstract
         }
 
         $token = $tokenMatches[1];
-        $this->debugLog('Successfully extracted JWT token from JS bundle');
+        $this->debugLog('Successfully extracted JWT token from JS bundle: ' . $token);
 
         $url = $this->makeJsonUrl();
         $this->debugLog(sprintf('Fetching data from API: %s', $url));
