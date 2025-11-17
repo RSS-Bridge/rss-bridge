@@ -131,14 +131,11 @@ class AppleAppStoreBridge extends BridgeAbstract
         // Match a const assignment that looks like a JWT
         // eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6 decodes to '{"alg":"ES256","typ":"JWT","kid"'
         $tokenMatches = [];
-        if (!preg_match(
-            '~const\s+\w+\s*=\s*[\'"](eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)[\'"]~',
-            $jsContent,
-            $tokenMatches
-        )) {
+        // phpcs:disable Generic.Files.LineLength
+        if (!preg_match('~const\s+\w+\s*=\s*[\'\"](eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)[\'\"]~', $jsContent, $tokenMatches)) {
             throw new \Exception('Failed to extract JWT token from JS bundle');
         }
-
+        // phpcs:enable Generic.Files.LineLength
         $token = $tokenMatches[1];
         $this->debugLog('Successfully extracted JWT token from JS bundle: ' . $token);
 
