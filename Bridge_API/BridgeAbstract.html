@@ -535,6 +535,7 @@ This action allows an user to get a list of all feeds corresponding to an URL.</
 Use these methods whenever possible instead of writing your own.</p>
 <h2><a id="savecachevalue" href="#savecachevalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>saveCacheValue</h2>
 <p>Within the context of the current bridge, stores a value by key in the cache.
+Optionally specifies the cache duration in seconds for the key.
 The value can later be retrieved with <a href="#loadcachevalue">loadCacheValue</a>.</p>
 <pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">saveCacheValue</span><span class="hljs-params">($key, $value, $ttl = null)</span>
 </span></code></pre>
@@ -546,7 +547,6 @@ The value can later be retrieved with <a href="#loadcachevalue">loadCacheValue</
 </code></pre>
 <h2><a id="loadcachevalue" href="#loadcachevalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>loadCacheValue</h2>
 <p>Within the context of the current bridge, loads a value by key from cache.
-Optionally specifies the cache duration for the key.
 Returns <code>null</code> if the key doesn’t exist or the value is expired.</p>
 <pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadCacheValue</span><span class="hljs-params">($key, $default = null)</span>
 </span></code></pre>
