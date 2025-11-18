@@ -528,6 +528,7 @@ Use these methods whenever possible instead of writing your own.
 ## saveCacheValue
 
 Within the context of the current bridge, stores a value by key in the cache.
+Optionally specifies the cache duration in seconds for the key.
 The value can later be retrieved with [loadCacheValue](#loadcachevalue).
 
 ```php
@@ -546,7 +547,6 @@ public function collectData()
 ## loadCacheValue
 
 Within the context of the current bridge, loads a value by key from cache.
-Optionally specifies the cache duration for the key.
 Returns `null` if the key doesn't exist or the value is expired.
 
 ```php
