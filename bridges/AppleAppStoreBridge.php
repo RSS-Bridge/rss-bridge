@@ -2,7 +2,7 @@
 
 class AppleAppStoreBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'captn3m0';
+    const MAINTAINER = 'NohamR';
     const NAME = 'Apple App Store';
     const URI = 'https://apps.apple.com/';
     const CACHE_TIMEOUT = 3600; // 1h
@@ -27,7 +27,7 @@ class AppleAppStoreBridge extends BridgeAbstract
                 'Web'   => 'web',
                 'Apple TV'  => 'appletv',
             ],
-            'defaultValue'  => 'iphone',
+            'defaultValue'  => 'mac',
         ],
         'country'   => [
             'name'  => 'Store Country',
@@ -106,28 +106,38 @@ class AppleAppStoreBridge extends BridgeAbstract
         }
     }
 
-    private function getHtml()
-    {
-        $url = $this->makeHtmlUrl();
-        $this->debugLog(sprintf('Fetching HTML from: %s', $url));
-
-        return getSimpleHTMLDOM($url);
-    }
-
     private function getAppData()
     {
-        // Spoof a call to get the HTML first to mimic browser behavior
+        // Fetch the HTML page to find the JS bundle URL
         $url = $this->makeHtmlUrl();
+        $this->debugLog(sprintf('Fetching HTML page for token extraction: %s', $url));
         $content = getContents($url);
 
-        // The above method stopped working, using a hardcoded token for now, "exp": 1769466135 (~Jan 26 2026)
-        // This token is hardcoded in Apple's own JavaScript source code: https://apps.apple.com/assets/index~BMeKnrDH8T.js
+        // Extract the JS bundle path, e.g. /assets/index~BMeKnrDH8T.js
+        $matches = [];
+        if (!preg_match('#<script type="module" crossorigin src="(/assets/index~[^"]+\.js)"></script>#', $content, $matches)) {
+            throw new \Exception('Failed to locate JS bundle tag for token extraction');
+        }
 
-        // phpcs:disable Generic.Strings.UnnecessaryStringConcat.Found
-        $token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.'
-            . 'eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNzYyOTkwMTA3LCJleHAiOjE3NzAyNDc3MDcsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.'
-            . 'IrZxlIHsZBiBLZPw1UZYkyqwbPDPmzcj8U57M3w252i3A4TRzASKx2aGAoXJ0WtuNihmyyopREeVqpJlpjq0fw';
-        // phpcs:enable Generic.Strings.UnnecessaryStringConcat.Found
+        $jsPath = $matches[1];
+        $jsUrl = 'https://apps.apple.com' . $jsPath;
+        $this->debugLog(sprintf('Fetching JS bundle for token extraction: %s', $jsUrl));
+
+        // Fetch the JS bundle where the JWT is embedded
+        $jsContent = getContents($jsUrl);
+
+        // Find the JWT inside a const assignment, e.g.
+        // const SOME_NAME = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6.XXXX.YYYY";
+        // Match a const assignment that looks like a JWT
+        // eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6 decodes to '{"alg":"ES256","typ":"JWT","kid"'
+        $tokenMatches = [];
+        // phpcs:disable Generic.Files.LineLength
+        if (!preg_match('~const\s+\w+\s*=\s*[\'\"](eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)[\'\"]~', $jsContent, $tokenMatches)) {
+            throw new \Exception('Failed to extract JWT token from JS bundle');
+        }
+        // phpcs:enable Generic.Files.LineLength
+        $token = $tokenMatches[1];
+        $this->debugLog('Successfully extracted JWT token from JS bundle: ' . $token);
 
         $url = $this->makeJsonUrl();
         $this->debugLog(sprintf('Fetching data from API: %s', $url));
