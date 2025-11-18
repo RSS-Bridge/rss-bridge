@@ -78,9 +78,13 @@ class SQLiteCache implements CacheInterface
 
     public function set(string $key, $value, ?int $ttl = null): void
     {
+        if ($ttl === 0) {
+            return; // ttl is 0, do nothing
+        }
+
         $cacheKey = $this->createCacheKey($key);
         $blob = serialize($value);
-        $expiration = $ttl === null ? 0 : time() + $ttl;
+        $expiration = $ttl === null ? 0 : time() + $ttl; // if ttl not provided, store forever
         $stmt = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
         $stmt->bindValue(':key', $cacheKey, \SQLITE3_BLOB);
         $stmt->bindValue(':value', $blob, \SQLITE3_BLOB);

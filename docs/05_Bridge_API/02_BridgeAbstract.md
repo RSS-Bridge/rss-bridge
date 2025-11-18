@@ -68,7 +68,7 @@ const URI           // URI to the target website of the bridge (default: empty)
 const DESCRIPTION   // A brief description of the Bridge (default: "No description provided")
 const MAINTAINER    // Name of the maintainer, i.e. your name on GitHub (default: "No maintainer")
 const PARAMETERS    // (optional) Definition of additional parameters (default: empty)
-const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in seconds (default: 3600)
+const CACHE_TIMEOUT // (optional) Defines the maximum duration for storing the cached feed result in seconds (default: 3600). 0 disables caching altogether. Note that this pertains to the feed itself, not the individual items you may want to save to/load from the cache using saveCacheValue()/loadCacheValue() helpers.
 ```
 
 <details><summary>Show example</summary><div>
