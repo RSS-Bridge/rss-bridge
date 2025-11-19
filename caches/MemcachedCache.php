@@ -40,6 +40,7 @@ class MemcachedCache implements CacheInterface
         if ($result === false) {
             $this->logger->warning('Failed to store an item in memcached', [
                 'key'           => $key,
+                'resultCode'    => $this->conn->getResultCode(),
                 'code'          => $this->conn->getLastErrorCode(),
                 'message'       => $this->conn->getLastErrorMessage(),
                 'number'        => $this->conn->getLastErrorErrno(),
