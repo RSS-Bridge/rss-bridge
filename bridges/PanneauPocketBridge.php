@@ -45,8 +45,8 @@ class PanneauPocketBridge extends BridgeAbstract
         }
 
         foreach ($notices as $notice) {
-            $action = $notice->find('.sign-preview__actions a.action', 0);
-            $url = $action->href ?? '';
+            $a = $notice->find('button.dropdown-item', 0);
+            $url = $a->href ?? '';
 
             if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
                 continue;
