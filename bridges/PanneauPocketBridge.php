@@ -35,11 +35,11 @@ class PanneauPocketBridge extends BridgeAbstract
             throwServerException('Invalid city slug: ' . $citySlug);
         }
 
-        $html = getSimpleHTMLDOM($cityUrl);
+        $dom = getSimpleHTMLDOM($cityUrl);
 
-        $this->cityName = $this->extractCityName($html);
+        $this->cityName = $this->extractCityName($dom);
 
-        $notices = $html->find('div.sign-carousel--item');
+        $notices = $dom->find('div.sign-carousel--item');
         if (!is_array($notices)) {
             throwServerException('Invalid or empty content');
         }
@@ -66,19 +66,19 @@ class PanneauPocketBridge extends BridgeAbstract
         }
     }
 
-    private function extractCityName($html)
+    private function extractCityName($dom)
     {
-        $city = $html->find('.sign-preview__title .infos .city', 0);
+        $city = $dom->find('.sign-preview__title .infos .city', 0);
         if (!$city) {
-            return null;
+            return '';
         }
 
         $cityName = trim($city->plaintext);
         if ($cityName === '') {
-            return null;
+            return '';
         }
 
-        $postcode = $html->find('.sign-preview__title .infos .postcode', 0);
+        $postcode = $dom->find('.sign-preview__title .infos .postcode', 0);
         if ($postcode) {
             $postcodeValue = trim($postcode->plaintext);
             if ($postcodeValue !== '') {
