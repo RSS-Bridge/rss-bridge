@@ -207,8 +207,7 @@ class EuronewsBridge extends BridgeAbstract
             $player_div = $html->find('.js-player-pfp', 0);
             if ($player_div) {
                 $video_id = $player_div->getAttribute('data-video-id');
-                $video_url = 'https://www.youtube.com/watch?v=' . $video_id;
-                $content .= '<a href="' . $video_url . '">' . $video_url . '</a>';
+                $content .= handleYoutube($video_id);
             }
         }
 
