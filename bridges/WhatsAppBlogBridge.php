@@ -10,45 +10,48 @@ class WhatsAppBlogBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getContents('https://blog.whatsapp.com/');
+        $html = getSimpleHTMLDOMCached('https://blog.whatsapp.com/');
 
-        // Extract subjects and bodies with offset capture for better performance
-        $subjectPattern = '/Subject=([^&]+)&amp;body=([^"]+)/';
-        preg_match_all($subjectPattern, $html, $subjectMatches, PREG_OFFSET_CAPTURE);
+        // extract React HTML snippets from JavaScript
+        foreach ($html->find('script') as $script) {
+            $htmlSnippetPattern = '/\{"__html":".*"\}/U';
+            if (preg_match_all($htmlSnippetPattern, $script, $htmlSnippets)) {
+                foreach ($htmlSnippets[0] as $snippet) {
+                    $decoded = json_decode($snippet, false)->__html;
+                    $parsed = str_get_html($decoded); // this is the parsed HTML snippet
 
-        // Cache the count to avoid repeated calls
-        $matchCount = count($subjectMatches[0]);
+                    $content = $parsed->find('section', 0);
+                    if ($content) {
+                        // remove share buttons
+                        $content->find('._9wj7', 0)->remove();
+                        // remove "learn more" link
+                        $content->find('a._ajcm', 0)->remove();
 
-        for ($i = 0; $i < $matchCount; $i++) {
-            $subject = urldecode($subjectMatches[1][$i][0]);
-            $bodyText = urldecode($subjectMatches[2][$i][0]);
+                        $item = [];
 
-            // Extract URL from body
-            if (!preg_match('/http[^\s]*/', $bodyText, $urlMatch)) {
-                continue;
+                        $timestampStr = $content->find('._aof4 p', 0);
+                        if ($timestampStr) {
+                            $timestamp = strtotime($timestampStr->plaintext);
+                            $item['timestamp'] = $timestamp;
+                        }
+
+                        $title = $content->find('h2', 0);
+                        if ($title) {
+                            $item['title'] = $title->plaintext;
+                        }
+
+                        $links = $content->find('a');
+                        $uri = end($links);
+                        if ($uri) {
+                            $item['uri'] = $uri->href;
+                        }
+
+                        $item['content'] = implode('', array_map(fn($e) => $e->outertext, $content->find('._aofe, picture')));
+
+                        $this->items[] = $item;
+                    }
+                }
             }
-
-            // Unescape and clean URL
-            $url = strtr($urlMatch[0], ['\\/' => '/']);
-            $url = rtrim($url, '\\');
-
-            // Extract body content by finding position of URL
-            $urlPos = strpos($bodyText, $urlMatch[0]);
-            $body = trim(substr($bodyText, 0, $urlPos) ?: $bodyText);
-
-            // NOTE: The WhatsApp blog is a JavaScript-rendered React application.
-            // Post publish dates are NOT available in the static HTML source code.
-            $timestamp = time();
-
-            $item = [
-                'title' => $subject,
-                'uri' => $url,
-                'timestamp' => $timestamp,
-                'content' => $body,
-                'uid' => hash('sha256', $url . $timestamp) // Better uniqueness than simple md5
-            ];
-
-            $this->items[] = $item;
         }
     }
 }
