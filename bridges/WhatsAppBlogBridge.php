@@ -1,21 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 class WhatsAppBlogBridge extends BridgeAbstract
 {
     const NAME = 'WhatsApp Blog';
     const URI = 'https://blog.whatsapp.com/';
     const DESCRIPTION = 'WhatsApp Blog';
     const MAINTAINER = 'latz';
+    const PARAMETERS = [[
+        'language' => [
+            'name' => 'Language',
+            'title' => 'ISO 639 language code',
+            'type' => 'text',
+            'required' => false,
+            'defaultValue' => 'en',
+        ],
+    ]];
     const CACHE_TIMEOUT = 3600; // 1h
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOMCached('https://blog.whatsapp.com/');
+        $html = getSimpleHTMLDOMCached('https://blog.whatsapp.com/?lang=' . $this->getInput('language'));
 
         // extract React HTML snippets from JavaScript
         foreach ($html->find('script') as $script) {
             $htmlSnippetPattern = '/\{"__html":".*"\}/U';
-            if (preg_match_all($htmlSnippetPattern, $script, $htmlSnippets)) {
+            if (preg_match_all($htmlSnippetPattern, $script->innertext, $htmlSnippets)) {
                 foreach ($htmlSnippets[0] as $snippet) {
                     $decoded = json_decode($snippet, false)->__html;
                     $parsed = str_get_html($decoded); // this is the parsed HTML snippet
