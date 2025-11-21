@@ -91,7 +91,6 @@ class KleinanzeigenBridge extends BridgeAbstract
         if ($this->queriedContext === 'By profile') {
             for ($i = 1; $i <= $this->getInput('pages'); $i++) {
                 $html = getSimpleHTMLDOM($this->getURI() . '/s-bestandsliste.html?userId=' . $this->getInput('userid') . '&pageNum=' . $i . '&sortingField=SORTING_DATE');
-                $html = defaultLinkTo($html, $this->getURI());
 
                 $foundItem = false;
                 foreach ($html->find('article.aditem') as $element) {
@@ -120,7 +119,6 @@ class KleinanzeigenBridge extends BridgeAbstract
                 ]);
 
                 $html = getSimpleHTMLDOM($searchUrl);
-                $html = defaultLinkTo($html, $this->getURI());
 
                 // end of list if returned page is not the expected one
                 if ($html->find('.pagination-current', 0)->plaintext != $page) {
@@ -138,22 +136,56 @@ class KleinanzeigenBridge extends BridgeAbstract
     {
         $item = [];
 
+        $item['content'] = '';
+
+        $json = $element->find('.aditem-image > script', 0);
+        if ($json) {
+            $data = json_decode($json->innertext, true);
+            $item['title'] = $data['title'];
+            $item['content'] .= '<div><p>' . $data['description'] . '</div></p></br>';
+        } else {
+            $item['title'] = $element->find('h2', 0)->plaintext;
+            $item['content'] .= $element->find('.aditem-main--middle--description');
+        }
+
+        if ($element->find('.aditem-main--top', 0)) {
+            $item['content'] .= $element->find('.aditem-main--top', 0);
+        }
+
+        if ($element->find('.aditem-main--middle--price-shipping', 0)) {
+            $item['content'] .= preg_replace(
+                '#(<p\s+class="aditem-main--middle--price-shipping--old-price"[^>]*>.*?</p>)#si',
+                '<s>$1</s>',
+                $element->find('.aditem-main--middle--price-shipping', 0)
+            );
+        }
+
+        if ($element->find('.aditem-main--bottom', 0)) {
+            $item['content'] .= $element->find('.aditem-main--bottom', 0);
+        }
+
+        $item['content'] = sanitize($item['content']);
+
         $item['uid'] = $element->getAttribute('data-adid');
-        $item['uri'] = $element->getAttribute('data-href');
+        $item['uri'] = urljoin($this->getURI(), $element->getAttribute('data-href'));
 
-        $item['title'] = $element->find('h2', 0)->plaintext;
-        $item['timestamp'] = $element->find('div.aditem-main--top--right', 0)->plaintext;
-        $imgUrl = str_replace(
-            'rule=$_2.JPG',
-            'rule=$_57.JPG',
-            str_replace(
-                'rule=$_35.JPG',
-                'rule=$_57.JPG',
-                $element->find('img', 0) ? $element->find('img', 0)->getAttribute('src') : ''
-            )
-        ); //enhance img quality
+        $dateString = trim($element->find('div.aditem-main--top--right', 0)->plaintext);
+        if ($dateString) {
+                $dateString = str_ireplace(
+                    ['Gestern', 'Heute'],
+                    ['yesterday', 'today'],
+                    $dateString
+                );
 
-        $item['content'] = '<img src="' . $imgUrl . '"/>' . $element->find('div.aditem-main', 0)->outertext;
+                $item['timestamp'] = strtotime($dateString);
+        } else {
+            $item['timestamp']  = time();
+        }
+
+        if ($element->find('img', 0)) {
+            //enhance img quality. Cannot use convertLazyLoading() here due to non-standard URI suffix in srcset.
+            $item['enclosures'] = [preg_replace('/rule=\$_\d+\.AUTO/i', 'rule=$_57.AUTO', $element->find('img', 0)->getAttribute('src')) . '#.image'];
+        };
 
         $this->items[] = $item;
     }
