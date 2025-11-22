@@ -337,14 +337,14 @@ class VkBridge extends BridgeAbstract
                     $doc_link = $sa_href;
                     $content_suffix .= "<br>Doc: <a href='$doc_link'>$doc_title</a> ($doc_size)";
                     $sa->outertext = '';
-                } else if (str_starts_with($sa_href, 'https://vk.com/@')) {
+                } elseif (str_starts_with($sa_href, 'https://vk.com/@')) {
                     // article
                     $article_title = $sa->find('.SecondaryAttachment__childrenText', 0)->innertext;
                     $article_author = explode('Article · from ', $sa->find('.SecondaryAttachmentSubhead', 0)->innertext)[1];
                     $article_link = $sa_href;
                     $content_suffix .= "<br>Article: <a href='$article_link'>$article_title ($article_author)</a>";
                     $sa->outertext = '';
-                } else if ($sa_task_click == 'SecondaryAttachment/playAudio') {
+                } elseif ($sa_task_click == 'SecondaryAttachment/playAudio') {
                     // audio
                     $audio_json = json_decode(html_entity_decode($sa->getAttribute('data-audio')));
                     $audio_link = $audio_json->url;
@@ -352,7 +352,7 @@ class VkBridge extends BridgeAbstract
                     $audio_author = $sa->find('.SecondaryAttachmentSubhead', 0)->innertext;
                     $content_suffix .= "<br>Audio: <a href='$audio_link'>$audio_title ($audio_author)</a>";
                     $sa->outertext = '';
-                } else if ($sa_task_click == 'SecondaryAttachment/playPlaylist') {
+                } elseif ($sa_task_click == 'SecondaryAttachment/playPlaylist') {
                     // playlist link
                     $playlist_title = $sa->find('.SecondaryAttachment__childrenText', 0)->innertext;
                     $playlist_link = $sa->find('.SecondaryAttachment__link', 0)->getAttribute('href');
