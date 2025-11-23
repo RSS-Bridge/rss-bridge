@@ -43,13 +43,12 @@ class AtmoOccitanieBridge extends BridgeAbstract
         $indice = $lastRecommendationsDom->find('.current-indice .indice div', 0)->innertext;
         $informationDescriptionMessage = $lastRecommendationsDom->find('.current-indice .description p', 0)->innertext;
 
-        $message = "$generalMessage L'indice est de $indice/10. $informationDescriptionMessage. $recommendationsMessage";
+        $message = "$generalMessage L'indice est de " . (6 - $indice) . "/6. $informationDescriptionMessage. $recommendationsMessage";
         $city = $this->getInput('city');
 
         $item['uri'] = $uri;
         $today = date('d/m/Y');
         $item['title'] = "Bulletin de l'air du $today pour la ville : $city.";
-        //$item['title'] .= ' Retrouvez plus d\'informations en allant sur atmo-occitanie.org #QualiteAir. ' . $message;
         $item['title'] .= ' #QualiteAir. ' . $message;
         $item['author'] = 'floviolleau';
         $item['content'] = $message;
