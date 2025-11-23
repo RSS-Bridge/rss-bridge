@@ -19,7 +19,7 @@ class EdfColorDayBridge extends BridgeAbstract
             ]
         ]
     ];
-    const CACHE_TIMEOUT = 0; //7200; // 2h
+    const CACHE_TIMEOUT = 7200; // 2h
 
     /**
      * @param simple_html_dom $html
