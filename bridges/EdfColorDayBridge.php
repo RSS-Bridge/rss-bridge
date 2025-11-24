@@ -36,7 +36,6 @@ class EdfColorDayBridge extends BridgeAbstract
         ];
 
         foreach ($values as $key => $value) {
-            $i++;
             $item = [];
 
             $text = $key . ' : ' . $this->getDisplayableColor($jsonDecoded['values'][$value]);
