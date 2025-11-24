@@ -22,8 +22,7 @@ class EdfColorDayBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 7200; // 2h
 
     /**
-     * @param simple_html_dom $html
-     * @param string $contractUri
+     * @param string $json
      * @return void
      */
     private function tempo(string $json): void
@@ -39,7 +38,7 @@ class EdfColorDayBridge extends BridgeAbstract
             $item = [];
 
             $text = $key . ' : ' . $this->getDisplayableColor($jsonDecoded['values'][$value]);
-            $item['uri'] = self::URI . $contractUri;
+            $item['uri'] = self::URI . '?season=' . $this->getTempoYear();
             $item['title'] = $text;
             $item['author'] = self::MAINTAINER;
             $item['content'] = $text;
