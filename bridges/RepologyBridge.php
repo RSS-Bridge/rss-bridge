@@ -56,9 +56,9 @@ class RepologyBridge extends BridgeAbstract
                 continue;
             }
 
-            $title = $filterRepo !== '' ?
-                $srcname . ' ' . $version :
-                $srcname . ' ' . $version . ' – ' . $repo;
+            $title = $filterRepo !== ''
+                ? $srcname . ' ' . $version
+                : $srcname . ' ' . $version . ' – ' . $repo;
 
             $uri = self::URI . '/project/' . urlencode($srcname) . '/versions';
 
