@@ -31,7 +31,7 @@ class RepologyBridge extends BridgeAbstract
         return $project !== '' ? $project : self::NAME;
     }
 
-    public function collectData(): void
+    public function collectData()
     {
         $project = trim((string) $this->getInput('project'));
         $filterRepo = trim((string) ($this->getInput('repo') ?? ''));
@@ -57,8 +57,8 @@ class RepologyBridge extends BridgeAbstract
             }
 
             $title = $filterRepo !== ''
-            ? ($srcname . ' ' . $version)
-            : ($srcname . ' ' . $version . ' – ' . $repo);
+                ? $srcname . ' ' . $version
+                : $srcname . ' ' . $version . ' – ' . $repo;
 
             $uri = self::URI . '/project/' . urlencode($srcname) . '/versions';
 
@@ -83,8 +83,8 @@ class RepologyBridge extends BridgeAbstract
             $contentHtml = nl2br(
                 htmlspecialchars(
                     implode("\n", $contents),
-                                    ENT_QUOTES | ENT_SUBSTITUTE,
-                                    'UTF-8'
+                    ENT_QUOTES | ENT_SUBSTITUTE,
+                    'UTF-8'
                 )
             );
 
