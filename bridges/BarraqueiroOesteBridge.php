@@ -2,7 +2,7 @@
 
 class BarraqueiroOesteBridge extends BarraqueiroBridgeAbstract
 {
-    const name = 'Barraqueiro Oeste';
+    const NAME = 'Barraqueiro Oeste';
     const URI = 'https://barraqueiro-oeste.pt/';
 
     public function collectData()

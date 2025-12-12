@@ -2,7 +2,7 @@
 
 class BoaViagemBridge extends BarraqueiroBridgeAbstract
 {
-    const name = 'Boa Viagem';
+    const NAME = 'Boa Viagem';
     const URI = 'https://boa-viagem.pt/';
 
     public function collectData()

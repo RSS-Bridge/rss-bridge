@@ -2,7 +2,7 @@
 
 class RibatejanaBridge extends BarraqueiroBridgeAbstract
 {
-    const name = 'Ribatejana';
+    const NAME = 'Ribatejana';
     const URI = 'https://ribatejana.pt/';
 
     public function collectData()
