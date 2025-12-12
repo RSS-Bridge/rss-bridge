@@ -10,5 +10,3 @@ class BarraqueiroOesteBridge extends BarraqueiroBridgeAbstract
         parent::collectDataBarraqueiro(self::URI, self::URI . '/barraqueirooeste/Barraqueiro-Oeste');
     }
 }
-
-?>

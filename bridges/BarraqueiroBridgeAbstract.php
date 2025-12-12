@@ -10,12 +10,11 @@ abstract class BarraqueiroBridgeAbstract extends BridgeAbstract
 
         $data = $dom->find('div.newsFundoGrey1, div.newsFundoGrey2');
 
-        foreach ($data as $entry)
-        {
+        foreach ($data as $entry) {
             $item = [];
 
             $text = $entry->find('span.text', 0)->plaintext;
-            
+
             $title = substr($text, 12);
 
             $day = substr($text, 0, 2);
@@ -30,5 +29,3 @@ abstract class BarraqueiroBridgeAbstract extends BridgeAbstract
         }
     }
 }
-
-?>

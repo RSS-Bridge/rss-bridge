@@ -10,5 +10,3 @@ class BoaViagemBridge extends BarraqueiroBridgeAbstract
         parent::collectDataBarraqueiro(self::URI, self::URI . '/boaviagem/Boa-Viagem');
     }
 }
-
-?>

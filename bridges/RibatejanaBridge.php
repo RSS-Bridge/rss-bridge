@@ -10,5 +10,3 @@ class RibatejanaBridge extends BarraqueiroBridgeAbstract
         parent::collectDataBarraqueiro(self::URI, self::URI . '/ribatejana/Ribatejana');
     }
 }
-
-?>
