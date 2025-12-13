@@ -56,14 +56,17 @@ class TelegramBridge extends BridgeAbstract
 
             $dom = getSimpleHTMLDOM($url);
 
-            $channelTitle = $dom->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
-            $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
-            $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
+            if (!$this->feedName) {
+                $channelTitle = $dom->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
+                $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
+                $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
+            }
 
-            // Extract channel icon from page photo
-            $photoImg = $dom->find('i.tgme_page_photo_image img', 0);
-            if ($photoImg) {
-                $this->feedIcon = $photoImg->src;
+            if (! $this->feedIcon) {
+                $photoImg = $dom->find('i.tgme_page_photo_image img', 0);
+                if ($photoImg) {
+                    $this->feedIcon = $photoImg->src;
+                }
             }
 
             $messages = $dom->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
