@@ -36,6 +36,7 @@ class TelegramBridge extends BridgeAbstract
 
     const CACHE_TIMEOUT = 60 * 60; // 1h
     private $feedName = '';
+    private $feedIcon = '';
 
     private $enclosures = [];
     private $itemTitle = '';
@@ -58,6 +59,12 @@ class TelegramBridge extends BridgeAbstract
             $channelTitle = $dom->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
             $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
             $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
+
+            // Extract channel icon from page photo
+            $photoImg = $dom->find('i.tgme_page_photo_image img', 0);
+            if ($photoImg) {
+                $this->feedIcon = $photoImg->src;
+            }
 
             $messages = $dom->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
             if (!$channelTitle && !$messages) {
@@ -173,6 +180,14 @@ class TelegramBridge extends BridgeAbstract
             return $this->feedName . ' - Telegram';
         }
         return parent::getName();
+    }
+
+    public function getIcon()
+    {
+        if ($this->feedIcon) {
+            return $this->feedIcon;
+        }
+        return parent::getIcon();
     }
 
     private function processReply($messageDiv)
