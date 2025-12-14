@@ -50,6 +50,13 @@ class KleinanzeigenBridge extends BridgeAbstract
                 'type' => 'number',
                 'title' => 'how many pages to fetch',
                 'defaultValue' => 2,
+            ],
+            'buyNowEnabled' => [
+                'name' => 'buyItNow',
+                'required' => false,
+                'type' => 'checkbox',
+                'title' => 'whether Buy It Now is offered',
+                'defaultValue' => 'unchecked',
             ]
         ],
         'By profile' => [
@@ -115,7 +122,8 @@ class KleinanzeigenBridge extends BridgeAbstract
                     'categoryId' => $categoryId,
                     'pageNum' => $page,
                     'maxPrice' => $this->getInput('maxprice'),
-                    'minPrice' => $this->getInput('minprice')
+                    'minPrice' => $this->getInput('minprice'),
+                    'buyNowEnabled' => $this->getInput('buyNowEnabled'),
                 ]);
 
                 $html = getSimpleHTMLDOM($searchUrl);
