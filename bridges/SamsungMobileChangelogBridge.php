@@ -34,7 +34,9 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 
         $html = getSimpleHTMLDOMCached($URL)
             or throwServerException('Could not request changelog page: ' . $URL);
-        $changelog = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/' . $html->find('input', 0)->value;
+
+        $input_url = preg_replace('/(\S+\/)\S+\.(html?|htm)$/i', '${1}eng.$2', $html->find('input', 0)->value);
+        $changelog = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/' . $input_url;
 
         $html = getSimpleHTMLDOMCached($changelog)
             or throwServerException('Could not request changelog: ' . $changelog);
@@ -88,6 +90,10 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 
     public function getName()
     {
-        return htmlspecialchars_decode($this->device) . ' - ' . self::NAME;
+        if ($this->device) {
+            return htmlspecialchars_decode($this->device) . ' - ' . self::NAME;
+        } else {
+            return self::NAME;
+        }
     }
 }
