@@ -44,10 +44,9 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 
         $reachedStart = false;
         foreach ($container->children() as $element) {
-
             if ($element->tag == 'hr') {
                 $reachedStart = true;
-                $item = array();
+                $item = [];
                 continue;
             } else if (!$reachedStart) {
                 // Skip non-changelog elements
