@@ -1,96 +1,94 @@
 <?PHP
+
 class SamsungMobileChangelogBridge extends BridgeAbstract
 {
+    const NAME = 'Samsung Mobile Changelog';
+    const URI = 'https://doc.samsungmobile.com/';
+    const DESCRIPTION = 'Returns the changelog of selected devices from the Samsung Mobile documentation in English';
+    const MAINTAINER = 'ajain-93';
+    const PARAMETERS = [
+        [
+            'devices' => [
+                'name' => 'Device Model',
+                'required' => true,
+                'exampleValue' => 'SM-S931B',
+            ],
+            'region' => [
+                'name' => 'Region',
+                'required' => true,
+                'exampleValue' => 'EUX',
+            ],
+        ]
+    ];
+    private $device = '';
 
-	const NAME = 'Samsung Mobile Changelog';
-	const URI = 'https://doc.samsungmobile.com/';
-	const DESCRIPTION = 'Returns the changelog of selected devices from the Samsung Mobile documentation in English';
-	const MAINTAINER = 'ajain-93';
-	const PARAMETERS = [
-		[
-			'devices' => [
-				'name' => 'Device Model',
-				'required' => true,
-				'exampleValue' => 'SM-S931B',
-			],
-			'region' => [
-				'name' => 'Region',
-				'required' => true,
-				'exampleValue' => 'EUX',
-			],
-		]
-	];
-	private $device = '';
-
-	const str_build_number = 'Build Number';
-	const str_android_version = 'Android version';
-	const str_release_date = 'Release Date';
-	const str_security_patch_level = 'Security patch level';
+    const STR_BUILD_NUMBER = 'Build Number';
+    const STR_ANDROID_VERSION = 'Android version';
+    const STR_RELEASE_DATE = 'Release Date';
+    const STR_SECURITY_PATCH_LEVEL = 'Security patch level';
 
 
-	public function collectData()
-	{
+    public function collectData()
+    {
+        $URL = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/doc.html';
 
-		$URL = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/doc.html';
+        $html = getSimpleHTMLDOMCached($URL)
+            or throwServerException('Could not request changelog page: ' . $URL);
+        $changelog = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/' . $html->find('input', 0)->value;
 
-		$html = getSimpleHTMLDOMCached($URL)
-			or returnServerError('Could not request changelog page: ' . $URL);
-		$changelog = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/' . $html->find('input', 0)->value;
+        $html = getSimpleHTMLDOMCached($changelog)
+            or throwServerException('Could not request changelog: ' . $changelog);
+        $container = $html->find('div.container', 0);
+        $this->device = trim($html->find('h1', 0)->plaintext);
+        // Debug::log('Device: ' . $device);
 
-		$html = getSimpleHTMLDOMCached($changelog)
-			or returnServerError('Could not request changelog: ' . $changelog);
-		$container = $html->find('div.container', 0);
-		$this->device = trim($html->find('h1', 0)->plaintext);
-		// Debug::log('Device: ' . $device);
+        $reachedStart = false;
+        foreach ($container->children() as $element) {
 
-		$reachedStart = false;
-		foreach ($container->children() as $element) {
+            if ($element->tag == 'hr') {
+                $reachedStart = true;
+                $item = array();
+                continue;
+            } else if (!$reachedStart) {
+                // Skip non-changelog elements
+                continue;
+            } else if ($element->tag == 'div' && $element->getAttribute('class') == 'row') {
+                // Debug::log('Processing row element');
+                $build = $element->find('div', 0)->plaintext;
+                $build = str_replace(self::STR_BUILD_NUMBER . ' : ', '', $build);
 
-			if ($element->tag == 'hr') {
-				$reachedStart = true;
-				$item = array();
-				continue;
-			} else if (!$reachedStart) {
-				continue;
+                $version = $element->find('div', 1)->plaintext;
+                $version = str_replace(self::STR_ANDROID_VERSION . ' : ', '', $version);
 
-			} else if ($element->tag == 'div' && $element->getAttribute('class') == 'row') {
-				// Debug::log('Processing row element');
-				$build = $element->find('div', 0)->plaintext;
-				$build = str_replace(self::str_build_number . ' : ', '', $build);
+                $date = $element->find('div', 2)->plaintext;
+                $date = str_replace(self::STR_RELEASE_DATE . ' : ', '', $date);
 
-				$version = $element->find('div', 1)->plaintext;
-				$version = str_replace(self::str_android_version . ' : ', '', $version);
+                $patch = $element->find('div', 3)->plaintext;
+                $patch = str_replace(self::STR_SECURITY_PATCH_LEVEL . ' : ', '', $patch);
 
-				$date = $element->find('div', 2)->plaintext;
-				$date = str_replace(self::str_release_date . ' : ', '', $date);
+                $item['title'] = $date . ' ' . $build;
+                $item['uri'] = $URL;
+                $item['timestamp'] = strtotime($date);
+                $item['content'] = '<b>' . self::STR_BUILD_NUMBER . ':</b> ' . $build . '<br>';
+                $item['content'] .= '<b>' . self::STR_ANDROID_VERSION . ':</b> ' . $version . '<br>';
+                $item['content'] .= '<b>' . self::STR_RELEASE_DATE . ':</b> ' . $date . '<br>';
+                $item['content'] .= '<b>' . self::STR_SECURITY_PATCH_LEVEL . ':</b> ' . $patch . '<br>';
+                $item['content'] .= '<br><b>Changelog: </b><br>';
 
-				$patch = $element->find('div', 3)->plaintext;
-				$patch = str_replace(self::str_security_patch_level . ' : ', '', $patch);
+                continue;
+            } else {
+                $item['content'] .= $element;
+                $item['author'] = 'Samsung Mobile';
+                $this->items[] = $item;
 
-				$item['title'] = $date . ' ' . $build;
-				$item['uri'] = $URL;
-				$item['timestamp'] = strtotime($date);
-				$item['content'] = '<b>' . self::str_build_number . ':</b> ' . $build . '<br>';
-				$item['content'] .= '<b>' . self::str_android_version . ':</b> ' . $version . '<br>';
-				$item['content'] .= '<b>' . self::str_release_date . ':</b> ' . $date . '<br>';
-				$item['content'] .= '<b>' . self::str_security_patch_level . ':</b> ' . $patch . '<br>';
-				$item['content'] .= '<br><b>Changelog: </b><br>';
+                // break;
+                continue;
+            }
+        }
+    }
 
-				continue;
-
-			} else {
-				$item['content'] .= $element;
-				$item['author'] = 'Samsung Mobile';
-				$this->items[] = $item;
-
-				// break;
-				continue;
-			}
-		}
-	}
-
-	public function getName()
-	{
-		return htmlspecialchars_decode($this->device) . ' - ' . self::NAME;
-	}
+    public function getName()
+    {
+        return htmlspecialchars_decode($this->device) . ' - ' . self::NAME;
+    }
 }
