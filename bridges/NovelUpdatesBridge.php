@@ -4,7 +4,7 @@ class NovelUpdatesBridge extends BridgeAbstract
 {
     const MAINTAINER = 'albirew';
     const NAME = 'Novel Updates';
-    const URI = 'https://www.novelupdates.com/';
+    const URI = 'https://www.novelupdates.com';
     const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'Returns releases from Novel Updates';
     const PARAMETERS = [ [
@@ -39,23 +39,17 @@ class NovelUpdatesBridge extends BridgeAbstract
         $html = str_get_html(stristr($html, '</tbody>', true)); //remove last tbody and get back as an array
         foreach ($html->find('tr') as $element) {
             $item = [];
-            $item['uri'] = $element->find('td', 2)->find('a', 0)->href;
-            $item['title'] = $element->find('td', 2)->find('a', 0)->plaintext;
-            $item['team'] = $element->find('td', 1)->innertext;
+            //$item['uri'] = $element->find('td', 2)->find('a', 0)->href; // NOVELUPDATE REMOVED THIS
+            $item['title'] = $element->find('td', 2)->find('span', 0)->plaintext;
+            $item['author'] = $element->find('a', 0)->plaintext;
             $item['timestamp'] = strtotime($element->find('td', 0)->plaintext);
-            $item['content'] = '<a href="'
-                . $item['uri']
-                . '">'
-                . $this->seriesTitle
-                . ' - '
+            $item['content'] = $this->seriesTitle
+                . ' -'
                 . $item['title']
-                . '</a> by '
-                . $item['team']
-                . '<br><a href="'
-                . $item['uri']
-                . '">'
-                . $fullhtml->find('div.seriesimg', 0)->innertext
-                . '</a>';
+                . '- by '
+                . $element->find('a', 0)->plaintext
+                . '<br>'
+                . $fullhtml->find('div.seriesimg', 0)->innertext;
 
             $this->items[] = $item;
         }
