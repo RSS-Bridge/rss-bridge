@@ -2,7 +2,7 @@
 
 abstract class BarraqueiroBridgeAbstract extends BridgeAbstract
 {
-    const MANTAINER = 'FJSFerreira';
+    const MAINTAINER = 'FJSFerreira';
 
     public function collectDataBarraqueiro($base_uri, $full_uri)
     {
@@ -17,13 +17,9 @@ abstract class BarraqueiroBridgeAbstract extends BridgeAbstract
 
             $title = substr($text, 12);
 
-            $day = substr($text, 0, 2);
-            $month = substr($text, 3, 2);
-            $year = substr($text, 6, 4);
-
             $item['uri'] = $base_uri . $entry->find('a', 0)->href;
             $item['title'] = $title;
-            $item['timestamp'] = mktime(0, 0, 0, $month, $day, $year);
+            $item['timestamp'] = DateTimeImmutable::createFromFormat('d-m-Y+', $text)->format('Y-m-d');
 
             $this->items[] = $item;
         }
