@@ -232,6 +232,8 @@ config/*
 !config/nginx.conf
 !config/php-fpm.conf
 !config/php.ini
+favicon.gif
+favicon.ico
 
 ######################
 ## VisualStudioCode ##
