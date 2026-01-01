@@ -207,19 +207,13 @@ class HeiseBridge extends FeedExpander
         //fix for embbedded youtube-videos
         $oldlink = '';
         foreach ($article->find('div.video__yt-container') as &$ytvideo) {
-            if (preg_match('/www.youtube.*?\"/', $ytvideo->innertext, $link) && $link[0] != $oldlink) {
-                //save link to prevent duplicates
-                $oldlink = $link[0];
-                $ytiframe = <<<EOT
-                    <iframe width="560" height="315" src="https://$link[0] title="YouTube video player" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin" allowfullscreen></iframe>
-                EOT;
-                //check if video is in header or article for correct possitioning
-                if (strpos($header->innertext, $link[0])) {
-                    $item['content'] .= $ytiframe;
+            $ytResult = handleYoutube($ytvideo->innertext);
+            if ($ytResult) {
+                //check if video is in header or article for correct positioning
+                if (strpos($header->innertext, $ytvideo)) {
+                    $item['content'] .= $ytResult;
                 } else {
-                    $ytvideo->innertext .= $ytiframe;
+                    $ytvideo->innertext .= $ytResult;
                     $reloadneeded = 1;
                 }
             }
