@@ -6,7 +6,7 @@ class DjMagDotComBridge extends BridgeAbstract
     const URI = 'https://www.djmag.com/';
     const DESCRIPTION = 'News from DJMag.com';
     const MAINTAINER = 'skrollme';
-    const CACHE_TIMEOUT = 60*60; // 1 hours
+    const CACHE_TIMEOUT = 60 * 60; // 1 hours
     const PARAMETERS = [[
             'limit' => [
                 'name' => 'Limit',
@@ -27,7 +27,7 @@ class DjMagDotComBridge extends BridgeAbstract
         return self::URI . 'news';
     }
 
-    private function _parseDateString($dateString)
+    private function parseDateString($dateString)
     {
         // Expect formats like "30 December 2025, 12:10"
         $dateString = trim($dateString);
@@ -53,7 +53,7 @@ class DjMagDotComBridge extends BridgeAbstract
         return null;
     }
 
-    private function _fetchArticleDetails($uri, $image, $title)
+    private function fetchArticleDetails($uri, $image, $title)
     {
         $itemHtml = getSimpleHTMLDOM($uri);
 
@@ -64,7 +64,7 @@ class DjMagDotComBridge extends BridgeAbstract
         $metaFields = $itemHtml->find('article div.pane-author-info', 1);
         // contains a timestamp in a format like 30 December 2025, 12:10
         $rawTimestamp = $metaFields->find('div', 1)->plaintext;
-        $timestamp = $this->_parseDateString($rawTimestamp);
+        $timestamp = $this->parseDateString($rawTimestamp);
 
         $author = trim($metaFields->find('div', 0)->plaintext);
 
@@ -84,7 +84,7 @@ class DjMagDotComBridge extends BridgeAbstract
         $uri = self::URI . $firstNewsItemHtml->find('h1 > a', 0)->href;
         $image = rtrim(self::URI, '/') . $firstNewsItemHtml->find('.teaser-media source', 0)->srcset;
 
-        list($timestamp, $content, $author) = $this->_fetchArticleDetails($uri, $image, $title);
+        list($timestamp, $content, $author) = $this->fetchArticleDetails($uri, $image, $title);
 
         $this->items[] = [
             'title' => $title,
@@ -108,7 +108,7 @@ class DjMagDotComBridge extends BridgeAbstract
             $uri = self::URI . $newsItem->find('a', 0)->href;
             $image = rtrim(self::URI, '/') . $newsItem->find('source', 0)->srcset;
 
-            list($timestamp, $content, $author) = $this->_fetchArticleDetails($uri, $image, $title);
+            list($timestamp, $content, $author) = $this->fetchArticleDetails($uri, $image, $title);
 
             $this->items[] = [
                 'title' => $title,
