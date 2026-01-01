@@ -39,6 +39,25 @@ class EdfPricesBridge extends BridgeAbstract
     ];
     const CACHE_TIMEOUT = 7200; // 2h
 
+    private function removeEmojisAndSpecialSpaces(string $text): string
+    {
+        // This regex covers most common emoji ranges in Unicode
+        $regex = '/[\x{1F600}-\x{1F64F}' . // Emoticons
+                 '\x{1F300}-\x{1F5FF}' . // Misc Symbols and Pictographs
+                 '\x{1F680}-\x{1F6FF}' . // Transport and Map
+                 '\x{1F700}-\x{1F77F}' . // Alchemical Symbols
+                 '\x{1F780}-\x{1F7FF}' . // Geometric Shapes Extended
+                 '\x{1F800}-\x{1F8FF}' . // Supplemental Arrows-C
+                 '\x{1F900}-\x{1F9FF}' . // Supplemental Symbols and Pictographs
+                 '\x{1FA00}-\x{1FA6F}' . // Chess Symbols, Symbols and Pictographs Extended-A
+                 '\x{1FA70}-\x{1FAFF}' . // Symbols and Pictographs Extended-B
+                 '\x{2600}-\x{26FF}' . // Misc symbols
+                 '\x{2700}-\x{27BF}' . // Dingbats
+                 ']+/u';
+
+        return preg_replace($regex, '', str_replace('&nbsp;', '', $text));
+    }
+
     /**
      * @param simple_html_dom $html
      * @param string $contractUri
@@ -47,15 +66,22 @@ class EdfPricesBridge extends BridgeAbstract
     private function tempo(simple_html_dom $html, string $contractUri, int $power): void
     {
         // colors
-        $ulDom = $html->find('#tarif-de-l-offre-tempo-edf-template-date-now-y', 0)->nextSibling()->nextSibling()->nextSibling();
-        $elementsDom = $ulDom->find('li');
+        $ulDom = $html->find('#les-tarifs-du-kwh-tempo-pour-les-differentes-couleurs-et-heures-de-la-journee', 0)->nextSibling();
+        $elementsDom = $ulDom->children;
+
         if ($elementsDom && count($elementsDom) === 3) {
             // price per kWh is same for all powers
             foreach ($elementsDom as $elementDom) {
                 $item = [];
 
                 $matches = [];
-                preg_match_all('/Jour (.*) : Heures (.*) : (.*)&nbsp;€ \/ Heures (.*) : (.*)&nbsp;€/um', $elementDom->innertext, $matches, PREG_SET_ORDER, 0);
+                preg_match_all(
+                    '/Jour (.*) :.*?Heures (.*) : (.*).*?€.*?Heures (.*) : (.*).*?€/um',
+                    $this->removeEmojisAndSpecialSpaces($elementDom->plaintext),
+                    $matches,
+                    PREG_SET_ORDER,
+                    0
+                );
 
                 // for tempo contract we have 2x3 colors
                 if ($matches && count($matches[0]) === 6) {
@@ -74,7 +100,7 @@ class EdfPricesBridge extends BridgeAbstract
         }
 
         // add subscription power info
-        $tablePrices = $ulDom->nextSibling()->nextSibling()->nextSibling()->find('.table--responsive', 0);
+        $tablePrices = $ulDom->nextSibling()->nextSibling();
         $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 7);
     }
 
@@ -186,14 +212,17 @@ class EdfPricesBridge extends BridgeAbstract
     {
         $prices = $tablePrices->find('.table tbody tr');
 
-        // 8 contracts for tempo: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
+        // 7 contracts for tempo: 6, 9, 12, 15, 18, 30 and 36 kVA
         // 9 contracts for base: 3, 6, 9, 12, 15, 18, 24, 30 and 36 kVA
         // 8 contracts for HPHC: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
         // 5 contracts for EJP: 9, 12, 15, 18 and 36 kVA
         if ($prices && count($prices) === $numberOfPrices) {
             $powerFound = false;
             foreach ($prices as $price) {
-                $powerText = $price->firstChild()->firstChild()->innertext;
+                $powerText = trim($price->children(0)->innertext);
+                if ($price->children(0)->children(0)) {
+                    $powerText = trim($price->children(0)->children(0)->innertext);
+                }
                 $powerValue = (int)substr($powerText, 0, strpos($powerText, ' kVA'));
 
                 if ($powerValue !== $power) {
