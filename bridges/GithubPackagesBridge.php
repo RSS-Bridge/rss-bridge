@@ -71,7 +71,6 @@ class GithubPackagesBridge extends BridgeAbstract
         */
 
         $dom = getSimpleHTMLDOM($this->getPackageUri());
-        // Get specific "divs" from html code.
         $divs = $dom->find('div[class=col-10 d-flex flex-auto flex-column]');
         foreach ($divs as $div) {
             $a = $div->find('a[class=Label mr-1 mb-2 text-normal]');
