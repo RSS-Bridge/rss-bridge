@@ -2,22 +2,23 @@
 
 class GithubPackagesBridge extends BridgeAbstract
 {
-    const NAME = 'Github Packages Bridge';
+    const NAME = 'GitHub Packages Bridge';
     const MAINTAINER = 'rsd76';
     const URI = 'https://github.com/';
-    const DESCRIPTION = 'Bridge for getting GitHub packages';
-    const CACHE_TIMEOUT = 15;
+    const DESCRIPTION = 'List GitHub packaes for organization, user or project';
+    const CACHE_TIMEOUT = 3600;
 
     const PARAMETERS = [
-        'Github organization/repository' => [
+        [
             'organization' => [
                 'type' => 'text',
-                'name' => 'Github organization',
-                'exampleValue' => 'RSS-Bridge'
+                'name' => 'GitHub organization/user',
+                'exampleValue' => 'RSS-Bridge',
+                'required' => true
             ],
             'repository' => [
                 'type' => 'text',
-                'name' => 'Github repository',
+                'name' => 'GitHub repository',
                 'exampleValue' => 'rss-bridge'
             ],
             'packagename' => [
@@ -29,12 +30,11 @@ class GithubPackagesBridge extends BridgeAbstract
                 'type' => 'list',
                 'name' => 'Package Type',
                 'values' => [
+                    'Container' => 'container',
+                    'Maven' => 'maven',
                     'npm' => 'npm',
-                    'maven' => 'maven',
-                    'rubygems' => 'rubegems',
-                    'docker' => 'docker',
-                    'nuget' => 'nuget',
-                    'container' => 'container'
+                    'NuGet' => 'nuget',
+                    'RubyGems' => 'rubygems'
                 ],
                 'defaultValue' => 'container'
             ]
@@ -60,17 +60,35 @@ class GithubPackagesBridge extends BridgeAbstract
 
     public function collectData()
     {
+        /*
+          The packages are listed in a <div> with the class set to "col-10 d-flex flex-auto flex-column".
+          Within the div the <a>-link to the packages has the following class set: "Label mr-1 mb-2 text-normal".
+          The package "latest" does not seem to have this specific class and is therefor filtered out.
+          The link text is generally the Label of the package. Sometime nice labels, like 2026-01-02,
+          but sometimes SHA values.
+          There is a time value in the form of "Published (about) <#> <hours|days|month> ago in a small html entry.
+          This small has the class set to: "class=color-fg-muted". The strtotime functions sets this to a timestamp.
+        */
+
         $dom = getSimpleHTMLDOM($this->getPackageUri());
+        // Get specific "divs" from html code.
         $divs = $dom->find('div[class=col-10 d-flex flex-auto flex-column]');
         foreach ($divs as $div) {
             $a = $div->find('a[class=Label mr-1 mb-2 text-normal]');
-            foreach ($a as $link) {
-                $this->items[] = [
-                    'title' => $link->plaintext,
-                    'uri' => 'https://github.com' . $link->href,
-                    'uid' => $link->href
+            $link = $a[0];
+            $small = $div->find('small[class=color-fg-muted]');
+            $published = $small[0];
+            if (!preg_match('/[0-9]+ (hour|hours|day|days|week|weeks|month|months|year|years) ago/', $published, $ago)) {
+                $ago = [
+                    'now'
                 ];
             }
+            $this->items[] = [
+                'title' => $link->plaintext,
+                'uri' => 'https://github.com' . $link->href,
+                'uid' => $link->href,
+                'timestamp' => strtotime($ago[0])
+            ];
         }
     }
 
