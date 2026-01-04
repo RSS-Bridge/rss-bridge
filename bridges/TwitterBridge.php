@@ -487,7 +487,7 @@ EOD;
             $medias = [];
             if (isset($realtweet->extended_entities->media)) {
                 $medias = $realtweet->extended_entities->media;
-            } else if (isset($realtweet->mediaDetails)) {
+            } elseif (isset($realtweet->mediaDetails)) {
                 $medias = $realtweet->mediaDetails;
             }
 
