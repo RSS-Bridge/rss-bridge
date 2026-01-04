@@ -62,7 +62,7 @@ class TelegramBridge extends BridgeAbstract
                 $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
             }
 
-            if (! $this->feedIcon) {
+            if (!$this->feedIcon) {
                 $photoImg = $dom->find('i.tgme_page_photo_image img', 0);
                 if ($photoImg) {
                     $this->feedIcon = $photoImg->src;
