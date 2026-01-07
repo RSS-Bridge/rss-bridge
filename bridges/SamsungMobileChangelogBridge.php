@@ -24,7 +24,7 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
             ],
         ]
     ];
-    private $device = '';
+    private $device_name = '';
 
     const STR_BUILD_NUMBER = 'Build Number';
     const STR_ANDROID_VERSION = 'Android version';
@@ -45,7 +45,7 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
         $html = getSimpleHTMLDOMCached($changelog)
             or throwServerException('Could not request changelog: ' . $changelog);
         $container = $html->find('div.container', 0);
-        $this->device = trim($html->find('h1', 0)->plaintext);
+        $this->device_name = trim($html->find('h1', 0)->plaintext);
         // Debug::log('Device: ' . $device);
 
         $reachedStart = false;
@@ -94,8 +94,8 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 
     public function getName()
     {
-        if ($this->device) {
-            return htmlspecialchars_decode($this->device) . ' - ' . "Changelog";
+        if ($this->device_name) {
+            return htmlspecialchars_decode($this->device_name) . ' - ' . "Changelog";
         } else {
             return self::NAME;
         }
