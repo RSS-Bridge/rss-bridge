@@ -4,17 +4,21 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 {
     const NAME = 'Samsung Mobile Changelog';
     const URI = 'https://doc.samsungmobile.com/';
-    const DESCRIPTION = 'Returns the changelog of selected device from the Samsung Mobile documentation in English';
+    const DESCRIPTION = 'Changelog of selected device from the Samsung Mobile documentation in English';
     const MAINTAINER = 'ajain-93';
     const PARAMETERS = [
         [
             'device' => [
                 'name' => 'Device Model',
+                'title' => "The model name found in Settings → About phone/tablet\n" .
+                    "SM-931B/DS → SM-S931B",
                 'required' => true,
                 'exampleValue' => 'SM-S931B',
             ],
             'region' => [
                 'name' => 'Region',
+                'title' => "The 3 letter region code found in Service provider software version in\n" .
+                    "Settings → About phone/tablet → Software information",
                 'required' => true,
                 'exampleValue' => 'EUX',
             ],
@@ -91,7 +95,7 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
     public function getName()
     {
         if ($this->device) {
-            return htmlspecialchars_decode($this->device) . ' - ' . self::NAME;
+            return htmlspecialchars_decode($this->device) . ' - ' . "Changelog";
         } else {
             return self::NAME;
         }
