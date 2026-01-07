@@ -101,7 +101,7 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
     public function getName()
     {
         if ($this->device_name) {
-            return htmlspecialchars_decode($this->device_name) . ' - ' . 'Changelog';
+            return htmlspecialchars_decode($this->device_name) . ' - Changelog';
         } else {
             return self::NAME;
         }
