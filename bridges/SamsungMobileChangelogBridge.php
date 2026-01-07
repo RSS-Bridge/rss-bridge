@@ -4,11 +4,11 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 {
     const NAME = 'Samsung Mobile Changelog';
     const URI = 'https://doc.samsungmobile.com/';
-    const DESCRIPTION = 'Returns the changelog of selected devices from the Samsung Mobile documentation in English';
+    const DESCRIPTION = 'Returns the changelog of selected device from the Samsung Mobile documentation in English';
     const MAINTAINER = 'ajain-93';
     const PARAMETERS = [
         [
-            'devices' => [
+            'device' => [
                 'name' => 'Device Model',
                 'required' => true,
                 'exampleValue' => 'SM-S931B',
@@ -30,13 +30,13 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $URL = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/doc.html';
+        $URL = self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/doc.html';
 
         $html = getSimpleHTMLDOMCached($URL)
             or throwServerException('Could not request changelog page: ' . $URL);
 
         $input_url = preg_replace('/(\S+\/)\S+\.(html?|htm)$/i', '${1}eng.$2', $html->find('input', 0)->value);
-        $changelog = self::URI . $this->getInput('devices') . '/' . $this->getInput('region') . '/' . $input_url;
+        $changelog = self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/' . $input_url;
 
         $html = getSimpleHTMLDOMCached($changelog)
             or throwServerException('Could not request changelog: ' . $changelog);
