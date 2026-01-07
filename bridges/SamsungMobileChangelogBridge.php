@@ -37,7 +37,7 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
         $html = getSimpleHTMLDOMCached($URL)
             or throwServerException('Could not request changelog page: ' . $URL);
 
-        $input_url = preg_replace('/(\S+\/)\S+\.(html?|htm)$/i', '${1}eng.$2', $html->find('input', 0)->value);
+        $input_url = preg_replace('/(\S+\/)\S+\.(html?)$/i', '${1}eng.$2', $html->find('input', 0)->value);
         $changelog = self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/' . $input_url;
 
         $html = getSimpleHTMLDOMCached($changelog)
