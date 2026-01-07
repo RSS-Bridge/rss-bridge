@@ -10,15 +10,13 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
         [
             'device' => [
                 'name' => 'Device Model',
-                'title' => "The model name found in Settings → About phone/tablet\n" .
-                    "SM-931B/DS → SM-S931B",
+                'title' => 'The model name found in Settings → About phone/tablet\nSM-931B/DS → SM-S931B',
                 'required' => true,
                 'exampleValue' => 'SM-S931B',
             ],
             'region' => [
                 'name' => 'Region',
-                'title' => "The 3 letter region code found in Service provider software version in\n" .
-                    "Settings → About phone/tablet → Software information",
+                'title' => 'The 3 letter region code found in Service provider software version in\nSettings → About phone/tablet → Software information',
                 'required' => true,
                 'exampleValue' => 'EUX',
             ],
@@ -103,7 +101,7 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
     public function getName()
     {
         if ($this->device_name) {
-            return htmlspecialchars_decode($this->device_name) . ' - ' . "Changelog";
+            return htmlspecialchars_decode($this->device_name) . ' - ' . 'Changelog';
         } else {
             return self::NAME;
         }
