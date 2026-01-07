@@ -34,7 +34,7 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $URL = self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/doc.html';
+        $URL = $this->getURI();
 
         $html = getSimpleHTMLDOMCached($URL)
             or throwServerException('Could not request changelog page: ' . $URL);
@@ -83,12 +83,20 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
                 continue;
             } else {
                 $item['content'] .= $element;
-                $item['author'] = 'Samsung Mobile';
                 $this->items[] = $item;
 
                 // break;
                 continue;
             }
+        }
+    }
+
+    public function getURI()
+    {
+        if ($this->getInput('device')) {
+            return self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/doc.html';
+        } else {
+            return self::URI;
         }
     }
 
