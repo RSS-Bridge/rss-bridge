@@ -39,7 +39,6 @@ class NovelUpdatesBridge extends BridgeAbstract
         $html = str_get_html(stristr($html, '</tbody>', true)); //remove last tbody and get back as an array
         foreach ($html->find('tr') as $element) {
             $item = [];
-            //$item['uri'] = $element->find('td', 2)->find('a', 0)->href; // NOVELUPDATE REMOVED THIS
             $item['title'] = $element->find('td', 2)->find('span', 0)->plaintext;
             $item['author'] = $element->find('a', 0)->plaintext;
             $item['timestamp'] = strtotime($element->find('td', 0)->plaintext);
