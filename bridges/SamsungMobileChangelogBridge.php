@@ -39,8 +39,9 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
 
         // Iterate through language options, and find the English version
         $url_language = $this->getBaseURL() . $html->find('option[value=EN]', 0)->plaintext;
-        if (!isset($url_language))
+        if (!isset($url_language)) {
             throwServerException('Unable to find English version');
+        }
 
         $html = getSimpleHTMLDOMCached($url_language)
             or throwServerException('Could not request changelog: ' . $url_language);
