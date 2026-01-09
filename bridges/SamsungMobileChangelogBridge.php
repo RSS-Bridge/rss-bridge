@@ -37,11 +37,13 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
         $html = getSimpleHTMLDOMCached($URL)
             or throwServerException('Could not request changelog page: ' . $URL);
 
-        $input_url = preg_replace('/(\S+\/)\S+\.(html?)$/i', '${1}eng.$2', $html->find('input', 0)->value);
-        $changelog = self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/' . $input_url;
+        // Iterate through language options, and find the English version
+        $url_language = $this->getBaseURL() . $html->find('option[value=EN]', 0)->plaintext;
+        if (!isset($url_language))
+            throwServerException('Unable to find English version');
 
-        $html = getSimpleHTMLDOMCached($changelog)
-            or throwServerException('Could not request changelog: ' . $changelog);
+        $html = getSimpleHTMLDOMCached($url_language)
+            or throwServerException('Could not request changelog: ' . $url_language);
         $container = $html->find('div.container', 0);
         $this->device_name = trim($html->find('h1', 0)->plaintext);
         // Debug::log('Device: ' . $device);
@@ -89,10 +91,16 @@ class SamsungMobileChangelogBridge extends BridgeAbstract
         }
     }
 
+
+    private function getBaseURL()
+    {
+        return self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/';
+    }
+
     public function getURI()
     {
         if ($this->getInput('device')) {
-            return self::URI . $this->getInput('device') . '/' . $this->getInput('region') . '/doc.html';
+            return $this->getBaseURL() . 'doc.html';
         } else {
             return self::URI;
         }
