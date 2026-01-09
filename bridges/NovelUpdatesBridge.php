@@ -38,10 +38,10 @@ class NovelUpdatesBridge extends BridgeAbstract
             $item['author'] = $element->find('a', 0)->plaintext;
             $item['timestamp'] = strtotime($element->find('td', 0)->plaintext);
             $item['content'] = $this->seriesTitle
-                . ' -'
+                . ' - '
                 . $item['title']
-                . '- by '
-                . $element->find('a', 0)->plaintext
+                . ' - by '
+                . $item['author']
                 . '<br>'
                 . $fullhtml->find('div.seriesimg', 0)->innertext;
 
