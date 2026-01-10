@@ -186,22 +186,22 @@ class GithubPackagesBridge extends BridgeAbstract
 
     public function getUri()
     {
-        $org = $this->getInput('organization');
-        $repo = $this->getInput('repository');
-        $packagename = $this->getInput('packagename');
         $packagetype = $this->getInput('packagetype');
-        if ($org) {
-            if ($repo) {
-                if ($packagename) {
+        if ($this->getInput('organization')) {
+            $org = $this->getInput('organization');
+            if ($this->getInput('repository')) {
+                $repo = $this->getInput('repository');
+                if ($this->getInput('packagename')) {
+                    $packagename = $this->getInput('packagename');
                     if ($packagetype) {
-                        return 'https://github.com/' . $org . '/' . $repo . '/pkgs/' . $packagetype . '/' . $packagename;
+                        return self::URI . $org . '/' . $repo . '/pkgs/' . $packagetype . '/' . $packagename;
                     }
-                    return 'https://github.com/orgs/' . $org . '/packages?repo_name=' . $repo;
+                    return self::URI . 'orgs/' . $org . '/packages?repo_name=' . $repo;
                 }
-                return 'https://github.com/orgs/' . $org . '/packages?repo_name=' . $repo;
+                return self::URI . 'orgs/' . $org . '/packages?repo_name=' . $repo;
             }
-            return 'https://github.com/' . $org;
+            return self::URI . 'orgs/' . $org . '/packages';
         }
-        return 'https://github.com';
+        return self::URI;
     }
 }
