@@ -14,36 +14,60 @@ class GithubPackagesBridge extends BridgeAbstract
                 'type' => 'text',
                 'name' => 'GitHub organization/user',
                 'exampleValue' => 'RSS-Bridge',
-                'required' => true
+                'required' => true,
+                'title' => 'Name of the orgarnization/user: https://github.com/<org>/...'
+
             ],
             'repository' => [
                 'type' => 'text',
                 'name' => 'GitHub repository',
-                'exampleValue' => 'rss-bridge'
+                'exampleValue' => 'rss-bridge',
+                'required' => false,
+                'title' => 'Name of the repository: https://github.com/<org>/<repository>'
             ],
             'packagename' => [
                 'type' => 'text',
                 'name' => 'Package name',
-                'exampleValue' => 'rss-bridge'
+                'exampleValue' => 'rss-bridge',
+                'required' => false,
+                'title' => 'Name of the package. Example "rss-bridge" or "curl-container/curl".'
             ],
             'packagetype' => [
                 'type' => 'list',
                 'name' => 'Package Type',
                 'values' => [
+                    'All' => 'all',
                     'Container' => 'container',
                     'Maven' => 'maven',
                     'npm' => 'npm',
                     'NuGet' => 'nuget',
                     'RubyGems' => 'rubygems'
                 ],
-                'defaultValue' => 'container'
+                'defaultValue' => 'container',
+                'required' => true,
+                'title' => 'Type of package. Do not select "All" if a package name is provided.'
             ]
         ]
     ];
 
+    private function getRepoUri()
+    {
+        if (!empty($this->getInput('organization')) && !empty($this->getInput('repository'))) {
+            return self::URI
+                . urlencode($this->getInput('organization'))
+                . '/'
+                . urlencode($this->getInput('repository'));
+        } elseif (!empty($this->getInput('organization'))) {
+            return self::URI
+                . urlencode($this->getInput('organization'));
+        } else {
+            return 'https://github.com/RSS-Bridge/rss-bridge';
+        }
+    }
+
     private function getPackageUri()
     {
-        if (!is_null($this->getInput('organization')) && !is_null($this->getInput('repository'))) {
+        if (!empty($this->getInput('organization')) && !empty($this->getInput('repository')) && !empty($this->getInput('packagename'))) {
             return self::URI
                 . urlencode($this->getInput('organization'))
                 . '/'
@@ -53,6 +77,20 @@ class GithubPackagesBridge extends BridgeAbstract
                 . '/'
                 . urlencode($this->getInput('packagename'))
                 . '/versions?filters[version_type]=tagged';
+        } elseif (!empty($this->getInput('organization')) && !empty($this->getInput('repository'))) {
+            return self::URI
+                . 'orgs/'
+                . urlencode($this->getInput('organization'))
+                . '/packages?repo_name='
+                . urlencode($this->getInput('repository'))
+                . '&ecosystem='
+                . urlencode($this->getInput('packagetype'));
+        } elseif (!empty($this->getInput('organization'))) {
+            return self::URI
+                . 'orgs/'
+                . urlencode($this->getInput('organization'))
+                . '/packages?ecosystem='
+                . urlencode($this->getInput('packagetype'));
         } else {
             return 'https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge/versions?filters%5Bversion_type%5D=tagged';
         }
@@ -61,45 +99,87 @@ class GithubPackagesBridge extends BridgeAbstract
     public function collectData()
     {
         /*
-          The packages are listed in a <div> with the class set to "col-10 d-flex flex-auto flex-column".
-          Within the div the <a>-link to the packages has the following class set: "Label mr-1 mb-2 text-normal".
+          First an image of the repo is retrieved from the repo Uri or organization Uri if no repository is provided
+          A Uri to this image is listed in the content of a <meta> with property set to "og:image".
+          This Uri is added as the enclosures item parameter.
+
+          When only the organization / user is provided, the bridge will list all (or for a specific type ) packages
+          for the organization. If the repository is also provided, the bridge will only list the packages of the
+          specified type (or all). In this case the packages are listed in a <div> with class set to "flex-auto".
+          An <a>-link within this <div> and with the class set to: "text-bold f4 Link--primary" contains the link.
+          Another <relative-time> with class set to: "no-wrap" in the <div> contains the creation date of the package.
+          The strtotime function converts the UTC time string to local time.
+
+          When also the packagename is provided, the bridge will show the versions for the package.
+          The package versions are listed in a <div> with the class set to "col-10 d-flex flex-auto flex-column".
+          Within the div the <a>-link to the package versions has the following class set: "Label mr-1 mb-2 text-normal".
           The package "latest" does not seem to have this specific class and is therefor filtered out.
           The link text is generally the Label of the package. Sometime nice labels, like 2026-01-02,
-          but sometimes SHA values.
-          There is a time value in the form of "Published (about) <#> <hours|days|month> ago in a small html entry.
-          This small has the class set to: "class=color-fg-muted". The strtotime functions sets this to a timestamp.
+          but sometimes just a SHA value.
+          There is a time value in the form of "Published (about) <#> <hours|days|month> ago in a <small> html entry.
+          This <small> has the class set to: "class=color-fg-muted". The strtotime functions sets this to a timestamp.
         */
 
+        $repoDom = getSimpleHTMLDOM($this->getRepoUri());
+        $meta = $repoDom->find('meta[property=og:image]');
+        $image = $meta[0]->content;
+
         $dom = getSimpleHTMLDOM($this->getPackageUri());
-        $divs = $dom->find('div[class=col-10 d-flex flex-auto flex-column]');
-        foreach ($divs as $div) {
-            $a = $div->find('a[class=Label mr-1 mb-2 text-normal]');
-            $link = $a[0];
-            $small = $div->find('small[class=color-fg-muted]');
-            $published = $small[0];
-            if (!preg_match('/[0-9]+ (hour|hours|day|days|week|weeks|month|months|year|years) ago/', $published, $ago)) {
-                $ago = [
-                    'now'
+
+        if (empty($this->getInput('packagename'))) {
+            $divs = $dom->find('div[class=flex-auto]');
+            foreach ($divs as $div) {
+                $a = ($div->find('a[class=text-bold f4 Link--primary]'))[0];
+                $published = ($div->find('relative-time[class=no-wrap]'))[0];
+                $this->items[] = [
+                    'title' => $a->plaintext,
+                    'uri' => 'https://github.com' . $a->href,
+                    'uid' => $a->href,
+                    'timestamp' => strtotime($published->datetime),
+                    'enclosures' => [$image . '#.image']
                 ];
             }
-            $this->items[] = [
-                'title' => $link->plaintext,
-                'uri' => 'https://github.com' . $link->href,
-                'uid' => $link->href,
-                'timestamp' => strtotime($ago[0])
-            ];
+        } else {
+            $divs = $dom->find('div[class=col-10 d-flex flex-auto flex-column]');
+            foreach ($divs as $div) {
+                $a = ($div->find('a[class=Label mr-1 mb-2 text-normal]'))[0];
+                $published = ($div->find('small[class=color-fg-muted]'))[0];
+                if (!preg_match('/[0-9]+ (hour|hours|day|days|week|weeks|month|months|year|years) ago/', $published, $ago)) {
+                    $ago = [
+                        'now'
+                    ];
+                }
+                $this->items[] = [
+                    'title' => $a->plaintext,
+                    'uri' => 'https://github.com' . $a->href,
+                    'uid' => $a->href,
+                    'timestamp' => strtotime($ago[0]),
+                    'enclosures' => [$image . '#.image']
+                ];
+            }
         }
     }
 
     public function getName()
     {
+        $packagetype = $this->getInput('packagetype');
         if ($this->getInput('organization')) {
             $org = $this->getInput('organization');
-            if ($this->GetInput('repository')) {
-                $repo = $this->GetInput('repository');
-                return $org . ' - ' . $repo . ' - GitHub Packages';
+            if ($this->getInput('repository')) {
+                $repo = $this->getInput('repository');
+                if ($this->getInput('packagename')) {
+                    $packagename = $this->getInput('packagename');
+                    return $org . '/' . $repo . ' - ' . $packagename . ' - GitHub ' . $packagetype . ' Package versions';
+                }
+                if ($packagetype === 'all') {
+                    return $org . '/' . $repo . ' - GitHub Packages';
+                }
+                return $org . '/' . $repo . ' - GitHub ' . $packagetype . ' Packages';
             }
-            return $org . ' - GitHub Packages';
+            if ($packagetype === 'all') {
+                return $org . ' - GitHub Packages';
+            }
+            return $org . ' - GitHub ' . $packagetype . ' Packages';
         }
         return parent::getName();
     }
@@ -107,9 +187,9 @@ class GithubPackagesBridge extends BridgeAbstract
     public function getUri()
     {
         $org = $this->getInput('organization');
-        $repo = $this->GetInput('repository');
-        $packagename = $this->GetInput('packagename');
-        $packagetype = $this->GetInput('packagetype');
+        $repo = $this->getInput('repository');
+        $packagename = $this->getInput('packagename');
+        $packagetype = $this->getInput('packagetype');
         if ($org) {
             if ($repo) {
                 if ($packagename) {
