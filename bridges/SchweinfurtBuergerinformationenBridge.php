@@ -85,8 +85,8 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
         }
 
         // If a link is missing a host, prefix the URL with the base URL
-        foreach($links as $link) {
-            if (parse_url($link->href, PHP_URL_HOST) == NULL) {
+        foreach ($links as $link) {
+            if (parse_url($link->href, PHP_URL_HOST) == null) {
                     $prefix = substr(self::URI, 0, strrpos(self::URI, '/') + 1);
                     $link->href = $prefix . $link->href;
             }
