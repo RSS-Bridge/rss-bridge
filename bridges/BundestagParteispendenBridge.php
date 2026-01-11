@@ -22,17 +22,14 @@ TMPL;
 
     public function collectData()
     {
-        $ajaxUri = <<<URI
-https://www.bundestag.de/ajax/filterlist/de/parlament/praesidium/parteienfinanzierung/fundstellen50000/462002-462002
-URI;
         // Get the main page
-        $html = getSimpleHTMLDOMCached($ajaxUri, self::CACHE_TIMEOUT);
+        $html = getSimpleHTMLDOMCached(self::URI, self::CACHE_TIMEOUT);
 
         // Build the URL from the first anchor element. The list is sorted by year, descending, so the first element is the current year.
-        $firstAnchor = $html->find('a', 0)
+        $firstAnchor = $html->find('li.e-linkListItem > a', 0)
             or throwServerException('Could not find the proper HTML element.');
 
-        $url = $firstAnchor->href;
+        $url = 'https://www.bundestag.de' . $firstAnchor->href;
 
         // Get the actual page with the soft money donations
         $html = getSimpleHTMLDOMCached($url, self::CACHE_TIMEOUT);
