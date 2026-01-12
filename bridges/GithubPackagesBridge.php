@@ -132,7 +132,7 @@ class GithubPackagesBridge extends BridgeAbstract
             $divs = $dom->find('div[class=flex-auto]');
             foreach ($divs as $div) {
                 $a = ($div->find('a[class=text-bold f4 Link--primary]'))[0];
-                $published = ($div->find('relative-time[class=no-wrap]'))[0];
+                $published = (($div->find('relative-time[class=no-wrap]'))[0])->plaintext;
                 $this->items[] = [
                     'title' => $a->plaintext,
                     'uri' => 'https://github.com' . $a->href,
