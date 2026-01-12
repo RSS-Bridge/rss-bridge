@@ -27,7 +27,7 @@ TMPL;
         // Get the main page
         $html = getSimpleHTMLDOMCached($ajaxUri, self::CACHE_TIMEOUT);
 
-        // Apply default base URL for relative links 
+        // Apply default base URL for relative links
         defaultLinkTo($html, $this->getURI());
 
         // Build the URL from the first anchor element. The list is sorted by year, descending, so the first element is the current year.
