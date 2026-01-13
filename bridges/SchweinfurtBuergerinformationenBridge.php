@@ -74,7 +74,6 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
         $div = $html->find('div#artikel-detail', 0);
         $divContent = $div->find('.c-content', 0);
         $images = $divContent->find('img');
-        $links = $divContent->find('a');
 
         // Every external link has a little arrow symbol image attached to it.
         // Remove this image. This has to be done before building $content.
@@ -84,13 +83,8 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
             }
         }
 
-        // If a link is missing a host, prefix the URL with the base URL
-        foreach ($links as $link) {
-            if (parse_url($link->href, PHP_URL_HOST) == null) {
-                    $prefix = substr(self::URI, 0, strrpos(self::URI, '/') + 1);
-                    $link->href = $prefix . $link->href;
-            }
-        }
+        // Make relative URLs in content container absolute
+        defaultLinkTo($divContent, self::URI);
 
         $title = $div->find('.c-title', 0)->innertext;
         $teaser = $div->find('.c-teaser', 0)->innertext;
