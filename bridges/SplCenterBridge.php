@@ -5,16 +5,16 @@ class SplCenterBridge extends FeedExpander
     const NAME = 'Southern Poverty Law Center Bridge';
     const URI = 'https://www.splcenter.org';
     const DESCRIPTION = 'Returns the newest posts from the Southern Poverty Law Center';
-    const MAINTAINER = 'VerifiedJoseph';
+    const MAINTAINER = 'tyler000000';
     const PARAMETERS = [[
             'content' => [
                 'name' => 'Content',
                 'type' => 'list',
                 'values' => [
-                    'News' => 'news',
+                    'Stories' => 'stories',
                     'Hatewatch' => 'hatewatch',
                 ],
-                'defaultValue' => 'news',
+                'defaultValue' => 'stories',
             ]
         ]
     ];
@@ -23,8 +23,19 @@ class SplCenterBridge extends FeedExpander
 
     public function collectData()
     {
-        $url = $this->getURI() . '/rss.xml';
-        $this->collectExpandableDatas($url);
+        $dom = getSimpleHTMLDOM($this->getURI());
+        foreach ($dom->find('ul.wp-block-post-template li') as $li) {
+            $a = $li->find('h3 > a', 0);
+            if ($a && trim($a->plaintext) !== '') {
+                $this->items[] = [
+                    'title' => $a->plaintext,
+                    'uri' => $a->href,
+                    'author' => $li->find('p.wp-block-splc-authors__name', 0)->plaintext,
+                    'content' => $li->find('p.wp-block-post-excerpt__excerpt', 0)->plaintext,
+                    'timestamp' => date("U",strtotime($li->find('time', 0)->getAttribute('datetime'))),
+                ];
+            }
+        }
     }
 
     protected function parseItem(array $item)
@@ -44,7 +55,7 @@ class SplCenterBridge extends FeedExpander
     public function getURI()
     {
         if (!is_null($this->getInput('content'))) {
-            return self::URI . '/' . $this->getInput('content');
+            return self::URI . '/resources/' . $this->getInput('content');
         }
 
         return parent::getURI();
