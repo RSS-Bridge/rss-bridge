@@ -1,5 +1,20 @@
 Debug mode has been removed.
 
+## Debug logging
+
+To enable debug logging, set the env type to dev:
+
+```ini
+[system]
+
+; System environment: "dev" or "prod"
+env = "dev"
+```
+
+Then you can use `$this->logger->debug()` in your bridge to log debug messages to stdout.
+
+## Disable Caching
+
 If you want to disable caching you can set cache type to array (in-memory cache):
 
 ```ini
