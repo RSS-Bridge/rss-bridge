@@ -105,10 +105,6 @@ class GithubPackagesBridge extends BridgeAbstract
     public function collectData()
     {
         /*
-          First an image of the repo is retrieved from the repo Uri or organization Uri if no repository is provided
-          A Uri to this image is listed in the content of a <meta> with property set to "og:image".
-          This Uri is added as the enclosures item parameter.
-
           When only the organization / user is provided, the bridge will list all packages (or filtered to a specific type)
           for the organization. If the repository is also provided, the bridge will only list the packages of the
           specified type (or all). In this case the packages are listed in a <div> with class set to "flex-auto".
