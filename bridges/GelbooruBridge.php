@@ -45,12 +45,11 @@ class GelbooruBridge extends BridgeAbstract
     protected function getFullURI()
     {
         return $this->getURI()
-        . 'index.php?&page=dapi&s=post&q=index&json=1'
-        . '&api_key=' . urlencode($this->getInput('api_key'))
-        . '&user_id=' . urlencode($this->getInput('user_id'))
-        . '&pid=' . $this->getInput('p')
+        . 'index.php?&page=dapi&s=post&q=index&json=1&pid=' . $this->getInput('p')
         . '&limit=' . $this->getInput('l')
-        . '&tags=' . urlencode($this->getInput('t') ?? '');
+        . '&tags=' . urlencode($this->getInput('t') ?? '')
+        . '&api_key=' . urlencode($this->getInput('api_key'))
+        . '&user_id=' . urlencode($this->getInput('user_id'));
     }
 
     /*
