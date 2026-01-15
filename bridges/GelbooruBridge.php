@@ -9,6 +9,20 @@ class GelbooruBridge extends BridgeAbstract
 
     const PARAMETERS = [
         'global' => [
+            'api_key' => [
+                'name' => 'API Key',
+                'exampleValue' => 0,
+                'type' => 'text',
+                'required' => true,
+                'title' => 'Your Gelbooru API key'
+            ],
+            'user_id' => [
+                'name' => 'User ID',
+                'exampleValue' => 0,
+                'type' => 'number',
+                'required' => true,
+                'title' => 'Your Gelbooru user ID'
+            ],
             'p' => [
                 'name' => 'page',
                 'defaultValue' => 0,
@@ -33,7 +47,9 @@ class GelbooruBridge extends BridgeAbstract
         return $this->getURI()
         . 'index.php?&page=dapi&s=post&q=index&json=1&pid=' . $this->getInput('p')
         . '&limit=' . $this->getInput('l')
-        . '&tags=' . urlencode($this->getInput('t') ?? '');
+        . '&tags=' . urlencode($this->getInput('t') ?? '')
+        . '&api_key=' . urlencode($this->getInput('api_key'))
+        . '&user_id=' . urlencode($this->getInput('user_id'));
     }
 
     /*
