@@ -214,10 +214,7 @@ EOD;
                 }
 
                 if ($media['type'] === 'YouTube') {
-                    $div->outertext = <<<EOD
-	<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315" referrerpolicy="strict-origin">
-	</iframe>
-EOD;
+                    $div->outertext = handleYoutube($media['externalId']);
                 }
             }
         }
@@ -249,10 +246,7 @@ EOD;
         $video = $storyContent['media'][0];
 
         if ($video['type'] === 'YouTube') {
-            $url = 'https://www.youtube.com/embed/' . $video['externalId'];
-            $html = <<<EOD
-<iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen referrerpolicy="strict-origin"></iframe>
-EOD;
+            $html = handleYoutube($video['externalId']);
         } else {
             $html = <<<EOD
 <video controls poster="https://storage.googleapis.com/afs-prod/media/{$video['id']}/800.jpeg" preload="none">

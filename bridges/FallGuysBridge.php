@@ -94,22 +94,17 @@ class FallGuysBridge extends BridgeAbstract
                         if (count($mediaOptions) == count($mainContentOptions)) {
                             for ($i = 0; $i < count($mediaOptions); $i++) {
                                 if (property_exists($mediaOptions[$i], 'youtubeVideo')) {
-                                    $videoUrl = 'https://youtu.be/' . $mediaOptions[$i]->youtubeVideo->contentId;
+                                    $videoID = $mediaOptions[$i]->youtubeVideo->contentId;
+                                    $videoHtml = handleYoutube($videoID);
+
+                                    $content .= '<p>' . $videoHtml;
+
                                     $image = $mainContentOptions[$i]->image->src ?? '';
-
-                                    $content .= '<p>';
-
                                     if ($image != $headerImage) {
                                         $contentImages[] = $image;
 
-                                        $content .= <<<HTML
-                                        <a href="{$videoUrl}"><img src="{$image}"></a><br>
-                                        HTML;
+                                        $content .= '<img src="{$image}"><br>';
                                     }
-
-                                    $content .= <<<HTML
-                                    <i>(Video: <a href="{$videoUrl}">{$videoUrl}</a>)</i>
-                                    HTML;
 
                                     $content .= '</p>';
                                 }
