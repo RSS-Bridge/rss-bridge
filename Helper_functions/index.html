@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Helper_functions/index.html">Helper functions</a></h1>
                 <span class="ModifiedDate">
-            November 18, 2025 at 10:33 AM        </span>
+            January 15, 2026 at 12:18 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/06_Helper_functions/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -428,6 +428,18 @@ Json::decode($json);
     $lastmod = $url[<span class="hljs-string">'lastmod'</span>];
 }
 </code></pre>
+<h1><a id="handleyoutube-string-html-string" href="#handleyoutube-string-html-string" class="Permalink" aria-hidden="true" title="Permalink">#</a>handleYoutube(string $html): string</h1>
+<p>Use this function to throw a YouTube link, iframe tag or video ID and get a HTML snippet that returns a normalized iframe tag or clickable image thumbnail, depending on system configuration.</p>
+<pre><code class="hljs php">$result = handleYoutube(<span class="hljs-string">'naYc5X6EL_Y'</span>);
+
+$result = handleYoutube(<span class="hljs-string">'https://www.youtube.com/watch?v=naYc5X6EL_Y'</span>);
+
+$result = handleYoutube(<span class="hljs-string">'https://www.youtube.com/embed/naYc5X6EL_Y'</span>);
+
+$iframe = <span class="hljs-string">'&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/naYc5X6EL_Y?si=abcdefgh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen&gt;&lt;/iframe&gt;'</span>;
+$result = handleYoutube($iframe);
+</code></pre>
+<p><a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php" class="Link--external" rel="noopener noreferrer">Defined in lib/html.php</a></p>
     </div>
 
         <nav>
