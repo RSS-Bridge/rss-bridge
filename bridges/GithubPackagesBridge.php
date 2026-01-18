@@ -57,34 +57,12 @@ class GithubPackagesBridge extends BridgeAbstract
             if ($this->getInput('packagetype') === 'all') {
                 throwClientException('Do not provide package type as "all" when specifying a package name.');
             }
-            return self::URI
-                . urlencode($this->getInput('organization'))
-                . '/'
-                . urlencode($this->getInput('repository'))
-                . '/pkgs/'
-                . urlencode($this->getInput('packagetype'))
-                . '/'
-                . urlencode($this->getInput('packagename'))
-                . '/versions?filters[version_type]=tagged';
-        } elseif (!empty($this->getInput('organization')) && !empty($this->getInput('repository'))) {
-            return self::URI
-                . 'orgs/'
-                . urlencode($this->getInput('organization'))
-                . '/packages?repo_name='
-                . urlencode($this->getInput('repository'))
-                . '&ecosystem='
-                . urlencode($this->getInput('packagetype'));
-        } elseif (!empty($this->getInput('organization')) && !empty($this->getInput('packagename'))) {
+        } elseif (!empty($this->getInput('organization')) && empty($this->getInput('repository')) && !empty($this->getInput('packagename'))) {
             throwClientException('Provide a repository when providing a package name or do not provide the package name.');
-        } elseif (!empty($this->getInput('organization'))) {
-            return self::URI
-                . 'orgs/'
-                . urlencode($this->getInput('organization'))
-                . '/packages?ecosystem='
-                . urlencode($this->getInput('packagetype'));
-        } else {
+        } elseif (empty($this->getInput('organization'))) {
             throwClientException('Provide at least an organization.');
         }
+        return $this->getUri();
     }
 
     public function collectData()
@@ -192,13 +170,13 @@ class GithubPackagesBridge extends BridgeAbstract
                 if ($this->getInput('packagename')) {
                     $packagename = urlencode($this->getInput('packagename'));
                     if ($packagetype !== 'all') {
-                        return self::URI . $org . '/' . $repo . '/pkgs/' . $packagetype . '/' . $packagename;
+                        return self::URI . $org . '/' . $repo . '/pkgs/' . $packagetype . '/' . $packagename . '/versions?filters[version_type]=tagged';
                     }
-                    return self::URI . 'orgs/' . $org . '/packages?repo_name=' . $repo;
+                    return self::URI . 'orgs/' . $org . '/packages?repo_name=' . $repo . '&ecosystem=' . $packagetype;
                 }
-                return self::URI . 'orgs/' . $org . '/packages?repo_name=' . $repo;
+                return self::URI . 'orgs/' . $org . '/packages?repo_name=' . $repo . '&ecosystem=' . $packagetype;
             }
-            return self::URI . 'orgs/' . $org . '/packages';
+            return self::URI . 'orgs/' . $org . '/packages?ecosystem=' . $packagetype;
         }
         return self::URI;
     }
