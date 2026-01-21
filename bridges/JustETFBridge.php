@@ -2,7 +2,7 @@
 
 class JustETFBridge extends BridgeAbstract
 {
-    const NAME = 'justETF Bridge';
+    const NAME = 'justETF';
     const URI = 'https://www.justetf.com';
     const DESCRIPTION = 'Currently only supports the news feed';
     const MAINTAINER = 'logmanoriginal';

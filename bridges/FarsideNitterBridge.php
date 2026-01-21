@@ -2,7 +2,7 @@
 
 class FarsideNitterBridge extends FeedExpander
 {
-    const NAME = 'Farside Nitter Bridge';
+    const NAME = 'Farside Nitter';
     const DESCRIPTION = "Returns an user's recent tweets";
     const URI = 'https://farside.link/nitter/';
     const HOST = 'https://twitter.com/';

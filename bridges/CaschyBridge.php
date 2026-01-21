@@ -3,7 +3,7 @@
 class CaschyBridge extends FeedExpander
 {
     const MAINTAINER = 'Tone866';
-    const NAME = 'Caschys Blog Bridge';
+    const NAME = 'Caschys Blog';
     const URI = 'https://stadt-bremerhaven.de/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';

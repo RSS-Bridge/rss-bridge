@@ -4,7 +4,7 @@ class BlueskyBridge extends BridgeAbstract
 {
     //Initial PR by [RSSBridge contributors](https://github.com/RSS-Bridge/rss-bridge/issues/4058).
     //Modified from [©DIYgod and contributors at RSSHub](https://github.com/DIYgod/RSSHub/tree/master/lib/routes/bsky), MIT License';
-    const NAME = 'Bluesky Bridge';
+    const NAME = 'Bluesky';
     const URI = 'https://bsky.app';
     const DESCRIPTION = 'Fetches posts from Bluesky';
     const MAINTAINER = 'mruac';

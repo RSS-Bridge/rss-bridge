@@ -3,7 +3,7 @@
 class ForGifsBridge extends FeedExpander
 {
     const MAINTAINER = 'logmanoriginal';
-    const NAME = 'forgifs Bridge';
+    const NAME = 'forgifs';
     const URI = 'https://forgifs.com';
     const DESCRIPTION = 'Returns the forgifs feed with actual gifs instead of images';
 

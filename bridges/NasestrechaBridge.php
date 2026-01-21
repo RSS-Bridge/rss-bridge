@@ -8,7 +8,7 @@
 
 class NasestrechaBridge extends BridgeAbstract
 {
-    const NAME = 'Nasestrecha Bridge';
+    const NAME = 'Nasestrecha';
     const URI = 'https://www.nasestrecha.cz/';
     const DESCRIPTION = 'Articles from Nasestrecha.cz news site - Czech Republic / Spolehlivé informace pro Vaší střechu i stavbu';
     const MAINTAINER = 'pprenghyorg';

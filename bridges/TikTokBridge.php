@@ -2,7 +2,7 @@
 
 class TikTokBridge extends BridgeAbstract
 {
-    const NAME = 'TikTok Bridge';
+    const NAME = 'TikTok';
     const URI = 'https://www.tiktok.com';
     const DESCRIPTION = 'Returns posts';
     const MAINTAINER = 'VerifiedJoseph';

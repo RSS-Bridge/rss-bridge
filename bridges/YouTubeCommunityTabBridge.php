@@ -2,7 +2,7 @@
 
 class YouTubeCommunityTabBridge extends BridgeAbstract
 {
-    const NAME = 'YouTube Posts Tab Bridge';
+    const NAME = 'YouTube Posts Tab';
     const URI = 'https://www.youtube.com';
     const DESCRIPTION = 'Returns posts from a channel\'s posts tab';
     const MAINTAINER = 'VerifiedJoseph';

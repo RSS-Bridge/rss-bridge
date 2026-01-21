@@ -3,7 +3,7 @@
 class TheGuardianBridge extends FeedExpander
 {
     const MAINTAINER = 'IceWreck';
-    const NAME = 'The Guardian Bridge';
+    const NAME = 'The Guardian';
     const URI = 'https://www.theguardian.com/';
     const CACHE_TIMEOUT = 600; // This is a news site, so don't cache for more than 10 mins
     const DESCRIPTION = 'RSS feed for The Guardian';

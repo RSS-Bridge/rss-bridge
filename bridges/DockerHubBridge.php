@@ -2,7 +2,7 @@
 
 class DockerHubBridge extends BridgeAbstract
 {
-    const NAME = 'Docker Hub Bridge';
+    const NAME = 'Docker Hub';
     const URI = 'https://hub.docker.com';
     const DESCRIPTION = 'Returns new images for a container';
     const MAINTAINER = 'VerifiedJoseph';

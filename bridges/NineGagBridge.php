@@ -2,7 +2,7 @@
 
 class NineGagBridge extends BridgeAbstract
 {
-    const NAME = '9gag Bridge';
+    const NAME = '9gag';
     const URI = 'https://9gag.com/';
     const DESCRIPTION = 'Returns latest quotes from 9gag.';
     const MAINTAINER = 'ZeNairolf';

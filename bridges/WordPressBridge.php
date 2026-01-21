@@ -2,7 +2,7 @@
 
 class WordPressBridge extends FeedExpander
 {
-    const NAME = 'Wordpress Bridge';
+    const NAME = 'Wordpress';
     const URI = 'https://wordpress.org/';
     const DESCRIPTION = 'Returns the newest full posts of a WordPress powered website';
     const MAINTAINER = 'ORelio';

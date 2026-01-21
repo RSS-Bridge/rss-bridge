@@ -3,7 +3,7 @@
 class VarietyBridge extends FeedExpander
 {
     const MAINTAINER = 'IceWreck';
-    const NAME = 'Variety Bridge';
+    const NAME = 'Variety';
     const URI = 'https://variety.com';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'RSS feed for Variety';

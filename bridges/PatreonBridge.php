@@ -2,7 +2,7 @@
 
 class PatreonBridge extends BridgeAbstract
 {
-    const NAME = 'Patreon Bridge';
+    const NAME = 'Patreon';
     const URI = 'https://www.patreon.com/';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns posts by creators on Patreon';

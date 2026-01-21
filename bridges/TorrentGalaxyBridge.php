@@ -2,7 +2,7 @@
 
 class TorrentGalaxyBridge extends BridgeAbstract
 {
-    const NAME = 'Torrent Galaxy Bridge';
+    const NAME = 'Torrent Galaxy';
     const URI = 'https://torrentgalaxy.to';
     const DESCRIPTION = 'Returns latest torrents';
     const MAINTAINER = 'GregThib';

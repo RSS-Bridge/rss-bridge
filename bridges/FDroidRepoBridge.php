@@ -2,7 +2,7 @@
 
 class FDroidRepoBridge extends BridgeAbstract
 {
-    const NAME = 'F-Droid Repository Bridge';
+    const NAME = 'F-Droid Repository';
     const URI = 'https://f-droid.org/';
     const DESCRIPTION = 'Query any F-Droid Repository for its latest updates.';
 

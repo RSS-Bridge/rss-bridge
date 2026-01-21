@@ -3,7 +3,7 @@
 class ZDNetBridge extends FeedExpander
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'ZDNet Bridge';
+    const NAME = 'ZDNet';
     const URI = 'https://www.zdnet.com/';
     const DESCRIPTION = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
 

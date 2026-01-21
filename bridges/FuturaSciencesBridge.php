@@ -3,7 +3,7 @@
 class FuturaSciencesBridge extends FeedExpander
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'Futura-Sciences Bridge';
+    const NAME = 'Futura-Sciences';
     const URI = 'https://www.futura-sciences.com/';
     const DESCRIPTION = 'Returns the newest articles.';
 

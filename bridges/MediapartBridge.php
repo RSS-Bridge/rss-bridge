@@ -3,7 +3,7 @@
 class MediapartBridge extends FeedExpander
 {
     const MAINTAINER = 'killruana';
-    const NAME = 'Mediapart Bridge';
+    const NAME = 'Mediapart';
     const URI = 'https://www.mediapart.fr/';
     const PARAMETERS = [
         [

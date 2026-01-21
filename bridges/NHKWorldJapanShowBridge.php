@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class NHKWorldJapanShowBridge extends BridgeAbstract
 {
-    const NAME = 'NHK World-Japan Show Bridge';
+    const NAME = 'NHK World-Japan Show';
     const URI = 'https://www3.nhk.or.jp';
     const CACHE_TIMEOUT = 14400; // 4h
     const DESCRIPTION = 'Returns available episodes from NHK World-Japan Shows';

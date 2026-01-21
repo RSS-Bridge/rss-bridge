@@ -2,7 +2,7 @@
 
 class StreamCzBridge extends BridgeAbstract
 {
-    const NAME = 'Stream.cz Bridge';
+    const NAME = 'Stream.cz';
     const URI = 'https://www.stream.cz';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'Return newest videos';

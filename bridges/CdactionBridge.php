@@ -2,7 +2,7 @@
 
 class CdactionBridge extends BridgeAbstract
 {
-    const NAME = 'CD-ACTION bridge';
+    const NAME = 'CD-ACTION';
     const URI = 'https://cdaction.pl';
     const DESCRIPTION = 'Fetches the latest posts from given category.';
     const MAINTAINER = 'tomaszkane';

@@ -2,7 +2,7 @@
 
 class RumbleBridge extends BridgeAbstract
 {
-    const NAME = 'Rumble.com Bridge';
+    const NAME = 'Rumble.com';
     const URI = 'https://rumble.com/';
     const DESCRIPTION = 'Fetches the latest channel/user videos and livestreams.';
     const MAINTAINER = 'dvikan, NotsoanoNimus';

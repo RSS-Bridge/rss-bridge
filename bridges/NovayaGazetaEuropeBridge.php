@@ -3,7 +3,7 @@
 class NovayaGazetaEuropeBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'Novaya Gazeta Europe Bridge';
+    const NAME = 'Novaya Gazeta Europe';
     const URI = 'https://novayagazeta.eu';
 
     const CACHE_TIMEOUT = 3600; // 1 hour

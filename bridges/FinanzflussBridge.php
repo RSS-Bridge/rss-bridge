@@ -3,7 +3,7 @@
 class FinanzflussBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Tone866';
-    const NAME = 'finanzfluss Bridge';
+    const NAME = 'finanzfluss';
     const URI = 'https://www.finanzfluss.de/blog';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Feed for finanzfluss';

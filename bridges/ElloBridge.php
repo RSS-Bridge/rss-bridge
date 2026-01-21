@@ -3,7 +3,7 @@
 class ElloBridge extends BridgeAbstract
 {
     const MAINTAINER = 'teromene';
-    const NAME = 'Ello Bridge';
+    const NAME = 'Ello';
     const URI = 'https://ello.co/';
     const CACHE_TIMEOUT = 4800; //2hours
     const DESCRIPTION = 'Returns the newest posts for Ello';
@@ -127,7 +127,7 @@ class ElloBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('u'))) {
-            return $this->getInput('u') . ' - Ello Bridge';
+            return $this->getInput('u') . ' - Ello';
         }
 
         return parent::getName();

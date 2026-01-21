@@ -3,7 +3,7 @@
 class ShanaprojectBridge extends BridgeAbstract
 {
     const MAINTAINER = 'logmanoriginal';
-    const NAME = 'Shanaproject Bridge';
+    const NAME = 'Shanaproject';
     const URI = 'https://www.shanaproject.com';
     const DESCRIPTION = 'Returns a list of anime from the current Season Anime List';
     const PARAMETERS = [

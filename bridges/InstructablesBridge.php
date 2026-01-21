@@ -13,7 +13,7 @@
 */
 class InstructablesBridge extends BridgeAbstract
 {
-    const NAME = 'Instructables Bridge';
+    const NAME = 'Instructables';
     const URI = 'https://www.instructables.com';
     const DESCRIPTION = 'Returns general feeds and feeds by category';
     const MAINTAINER = 'logmanoriginal';

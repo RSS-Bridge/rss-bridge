@@ -2,7 +2,7 @@
 
 class TrelloBridge extends BridgeAbstract
 {
-    const NAME = 'Trello Bridge';
+    const NAME = 'Trello';
     const URI = 'https://trello.com/';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns activity on Trello boards or cards';
