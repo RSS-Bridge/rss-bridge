@@ -86,9 +86,10 @@ class ARMCommunityBridge extends BridgeAbstract
     public function getName()
     {
         $categoryname = $this->getKey('community');
-        
-        if (empty($categoryname))
+
+        if (empty($categoryname)) {
             return static::NAME;
+        }
 
         return static::NAME . ': ' . $categoryname;
     }
