@@ -12,7 +12,6 @@ class ARMCommunityBridge extends BridgeAbstract
         'Blog' => [
             'community' => [
                 'name' => 'Community',
-                'required' => true,
                 'type' => 'list',
                 'values' => [
                     'AI' => 'ai-blog',
