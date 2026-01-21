@@ -48,23 +48,24 @@ class ARMCommunityBridge extends BridgeAbstract
         // paste scripts together
         $jsonstr = '';
         $pattern = '/\(\[.."(.*?)"\]\)/';
-        foreach($html->find('script') as $s) {
-            if (!str_starts_with($s->innertext, 'self.__next_f.push'))
+        foreach ($html->find('script') as $s) {
+            if (!str_starts_with($s->innertext, 'self.__next_f.push')) {
                 continue;
+            }
 
             if (preg_match($pattern, $s->innertext, $matches)) {
-                $jsonstr .= $matches[1];    
+                $jsonstr .= $matches[1];
             }
         }
 
         $exp = explode('\\n', $jsonstr);
 
         $pattern = '/"link":"' . addcslashes($category, '/') . '(.*?)"/';
-        foreach($exp as $e) {
+        foreach ($exp as $e) {
             if (preg_match($pattern, stripcslashes($e), $matches)) {
                 $articleurl = static::URI . $category . $matches[1];
                 $html = getSimpleHTMLDOMCached($articleurl, static::CACHE_TIMEOUT, $header);
-                
+
                 $date = strtotime($html->find('#blog-date', 0)->innertext);
                 $title = $html->find('#blog-title', 0)->innertext;
                 $author = $html->find('#blog-title', 0)->parent->find('p', 1)->find('a', 0)->innertext;
