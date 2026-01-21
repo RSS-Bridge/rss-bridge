@@ -15,7 +15,7 @@ class ARMCommunityBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'AI' => 'ai-blog',
-                    'Annoucements' => 'annoucements',
+                    'Announcements' => 'announcements',
                     'Architectures and Processors' => 'architectures-and-processors-blog',
                     'Automotive' => 'automotive-blog',
                     'Embedded and Microcontrollers' => 'embedded-and-microcontrollers-blog',
