@@ -42,7 +42,7 @@ class ARMCommunityBridge extends BridgeAbstract
         ];
 
         $html = getSimpleHTMLDOM(static::URI . $category, $header);
-        $html = defaultLinkTo ($html, static::URI);
+        $html = defaultLinkTo($html, static::URI);
 
         foreach ($html->find('ads-card') as $c) {
             $articleurl = static::URI . $c->link;
