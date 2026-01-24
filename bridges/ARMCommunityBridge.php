@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class ARMCommunityBridge extends BridgeAbstract
 {
     const MAINTAINER = 'thefranke';
@@ -36,50 +38,28 @@ class ARMCommunityBridge extends BridgeAbstract
         $category = '/community/arm-community-blogs/b/' . $this->getInput('community');
 
         $header = [
-            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0',
-            'Accept: application/json, text/plain, */*',
-            'Accept-Language: en',
-            'Accept-Encoding: gzip, deflate, br, zstd',
+            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0',
         ];
 
         $html = getSimpleHTMLDOM(static::URI . $category, $header);
+        $html = defaultLinkTo ($html, static::URI);
 
-        // paste scripts together
-        $jsonstr = '';
-        $pattern = '/\(\[.."(.*?)"\]\)/';
-        foreach ($html->find('script') as $s) {
-            if (!str_starts_with($s->innertext, 'self.__next_f.push')) {
-                continue;
-            }
+        foreach ($html->find('ads-card') as $c) {
+            $articleurl = static::URI . $c->link;
+            $articlehtml = getSimpleHTMLDOMCached($articleurl, static::CACHE_TIMEOUT, $header);
 
-            if (preg_match($pattern, $s->innertext, $matches)) {
-                $jsonstr .= $matches[1];
-            }
-        }
+            $date = strtotime($articlehtml->find('#blog-date', 0)->innertext);
+            $title = $articlehtml->find('#blog-title', 0)->innertext;
+            $author = $articlehtml->find('#blog-title', 0)->parent->find('p', 1)->find('a', 0)->innertext;
+            $content = $articlehtml->find('#blog-body', 0)->innertext;
 
-        $exp = explode('\\n', $jsonstr);
-
-        $pattern = '/"link":"' . addcslashes($category, '/') . '(.*?)"/';
-        foreach ($exp as $e) {
-            if (preg_match($pattern, stripcslashes($e), $matches)) {
-                $articleurl = static::URI . $category . $matches[1];
-                $html = getSimpleHTMLDOMCached($articleurl, static::CACHE_TIMEOUT, $header);
-
-                $date = strtotime($html->find('#blog-date', 0)->innertext);
-                $title = $html->find('#blog-title', 0)->innertext;
-                $author = $html->find('#blog-title', 0)->parent->find('p', 1)->find('a', 0)->innertext;
-                $content = $html->find('#blog-body', 0)->innertext;
-                $categories = $html->find('.c-tag', 0)->innertext;
-
-                $this->items[] = [
-                    'title'      => $title,
-                    'timestamp'  => $date,
-                    'author'     => $author,
-                    'uri'        => $articleurl,
-                    'content'    => $content,
-                    'categories' => [$categories],
-                ];
-            }
+            $this->items[] = [
+                'title'      => $title,
+                'timestamp'  => $date,
+                'author'     => $author,
+                'uri'        => $articleurl,
+                'content'    => $content,
+            ];
         }
     }
 
@@ -91,6 +71,6 @@ class ARMCommunityBridge extends BridgeAbstract
             return static::NAME;
         }
 
-        return static::NAME . ': ' . $categoryname;
+        return static::NAME . ' - ' . $categoryname;
     }
 }
