@@ -127,24 +127,25 @@ class AlpinePackagesBridge extends BridgeAbstract
             $name = $packageName;
             if ($branchName) {
                 $branchName = strtolower($branchName);
-                $name = $name . ' on branch ' . $branchName;
+                $name .= ' on branch ' . $branchName;
             }
             if ($repositoryName) {
                 $repositoryName = strtolower($repositoryName);
                 if ($repositoryName === 'all') {
-                    $name = $name . ' in all repositories';
+                    $name .= ' in all repositories';
                 } else {
-                    $name = $name . ' in repository ' . $repositoryName;
+                    $name .= ' in repository ' . $repositoryName;
                 }
             }
             if ($architecture) {
                 $architecture = strtolower($architecture);
                 if ($architecture === 'all') {
-                    $name = $name . ' on all architectures';
+                    $name .= ' on all architectures';
                 } else {
-                    $name = $name . ' on ' . $architecture;
+                    $name .= ' on ' . $architecture;
                 }
             }
+            $name .= ' - Alpine packages';
             return $name;
         }
 
