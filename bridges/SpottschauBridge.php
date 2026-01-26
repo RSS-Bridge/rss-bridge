@@ -12,10 +12,10 @@ class SpottschauBridge extends BridgeAbstract
     public function collectData()
     {
         $html = getSimpleHTMLDOMCached(self::URI, self::CACHE_TIMEOUT)
-            or returnServerError('Could not retrieve ' . self::URI);
+            or throwServerException('Could not retrieve ' . self::URI);
 
         $strip = $html->find('div.strip > a', 0)
-            or returnServerError('Could not find the proper HTML element of the strip.');
+            or throwServerException('Could not find the proper HTML element of the strip.');
 
         defaultLinkTo($strip, self::URI);
         // Get URL from image src attribute
