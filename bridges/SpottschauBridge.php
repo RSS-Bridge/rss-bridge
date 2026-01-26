@@ -21,13 +21,13 @@ class SpottschauBridge extends BridgeAbstract
         // Get URL from image src attribute
         $src = $strip->children(0)->src;
 
-        $this->items[] = array(
+        $this->items[] = [
             'uri' => self::URI,
             'title' => 'Strip der Woche',
             'content' => '<img src="' . $src . '">',
-            'enclosures' => array($src),
+            'enclosures' => [$src],
             'author' => 'Christoph Härringer',
             'uid' => $src,
-            );
+            ];
     }
 }
