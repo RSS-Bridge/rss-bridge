@@ -4,39 +4,30 @@ class SpottschauBridge extends BridgeAbstract
 {
     const NAME = 'Härringers Spottschau Bridge';
     const URI = 'https://spottschau.com/';
-    const DESCRIPTION = 'Der Fußball-Comic';
+    const DESCRIPTION = 'Returns the latest strip from the "Härringers Spottschau" comic.';
     const MAINTAINER = 'sal0max';
-    const PARAMETERS = [];
 
-    const CACHE_TIMEOUT = 3600; // 1 hour
+    const CACHE_TIMEOUT = 86400; // 24h
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = getSimpleHTMLDOMCached(self::URI, self::CACHE_TIMEOUT)
+            or returnServerError('Could not retrieve ' . self::URI);
 
-        $item = [];
-        $item['uri'] = urljoin(self::URI, $html->find('div.strip>a', 0)->attr['href']);
-        $item['title'] = $html->find('div.text>h2', 0)->innertext;
+        $strip = $html->find('div.strip > a', 0)
+            or returnServerError('Could not find the proper HTML element of the strip.');
 
-        $date = preg_replace('/.*, /', '', $item['title']);
-        $date = preg_replace('/\\d\\d\\.\\//', '', $date);
-        try {
-            $item['timestamp'] = DateTime::createFromFormat('d.m.y', $date)
-                ->setTimezone(new DateTimeZone('Europe/Berlin'))
-                ->setTime(0, 0)
-                ->getTimestamp();
-        } catch (Throwable $ignored) {
-            $item['timestamp'] = null;
-        }
+        defaultLinkTo($strip, self::URI);
+        // Get URL from image src attribute
+        $src = $strip->children(0)->src;
 
-        $image = $html->find('div.strip>a>img', 0);
-        $imageUrl = urljoin(self::URI, $image->attr['src']);
-        $imageAlt = $image->attr['alt'];
-
-        $item['content'] = <<<EOD
-<img src="{$imageUrl}" alt="{$imageAlt}"/>
-<br/>
-EOD;
-        $this->items[] = $item;
+        $this->items[] = array(
+            'uri' => self::URI,
+            'title' => 'Strip der Woche',
+            'content' => '<img src="' . $src . '">',
+            'enclosures' => array($src),
+            'author' => 'Christoph Härringer',
+            'uid' => $src,
+            );
     }
 }
