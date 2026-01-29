@@ -85,9 +85,17 @@ class RutubeBridge extends BridgeAbstract
         $reduxState = $this->getJSONData($html);
         $videos = [];
         if ($this->getInput('c')) {
-            $videosMethod = 'allVideos(' . $this->getInput('c') . ',)';
+            $videosMethod1 = 'allVideos(' . $this->getInput('c') . ',)';
+            $videosMethod2 = 'videos(' . $this->getInput('c') . ',)';
+            if (isset($reduxState->api->queries->$videosMethod1)) {
+                $videos = $reduxState->api->queries->$videosMethod1->data->results;
+            } else {
+                // Fallback to other method
+                // No idea what is difference between "allVideos" and "videos"
+                // Introduced while resolving https://github.com/RSS-Bridge/rss-bridge/issues/4716
+                $videos = $reduxState->api->queries->$videosMethod2->data->results;
+            }
             $channelInfoMethod = 'channelInfo({"userChannelId":' . $this->getInput('c') . '})';
-            $videos = $reduxState->api->queries->$videosMethod->data->results;
             $this->title = $reduxState->api->queries->$channelInfoMethod->data->name;
         } elseif ($this->getInput('p')) {
             $playListVideosMethod = 'getPlaylistVideos(' . $this->getInput('p') . ')';
