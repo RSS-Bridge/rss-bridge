@@ -3,7 +3,7 @@
 class MistralAIBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'Mistral AI Bridge';
+    const NAME = 'Mistral AI';
     const URI = 'https://mistral.ai/';
 
     const CACHE_TIMEOUT = 3600; // 1 hour

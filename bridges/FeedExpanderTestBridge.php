@@ -5,7 +5,7 @@ declare(strict_types=1);
 class FeedExpanderTestBridge extends FeedExpander
 {
     const MAINTAINER = 'No maintainer';
-    const NAME = 'Unnamed bridge';
+    const NAME = 'Unnamed';
     const URI = 'https://esdf.com/';
     const DESCRIPTION = 'No description provided';
     const PARAMETERS = [];

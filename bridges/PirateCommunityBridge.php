@@ -2,7 +2,7 @@
 
 class PirateCommunityBridge extends BridgeAbstract
 {
-    const NAME = 'Pirate-Community Bridge';
+    const NAME = 'Pirate-Community';
     const URI = 'https://raymanpc.com/';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns replies to topics';

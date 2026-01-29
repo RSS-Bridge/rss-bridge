@@ -2,7 +2,7 @@
 
 class FirefoxAddonsBridge extends BridgeAbstract
 {
-    const NAME = 'Firefox Add-ons Bridge';
+    const NAME = 'Firefox Add-ons';
     const URI = 'https://addons.mozilla.org/';
     const DESCRIPTION = 'Returns version history for a Firefox Add-on.';
     const MAINTAINER = 'VerifiedJoseph';

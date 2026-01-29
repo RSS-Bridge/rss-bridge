@@ -2,7 +2,7 @@
 
 class TebeoBridge extends FeedExpander
 {
-    const NAME = 'Tébéo Bridge';
+    const NAME = 'Tébéo';
     const URI = 'http://www.tebeo.bzh/';
     const CACHE_TIMEOUT = 21600; //6h
     const DESCRIPTION = 'Returns the newest Tébéo videos by category';

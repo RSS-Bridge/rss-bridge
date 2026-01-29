@@ -8,7 +8,7 @@
 class RedditBridge extends BridgeAbstract
 {
     const MAINTAINER = 'dawidsowa';
-    const NAME = 'Reddit Bridge';
+    const NAME = 'Reddit';
     const URI = 'https://old.reddit.com';
     const CACHE_TIMEOUT = 60 * 60 * 2; // 2h
     const DESCRIPTION = 'Return hot submissions from Reddit';

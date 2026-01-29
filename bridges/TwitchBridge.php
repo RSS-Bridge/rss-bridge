@@ -3,7 +3,7 @@
 class TwitchBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Roliga';
-    const NAME = 'Twitch Bridge';
+    const NAME = 'Twitch';
     const URI = 'https://twitch.tv/';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Twitch channel videos';

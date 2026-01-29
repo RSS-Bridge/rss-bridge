@@ -2,7 +2,7 @@
 
 class TwitScoopBridge extends BridgeAbstract
 {
-    const NAME = 'TwitScoop Bridge';
+    const NAME = 'TwitScoop';
     const URI = 'https://www.twitscoop.com';
     const DESCRIPTION = 'Returns trending Twitter topics by country';
     const MAINTAINER = 'VerifiedJoseph';

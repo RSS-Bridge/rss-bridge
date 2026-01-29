@@ -3,7 +3,7 @@
 class GolemBridge extends FeedExpander
 {
     const MAINTAINER = 'Mynacol';
-    const NAME = 'Golem Bridge';
+    const NAME = 'Golem';
     const URI = 'https://www.golem.de/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';

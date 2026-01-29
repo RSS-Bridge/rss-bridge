@@ -2,7 +2,7 @@
 
 class NautiljonBridge extends BridgeAbstract
 {
-    const NAME = 'Nautiljon Bridge';
+    const NAME = 'Nautiljon';
     const URI = 'https://www.nautiljon.com';
     const DESCRIPTION = 'Actualités et Brèves de Nautiljon.';
     const MAINTAINER = 'papjul';

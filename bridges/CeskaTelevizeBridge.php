@@ -2,7 +2,7 @@
 
 class CeskaTelevizeBridge extends BridgeAbstract
 {
-    const NAME = 'Česká televize Bridge';
+    const NAME = 'Česká televize';
     const URI = 'https://www.ceskatelevize.cz';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'Return newest videos';

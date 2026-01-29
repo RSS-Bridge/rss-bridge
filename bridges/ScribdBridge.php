@@ -2,7 +2,7 @@
 
 class ScribdBridge extends BridgeAbstract
 {
-    const NAME = 'Scribd Bridge';
+    const NAME = 'Scribd';
     const URI = 'https://www.scribd.com';
     const DESCRIPTION = 'Returns documents uploaded by a user.';
     const MAINTAINER = 'VerifiedJoseph';

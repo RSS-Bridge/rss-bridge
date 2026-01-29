@@ -2,7 +2,7 @@
 
 class ARDMediathekBridge extends BridgeAbstract
 {
-    const NAME = 'ARD-Mediathek Bridge';
+    const NAME = 'ARD-Mediathek';
     const URI = 'https://www.ardmediathek.de';
     const DESCRIPTION = 'Feed of any series in the ARD-Mediathek, specified by its path';
     const MAINTAINER = 'yue-dongchen';

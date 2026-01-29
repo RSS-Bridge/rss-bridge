@@ -3,7 +3,7 @@
 class HDWallpapersBridge extends BridgeAbstract
 {
     const MAINTAINER = 'nel50n';
-    const NAME = 'HD Wallpapers Bridge';
+    const NAME = 'HD Wallpapers';
     const URI = 'https://www.hdwallpapers.in/';
     const CACHE_TIMEOUT = 43200; //12h
     const DESCRIPTION = 'Returns the latests wallpapers from HDWallpapers';

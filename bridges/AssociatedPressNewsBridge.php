@@ -2,7 +2,7 @@
 
 class AssociatedPressNewsBridge extends BridgeAbstract
 {
-    const NAME = 'Associated Press News Bridge';
+    const NAME = 'Associated Press News';
     const URI = 'https://apnews.com/';
     const DESCRIPTION = 'Returns newest articles by topic';
     const MAINTAINER = 'VerifiedJoseph';

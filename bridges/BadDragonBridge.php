@@ -2,7 +2,7 @@
 
 class BadDragonBridge extends BridgeAbstract
 {
-    const NAME = 'Bad Dragon Bridge';
+    const NAME = 'Bad Dragon';
     const URI = 'https://bad-dragon.com/';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns sales or new clearance items';

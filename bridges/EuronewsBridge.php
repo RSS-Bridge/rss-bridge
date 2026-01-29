@@ -3,7 +3,7 @@
 class EuronewsBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'Euronews Bridge';
+    const NAME = 'Euronews';
     const URI = 'https://www.euronews.com/';
     const CACHE_TIMEOUT = 600; // 10 minutes
     const DESCRIPTION = 'Return articles from the "Just In" feed of Euronews.';

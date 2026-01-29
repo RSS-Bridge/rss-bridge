@@ -3,7 +3,7 @@
 class CssSelectorComplexBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Lars Stegman';
-    const NAME = 'CSS Selector Complex Bridge';
+    const NAME = 'CSS Selector Complex';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge/';
     const DESCRIPTION = <<<EOT
         Convert any site to RSS feed using CSS selectors (Advanced Users). The bridge first selects 

@@ -3,7 +3,7 @@
 class UnogsBridge extends BridgeAbstract
 {
     const MAINTAINER = 'csisoap';
-    const NAME = 'uNoGS Bridge';
+    const NAME = 'uNoGS';
     const URI = 'https://unogs.com';
     const DESCRIPTION = 'Return what\'s new or removal on Netflix';
 

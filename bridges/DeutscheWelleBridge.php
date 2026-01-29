@@ -3,7 +3,7 @@
 class DeutscheWelleBridge extends FeedExpander
 {
     const MAINTAINER = 'No maintainer';
-    const NAME = 'Deutsche Welle Bridge';
+    const NAME = 'Deutsche Welle';
     const URI = 'https://www.dw.com';
     const DESCRIPTION = 'Returns the full articles instead of only the intro';
     const CACHE_TIMEOUT = 3600;

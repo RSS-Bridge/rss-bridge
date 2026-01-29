@@ -6,7 +6,7 @@
 class FlickrBridge extends BridgeAbstract
 {
     const MAINTAINER = 'logmanoriginal';
-    const NAME = 'Flickr Bridge';
+    const NAME = 'Flickr';
     const URI = 'https://www.flickr.com/';
     const CACHE_TIMEOUT = 21600; // 6 hours
     const DESCRIPTION = 'Returns images from Flickr';

@@ -3,7 +3,7 @@
 class NotAlwaysBridge extends BridgeAbstract
 {
     const MAINTAINER = 'mozes';
-    const NAME = 'Not Always family Bridge';
+    const NAME = 'Not Always family';
     const URI = 'https://notalwaysright.com/';
     const DESCRIPTION = 'Returns the latest stories';
     const CACHE_TIMEOUT = 1800; // 30 minutes
@@ -51,7 +51,7 @@ class NotAlwaysBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('filter'))) {
-            return $this->getInput('filter') . ' - NotAlways Bridge';
+            return $this->getInput('filter') . ' - NotAlways';
         }
 
         return parent::getName();

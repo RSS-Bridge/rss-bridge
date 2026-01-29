@@ -9,7 +9,7 @@ class MastodonBridge extends BridgeAbstract
     // so use the official feed: https://pixelfed.instance/users/username.atom (Posts only)
 
     const MAINTAINER = 'Austin Huang';
-    const NAME = 'ActivityPub Bridge';
+    const NAME = 'ActivityPub';
     const CACHE_TIMEOUT = 900; // 15mn
     const DESCRIPTION = 'Returns recent statuses. Supports Mastodon, Pleroma and Misskey, among others. Access to
     instances that have Authorized Fetch enabled requires

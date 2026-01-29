@@ -5,7 +5,7 @@ class DevToBridge extends BridgeAbstract
     const CONTEXT_BY_TAG = 'By tag';
     const CONTEXT_BY_USER = 'By user';
 
-    const NAME = 'dev.to Bridge';
+    const NAME = 'dev.to';
     const URI = 'https://dev.to';
     const DESCRIPTION = 'Returns feeds for tags';
     const MAINTAINER = 'logmanoriginal';

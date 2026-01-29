@@ -3,7 +3,7 @@
 class CommonDreamsBridge extends FeedExpander
 {
     const MAINTAINER = 'nyutag';
-    const NAME = 'CommonDreams Bridge';
+    const NAME = 'CommonDreams';
     const URI = 'https://www.commondreams.org/';
     const DESCRIPTION = 'Returns the newest articles.';
 

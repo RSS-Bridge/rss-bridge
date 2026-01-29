@@ -3,7 +3,7 @@
 class GoodreadsBridge extends BridgeAbstract
 {
     const MAINTAINER = 'captn3m0';
-    const NAME = 'Goodreads Bridge';
+    const NAME = 'Goodreads';
     const URI = 'https://www.goodreads.com/';
     const CACHE_TIMEOUT = 0; // 30min
     const DESCRIPTION = 'Various RSS feeds from Goodreads';

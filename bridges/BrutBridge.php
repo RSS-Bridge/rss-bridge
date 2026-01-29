@@ -2,7 +2,7 @@
 
 class BrutBridge extends BridgeAbstract
 {
-    const NAME = 'Brut Bridge';
+    const NAME = 'Brut';
     const URI = 'https://www.brut.media';
     const DESCRIPTION = 'Returns 10 newest videos by category and edition';
     const MAINTAINER = 'VerifiedJoseph';

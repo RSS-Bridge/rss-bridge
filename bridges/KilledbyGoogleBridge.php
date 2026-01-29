@@ -2,7 +2,7 @@
 
 class KilledbyGoogleBridge extends BridgeAbstract
 {
-    const NAME = 'Killed by Google Bridge';
+    const NAME = 'Killed by Google';
     const URI = 'https://killedbygoogle.com';
     const DESCRIPTION = 'Returns list of recently discontinued Google services, products, devices, and apps.';
     const MAINTAINER = 'VerifiedJoseph';

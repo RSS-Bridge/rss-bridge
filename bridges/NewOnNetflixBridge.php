@@ -2,7 +2,7 @@
 
 class NewOnNetflixBridge extends BridgeAbstract
 {
-    const NAME = 'NewOnNetflix removals bridge';
+    const NAME = 'NewOnNetflix removals';
     const URI = 'https://www.newonnetflix.info';
     const DESCRIPTION = 'Upcoming removals from Netflix (NewOnNetflix already provides additions as RSS)';
     const MAINTAINER = 'jdesgats';

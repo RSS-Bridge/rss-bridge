@@ -2,7 +2,7 @@
 
 class ErowallBridge extends BridgeAbstract
 {
-    const NAME = 'Erowall.com Bridge';
+    const NAME = 'Erowall.com';
     const URI = 'https://www.erowall.com/';
     const DESCRIPTION = 'Latest wallpapers from erowall.com';
     const MAINTAINER = 'kurz.junge';

@@ -3,7 +3,7 @@
 class WiredBridge extends FeedExpander
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'WIRED Bridge';
+    const NAME = 'WIRED';
     const URI = 'https://www.wired.com/';
     const DESCRIPTION = 'Returns the newest articles from WIRED';
 

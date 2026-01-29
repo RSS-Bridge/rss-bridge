@@ -3,7 +3,7 @@
 class FM4Bridge extends BridgeAbstract
 {
     const MAINTAINER = 'joni1993';
-    const NAME = 'FM4 Bridge';
+    const NAME = 'FM4';
     const URI = 'https://fm4.orf.at';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Feed for FM4 articles by tags (authors)';
