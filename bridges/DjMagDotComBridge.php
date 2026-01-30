@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class DjMagDotComBridge extends BridgeAbstract
 {
     const NAME = 'DJMag.com News';
