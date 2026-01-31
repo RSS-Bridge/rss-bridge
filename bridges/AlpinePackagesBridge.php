@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 class AlpinePackagesBridge extends BridgeAbstract
 {
-    const NAME = 'Alpine Packages Bridge';
+    const NAME = 'Alpine Packages';
     const MAINTAINER = 'rsd76';
     const URI = 'https://pkgs.alpinelinux.org';
-    const DESCRIPTION = 'Bridge for getting Alpine packages versions';
+    const DESCRIPTION = 'Get Alpine package versions';
     const CACHE_TIMEOUT = 3600;
 
     const PARAMETERS = [
