@@ -17,14 +17,14 @@ class AlpinePackagesBridge extends BridgeAbstract
                 'name' => 'Package Name',
                 'required' => true,
                 'exampleValue' => 'curl',
-                'title' => 'Name of the package. Use * and ? as wildcards. Example: curl, curl-* or curl-???'
+                'title' => 'Name of the package. Use * and ? as wildcards. For example: curl-dev, curl-* or curl-???.'
             ],
             'branch' => [
                 'type' => 'text',
                 'name' => 'Package branch',
                 'required' => true,
                 'exampleValue' => 'v3.23',
-                'title' => 'Name of the branch. Like: edge, v3.23, v3.22, etc.'
+                'title' => 'Name of the branch. For example: edge, v3.23, v3.22, etc.'
             ],
             'repository' => [
                 'type' => 'list',
@@ -35,8 +35,7 @@ class AlpinePackagesBridge extends BridgeAbstract
                     'Main' => 'main',
                     'Testing' => 'testing'
                 ],
-                'defaultValue' => 'all',
-                'title' => 'Name of the repository.'
+                'defaultValue' => 'all'
             ],
             'architecture' => [
                 'type' => 'text',
@@ -124,28 +123,24 @@ class AlpinePackagesBridge extends BridgeAbstract
 
         if ($packageName) {
             $packageName = strtolower($packageName);
-            $name = $packageName;
+            $name = $packageName . ' (';
             if ($branchName) {
                 $branchName = strtolower($branchName);
-                $name .= ' on branch ' . $branchName;
+                $name .= 'branch ' . $branchName;
             }
             if ($repositoryName) {
                 $repositoryName = strtolower($repositoryName);
-                if ($repositoryName === 'all') {
-                    $name .= ' in all repositories';
-                } else {
-                    $name .= ' in repository ' . $repositoryName;
+                if ($repositoryName !== 'all') {
+                    $name .= ', repo ' . $repositoryName;
                 }
             }
             if ($architecture) {
                 $architecture = strtolower($architecture);
-                if ($architecture === 'all') {
-                    $name .= ' on all architectures';
-                } else {
-                    $name .= ' on ' . $architecture;
+                if ($architecture !== 'all') {
+                    $name .= ', arch ' . $architecture;
                 }
             }
-            $name .= ' - Alpine packages';
+            $name .= ') - Alpine packages';
             return $name;
         }
 
