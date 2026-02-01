@@ -52,7 +52,7 @@ class AlpinePackagesBridge extends BridgeAbstract
                     'x86' => 'x86',
                     'x86_64' => 'x86_64'
                 ],
-                'defaultValue' => 'aarch64'
+                'defaultValue' => 'all'
             ]
         ]
     ];
