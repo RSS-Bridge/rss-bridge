@@ -38,10 +38,21 @@ class AlpinePackagesBridge extends BridgeAbstract
                 'defaultValue' => 'all'
             ],
             'architecture' => [
-                'type' => 'text',
+                'type' => 'list',
                 'name' => 'Achitecture',
-                'exampleValue' => 'aarch64',
-                'title' => 'Architecture of the package. Like: aarch64, armhf, armv7, loongarch64, ppc64le, ppc64le, ppc64le, x86 and x86_64. Keep empty or use "all" for all.'
+                'values' => [
+                    'All' => 'all',
+                    'aarch64' => 'aarch64',
+                    'armhf' => 'armhf',
+                    'armv7' => 'armv7',
+                    'loongarch64' => 'loongarch64',
+                    'ppc64le' => 'ppc64le',
+                    'riscv64' => 'riscv64',
+                    's390x' => 's390x',
+                    'x86' => 'x86',
+                    'x86_64' => 'x86_64'
+                ],
+                'defaultValue' => 'aarch64'
             ]
         ]
     ];
