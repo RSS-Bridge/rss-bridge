@@ -29,6 +29,9 @@ class HeiseBridge extends FeedExpander
                 => 'https://www.heise.de/rss/heise-Rubrik-Wirtschaft-atom.xml',
                 'heise online Journal'
                 => 'https://www.heise.de/rss/heise-Rubrik-Journal-atom.xml',
+                // → https://www.heise.de/thema
+                'heise online > Thema > Open Source'
+                => 'https://www.heise.de/thema/Open-Source.xml',
                 'heise online Top-News'
                 => 'https://www.heise.de/rss/heise-top-atom.xml',
                 //'iMonitor – Internet-Störungen'
