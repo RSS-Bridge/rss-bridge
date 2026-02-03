@@ -11,8 +11,7 @@ class SpottschauBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOMCached(self::URI, self::CACHE_TIMEOUT)
-            or throwServerException('Could not retrieve ' . self::URI);
+        $html = getSimpleHTMLDOMCached(self::URI, self::CACHE_TIMEOUT);
 
         $strip = $html->find('div.strip > a', 0)
             or throwServerException('Could not find the proper HTML element of the strip.');
