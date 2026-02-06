@@ -31,6 +31,10 @@ class ParameterValidator
                     case 'list':
                         $input[$name] = $this->validateListValue($value, $contextParameters[$name]['values']);
                         break;
+                    case 'multi-list':
+                        //TODO: Maybe move the array checking and looping through all of the values to another method?
+                        $input[$name] = is_array($value) ? array_map(fn($v) => $this->validateListValue($v, $contextParameters[$name]['values']), $value) : null;
+                        break;
                     default:
                     case 'text':
                         if (isset($contextParameters[$name]['pattern'])) {

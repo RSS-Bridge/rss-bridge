@@ -146,6 +146,8 @@ final class BridgeCard
                     $form .= self::getNumberInput($inputEntry, $idArg, $id);
                 } elseif ($inputEntry['type'] === 'list') {
                     $form .= self::getListInput($inputEntry, $idArg, $id) . "\n";
+                } elseif ($inputEntry['type'] === 'multi-list') {
+                    $form .= self::getListInput($inputEntry, $idArg, $id, true) . "\n";
                 } elseif ($inputEntry['type'] === 'checkbox') {
                     $form .= self::getCheckboxInput($inputEntry, $idArg, $id);
                 } else {
@@ -196,7 +198,7 @@ final class BridgeCard
         return sprintf('<input %s id="%s" type="number" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
     }
 
-    public static function getListInput(array $entry, string $id, string $name): string
+    public static function getListInput(array $entry, string $id, string $name, bool $isMulti = false): string
     {
         $required = $entry['required'] ?? null;
         if ($required) {
@@ -205,7 +207,7 @@ final class BridgeCard
         }
 
         $attributes = self::getInputAttributes($entry);
-        $list = sprintf('<select %s id="%s" name="%s" >' . "\n", $attributes, $id, $name);
+        $list = sprintf('<select %s id="%s" name="%s" %s>' . "\n", $attributes, $id, $name . ($isMulti ? '[]' : ''), $isMulti ? 'multiple ' : '');
 
         foreach ($entry['values'] as $name => $value) {
             if (is_array($value)) {
