@@ -70,6 +70,7 @@ class BridgeImplementationTest extends TestCase
             'text',
             'number',
             'list',
+            'multi-list',
             'checkbox',
         ];
 
@@ -99,7 +100,7 @@ class BridgeImplementationTest extends TestCase
                     $this->assertIsString($options['type'], $field . ': invalid type');
                     $this->assertContains($options['type'], $allowedTypes, $field . ': unknown type');
 
-                    if ($options['type'] == 'list') {
+                    if ($options['type'] == 'list' || $options['type'] == 'multi-list') {
                         $this->assertArrayHasKey('values', $options, $field . ': missing list values');
                         $this->assertIsArray($options['values'], $field . ': invalid list values');
                         $this->assertNotEmpty($options['values'], $field . ': empty list values');
@@ -116,6 +117,7 @@ class BridgeImplementationTest extends TestCase
                     if ($options['required'] === true && isset($options['type'])) {
                         switch ($options['type']) {
                             case 'list':
+                            case 'multi-list':
                             case 'checkbox':
                                 $this->assertArrayNotHasKey(
                                     'required',
