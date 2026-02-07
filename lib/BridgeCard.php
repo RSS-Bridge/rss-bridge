@@ -214,8 +214,9 @@ final class BridgeCard
                 $list .= '<optgroup label="' . htmlentities($name) . '">';
                 foreach ($value as $subname => $subvalue) {
                     if (
-                        $entry['defaultValue'] === $subname
-                        || $entry['defaultValue'] === $subvalue
+                        $isMulti
+                            ? $entry['defaultValue'] && array_any($entry['defaultValue'], fn($v) => $v === $subname || $v === $subvalue)
+                            : ($entry['defaultValue'] === $subname || $entry['defaultValue'] === $subvalue)
                     ) {
                         $list .= '<option value="' . $subvalue . '" selected>' . $subname . '</option>';
                     } else {
@@ -225,8 +226,9 @@ final class BridgeCard
                 $list .= '</optgroup>';
             } else {
                 if (
-                    $entry['defaultValue'] === $name
-                    || $entry['defaultValue'] === $value
+                    $isMulti
+                        ? $entry['defaultValue'] && array_any($entry['defaultValue'], fn($v) => $v === $name || $v === $value)
+                        : ($entry['defaultValue'] === $name || $entry['defaultValue'] === $value)
                 ) {
                     $list .= '<option value="' . $value . '" selected>' . $name . '</option>' . "\n";
                 } else {

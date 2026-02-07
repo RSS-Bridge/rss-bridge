@@ -30,3 +30,19 @@ if (!function_exists('array_is_list')) {
         return array_keys($arr) === range(0, count($arr) - 1);
     }
 }
+
+if (!function_exists('array_find')) {
+    function array_find(array $array, callable $callback): mixed
+    {
+        foreach ($array as $key => $value)
+            if ($found = $callback($value, $key)) return $value;
+        return null;
+    }
+}
+
+if (!function_exists('array_any')) {
+    function array_any(array $array, callable $callback): bool
+    {
+        return !is_null(array_find($array, $callback));
+    }
+}
