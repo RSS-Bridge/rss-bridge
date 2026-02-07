@@ -23,9 +23,9 @@ class NautilusBridge extends FeedExpander
                 'required' => false,
                 'title' => 'Select a topic',
                 'type' => 'list',
-                'defaultValue' => '',
+                'defaultValue' => 'default',
                 'values' => [
-                    'All items' => '',
+                    'All items' => 'default',
                     'Topic: Anthropology' => 'topics/anthropology',
                     'Topic: Arts' => 'topics/arts',
                     'Topic: Astronomy' => 'topics/astronomy',
@@ -80,7 +80,7 @@ class NautilusBridge extends FeedExpander
     public function collectData()
     {
         $uri = self::URI;
-        if ($this->getInput('topic')) {
+        if ($this->getInput('topic') && $this->getInput('topic') != 'default') {
             $uri .= $this->getInput('topic') . '/';
         }
         $uri .= 'feed';
