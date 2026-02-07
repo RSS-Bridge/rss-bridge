@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Make sure that only strings and arrays are allowed in GET parameters
+ * Make sure that only strings and arrays of strings are allowed in GET parameters
  */
 class SecurityMiddleware implements Middleware
 {
