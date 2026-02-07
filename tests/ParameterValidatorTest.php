@@ -41,7 +41,7 @@ class ParameterValidatorTest extends TestCase
     public function test3()
     {
         $sut = new \ParameterValidator();
-        $input = [ 'category' => [ 'economy', 'politics', 'entertainment', ], ];
+        $input = [ 'categories' => [ 'economy', 'politics', 'entertainment', ], ];
         $parameters = [
             [
                 'categories' => [
@@ -60,7 +60,7 @@ class ParameterValidatorTest extends TestCase
         $input = [ 'categories' => [ 'economy', 'politics', 'entertainment', ], ];
         $parameters = [
             [
-                'categories' => [
+                'category' => [
                     'name'   => 'Categories',
                     'type'   => 'multi-list',
                     'values' => [ 'economy', 'politics', 'entertainment', ],
