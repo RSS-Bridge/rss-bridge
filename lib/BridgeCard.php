@@ -46,7 +46,7 @@ final class BridgeCard
 
             <a style="position: absolute; top: 10px; left: 10px" href="#bridge-{$bridgeClassName}">
                 <h1>#</h1>
-            <a>
+            </a>
 
             <h2><a href="{$uri}">{$name}</a></h2>
             <p class="description">{$description}</p>
