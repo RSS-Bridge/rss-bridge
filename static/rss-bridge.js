@@ -50,7 +50,7 @@ var rssbridge_feed_finder = (function() {
      */
 
     // Start the Feed search
-    async function rssbridge_feed_search(event) {
+    async function rssbridge_feed_search(_) {
         const input = document.getElementById('searchfield');
         let content = encodeURIComponent(input.value);
         if (content) {
@@ -92,7 +92,9 @@ var rssbridge_feed_finder = (function() {
 
             // Now display every Feed parameter
             for (const param in element.bridgeData) {
-                content += `<li>${element.bridgeData[param].name} : ${element.bridgeData[param].value}</li>`;
+                const paramMeta = element.bridgeMeta.parameters[element.bridgeParams.context][param] ?? element.bridgeMeta.parameters['global'][param];
+                const value = paramMeta?.type === 'multi-list' ? element.bridgeData[param].value.join(', ') : element.bridgeData[param].value
+                content += `<li>${element.bridgeData[param].name} : ${value}</li>`;
             }
             content += `</div>
               </div>
