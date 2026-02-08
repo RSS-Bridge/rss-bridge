@@ -92,8 +92,8 @@ var rssbridge_feed_finder = (function() {
 
             // Now display every Feed parameter
             for (const param in element.bridgeData) {
-                const paramMeta = element.bridgeMeta.parameters[element.bridgeParams.context][param] ?? element.bridgeMeta.parameters['global'][param];
-                const value = paramMeta?.type === 'multi-list' ? element.bridgeData[param].value.join(', ') : element.bridgeData[param].value
+                const paramMeta = element.bridgeMeta.parameters[element.bridgeParams.context]?.[param] ?? element.bridgeMeta.parameters['global']?.[param];
+                const value = paramMeta?.type === 'multi-list' ? element.bridgeData[param].value.join(', ') : element.bridgeData[param].value;
                 content += `<li>${element.bridgeData[param].name} : ${value}</li>`;
             }
             content += `</div>
