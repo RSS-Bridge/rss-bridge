@@ -195,11 +195,12 @@ class ParameterValidator
         }
         $filteredValues = [];
         foreach ($values as $v) {
-            $filteredValue = $this->validateListValue($v, $expectedValues)
-            if ($filtered === null) {
+            $filteredValue = $this->validateListValue($v, $expectedValues);
+            if ($filteredValue === null) {
                 return null;
             }
-            $filteredValues[] = $filtered;
+            $filteredValues[] = $filteredValue;
         }
+        return $filteredValues;
     }
 }
