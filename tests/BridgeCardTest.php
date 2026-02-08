@@ -31,7 +31,7 @@ class BridgeCardTest extends TestCase
         $entry = [
             'values' => [],
         ];
-        $this->assertSame('<select id="id" name="name" >' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
+        $this->assertSame('<select id="id" name="name">' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
 
         $entry = [
             'defaultValue' => 2,
@@ -39,7 +39,7 @@ class BridgeCardTest extends TestCase
                 'foo' => 'bar',
             ],
         ];
-        $this->assertSame('<select id="id" name="name" >' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
+        $this->assertSame('<select id="id" name="name">' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
 
         // optgroup
         $entry = [
@@ -49,7 +49,7 @@ class BridgeCardTest extends TestCase
             ]],
         ];
         $this->assertSame(
-            '<select id="id" name="name" >' . "\n" . '<optgroup label="kek"><option value="b">f</option>' . "\n" . '</optgroup></select>',
+            '<select id="id" name="name">' . "\n" . '<optgroup label="kek"><option value="b">f</option>' . "\n" . '</optgroup></select>',
             BridgeCard::getListInput($entry, 'id', 'name')
         );
     }
@@ -85,8 +85,10 @@ class BridgeCardTest extends TestCase
         ]));
 
         // test self-closing
-        $this->assertSame('<p >', html_tag('p', [], false));
-        $this->assertSame('<p />', html_tag('p', [], true));
+        $this->assertSame('<p />', html_tag('p'));
+        $this->assertSame('<p>hello</p>', html_tag('p', 'hello'));
+        $this->assertSame('<option value="AAA">QQQ</option>', html_tag('option', 'QQQ', ['value'=>'AAA']));
+        $this->assertSame('<p class="red">hello</p>', html_tag('p', 'hello', ['class' => 'red']));
 
         // test escaping
         $this->assertSame('<input type="text" value="&lt;h1&gt;" />', html_input([

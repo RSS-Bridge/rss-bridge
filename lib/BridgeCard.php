@@ -226,10 +226,7 @@ final class BridgeCard
 
     public static function getListInput(array $entry, string $id, string $name): string
     {
-        $list = html_tag('select', [
-            'id'        => $id,
-            'name'      => $name,
-        ], false) . "\n";
+        $list = sprintf('<select id="%s" name="%s">', $id, $name) . "\n";
 
         foreach ($entry['values'] as $name => $value) {
             if (is_array($value)) {

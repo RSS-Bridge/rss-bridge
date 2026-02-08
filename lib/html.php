@@ -82,27 +82,24 @@ function truncate(string $s, int $length = 150, $marker = '...'): string
     return mb_substr($s, 0, $length) . $marker;
 }
 
-function html_input(array $input): string
+function html_input(array $attributes): string
 {
-    return html_tag('input', $input);
+    return html_tag('input', null, $attributes);
 }
 
 function html_option(string $name, $value, bool $selected = false): string
 {
-    $value = (string) $value;
-    $s = sprintf('<option value="%s"', e($value));
-
-    if ($selected) {
-        $s .= ' selected';
-    }
-
-    $s .= sprintf('>%s</option>', e($name));
-
-    return $s;
+    return html_tag('option', $name, [
+        'value'     => $value,
+        'selected'  => $selected,
+    ]);
 }
 
-function html_tag(string $name, array $attributes, bool $selfclosing = true): string
-{
+function html_tag(
+    string $name,
+    string $content = null,
+    array $attributes = []
+): string {
     $strings = [
         'type',
         'id',
@@ -111,10 +108,12 @@ function html_tag(string $name, array $attributes, bool $selfclosing = true): st
         'placeholder',
         'title',
         'pattern',
+        'class',
     ];
     $booleans = [
         'checked',
         'required',
+        'selected',
     ];
 
     $s = "<$name";
@@ -133,10 +132,10 @@ function html_tag(string $name, array $attributes, bool $selfclosing = true): st
         }
     }
 
-    if ($selfclosing) {
-        $s .= ' />';
+    if ($content) {
+        $s .= sprintf('>%s</%s>', e($content), $name);
     } else {
-        $s .= ' >';
+        $s .= ' />';
     }
 
     return $s;
