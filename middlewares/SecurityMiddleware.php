@@ -10,8 +10,7 @@ class SecurityMiddleware implements Middleware
     public function __invoke(Request $request, $next): Response
     {
         foreach ($request->toArray() as $key => $value) {
-            //TODO: verify if the type of parameter matches the type defined by the bridge in ParameterValidator
-            if (is_string($value) || is_array($value) && array_all($value, 'is_string')) {
+            if (is_string($value) || is_array($value) && array_all($value, fn($v, $k) => is_string($v))) {
                 continue;
             }
             return new Response(render(__DIR__ . '/../templates/error.html.php', [
