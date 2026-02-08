@@ -4,7 +4,7 @@ class YoutubeBridge extends BridgeAbstract
 {
     const NAME = 'YouTube';
     const URI = 'https://www.youtube.com';
-    const CACHE_TIMEOUT = 60 * 60 * 3;
+    const CACHE_TIMEOUT = 60 * 60 * 3; // 3 hours
     const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 
     const PARAMETERS = [
@@ -183,8 +183,14 @@ class YoutubeBridge extends BridgeAbstract
             });
         } elseif ($search) {
             // search
-            $url_listing = self::URI . '/results?search_query=' . urlencode($search) . '&sp=CAI%253D';
-            $html = $this->fetch($url_listing);
+            $today_filter = 'EgIIAg'; // restrict the upload date to the last 24 hours
+            $url_listing = self::URI . '/results?sp=' . $today_filter . '&search_query=' . urlencode($search);
+            if (!preg_match("/\b(before|after):/i", $search)) {
+                // unless explicitly overridden, a special "after:yyyy-mm-dd" keyword is appended to restrict the upload date to the last 6-30 hours
+                $html = $this->fetch($url_listing . urlencode(' after:' . date('Y-m-d', strtotime('-6 hours'))));
+            } else {
+                $html = $this->fetch($url_listing);
+            }
             $jsonData = $this->extractJsonFromHtml($html);
             $jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;
             $jsonData = $jsonData->sectionListRenderer->contents[0]->itemSectionRenderer->contents;
