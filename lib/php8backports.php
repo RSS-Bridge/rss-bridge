@@ -31,26 +31,35 @@ if (!function_exists('array_is_list')) {
     }
 }
 
-if (!function_exists('array_find')) {
-    function array_find(array $array, callable $callback): mixed
+if (!function_exists('array_find_key')) {
+    function array_find_key(array $array, callable $callback)
     {
         foreach ($array as $key => $value) {
-            if ($found = $callback($value, $key)) return $value;
+            if ($callback($value, $key)) {
+                return $key;
+            }
         }
         return null;
+    }
+}
+
+if (!function_exists('array_find')) {
+    function array_find(array $array, callable $callback)
+    {
+        return (($key = array_find_key($array, $callback)) !== null) ? $array[$key] : null;
     }
 }
 
 if (!function_exists('array_any')) {
     function array_any(array $array, callable $callback): bool
     {
-        return !is_null(array_find($array, $callback));
+        return array_find_key($array, $callback) !== null;
     }
 }
 
 if (!function_exists('array_all')) {
     function array_all(array $array, callable $callback): bool
     {
-        return !array_any($array, fn($v) => !$callback($v));
+        return !array_any($array, fn($v, $k) => !$callback($v, $k));
     }
 }
