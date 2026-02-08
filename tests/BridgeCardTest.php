@@ -7,7 +7,6 @@ namespace RssBridge\Tests;
 use BridgeCard;
 use PHPUnit\Framework\TestCase;
 
-
 class BridgeCardTest extends TestCase
 {
     public function test()
@@ -40,7 +39,7 @@ class BridgeCardTest extends TestCase
                 'foo' => 'bar',
             ],
         ];
-        $this->assertSame('<select id="id" name="name" >' . "\n" . '<option value="bar">foo</option>' . "\n". '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
+        $this->assertSame('<select id="id" name="name" >' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
 
         // optgroup
         $entry = [
@@ -50,7 +49,7 @@ class BridgeCardTest extends TestCase
             ]],
         ];
         $this->assertSame(
-            '<select id="id" name="name" >' . "\n" . '<optgroup label="kek"><option value="b">f</option>'."\n".'</optgroup></select>',
+            '<select id="id" name="name" >' . "\n" . '<optgroup label="kek"><option value="b">f</option>' . "\n" . '</optgroup></select>',
             BridgeCard::getListInput($entry, 'id', 'name')
         );
     }
