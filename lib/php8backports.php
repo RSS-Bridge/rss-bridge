@@ -34,8 +34,9 @@ if (!function_exists('array_is_list')) {
 if (!function_exists('array_find')) {
     function array_find(array $array, callable $callback): mixed
     {
-        foreach ($array as $key => $value)
+        foreach ($array as $key => $value) {
             if ($found = $callback($value, $key)) return $value;
+        }
         return null;
     }
 }
@@ -44,5 +45,12 @@ if (!function_exists('array_any')) {
     function array_any(array $array, callable $callback): bool
     {
         return !is_null(array_find($array, $callback));
+    }
+}
+
+if (!function_exists('array_all')) {
+    function array_all(array $array, callable $callback): bool
+    {
+        return !array_any($array, fn($v) => !$callback($v));
     }
 }
