@@ -143,11 +143,11 @@ final class BridgeCard
                 ) {
                     $form .= self::getTextInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'number') {
-                    $form .= self::getNumberInput($inputEntry, $idArg, $id);
+                    $form .= self::getNumberInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'list') {
                     $form .= self::getListInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'checkbox') {
-                    $form .= self::getCheckboxInput($inputEntry, $idArg, $id);
+                    $form .= self::getCheckboxInput($inputEntry, $idArg, $id) . "\n";
                 } else {
                     $foo = 2;
                     // oops?
@@ -180,32 +180,56 @@ final class BridgeCard
 
     public static function getTextInput(array $entry, string $id, string $name): string
     {
-        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $attributes = self::getInputAttributes($entry);
+        $pattern = $entry['pattern'] ?? null;
+        $checked = $entry['defaultValue'] === 'checked';
+        $required = $entry['required'] ?? false;
 
-        return sprintf('<input %s id="%s" type="text" value="%s" placeholder="%s" name="%s" />', $attributes, $id, $defaultValue, $exampleValue, $name);
+        return html_input([
+            'id'            => $id,
+            'type'          => 'text',
+            'value'         => $entry['defaultValue'],
+            'placeholder'   => $entry['exampleValue'],
+            'name'          => $name,
+            'pattern'       => $pattern,
+            'checked'       => $checked,
+            'required'      => $required,
+        ]);
     }
 
     public static function getNumberInput(array $entry, string $id, string $name): string
     {
-        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT);
-        $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT);
-        $attributes = self::getInputAttributes($entry);
+        $pattern = $entry['pattern'] ?? null;
+        $checked = $entry['defaultValue'] === 'checked';
+        $required = $entry['required'] ?? false;
 
-        return sprintf('<input %s id="%s" type="number" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
+        return html_input([
+            'id'            => $id,
+            'type'          => 'number',
+            'value'         => $entry['defaultValue'],
+            'placeholder'   => $entry['exampleValue'],
+            'name'          => $name,
+            'pattern'       => $pattern,
+            'checked'       => $checked,
+            'required'      => $required,
+        ]);
+    }
+
+    public static function getCheckboxInput(array $entry, string $id, string $name): string
+    {
+        return html_input([
+            'id'        => $id,
+            'type'      => 'checkbox',
+            'name'      => $name,
+            'checked'   => $entry['defaultValue'] === 'checked',
+        ]);
     }
 
     public static function getListInput(array $entry, string $id, string $name): string
     {
-        $required = $entry['required'] ?? null;
-        if ($required) {
-            trigger_error('The required attribute is not supported for lists');
-            unset($entry['required']);
-        }
-
-        $attributes = self::getInputAttributes($entry);
-        $list = sprintf('<select %s id="%s" name="%s" >' . "\n", $attributes, $id, $name);
+        $list = html_tag('select', [
+            'id'        => $id,
+            'name'      => $name,
+        ], false) . "\n";
 
         foreach ($entry['values'] as $name => $value) {
             if (is_array($value)) {
@@ -215,9 +239,9 @@ final class BridgeCard
                         $entry['defaultValue'] === $subname
                         || $entry['defaultValue'] === $subvalue
                     ) {
-                        $list .= '<option value="' . $subvalue . '" selected>' . $subname . '</option>';
+                        $list .= html_option($subname, $subvalue, true) . "\n";
                     } else {
-                        $list .= '<option value="' . $subvalue . '">' . $subname . '</option>';
+                        $list .= html_option($subname, $subvalue) . "\n";
                     }
                 }
                 $list .= '</optgroup>';
@@ -226,9 +250,9 @@ final class BridgeCard
                     $entry['defaultValue'] === $name
                     || $entry['defaultValue'] === $value
                 ) {
-                    $list .= '<option value="' . $value . '" selected>' . $name . '</option>' . "\n";
+                    $list .= html_option($name, $value, true) . "\n";
                 } else {
-                    $list .= '<option value="' . $value . '">' . $name . '</option>' . "\n";
+                    $list .= html_option($name, $value) . "\n";
                 }
             }
         }
@@ -236,37 +260,5 @@ final class BridgeCard
         $list .= '</select>';
 
         return $list;
-    }
-
-
-    public static function getCheckboxInput(array $entry, string $id, string $name): string
-    {
-        $required = $entry['required'] ?? null;
-        if ($required) {
-            trigger_error('The required attribute is not supported for checkboxes');
-            unset($entry['required']);
-        }
-
-        $checked = $entry['defaultValue'] === 'checked' ? 'checked' : '';
-        $attributes = self::getInputAttributes($entry);
-
-        return sprintf('<input %s id="%s" type="checkbox" name="%s" %s />' . "\n", $attributes, $id, $name, $checked);
-    }
-
-    public static function getInputAttributes(array $entry): string
-    {
-        $result = '';
-
-        $required = $entry['required'] ?? null;
-        if ($required) {
-            $result .= ' required';
-        }
-
-        $pattern = $entry['pattern'] ?? null;
-        if ($pattern) {
-            $result .= ' pattern="' . $pattern . '"';
-        }
-
-        return $result;
     }
 }

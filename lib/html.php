@@ -82,6 +82,66 @@ function truncate(string $s, int $length = 150, $marker = '...'): string
     return mb_substr($s, 0, $length) . $marker;
 }
 
+function html_input(array $input): string
+{
+    return html_tag('input', $input);
+}
+
+function html_option(string $name, $value, bool $selected = false): string
+{
+    $value = (string) $value;
+    $s = sprintf('<option value="%s"', e($value));
+
+    if ($selected) {
+        $s .= ' selected';
+    }
+
+    $s .= sprintf('>%s</option>', e($name));
+
+    return $s;
+}
+
+function html_tag(string $name, array $attributes, bool $selfclosing = true): string
+{
+    $strings = [
+        'type',
+        'id',
+        'name',
+        'value',
+        'placeholder',
+        'title',
+        'pattern',
+    ];
+    $booleans = [
+        'checked',
+        'required',
+    ];
+
+    $s = "<$name";
+
+    foreach ($attributes as $k => $v) {
+        if (in_array($k, $strings)) {
+            if ($v) {
+                $s .= sprintf(' %s="%s"', $k, e($v));
+            }
+        } elseif (in_array($k, $booleans)) {
+            if ($v === true) {
+                $s .= sprintf(' %s', $k);
+            }
+        } else {
+            throw new Exception(sprintf('Illegal html tag attribute: %s', $k));
+        }
+    }
+
+    if ($selfclosing) {
+        $s .= ' />';
+    } else {
+        $s .= ' >';
+    }
+
+    return $s;
+}
+
 /**
  * Removes unwanted tags from a given HTML text.
  *
