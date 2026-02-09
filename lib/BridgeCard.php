@@ -141,7 +141,7 @@ final class BridgeCard
                 }
 
                 if (!isset($inputEntry['defaultValue'])) {
-                    $inputEntry['defaultValue'] = '';
+                    $inputEntry['defaultValue'] = $inputEntry['type'] === 'multi-list' ? [] : '';
                 }
 
                 $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);

@@ -224,6 +224,11 @@ abstract class BridgeAbstract
                         } else {
                             $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
                         }
+                    case 'multi-list':
+                        if (isset($properties['defaultValue'])) {
+                            // Casting to array makes scalar values, like 'my value', become arrays, like ['my value'].
+                            $this->inputs[$context][$name]['value'] = (array)($properties['defaultValue'] ?? []);
+                        }
                         break;
                     default:
                         if (isset($properties['defaultValue'])) {
