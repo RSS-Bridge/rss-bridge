@@ -110,6 +110,9 @@ function html_tag(
         'pattern',
         'class',
         'for',
+        'oncontextmenu',
+        'data-for',
+        'formtarget',
     ];
     $booleans = [
         'checked',
