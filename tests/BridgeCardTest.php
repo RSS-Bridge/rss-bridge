@@ -87,7 +87,7 @@ class BridgeCardTest extends TestCase
         // test self-closing
         $this->assertSame('<p />', html_tag('p'));
         $this->assertSame('<p>hello</p>', html_tag('p', 'hello'));
-        $this->assertSame('<option value="AAA">QQQ</option>', html_tag('option', 'QQQ', ['value'=>'AAA']));
+        $this->assertSame('<option value="AAA">QQQ</option>', html_tag('option', 'QQQ', ['value' => 'AAA']));
         $this->assertSame('<p class="red">hello</p>', html_tag('p', 'hello', ['class' => 'red']));
 
         // test escaping
