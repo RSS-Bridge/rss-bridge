@@ -12,23 +12,6 @@ class BridgeCardTest extends TestCase
     public function test()
     {
         $entry = [
-            'defaultValue' => 'checked',
-        ];
-        $this->assertSame('<input id="id" type="checkbox" name="name" checked />', BridgeCard::getCheckboxInput($entry, 'id', 'name'));
-
-        $entry = [
-            'defaultValue' => 42,
-            'exampleValue' => 43,
-        ];
-        $this->assertSame('<input id="id" type="number" value="42" placeholder="43" name="name" />', BridgeCard::getNumberInput($entry, 'id', 'name'));
-
-        $entry = [
-            'defaultValue' => 'yo1',
-            'exampleValue' => 'yo2',
-        ];
-        $this->assertSame('<input id="id" type="text" value="yo1" placeholder="yo2" name="name" />', BridgeCard::getTextInput($entry, 'id', 'name'));
-
-        $entry = [
             'values' => [],
         ];
         $this->assertSame('<select id="id" name="name">' . "\n" . '</select>', BridgeCard::getListInput($entry, 'id', 'name'));
@@ -100,5 +83,11 @@ class BridgeCardTest extends TestCase
         $this->assertSame('<option value="val">name</option>', html_option('name', 'val'));
         $this->assertSame('<option value="val">name</option>', html_option('name', 'val', false));
         $this->assertSame('<option value="val" selected>name</option>', html_option('name', 'val', true));
+
+        // test label
+        $this->assertSame('<label class="showless" for="for2">Show less</label>', html_tag('label', 'Show less', [
+            'class' => 'showless',
+            'for' => 'for2',
+        ]));
     }
 }

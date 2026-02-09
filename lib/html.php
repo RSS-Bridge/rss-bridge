@@ -109,6 +109,7 @@ function html_tag(
         'title',
         'pattern',
         'class',
+        'for',
     ];
     $booleans = [
         'checked',
