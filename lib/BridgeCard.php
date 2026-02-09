@@ -46,7 +46,7 @@ final class BridgeCard
 
             <a style="position: absolute; top: 10px; left: 10px" href="#bridge-{$bridgeClassName}">
                 <h1>#</h1>
-            <a>
+            </a>
 
             <h2><a href="{$uri}">{$name}</a></h2>
             <p class="description">{$description}</p>
@@ -77,14 +77,17 @@ final class BridgeCard
 
                 if (!is_numeric($contextName)) {
                     // This is a named context
-                    $card .= '<h5>' . $contextName . '</h5>' . PHP_EOL;
+                    $card .= '<h5>' . $contextName . "</h5>\n";
                 }
 
                 $card .= self::renderForm($bridgeClassName, $contextName, $contextParameters, $token);
             }
         }
 
-        $card .= sprintf('<label class="showless" for="showmore-%s">Show less</label>', $bridgeClassName);
+        $card .= html_tag('label', 'Show less', [
+            'class' => 'showless',
+            'for'   => "showmore-$bridgeClassName",
+        ]) . "\n";
 
         if (Configuration::getConfig('admin', 'donations') && $bridge->getDonationURI()) {
             $card .= sprintf(
@@ -93,9 +96,9 @@ final class BridgeCard
                 $bridge->getDonationURI()
             );
         } else {
-            $card .= sprintf('<p class="maintainer">%s</p>', $bridge->getMaintainer());
+            $card .= html_tag('p', $bridge->getMaintainer(), ['class' => 'maintainer']) . "\n";
         }
-        $card .= '</section>';
+        $card .= "</section>\n\n";
 
         return $card;
     }
@@ -110,18 +113,27 @@ final class BridgeCard
         <form method="GET" action="?" class="bridge-form">
             <input type="hidden" name="action" value="display" />
             <input type="hidden" name="bridge" value="{$bridgeClassName}" />
+
         EOD;
 
         if (Configuration::getConfig('authentication', 'token') && $token) {
-            $form .= sprintf('<input type="hidden" name="token" value="%s" />', e($token));
+            $form .= html_input([
+                'type'  => 'hidden',
+                'name'  => 'token',
+                'value' => $token,
+            ]) . "\n";
         }
 
         if (!empty($contextName)) {
-            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $contextName);
+            $form .= html_input([
+                'type'  => 'hidden',
+                'name'  => 'context',
+                'value' => $contextName,
+            ]) . "\n";
         }
 
         if (count($contextParameters) > 0) {
-            $form .= '<div class="parameters">';
+            $form .= '<div class="parameters">' . "\n";
 
             foreach ($contextParameters as $id => $inputEntry) {
                 if (!isset($inputEntry['exampleValue'])) {
@@ -134,8 +146,7 @@ final class BridgeCard
 
                 $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
 
-                $inputName = filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                $form .= '<label for="' . $idArg . '">' . $inputName . '</label>' . PHP_EOL;
+                $form .= html_tag('label', $inputEntry['name'], ['for' => $idArg]) . "\n";
 
                 if (
                     !isset($inputEntry['type'])
@@ -143,134 +154,124 @@ final class BridgeCard
                 ) {
                     $form .= self::getTextInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'number') {
-                    $form .= self::getNumberInput($inputEntry, $idArg, $id);
+                    $form .= self::getNumberInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'list') {
                     $form .= self::getListInput($inputEntry, $idArg, $id) . "\n";
                 } elseif ($inputEntry['type'] === 'multi-list') {
                     $form .= self::getListInput($inputEntry, $idArg, $id, true) . "\n";
                 } elseif ($inputEntry['type'] === 'checkbox') {
-                    $form .= self::getCheckboxInput($inputEntry, $idArg, $id);
+                    $form .= self::getCheckboxInput($inputEntry, $idArg, $id) . "\n";
                 } else {
                     $foo = 2;
                     // oops?
                 }
 
-                $infoText = [];
-                $infoTextScript = '';
+                $params = [];
                 if (isset($inputEntry['title'])) {
-                    $infoText[] = filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                    $params = [
+                        'title' => $inputEntry['title'],
+                        'class' => 'info',
+                    ];
                 }
                 if ($inputEntry['exampleValue'] !== '') {
-                    $infoText[] = "Example (right click to use):\n" . filter_var($inputEntry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                    $infoTextScript = 'rssbridge_use_placeholder_value(this);';
+                    $params = [
+                        'title'         => sprintf("Example (right click to use):\n%s", $inputEntry['exampleValue']),
+                        'class'         => 'info',
+                        'oncontextmenu' => 'rssbridge_use_placeholder_value(this);return false',
+                        'data-for'      => $idArg,
+                    ];
                 }
 
-                if (count($infoText) > 0) {
-                    $form .= '<i class="info" data-for="' . $idArg . '" title="' . implode("\n\n", $infoText) . '" oncontextmenu="' . $infoTextScript . 'return false">i</i>';
+                if ($params) {
+                    $form .= html_tag('i', 'i', $params) . "\n";
                 } else {
-                    $form .= '<i class="no-info"></i>';
+                    $form .= html_tag('i', ' ', ['class' => 'no-info']) . "\n";
                 }
             }
 
-            $form .= '</div>';
+            $form .= "</div>\n\n";
         }
 
-        $form .= '<button type="submit" name="format" formtarget="_blank" value="Html">Generate feed</button>';
+        $form .= html_tag('button', 'Generate feed', [
+            'type'          => 'submit',
+            'name'          => 'format',
+            'value'         => 'Html',
+            'formtarget'    => '_blank',
+        ]) . "\n";
 
-        return $form . '</form>' . PHP_EOL;
+        return $form . "</form>\n\n";
     }
 
     public static function getTextInput(array $entry, string $id, string $name): string
     {
-        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $attributes = self::getInputAttributes($entry);
+        $pattern = $entry['pattern'] ?? null;
+        $checked = $entry['defaultValue'] === 'checked';
+        $required = $entry['required'] ?? false;
 
-        return sprintf('<input %s id="%s" type="text" value="%s" placeholder="%s" name="%s" />', $attributes, $id, $defaultValue, $exampleValue, $name);
+        return html_input([
+            'id'            => $id,
+            'type'          => 'text',
+            'value'         => $entry['defaultValue'],
+            'placeholder'   => $entry['exampleValue'],
+            'name'          => $name,
+            'pattern'       => $pattern,
+            'checked'       => $checked,
+            'required'      => $required,
+        ]);
     }
 
     public static function getNumberInput(array $entry, string $id, string $name): string
     {
-        $defaultValue = filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT);
-        $exampleValue = filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT);
-        $attributes = self::getInputAttributes($entry);
+        $pattern = $entry['pattern'] ?? null;
+        $checked = $entry['defaultValue'] === 'checked';
+        $required = $entry['required'] ?? false;
 
-        return sprintf('<input %s id="%s" type="number" value="%s" placeholder="%s" name="%s" />' . "\n", $attributes, $id, $defaultValue, $exampleValue, $name);
+        return html_input([
+            'id'            => $id,
+            'type'          => 'number',
+            'value'         => $entry['defaultValue'],
+            'placeholder'   => $entry['exampleValue'],
+            'name'          => $name,
+            'pattern'       => $pattern,
+            'checked'       => $checked,
+            'required'      => $required,
+        ]);
+    }
+
+    public static function getCheckboxInput(array $entry, string $id, string $name): string
+    {
+        return html_input([
+            'id'        => $id,
+            'type'      => 'checkbox',
+            'name'      => $name,
+            'checked'   => $entry['defaultValue'] === 'checked',
+        ]);
     }
 
     public static function getListInput(array $entry, string $id, string $name, bool $isMulti = false): string
     {
-        $required = $entry['required'] ?? null;
-        if ($required) {
-            trigger_error('The required attribute is not supported for lists');
-            unset($entry['required']);
-        }
+        $list = sprintf('<select id="%s" name="%s"%s>', $id, $name . ($isMulti ? '[]' : ''), $isMulti ? ' multiple' : '') . "\n";
 
-        $attributes = self::getInputAttributes($entry);
-        $list = sprintf('<select %s id="%s" name="%s" %s>' . "\n", $attributes, $id, $name . ($isMulti ? '[]' : ''), $isMulti ? 'multiple ' : '');
+        // Cast to array, so scalars become single element arrays - `"default value"` becomes `["default value"]`.
+        // Flip, so the values become keys and we can access the values later with O(1) complexity.
+        $flip = $isMulti ? array_flip((array)($entry['defaultValue'] ?? [])) : null;
 
         foreach ($entry['values'] as $name => $value) {
             if (is_array($value)) {
                 $list .= '<optgroup label="' . htmlentities($name) . '">';
                 foreach ($value as $subname => $subvalue) {
-                    if (
-                        $isMulti
-                            ? $entry['defaultValue'] && array_any($entry['defaultValue'], fn($v) => $v === $subname || $v === $subvalue)
-                            : ($entry['defaultValue'] === $subname || $entry['defaultValue'] === $subvalue)
-                    ) {
-                        $list .= '<option value="' . $subvalue . '" selected>' . $subname . '</option>';
-                    } else {
-                        $list .= '<option value="' . $subvalue . '">' . $subname . '</option>';
-                    }
+                    $selected = $isMulti ? (isset($flip[$subname]) || isset($flip[$subvalue])) : ($entry['defaultValue'] === $subname || $entry['defaultValue'] === $subvalue);
+                    $list .= html_option($subname, $subvalue, $selected) . "\n";
                 }
                 $list .= '</optgroup>';
             } else {
-                if (
-                    $isMulti
-                        ? $entry['defaultValue'] && array_any($entry['defaultValue'], fn($v) => $v === $name || $v === $value)
-                        : ($entry['defaultValue'] === $name || $entry['defaultValue'] === $value)
-                ) {
-                    $list .= '<option value="' . $value . '" selected>' . $name . '</option>' . "\n";
-                } else {
-                    $list .= '<option value="' . $value . '">' . $name . '</option>' . "\n";
-                }
+                $selected = $isMulti ? (isset($flip[$name]) || isset($flip[$value])) : ($entry['defaultValue'] === $name || $entry['defaultValue'] === $value);
+                $list .= html_option($name, $value, $selected) . "\n";
             }
         }
 
-        $list .= '</select>';
+        $list .= "</select>\n";
 
         return $list;
-    }
-
-
-    public static function getCheckboxInput(array $entry, string $id, string $name): string
-    {
-        $required = $entry['required'] ?? null;
-        if ($required) {
-            trigger_error('The required attribute is not supported for checkboxes');
-            unset($entry['required']);
-        }
-
-        $checked = $entry['defaultValue'] === 'checked' ? 'checked' : '';
-        $attributes = self::getInputAttributes($entry);
-
-        return sprintf('<input %s id="%s" type="checkbox" name="%s" %s />' . "\n", $attributes, $id, $name, $checked);
-    }
-
-    public static function getInputAttributes(array $entry): string
-    {
-        $result = '';
-
-        $required = $entry['required'] ?? null;
-        if ($required) {
-            $result .= ' required';
-        }
-
-        $pattern = $entry['pattern'] ?? null;
-        if ($pattern) {
-            $result .= ' pattern="' . $pattern . '"';
-        }
-
-        return $result;
     }
 }
