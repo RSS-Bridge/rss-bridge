@@ -77,14 +77,17 @@ final class BridgeCard
 
                 if (!is_numeric($contextName)) {
                     // This is a named context
-                    $card .= '<h5>' . $contextName . '</h5>' . PHP_EOL;
+                    $card .= '<h5>' . $contextName . "</h5>\n";
                 }
 
                 $card .= self::renderForm($bridgeClassName, $contextName, $contextParameters, $token);
             }
         }
 
-        $card .= sprintf('<label class="showless" for="showmore-%s">Show less</label>', $bridgeClassName);
+        $card .= html_tag('label', 'Show less', [
+            'class' => 'showless',
+            'for'   => "showmore-$bridgeClassName",
+        ]) . "\n";
 
         if (Configuration::getConfig('admin', 'donations') && $bridge->getDonationURI()) {
             $card .= sprintf(
@@ -93,9 +96,9 @@ final class BridgeCard
                 $bridge->getDonationURI()
             );
         } else {
-            $card .= sprintf('<p class="maintainer">%s</p>', $bridge->getMaintainer());
+            $card .= html_tag('p', $bridge->getMaintainer(), ['class' => 'maintainer']) . "\n";
         }
-        $card .= '</section>';
+        $card .= "</section>\n\n";
 
         return $card;
     }
@@ -110,18 +113,27 @@ final class BridgeCard
         <form method="GET" action="?" class="bridge-form">
             <input type="hidden" name="action" value="display" />
             <input type="hidden" name="bridge" value="{$bridgeClassName}" />
+
         EOD;
 
         if (Configuration::getConfig('authentication', 'token') && $token) {
-            $form .= sprintf('<input type="hidden" name="token" value="%s" />', e($token));
+            $form .= html_input([
+                'type'  => 'hidden',
+                'name'  => 'token',
+                'value' => $token,
+            ]) . "\n";
         }
 
         if (!empty($contextName)) {
-            $form .= sprintf('<input type="hidden" name="context" value="%s" />', $contextName);
+            $form .= html_input([
+                'type'  => 'hidden',
+                'name'  => 'context',
+                'value' => $contextName,
+            ]) . "\n";
         }
 
         if (count($contextParameters) > 0) {
-            $form .= '<div class="parameters">';
+            $form .= '<div class="parameters">' . "\n";
 
             foreach ($contextParameters as $id => $inputEntry) {
                 if (!isset($inputEntry['exampleValue'])) {
@@ -134,8 +146,7 @@ final class BridgeCard
 
                 $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
 
-                $inputName = filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                $form .= '<label for="' . $idArg . '">' . $inputName . '</label>' . PHP_EOL;
+                $form .= html_tag('label', $inputEntry['name'], ['for' => $idArg]) . "\n";
 
                 if (
                     !isset($inputEntry['type'])
@@ -153,29 +164,40 @@ final class BridgeCard
                     // oops?
                 }
 
-                $infoText = [];
-                $infoTextScript = '';
+                $params = [];
                 if (isset($inputEntry['title'])) {
-                    $infoText[] = filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                    $params = [
+                        'title' => $inputEntry['title'],
+                        'class' => 'info',
+                    ];
                 }
                 if ($inputEntry['exampleValue'] !== '') {
-                    $infoText[] = "Example (right click to use):\n" . filter_var($inputEntry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                    $infoTextScript = 'rssbridge_use_placeholder_value(this);';
+                    $params = [
+                        'title'         => sprintf("Example (right click to use):\n%s", $inputEntry['exampleValue']),
+                        'class'         => 'info',
+                        'oncontextmenu' => 'rssbridge_use_placeholder_value(this);return false',
+                        'data-for'      => $idArg,
+                    ];
                 }
 
-                if (count($infoText) > 0) {
-                    $form .= '<i class="info" data-for="' . $idArg . '" title="' . implode("\n\n", $infoText) . '" oncontextmenu="' . $infoTextScript . 'return false">i</i>';
+                if ($params) {
+                    $form .= html_tag('i', 'i', $params) . "\n";
                 } else {
-                    $form .= '<i class="no-info"></i>';
+                    $form .= html_tag('i', ' ', ['class' => 'no-info']) . "\n";
                 }
             }
 
-            $form .= '</div>';
+            $form .= "</div>\n\n";
         }
 
-        $form .= '<button type="submit" name="format" formtarget="_blank" value="Html">Generate feed</button>';
+        $form .= html_tag('button', 'Generate feed', [
+            'type'          => 'submit',
+            'name'          => 'format',
+            'value'         => 'Html',
+            'formtarget'    => '_blank',
+        ]) . "\n";
 
-        return $form . '</form>' . PHP_EOL;
+        return $form . "</form>\n\n";
     }
 
     public static function getTextInput(array $entry, string $id, string $name): string
@@ -254,7 +276,7 @@ final class BridgeCard
             }
         }
 
-        $list .= '</select>';
+        $list .= "</select>\n";
 
         return $list;
     }
