@@ -23,8 +23,14 @@ class BridgeCardTest extends TestCase
                 'foo' => 'bar',
             ],
         ];
-        $this->assertSame('<select id="id" name="name">' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n", BridgeCard::getListInput($entry, 'id', 'name'));
-        $this->assertSame('<select id="id" name="name[]" multiple>' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n", BridgeCard::getListInput($entry, 'id', 'name', true));
+        $this->assertSame(
+            '<select id="id" name="name">' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n",
+            BridgeCard::getListInput($entry, 'id', 'name')
+        );
+        $this->assertSame(
+            '<select id="id" name="name[]" multiple>' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n",
+            BridgeCard::getListInput($entry, 'id', 'name', true)
+        );
 
         // optgroup
         $entry = [
