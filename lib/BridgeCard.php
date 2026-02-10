@@ -140,10 +140,6 @@ final class BridgeCard
                     $inputEntry['exampleValue'] = '';
                 }
 
-                if (!isset($inputEntry['defaultValue'])) {
-                    $inputEntry['defaultValue'] = $inputEntry['type'] === 'multi-list' ? [] : '';
-                }
-
                 $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
 
                 $form .= html_tag('label', $inputEntry['name'], ['for' => $idArg]) . "\n";
@@ -205,7 +201,7 @@ final class BridgeCard
     public static function getTextInput(array $entry, string $id, string $name): string
     {
         $pattern = $entry['pattern'] ?? null;
-        $checked = $entry['defaultValue'] === 'checked';
+        $checked = ($entry['defaultValue'] ??= '') === 'checked';
         $required = $entry['required'] ?? false;
 
         return html_input([
@@ -223,7 +219,7 @@ final class BridgeCard
     public static function getNumberInput(array $entry, string $id, string $name): string
     {
         $pattern = $entry['pattern'] ?? null;
-        $checked = $entry['defaultValue'] === 'checked';
+        $checked = ($entry['defaultValue'] ??= '') === 'checked';
         $required = $entry['required'] ?? false;
 
         return html_input([
@@ -244,17 +240,20 @@ final class BridgeCard
             'id'        => $id,
             'type'      => 'checkbox',
             'name'      => $name,
-            'checked'   => $entry['defaultValue'] === 'checked',
+            'checked'   => ($entry['defaultValue'] ??= '') === 'checked',
         ]);
     }
 
     public static function getListInput(array $entry, string $id, string $name, bool $isMulti = false): string
     {
-        $list = sprintf('<select id="%s" name="%s"%s>', $id, $name . ($isMulti ? '[]' : ''), $isMulti ? ' multiple' : '') . "\n";
-
+        $entry['defaultValue'] ??= $isMulti ? [] : null;
         // Cast to array, so scalars become single element arrays - `"default value"` becomes `["default value"]`.
         // Flip, so the values become keys and we can access the values later with O(1) complexity.
-        $flip = $isMulti ? array_flip((array)($entry['defaultValue'] ?? [])) : null;
+        if ($isMulti) {
+            $flip = array_flip((array)($entry['defaultValue']));
+        }
+
+        $list = sprintf('<select id="%s" name="%s"%s>', $id, $name . ($isMulti ? '[]' : ''), $isMulti ? ' multiple' : '') . "\n";
 
         foreach ($entry['values'] as $name => $value) {
             if (is_array($value)) {
