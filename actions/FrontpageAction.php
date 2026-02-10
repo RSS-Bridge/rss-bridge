@@ -57,7 +57,7 @@ final class FrontpageAction implements ActionInterface
         $name = $bridge->getName();
         $icon = $bridge->getIcon();
         $description = $bridge->getDescription();
-        $contexts = $bridge->getParameters();
+        $parameters = $bridge->getParameters();
 
         // Checkbox for disabling of proxy (if enabled)
         if (
@@ -65,14 +65,14 @@ final class FrontpageAction implements ActionInterface
             && Configuration::getConfig('proxy', 'by_bridge')
         ) {
             $proxyName = Configuration::getConfig('proxy', 'name') ?: Configuration::getConfig('proxy', 'url');
-            $contexts['global']['_noproxy'] = [
+            $parameters['global']['_noproxy'] = [
                 'name' => sprintf('Disable proxy (%s)', $proxyName),
                 'type' => 'checkbox',
             ];
         }
 
         if (Configuration::getConfig('cache', 'custom_timeout')) {
-            $contexts['global']['_cache_timeout'] = [
+            $parameters['global']['_cache_timeout'] = [
                 'name' => 'Cache timeout in seconds',
                 'type' => 'number',
                 'defaultValue' => $bridge->getCacheTimeout()
@@ -101,22 +101,22 @@ final class FrontpageAction implements ActionInterface
 
         CARD;
 
-        if (count($contexts) === 0) {
+        if (count($parameters) === 0) {
             // The bridge has zero parameters
             $card .= self::renderForm($bridgeClassName, '', [], $token);
-        } elseif (count($contexts) === 1 && array_key_exists('global', $contexts)) {
+        } elseif (count($parameters) === 1 && array_key_exists('global', $parameters)) {
             // The bridge has a single context with key 'global'
-            $card .= self::renderForm($bridgeClassName, '', $contexts['global'], $token);
+            $card .= self::renderForm($bridgeClassName, '', $parameters['global'], $token);
         } else {
             // The bridge has one or more contexts (named or unnamed)
-            foreach ($contexts as $contextName => $contextParameters) {
+            foreach ($parameters as $contextName => $contextParameters) {
                 if ($contextName === 'global') {
                     continue;
                 }
 
-                if (array_key_exists('global', $contexts)) {
+                if (array_key_exists('global', $parameters)) {
                     // Merge the global parameters into current context
-                    $contextParameters = array_merge($contextParameters, $contexts['global']);
+                    $contextParameters = array_merge($contextParameters, $parameters['global']);
                 }
 
                 if (!is_numeric($contextName)) {
@@ -150,7 +150,7 @@ final class FrontpageAction implements ActionInterface
     private static function renderForm(
         string $bridgeClassName,
         string $contextName,
-        array $contextParameters,
+        array $parameters,
         ?string $token
     ): string {
         $form = <<<EOD
@@ -176,48 +176,48 @@ final class FrontpageAction implements ActionInterface
                 ]) . "\n";
         }
 
-        if (count($contextParameters) > 0) {
+        if (count($parameters) > 0) {
             $form .= '<div class="parameters">' . "\n";
 
-            foreach ($contextParameters as $id => $inputEntry) {
-                if (!isset($inputEntry['exampleValue'])) {
-                    $inputEntry['exampleValue'] = '';
+            foreach ($parameters as $id => $parameter) {
+                if (!isset($parameter['exampleValue'])) {
+                    $parameter['exampleValue'] = '';
                 }
 
-                if (!isset($inputEntry['defaultValue'])) {
-                    $inputEntry['defaultValue'] = '';
+                if (!isset($parameter['defaultValue'])) {
+                    $parameter['defaultValue'] = '';
                 }
 
                 $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
 
-                $form .= html_tag('label', $inputEntry['name'], ['for' => $idArg]) . "\n";
+                $form .= html_tag('label', $parameter['name'], ['for' => $idArg]) . "\n";
 
                 if (
-                    !isset($inputEntry['type'])
-                    || $inputEntry['type'] === 'text'
+                    !isset($parameter['type'])
+                    || $parameter['type'] === 'text'
                 ) {
-                    $form .= self::getTextInput($inputEntry, $idArg, $id) . "\n";
-                } elseif ($inputEntry['type'] === 'number') {
-                    $form .= self::getNumberInput($inputEntry, $idArg, $id) . "\n";
-                } elseif ($inputEntry['type'] === 'list') {
-                    $form .= self::getListInput($inputEntry, $idArg, $id) . "\n";
-                } elseif ($inputEntry['type'] === 'checkbox') {
-                    $form .= self::getCheckboxInput($inputEntry, $idArg, $id) . "\n";
+                    $form .= self::getTextInput($parameter, $idArg, $id) . "\n";
+                } elseif ($parameter['type'] === 'number') {
+                    $form .= self::getNumberInput($parameter, $idArg, $id) . "\n";
+                } elseif ($parameter['type'] === 'list') {
+                    $form .= self::getListInput($parameter, $idArg, $id) . "\n";
+                } elseif ($parameter['type'] === 'checkbox') {
+                    $form .= self::getCheckboxInput($parameter, $idArg, $id) . "\n";
                 } else {
                     $foo = 2;
                     // oops?
                 }
 
                 $params = [];
-                if (isset($inputEntry['title'])) {
+                if (isset($parameter['title'])) {
                     $params = [
-                        'title' => $inputEntry['title'],
+                        'title' => $parameter['title'],
                         'class' => 'info',
                     ];
                 }
-                if ($inputEntry['exampleValue'] !== '') {
+                if ($parameter['exampleValue'] !== '') {
                     $params = [
-                        'title'         => sprintf("Example (right click to use):\n%s", $inputEntry['exampleValue']),
+                        'title'         => sprintf("Example (right click to use):\n%s", $parameter['exampleValue']),
                         'class'         => 'info',
                         'oncontextmenu' => 'rssbridge_use_placeholder_value(this);return false',
                         'data-for'      => $idArg,
@@ -244,17 +244,17 @@ final class FrontpageAction implements ActionInterface
         return $form . "</form>\n\n";
     }
 
-    public static function getTextInput(array $entry, string $id, string $name): string
+    public static function getTextInput(array $parameter, string $id, string $name): string
     {
-        $pattern = $entry['pattern'] ?? null;
-        $checked = $entry['defaultValue'] === 'checked';
-        $required = $entry['required'] ?? false;
+        $pattern = $parameter['pattern'] ?? null;
+        $checked = $parameter['defaultValue'] === 'checked';
+        $required = $parameter['required'] ?? false;
 
         return html_input([
             'id'            => $id,
             'type'          => 'text',
-            'value'         => $entry['defaultValue'],
-            'placeholder'   => $entry['exampleValue'],
+            'value'         => $parameter['defaultValue'],
+            'placeholder'   => $parameter['exampleValue'],
             'name'          => $name,
             'pattern'       => $pattern,
             'checked'       => $checked,
@@ -262,17 +262,17 @@ final class FrontpageAction implements ActionInterface
         ]);
     }
 
-    public static function getNumberInput(array $entry, string $id, string $name): string
+    public static function getNumberInput(array $parameter, string $id, string $name): string
     {
-        $pattern = $entry['pattern'] ?? null;
-        $checked = $entry['defaultValue'] === 'checked';
-        $required = $entry['required'] ?? false;
+        $pattern = $parameter['pattern'] ?? null;
+        $checked = $parameter['defaultValue'] === 'checked';
+        $required = $parameter['required'] ?? false;
 
         return html_input([
             'id'            => $id,
             'type'          => 'number',
-            'value'         => $entry['defaultValue'],
-            'placeholder'   => $entry['exampleValue'],
+            'value'         => $parameter['defaultValue'],
+            'placeholder'   => $parameter['exampleValue'],
             'name'          => $name,
             'pattern'       => $pattern,
             'checked'       => $checked,
@@ -280,27 +280,27 @@ final class FrontpageAction implements ActionInterface
         ]);
     }
 
-    public static function getCheckboxInput(array $entry, string $id, string $name): string
+    public static function getCheckboxInput(array $parameter, string $id, string $name): string
     {
         return html_input([
             'id'        => $id,
             'type'      => 'checkbox',
             'name'      => $name,
-            'checked'   => $entry['defaultValue'] === 'checked',
+            'checked'   => $parameter['defaultValue'] === 'checked',
         ]);
     }
 
-    public static function getListInput(array $entry, string $id, string $name): string
+    public static function getListInput(array $parameter, string $id, string $name): string
     {
         $list = sprintf('<select id="%s" name="%s">', $id, $name) . "\n";
 
-        foreach ($entry['values'] as $name => $value) {
+        foreach ($parameter['values'] as $name => $value) {
             if (is_array($value)) {
                 $list .= '<optgroup label="' . htmlentities($name) . '">';
                 foreach ($value as $subname => $subvalue) {
                     if (
-                        $entry['defaultValue'] === $subname
-                        || $entry['defaultValue'] === $subvalue
+                        $parameter['defaultValue'] === $subname
+                        || $parameter['defaultValue'] === $subvalue
                     ) {
                         $list .= html_option($subname, $subvalue, true) . "\n";
                     } else {
@@ -310,8 +310,8 @@ final class FrontpageAction implements ActionInterface
                 $list .= '</optgroup>';
             } else {
                 if (
-                    $entry['defaultValue'] === $name
-                    || $entry['defaultValue'] === $value
+                    $parameter['defaultValue'] === $name
+                    || $parameter['defaultValue'] === $value
                 ) {
                     $list .= html_option($name, $value, true) . "\n";
                 } else {
