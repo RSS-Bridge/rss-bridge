@@ -101,9 +101,6 @@ abstract class BridgeAbstract
         return static::MAINTAINER;
     }
 
-    /**
-     * A more correct method name would have been "getContexts"
-     */
     public function getParameters(): array
     {
         return static::PARAMETERS;
@@ -148,9 +145,9 @@ abstract class BridgeAbstract
             unset($input['context']);
         }
 
-        $contexts = $this->getParameters();
+        $parameters = $this->getParameters();
 
-        if (!$contexts) {
+        if (!$parameters) {
             if ($input) {
                 throw new \Exception('Invalid parameters value(s)');
             }
@@ -160,7 +157,7 @@ abstract class BridgeAbstract
         $validator = new ParameterValidator();
 
         // $input IS PASSED BY REFERENCE!
-        $errors = $validator->validateInput($input, $contexts);
+        $errors = $validator->validateInput($input, $parameters);
         if ($errors !== []) {
             $invalidParameterKeys = array_column($errors, 'name');
             throw new \Exception(sprintf('Invalid parameters value(s): %s', implode(', ', $invalidParameterKeys)));
@@ -168,7 +165,7 @@ abstract class BridgeAbstract
 
         // Guess the context from input data
         if (empty($this->queriedContext)) {
-            $queriedContext = $validator->getQueriedContext($input, $contexts);
+            $queriedContext = $validator->getQueriedContext($input, $parameters);
             $this->queriedContext = $queriedContext;
         }
 
@@ -193,32 +190,32 @@ abstract class BridgeAbstract
         }
 
         foreach ($contextNames as $context) {
-            foreach ($parameters[$context] as $name => $properties) {
+            foreach ($parameters[$context] as $name => $parameter) {
                 // Skip this property if we already set the value when iterating through another context.
                 if (isset($this->inputs[$queriedContext][$name]['value'])) {
                     continue;
                 }
                 // `… ?? null` protects us from 'Undefined array key' errors. It fallbacks to null if the value is null or the key does not exist.
                 $value = $input[$name] ?? null;
-                switch ($properties['type'] ?? 'text') {
+                switch ($parameter['type'] ?? 'text') {
                     case 'checkbox':
                         // We don't use default value. Use the value if value is set, `false` if not.
                         $value ??= false;
                         break;
                     case 'list':
-                        $value ??= ($properties['defaultValue'] ?? null);
+                        $value ??= ($parameter['defaultValue'] ?? null);
                         // Break from the switch statement if we set the value or default value was not null.
                         if ($value !== null) {
                             break;
                         }
                         // Get the first item or its first subitem.
-                        $value = reset($properties['values']);
+                        $value = reset($parameter['values']);
                         if (is_array($value)) {
                             $value = reset($value);
                         }
                         break;
                     default:
-                        $value ??= ($properties['defaultValue'] ?? null);
+                        $value ??= ($parameter['defaultValue'] ?? null);
                         break;
                 }
                 // Set the value in the GUESSED context.
