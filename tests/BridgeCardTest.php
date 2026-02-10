@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RssBridge\Tests;
 
-use BridgeCard;
+use FrontpageAction;
 use PHPUnit\Framework\TestCase;
 
 class BridgeCardTest extends TestCase
@@ -14,8 +14,8 @@ class BridgeCardTest extends TestCase
         $entry = [
             'values' => [],
         ];
-        $this->assertSame('<select id="id" name="name">' . "\n" . '</select>' . "\n", BridgeCard::getListInput($entry, 'id', 'name'));
-        $this->assertSame('<select id="id" name="name[]" multiple>' . "\n" . '</select>' . "\n", BridgeCard::getListInput($entry, 'id', 'name', true));
+        $this->assertSame('<select id="id" name="name">' . "\n" . '</select>' . "\n", FrontpageAction::getListInput($entry, 'id', 'name'));
+        $this->assertSame('<select id="id" name="name[]" multiple>' . "\n" . '</select>' . "\n", FrontpageAction::getListInput($entry, 'id', 'name', true));
 
         $entry = [
             'defaultValue' => 2,
@@ -25,11 +25,11 @@ class BridgeCardTest extends TestCase
         ];
         $this->assertSame(
             '<select id="id" name="name">' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n",
-            BridgeCard::getListInput($entry, 'id', 'name')
+            FrontpageAction::getListInput($entry, 'id', 'name')
         );
         $this->assertSame(
             '<select id="id" name="name[]" multiple>' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n",
-            BridgeCard::getListInput($entry, 'id', 'name', true)
+            FrontpageAction::getListInput($entry, 'id', 'name', true)
         );
 
         // optgroup
@@ -41,11 +41,11 @@ class BridgeCardTest extends TestCase
         ];
         $this->assertSame(
             '<select id="id" name="name">' . "\n" . '<optgroup label="kek"><option value="b">f</option>' . "\n" . '</optgroup></select>' . "\n",
-            BridgeCard::getListInput($entry, 'id', 'name')
+            FrontpageAction::getListInput($entry, 'id', 'name')
         );
         $this->assertSame(
             '<select id="id" name="name[]" multiple>' . "\n" . '<optgroup label="kek"><option value="b">f</option>' . "\n" . '</optgroup></select>' . "\n",
-            BridgeCard::getListInput($entry, 'id', 'name', true)
+            FrontpageAction::getListInput($entry, 'id', 'name', true)
         );
 
         //TODO: add test for mutli-list with array defaultValue

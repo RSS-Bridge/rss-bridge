@@ -101,9 +101,6 @@ abstract class BridgeAbstract
         return static::MAINTAINER;
     }
 
-    /**
-     * A more correct method name would have been "getContexts"
-     */
     public function getParameters(): array
     {
         return static::PARAMETERS;
@@ -148,9 +145,9 @@ abstract class BridgeAbstract
             unset($input['context']);
         }
 
-        $contexts = $this->getParameters();
+        $parameters = $this->getParameters();
 
-        if (!$contexts) {
+        if (!$parameters) {
             if ($input) {
                 throw new \Exception('Invalid parameters value(s)');
             }
@@ -160,7 +157,7 @@ abstract class BridgeAbstract
         $validator = new ParameterValidator();
 
         // $input IS PASSED BY REFERENCE!
-        $errors = $validator->validateInput($input, $contexts);
+        $errors = $validator->validateInput($input, $parameters);
         if ($errors !== []) {
             $invalidParameterKeys = array_column($errors, 'name');
             throw new \Exception(sprintf('Invalid parameters value(s): %s', implode(', ', $invalidParameterKeys)));
@@ -168,7 +165,7 @@ abstract class BridgeAbstract
 
         // Guess the context from input data
         if (empty($this->queriedContext)) {
-            $queriedContext = $validator->getQueriedContext($input, $contexts);
+            $queriedContext = $validator->getQueriedContext($input, $parameters);
             $this->queriedContext = $queriedContext;
         }
 
@@ -183,10 +180,12 @@ abstract class BridgeAbstract
 
     private function setInputWithContext(array $input, $queriedContext)
     {
+        $parameters = $this->getParameters();
+
         // Import and assign all inputs to their context
         foreach ($input as $name => $value) {
-            foreach ($this->getParameters() as $context => $set) {
-                if (array_key_exists($name, $this->getParameters()[$context])) {
+            foreach ($parameters as $context => $set) {
+                if (array_key_exists($name, $parameters[$context])) {
                     $this->inputs[$context][$name]['value'] = $value;
                 }
             }
@@ -194,35 +193,35 @@ abstract class BridgeAbstract
 
         // Apply default values to missing data
         $contextNames = [$queriedContext];
-        if (array_key_exists('global', $this->getParameters())) {
+        if (array_key_exists('global', $parameters)) {
             $contextNames[] = 'global';
         }
 
         foreach ($contextNames as $context) {
-            if (!isset($this->getParameters()[$context])) {
+            if (!isset($parameters[$context])) {
                 // unknown context provided by client, throw exception here? or continue?
             }
 
-            foreach ($this->getParameters()[$context] as $name => $properties) {
+            foreach ($parameters[$context] as $name => $parameter) {
                 if (isset($this->inputs[$context][$name]['value'])) {
                     continue;
                 }
 
-                $type = $properties['type'] ?? 'text';
+                $type = $parameter['type'] ?? 'text';
 
                 switch ($type) {
                     case 'checkbox':
                         $this->inputs[$context][$name]['value'] = $input[$context][$name]['value'] ?? false;
                         break;
                     case 'list':
-                        if (!isset($properties['defaultValue'])) {
-                            $firstItem = reset($properties['values']);
+                        if (!isset($parameter['defaultValue'])) {
+                            $firstItem = reset($parameter['values']);
                             if (is_array($firstItem)) {
                                 $firstItem = reset($firstItem);
                             }
                             $this->inputs[$context][$name]['value'] = $firstItem;
                         } else {
-                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                            $this->inputs[$context][$name]['value'] = $parameter['defaultValue'];
                         }
                         break;
                     case 'multi-list':
@@ -232,24 +231,25 @@ abstract class BridgeAbstract
                         }
                         break;
                     default:
-                        if (isset($properties['defaultValue'])) {
-                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                        if (isset($parameter['defaultValue'])) {
+                            $this->inputs[$context][$name]['value'] = $parameter['defaultValue'];
                         }
                         break;
                 }
             }
+            unset($parameter);
         }
 
         // Copy global parameter values to the guessed context
-        if (array_key_exists('global', $this->getParameters())) {
-            foreach ($this->getParameters()['global'] as $name => $properties) {
+        if (array_key_exists('global', $parameters)) {
+            foreach ($parameters['global'] as $name => $parameter) {
                 if (isset($input[$name])) {
                     $value = $input[$name];
                 } else {
-                    if (($properties['type'] ?? null) === 'checkbox') {
+                    if (($parameter['type'] ?? null) === 'checkbox') {
                         $value = false;
-                    } elseif (isset($properties['defaultValue'])) {
-                        $value = $properties['defaultValue'];
+                    } elseif (isset($parameter['defaultValue'])) {
+                        $value = $parameter['defaultValue'];
                     } else {
                         continue;
                     }

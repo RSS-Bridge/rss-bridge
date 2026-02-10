@@ -5,13 +5,13 @@ class ParameterValidator
     /**
      * Validate and sanitize user inputs against configured bridge parameters (contexts)
      */
-    public function validateInput(array &$input, $contexts): array
+    public function validateInput(array &$input, array $parameters): array
     {
         $errors = [];
 
         foreach ($input as $name => $value) {
             $registered = false;
-            foreach ($contexts as $contextName => $contextParameters) {
+            foreach ($parameters as $contextName => $contextParameters) {
                 if (!array_key_exists($name, $contextParameters)) {
                     continue;
                 }
@@ -61,25 +61,18 @@ class ParameterValidator
         return $errors;
     }
 
-    /**
-     * Get the name of the context matching the provided inputs
-     *
-     * @param array $input Associative array of user data
-     * @param array $contexts Array of bridge parameters
-     * @return string|null Returns the context name or null if no match was found
-     */
-    public function getQueriedContext(array $input, array $contexts)
+    public function getQueriedContext(array $input, array $parameters)
     {
         $queriedContexts = [];
 
         // Detect matching context
-        foreach ($contexts as $contextName => $contextParameters) {
+        foreach ($parameters as $contextName => $contextParameters) {
             $queriedContexts[$contextName] = null;
 
             // Ensure all user data exist in the current context
             $notInContext = array_diff_key($input, $contextParameters);
-            if (array_key_exists('global', $contexts)) {
-                $notInContext = array_diff_key($notInContext, $contexts['global']);
+            if (array_key_exists('global', $parameters)) {
+                $notInContext = array_diff_key($notInContext, $parameters['global']);
             }
             if (count($notInContext) > 0) {
                 continue;
@@ -103,7 +96,7 @@ class ParameterValidator
 
         // Abort if one of the globally required parameters is not satisfied
         if (
-            array_key_exists('global', $contexts)
+            array_key_exists('global', $parameters)
             && $queriedContexts['global'] === false
         ) {
             return null;
