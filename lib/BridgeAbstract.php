@@ -198,7 +198,7 @@ abstract class BridgeAbstract
                 if (isset($this->inputs[$queriedContext][$name]['value'])) {
                     continue;
                 }
-                // `… ?? null` protects us from 'Undefined array key' errors - it is more or less equivalent to checking with `isset` or `array_key_exists`.
+                // `… ?? null` protects us from 'Undefined array key' errors. It fallbacks to null if the value is null or the key does not exist.
                 $value = $input[$name] ?? null;
                 switch ($properties['type'] ?? 'text') {
                     case 'checkbox':
@@ -211,11 +211,11 @@ abstract class BridgeAbstract
                         if ($value !== null) {
                             break;
                         }
-                        // Get the first item or it's first subitem.
+                        // Get the first item or its first subitem.
                         $value = reset($properties['values']);
                         if (is_array($value)) {
                             $value = reset($value);
-                        };
+                        }
                         break;
                     default:
                         $value ??= ($properties['defaultValue'] ?? null);
