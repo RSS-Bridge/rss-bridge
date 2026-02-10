@@ -290,11 +290,11 @@ final class FrontpageAction implements ActionInterface
 
     public static function getListInput(array $parameter, string $id, string $name, bool $isMulti = false): string
     {
-        $parameter['defaultValue'] ??= $isMulti ? [] : null;
+        $default = $parameter['defaultValue'] ?? ($isMulti ? [] : null);
         // Cast to array, so scalars become single element arrays - `"default value"` becomes `["default value"]`.
         // Flip, so the values become keys and we can access the values later with O(1) complexity.
         if ($isMulti) {
-            $flip = array_flip((array)($parameter['defaultValue']));
+            $default = array_flip((array)($default));
         }
 
         $list = sprintf('<select id="%s" name="%s"%s>', $id, $name . ($isMulti ? '[]' : ''), $isMulti ? ' multiple' : '') . "\n";
@@ -303,12 +303,20 @@ final class FrontpageAction implements ActionInterface
             if (is_array($value)) {
                 $list .= '<optgroup label="' . htmlentities($name) . '">';
                 foreach ($value as $subname => $subvalue) {
-                    $selected = $isMulti ? (isset($flip[$subname]) || isset($flip[$subvalue])) : ($parameter['defaultValue'] === $subname || $parameter['defaultValue'] === $subvalue);
+                    if ($isMulti) {
+                        $selected = isset($default[$subname]) || isset($default[$subvalue]);
+                    } else {
+                        $selected = $default === $subname || $default === $subvalue;
+                    }
                     $list .= html_option($subname, $subvalue, $selected) . "\n";
                 }
                 $list .= '</optgroup>';
             } else {
-                $selected = $isMulti ? (isset($flip[$name]) || isset($flip[$value])) : ($parameter['defaultValue'] === $name || $parameter['defaultValue'] === $value);
+                if ($isMulti) {
+                    $selected = isset($default[$name]) || isset($default[$value]);
+                } else {
+                    $selected = $default === $name || $default === $value;
+                }
                 $list .= html_option($name, $value, $selected) . "\n";
             }
         }
