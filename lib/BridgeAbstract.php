@@ -183,82 +183,47 @@ abstract class BridgeAbstract
 
     private function setInputWithContext(array $input, $queriedContext)
     {
-        // Import and assign all inputs to their context
-        foreach ($input as $name => $value) {
-            foreach ($this->getParameters() as $context => $set) {
-                if (array_key_exists($name, $this->getParameters()[$context])) {
-                    $this->inputs[$context][$name]['value'] = $value;
-                }
-            }
+        $parameters = $this->getParameters();
+        if (!array_key_exists($queriedContext, $parameters)) {
+            // unknown context provided by client, throw exception here? or continue?
         }
-
-        // Apply default values to missing data
         $contextNames = [$queriedContext];
-        if (array_key_exists('global', $this->getParameters())) {
+        if (array_key_exists('global', $parameters)) {
             $contextNames[] = 'global';
         }
 
         foreach ($contextNames as $context) {
-            if (!isset($this->getParameters()[$context])) {
-                // unknown context provided by client, throw exception here? or continue?
-            }
-
-            foreach ($this->getParameters()[$context] as $name => $properties) {
-                if (isset($this->inputs[$context][$name]['value'])) {
+            foreach ($parameters[$context] as $name => $properties) {
+                // Skip this property if we already set the value when iterating through another context.
+                if (isset($this->inputs[$queriedContext][$name]['value'])) {
                     continue;
                 }
-
-                $type = $properties['type'] ?? 'text';
-
-                switch ($type) {
+                // `… ?? null` protects us from 'Undefined array key' errors - it is more or less equivalent to checking with `isset` or `array_key_exists`.
+                $value = $input[$name] ?? null;
+                switch ($properties['type'] ?? 'text') {
                     case 'checkbox':
-                        $this->inputs[$context][$name]['value'] = $input[$context][$name]['value'] ?? false;
+                        // We don't use default value. Use the value if value is set, `false` if not.
+                        $value ??= false;
                         break;
                     case 'list':
-                        if (!isset($properties['defaultValue'])) {
-                            $firstItem = reset($properties['values']);
-                            if (is_array($firstItem)) {
-                                $firstItem = reset($firstItem);
-                            }
-                            $this->inputs[$context][$name]['value'] = $firstItem;
-                        } else {
-                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                        $value ??= ($properties['defaultValue'] ?? null);
+                        // Break from the switch statement if we set the value or default value was not null.
+                        if ($value !== null) {
+                            break;
                         }
+                        // Get the first item or it's first subitem.
+                        $value = reset($properties['values']);
+                        if (is_array($value)) {
+                            $value = reset($value);
+                        };
                         break;
                     default:
-                        if (isset($properties['defaultValue'])) {
-                            $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
-                        }
+                        $value ??= ($properties['defaultValue'] ?? null);
                         break;
                 }
-            }
-        }
-
-        // Copy global parameter values to the guessed context
-        if (array_key_exists('global', $this->getParameters())) {
-            foreach ($this->getParameters()['global'] as $name => $properties) {
-                if (isset($input[$name])) {
-                    $value = $input[$name];
-                } else {
-                    if (($properties['type'] ?? null) === 'checkbox') {
-                        $value = false;
-                    } elseif (isset($properties['defaultValue'])) {
-                        $value = $properties['defaultValue'];
-                    } else {
-                        continue;
-                    }
-                }
+                // Set the value in the GUESSED context.
                 $this->inputs[$queriedContext][$name]['value'] = $value;
             }
-        }
-
-        // Only keep guessed context parameters values
-        if (isset($this->inputs[$queriedContext])) {
-            $this->inputs = [
-                $queriedContext => $this->inputs[$queriedContext],
-            ];
-        } else {
-            $this->inputs = [];
         }
     }
 
