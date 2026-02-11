@@ -48,7 +48,22 @@ class BridgeCardTest extends TestCase
             FrontpageAction::getListInput($entry, 'id', 'name', true)
         );
 
-        //TODO: add test for mutli-list with array defaultValue
+        // multiple default values
+        $entry = [
+            'defaultValue' => [ 'a', 'c', ],
+            'values' => ['kek' => [
+                'f' => 'b',
+                'a' => 'g',
+            ]],
+        ];
+        $expected = <<<EOT
+<select id="id" name="name[]" multiple>
+<optgroup label="kek"><option value="b">f</option>
+<option value="g" selected>a</option>
+</optgroup></select>
+
+EOT;
+        $this->assertSame($expected, FrontpageAction::getListInput($entry, 'id', 'name', true));
     }
 
     public function test2()
