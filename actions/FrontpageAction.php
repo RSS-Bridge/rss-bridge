@@ -184,6 +184,10 @@ final class FrontpageAction implements ActionInterface
                     $parameter['exampleValue'] = '';
                 }
 
+                if (!isset($parameter['defaultValue'])) {
+                    $parameter['defaultValue'] = ($parameter['type'] ?? null) === 'multi-list' ? [] : '';
+                }
+
                 $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
 
                 $form .= html_tag('label', $parameter['name'], ['for' => $idArg]) . "\n";
@@ -245,7 +249,7 @@ final class FrontpageAction implements ActionInterface
     public static function getTextInput(array $parameter, string $id, string $name): string
     {
         $pattern = $parameter['pattern'] ?? null;
-        $checked = ($parameter['defaultValue'] ?? '') === 'checked';
+        $checked = $parameter['defaultValue'] === 'checked';
         $required = $parameter['required'] ?? false;
 
         return html_input([
@@ -263,7 +267,7 @@ final class FrontpageAction implements ActionInterface
     public static function getNumberInput(array $parameter, string $id, string $name): string
     {
         $pattern = $parameter['pattern'] ?? null;
-        $checked = ($parameter['defaultValue'] ?? '') === 'checked';
+        $checked = $parameter['defaultValue'] === 'checked';
         $required = $parameter['required'] ?? false;
 
         return html_input([
@@ -284,13 +288,13 @@ final class FrontpageAction implements ActionInterface
             'id'        => $id,
             'type'      => 'checkbox',
             'name'      => $name,
-            'checked'   => ($parameter['defaultValue'] ?? '') === 'checked',
+            'checked'   => $parameter['defaultValue'] === 'checked',
         ]);
     }
 
     public static function getListInput(array $parameter, string $id, string $name, bool $isMulti = false): string
     {
-        $default = $parameter['defaultValue'] ?? ($isMulti ? [] : null);
+        $default = $parameter['defaultValue'];
         // Cast to array, so scalars become single element arrays - `"default value"` becomes `["default value"]`.
         // Flip, so the values become keys and we can access the values later with O(1) complexity.
         if ($isMulti) {
