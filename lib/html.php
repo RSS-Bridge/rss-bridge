@@ -97,7 +97,7 @@ function html_option(string $name, $value, bool $selected = false): string
 
 function html_tag(
     string $name,
-    string $content = null,
+    ?string $content = null,
     array $attributes = []
 ): string {
     $strings = [
