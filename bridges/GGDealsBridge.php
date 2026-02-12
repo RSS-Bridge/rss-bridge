@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class GGDealsBridge extends BridgeAbstract
 {
     const DESCRIPTION = 'Returns the price history for a game from gg.deals.';
