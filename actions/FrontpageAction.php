@@ -176,63 +176,61 @@ final class FrontpageAction implements ActionInterface
                 ]) . "\n";
         }
 
-        if (count($parameters) > 0) {
-            $form .= '<div class="parameters">' . "\n";
+        $form .= '<div class="parameters">' . "\n";
 
-            foreach ($parameters as $id => $parameter) {
-                if (!isset($parameter['exampleValue'])) {
-                    $parameter['exampleValue'] = '';
-                }
-
-                if (!isset($parameter['defaultValue'])) {
-                    $parameter['defaultValue'] = '';
-                }
-
-                $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
-
-                $form .= html_tag('label', $parameter['name'], ['for' => $idArg]) . "\n";
-
-                if (
-                    !isset($parameter['type'])
-                    || $parameter['type'] === 'text'
-                ) {
-                    $form .= self::getTextInput($parameter, $idArg, $id) . "\n";
-                } elseif ($parameter['type'] === 'number') {
-                    $form .= self::getNumberInput($parameter, $idArg, $id) . "\n";
-                } elseif ($parameter['type'] === 'list') {
-                    $form .= self::getListInput($parameter, $idArg, $id) . "\n";
-                } elseif ($parameter['type'] === 'checkbox') {
-                    $form .= self::getCheckboxInput($parameter, $idArg, $id) . "\n";
-                } else {
-                    $foo = 2;
-                    // oops?
-                }
-
-                $params = [];
-                if (isset($parameter['title'])) {
-                    $params = [
-                        'title' => $parameter['title'],
-                        'class' => 'info',
-                    ];
-                }
-                if ($parameter['exampleValue'] !== '') {
-                    $params = [
-                        'title'         => sprintf("Example (right click to use):\n%s", $parameter['exampleValue']),
-                        'class'         => 'info',
-                        'oncontextmenu' => 'rssbridge_use_placeholder_value(this);return false',
-                        'data-for'      => $idArg,
-                    ];
-                }
-
-                if ($params) {
-                    $form .= html_tag('i', 'i', $params) . "\n";
-                } else {
-                    $form .= html_tag('i', ' ', ['class' => 'no-info']) . "\n";
-                }
+        foreach ($parameters as $id => $parameter) {
+            if (!isset($parameter['exampleValue'])) {
+                $parameter['exampleValue'] = '';
             }
 
-            $form .= "</div>\n\n";
+            if (!isset($parameter['defaultValue'])) {
+                $parameter['defaultValue'] = '';
+            }
+
+            $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
+
+            $form .= html_tag('label', $parameter['name'], ['for' => $idArg]) . "\n";
+
+            if (
+                !isset($parameter['type'])
+                || $parameter['type'] === 'text'
+            ) {
+                $form .= self::getTextInput($parameter, $idArg, $id) . "\n";
+            } elseif ($parameter['type'] === 'number') {
+                $form .= self::getNumberInput($parameter, $idArg, $id) . "\n";
+            } elseif ($parameter['type'] === 'list') {
+                $form .= self::getListInput($parameter, $idArg, $id) . "\n";
+            } elseif ($parameter['type'] === 'checkbox') {
+                $form .= self::getCheckboxInput($parameter, $idArg, $id) . "\n";
+            } else {
+                $foo = 2;
+                // oops?
+            }
+
+            $params = [];
+            if (isset($parameter['title'])) {
+                $params = [
+                    'title' => $parameter['title'],
+                    'class' => 'info',
+                ];
+            }
+            if ($parameter['exampleValue'] !== '') {
+                $params = [
+                    'title'         => sprintf("Example (right click to use):\n%s", $parameter['exampleValue']),
+                    'class'         => 'info',
+                    'oncontextmenu' => 'rssbridge_use_placeholder_value(this);return false',
+                    'data-for'      => $idArg,
+                ];
+            }
+
+            if ($params) {
+                $form .= html_tag('i', 'i', $params) . "\n";
+            } else {
+                $form .= html_tag('i', ' ', ['class' => 'no-info']) . "\n";
+            }
         }
+
+        $form .= "</div>\n\n";
 
         $form .= html_tag('button', 'Generate feed', [
                 'type'          => 'submit',
