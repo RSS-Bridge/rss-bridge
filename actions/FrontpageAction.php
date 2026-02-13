@@ -185,7 +185,7 @@ final class FrontpageAction implements ActionInterface
                 }
 
                 if (!isset($parameter['defaultValue'])) {
-                    $parameter['defaultValue'] = '';
+                    $parameter['defaultValue'] = ($parameter['type'] ?? null) === 'multi-list' ? [] : '';
                 }
 
                 $idArg = 'arg-' . urlencode($bridgeClassName) . '-' . urlencode($contextName) . '-' . urlencode($id);
@@ -201,6 +201,8 @@ final class FrontpageAction implements ActionInterface
                     $form .= self::getNumberInput($parameter, $idArg, $id) . "\n";
                 } elseif ($parameter['type'] === 'list') {
                     $form .= self::getListInput($parameter, $idArg, $id) . "\n";
+                } elseif ($parameter['type'] === 'multi-list') {
+                    $form .= self::getListInput($inputEntry, $idArg, $id, true) . "\n";
                 } elseif ($parameter['type'] === 'checkbox') {
                     $form .= self::getCheckboxInput($parameter, $idArg, $id) . "\n";
                 } else {
@@ -290,32 +292,37 @@ final class FrontpageAction implements ActionInterface
         ]);
     }
 
-    public static function getListInput(array $parameter, string $id, string $name): string
+    public static function getListInput(array $parameter, string $id, string $name, bool $isMulti = false): string
     {
-        $list = sprintf('<select id="%s" name="%s">', $id, $name) . "\n";
+        $list = sprintf('<select id="%s" name="%s"%s>', $id, $name . ($isMulti ? '[]' : ''), $isMulti ? ' multiple' : '') . "\n";
 
-        foreach ($parameter['values'] as $name => $value) {
-            if (is_array($value)) {
-                $list .= '<optgroup label="' . htmlentities($name) . '">';
-                foreach ($value as $subname => $subvalue) {
-                    if (
-                        $parameter['defaultValue'] === $subname
-                        || $parameter['defaultValue'] === $subvalue
-                    ) {
-                        $list .= html_option($subname, $subvalue, true) . "\n";
-                    } else {
-                        $list .= html_option($subname, $subvalue) . "\n";
+        if (!empty($parameter['values'])) {
+            $default = $parameter['defaultValue'];
+            // Cast to array, so scalars become single element arrays - `"default value"` becomes `["default value"]`.
+            // Flip, so the values become keys and we can access the values later with O(1) complexity.
+            if ($isMulti) {
+                $default = array_flip((array)($default));
+            }
+
+            foreach ($parameter['values'] as $name => $value) {
+                if (is_array($value)) {
+                    $list .= '<optgroup label="' . htmlentities($name) . '">';
+                    foreach ($value as $subname => $subvalue) {
+                        if ($isMulti) {
+                            $selected = isset($default[$subname]) || isset($default[$subvalue]);
+                        } else {
+                            $selected = $default === $subname || $default === $subvalue;
+                        }
+                        $list .= html_option($subname, $subvalue, $selected) . "\n";
                     }
-                }
-                $list .= '</optgroup>';
-            } else {
-                if (
-                    $parameter['defaultValue'] === $name
-                    || $parameter['defaultValue'] === $value
-                ) {
-                    $list .= html_option($name, $value, true) . "\n";
+                    $list .= '</optgroup>';
                 } else {
-                    $list .= html_option($name, $value) . "\n";
+                    if ($isMulti) {
+                        $selected = isset($default[$name]) || isset($default[$value]);
+                    } else {
+                        $selected = $default === $name || $default === $value;
+                    }
+                    $list .= html_option($name, $value, $selected) . "\n";
                 }
             }
         }
