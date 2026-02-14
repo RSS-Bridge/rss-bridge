@@ -15,20 +15,18 @@ class CdactionBridge extends BridgeAbstract
                 'Newsy' => 'newsy',
                 'Recenzje' => 'recenzje',
                 'Teksty' => [
-                    'Publicystyka' => 'publicystyka',
+                    'Publicystyka' => 'teksty',
                     'Zapowiedzi' => 'zapowiedzi',
                     'Już graliśmy' => 'juz-gralismy',
-                    'Poradniki' => 'poradniki',
+                    'Retro' => 'retro',
                 ],
                 'Kultura' => 'kultura',
-                'Wideo' => 'wideo',
-                'Czasopismo' => 'czasopismo',
                 'Technologie' => [
                     'Artykuły' => 'artykuly',
+                    'Technologie' => 'technologie',
                     'Testy' => 'testy',
                 ],
                 'Na luzie' => [
-                    'Konkursy' => 'konkursy',
                     'Nadgodziny' => 'nadgodziny',
                 ]
             ]
@@ -39,22 +37,20 @@ class CdactionBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM($this->getURI() . '/' . $this->getInput('category'));
 
-        $newsJson = $html->find('script#__NEXT_DATA__', 0)->innertext;
-        if (!$newsJson = json_decode($newsJson)) {
-            return;
-        }
+        $mainArticles = $html->find('ul.news-list .first-item');
+        $this->processArticles($mainArticles);
+        $articles = $html->find('.news-list li.article');
+        $this->processArticles($articles);
+    }
 
-        $queriesIndex = $this->getInput('category') === 'najnowsze' ? 0 : 1;
-        foreach ($newsJson->props->pageProps->dehydratedState->queries[$queriesIndex]->state->data->results as $news) {
+    private function processArticles(array $articles): void
+    {
+        /** @var simple_html_dom_node $article */
+        foreach ($articles as $article) {
             $item = [];
-            $item['uri'] = $this->getURI() . '/' . $news->category->slug . '/' . $news->slug;
-            $item['title'] = $news->title;
-            $item['timestamp'] = $news->publishedAt;
-            $item['author'] = $news->editor->fullName;
-            $item['content'] = $news->lead;
-            $item['enclosures'][] = $news->bannerUrl;
-            $item['categories'] = array_column($news->tags, 'name');
-            $item['uid'] = $news->id;
+            $item['uri'] = $article->find('a.article-link', 0)->getAttribute('href');
+            $item['title'] = $article->find('h3 .title-desktop', 0)->innertext;
+            $item['uid'] = $item['uri'];
 
             $this->items[] = $item;
         }
