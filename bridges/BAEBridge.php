@@ -73,7 +73,7 @@ class BAEBridge extends BridgeAbstract
         $uri = parent::getURI();
         if (!empty($this->getInput('type'))) {
             if ($this->getInput('type') == 'boat') {
-                $uri .= '/embarquements.html';
+                $uri .= '/navigations.html';
             } elseif ($this->getInput('type') == 'skipper') {
                 $uri .= '/skippers.html';
             } else {
