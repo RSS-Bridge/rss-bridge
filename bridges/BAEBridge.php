@@ -2,7 +2,7 @@
 
 class BAEBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'couraudt';
+    const MAINTAINER = 'couraudt, hrenard';
     const NAME = 'Bourse Aux Equipiers';
     const URI = 'https://www.bourse-aux-equipiers.com';
     const DESCRIPTION = 'Returns the newest sailing offers.';
