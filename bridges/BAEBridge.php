@@ -33,7 +33,7 @@ class BAEBridge extends BridgeAbstract
 
         $annonces = $html->find('main article');
         foreach ($annonces as $annonce) {
-            $detail = $annonce->find('footer a', 0);
+            $detail = $annonce->find('a', 0);
 
             $htmlDetail = getSimpleHTMLDOMCached(parent::getURI() . $detail->href);
             if (!$htmlDetail) {
@@ -45,7 +45,7 @@ class BAEBridge extends BridgeAbstract
             $item['title'] = $annonce->find('header h2', 0)->plaintext;
             $item['uri'] = parent::getURI() . $detail->href;
 
-            $content = $htmlDetail->find('article p', 0)->innertext;
+            $content = $htmlDetail->find('article > p', 0)->innertext;
             if (!empty($this->getInput('keyword'))) {
                 $keyword = $this->removeAccents(strtolower($this->getInput('keyword')));
                 $cleanTitle = $this->removeAccents(strtolower($item['title']));
