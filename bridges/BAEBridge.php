@@ -31,6 +31,10 @@ class BAEBridge extends BridgeAbstract
         $url = $this->getURI();
         $html = getSimpleHTMLDOM($url);
 
+        $tz = new DateTimeZone('Europe/Paris');
+        $now = new DateTime("now", new DateTimeZone('Europe/Paris'));
+        $tzOffset = $tz->getOffset($now);
+
         $annonces = $html->find('main article');
         foreach ($annonces as $annonce) {
             $detail = $annonce->find('a', 0);
@@ -61,6 +65,21 @@ class BAEBridge extends BridgeAbstract
             $content .= '<hr>';
             $content .= $htmlDetail->find('section', 0)->innertext;
             $item['content'] = defaultLinkTo($content, parent::getURI());
+
+            $timestampStr = $htmlDetail->find('article > header > p > small', 0)->innertext;
+            $timestampStr = explode(',', $timestampStr)[1];
+            $timestampStr = str_replace(' déposée ', '', $timestampStr);
+            $timestampStr = str_replace('hier', 'yesterday', $timestampStr);
+            $timestampStr = str_replace('aujourd\'hui', 'today', $timestampStr);
+            $timestampStr = str_replace('le ', '', $timestampStr);
+            $timestampStr = str_replace('à ', '', $timestampStr);
+            $timestampStr = str_replace('h', ':', $timestampStr);
+            $timestampStrSplit = explode('/', $timestampStr);
+            if (count($timestampStrSplit) === 3) {
+                $timestampStr = join("/", [$timestampStrSplit[1], $timestampStrSplit[0], $timestampStrSplit[2]]);
+            }
+            $item['timestamp'] = strtotime($timestampStr) - $tzOffset;
+
             $image = $htmlDetail->find('#zoom', 0);
             if ($image) {
                 $item['enclosures'] = [parent::getURI() . $image->getAttribute('src')];
