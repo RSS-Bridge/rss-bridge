@@ -44,6 +44,7 @@ class BAEBridge extends BridgeAbstract
 
             $item['title'] = $annonce->find('header h2', 0)->plaintext;
             $item['uri'] = parent::getURI() . $detail->href;
+            $item['author'] = $htmlDetail->find('aside.membre > h2', 0)->innertext;
 
             $content = $htmlDetail->find('article > p', 0)->innertext;
             if (!empty($this->getInput('keyword'))) {
