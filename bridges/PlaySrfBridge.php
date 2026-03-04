@@ -51,10 +51,16 @@ class PlaySrfBridge extends BridgeAbstract
         }
 
         foreach ($episodes as $ep) {
-            $content = $ep['description'] === '' ? '<p>' . $ep['lead'] . '</p>' : '<p>' . $ep['description'] . '</p>';
+            $content = '';
+
             if ($embed === true) {
-                $content = '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" width="560" height="315" src="https://www.srf.ch/play/embed?urn=' . $ep['urn'] . '&subdivisions=false" allowfullscreen="" allow="geolocation *; autoplay; encrypted-media"></iframe></div>' . $content;
+                $content .= '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">';
+                $content .= '<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" width="560" height="315" ';
+                $content .= 'src="https://www.srf.ch/play/embed?urn=' . $ep['urn'] . '&subdivisions=false" allowfullscreen ';
+                $content .= 'allow="geolocation *; autoplay; encrypted-media"></iframe></div>';
             }
+
+            $content .= $ep['description'] === '' ? '<p>' . $ep['lead'] . '</p>' : '<p>' . $ep['description'] . '</p>';
 
             $item = [];
             $item['uri'] = 'https://www.srf.ch/play/tv/-/video/-?urn=' . $ep['urn'];
