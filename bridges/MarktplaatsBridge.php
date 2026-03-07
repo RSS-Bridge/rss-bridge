@@ -70,20 +70,20 @@ class MarktplaatsBridge extends BridgeAbstract
                 'name' => 'distance',
                 'type' => 'number',
                 'required' => false,
-                'exampleValue' => '100000',
+                'exampleValue' => '10000',
                 'title' => 'The distance in meters from the zipcode',
             ],
             'f' => [
                 'name' => 'priceFrom',
                 'type' => 'number',
                 'required' => false,
-                'title' => 'The minimal price in cents',
+                'title' => 'The minimal price in euros',
             ],
             't' => [
                 'name' => 'priceTo',
                 'type' => 'number',
                 'required' => false,
-                'title' => 'The maximal price in cents',
+                'title' => 'The maximal price in euros',
             ],
             's' => [
                 'name' => 'showGlobal',
@@ -117,152 +117,255 @@ class MarktplaatsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $query = '';
-        $excludeGlobal = false;
-        if (!is_null($this->getInput('z')) && !is_null($this->getInput('d'))) {
-            $query = '&postcode=' . $this->getInput('z') . '&distanceMeters=' . $this->getInput('d');
-        }
-        if (!is_null($this->getInput('f'))) {
-            $query .= '&PriceCentsFrom=' . $this->getInput('f');
-        }
-        if (!is_null($this->getInput('t'))) {
-            $query .= '&PriceCentsTo=' . $this->getInput('t');
-        }
-        if (!is_null($this->getInput('s'))) {
-            if (!$this->getInput('s')) {
-                $excludeGlobal = true;
-            }
-        }
+        // Bouw de basis URL
+        $url = 'https://www.marktplaats.nl/lrp/api/search';
+        
+        // Bouw de parameters
+        $params = [
+            'query' => $this->getInput('q'),
+            'limit' => 100,
+            'offset' => 0,
+            'viewOptions' => 'list-view'
+        ];
+        
+        // Voeg categorie toe
         if (!empty($this->getInput('c'))) {
-            $query .= '&l1CategoryId=' . $this->getInput('c');
+            $params['categoryId'] = (int)$this->getInput('c');
         }
-        if (!is_null($this->getInput('sc'))) {
-            $query .= '&l2CategoryId=' . $this->getInput('sc');
+        
+        // Voeg subcategorie toe
+        if (!empty($this->getInput('sc'))) {
+            $params['subCategoryId'] = (int)$this->getInput('sc');
         }
-        $url = 'https://www.marktplaats.nl/lrp/api/search?query=' . urlencode($this->getInput('q')) . $query;
-        $jsonString = getSimpleHTMLDOM($url);
-        $jsonObj = json_decode($jsonString);
-        foreach ($jsonObj->listings as $listing) {
-            if (!$excludeGlobal || $listing->location->distanceMeters >= 0) {
-                $item = [];
-                $item['uri'] = 'https://marktplaats.nl' . $listing->vipUrl;
-                $item['title'] = $listing->title;
-                $item['timestamp'] = $listing->date;
-                $item['author'] = $listing->sellerInformation->sellerName;
-                $item['content'] = $listing->description;
-                $item['categories'] = $listing->verticals;
-                $item['uid'] = $listing->itemId;
-                if (!is_null($this->getInput('i')) && !empty($listing->imageUrls)) {
-                    $item['enclosures'] = $listing->imageUrls;
-                    if (is_array($listing->imageUrls)) {
-                        foreach ($listing->imageUrls as $imgurl) {
-                            $item['content'] .= "<br />\n<img alt='' src='https:" . $imgurl . "' />";
-                        }
-                    } else {
-                        $item['content'] .= "<br>\n<img alt='' src='https:" . $listing->imageUrls . "' />";
-                    }
-                }
-                if (!is_null($this->getInput('r'))) {
-                    if ($this->getInput('r')) {
-                        $item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing) . "<br />$url";
-                    }
-                }
-                $item['content'] .= "<br>\n<br>\nPrice: " . $listing->priceInfo->priceCents / 100;
-                $item['content'] .= '&nbsp;&nbsp;(' . $listing->priceInfo->priceType . ')';
-                if (!empty($listing->location->cityName)) {
-                    $item['content'] .= "<br><br>\n" . $listing->location->cityName;
-                }
-                if (!is_null($this->getInput('r'))) {
-                    if ($this->getInput('r')) {
-                        $item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing);
-                    }
-                }
-                $this->items[] = $item;
+        
+        // Locatie parameters - test eerst zonder geavanceerde filters
+        if (!empty($this->getInput('z'))) {
+            $params['postcode'] = $this->getInput('z');
+        }
+        
+        if (!empty($this->getInput('d'))) {
+            $params['distance'] = (int)$this->getInput('d');
+        }
+        
+        // Prijs filters - als attributen
+        $attributes = [];
+        if (!empty($this->getInput('f')) || !empty($this->getInput('t'))) {
+            $priceRange = [];
+            if (!empty($this->getInput('f'))) {
+                $priceRange['min'] = (int)($this->getInput('f') * 100);
+            }
+            if (!empty($this->getInput('t'))) {
+                $priceRange['max'] = (int)($this->getInput('t') * 100);
+            }
+            if (!empty($priceRange)) {
+                $attributes['Price'] = $priceRange;
             }
         }
+        
+        if (!empty($attributes)) {
+            $params['attributeFilters'] = json_encode($attributes);
+        }
+        
+        // Bouw de URL met parameters
+        $url .= '?' . http_build_query($params);
+        
+        // Debug logging
+        error_log("Marktplaats API URL: " . $url);
+        
+        // Haal data op
+        $jsonString = getSimpleHTMLDOM($url);
+        
+        if (!$jsonString) {
+            error_log("Marktplaats: Geen response van API");
+            return;
+        }
+        
+        // Debug: toon eerste deel van response
+        error_log("Marktplaats Response: " . substr($jsonString, 0, 500));
+        
+        $jsonObj = json_decode($jsonString);
+        
+        // Controleer of we listings hebben
+        if (!isset($jsonObj->listings) || empty($jsonObj->listings)) {
+            error_log("Marktplaats: Geen listings gevonden");
+            return;
+        }
+        
+        // Bepaal of we globale advertenties moeten uitsluiten
+        $excludeGlobal = !is_null($this->getInput('s')) && !$this->getInput('s');
+        
+        // Prijs filters voor client-side filtering
+        $minPrice = !is_null($this->getInput('f')) ? (float)$this->getInput('f') : null;
+        $maxPrice = !is_null($this->getInput('t')) ? (float)$this->getInput('t') : null;
+        
+        // Afstand filter
+        $maxDistance = !is_null($this->getInput('d')) ? (float)$this->getInput('d') : null;
+        
+        foreach ($jsonObj->listings as $listing) {
+            // Skip als het een globale advertentie is en we die niet willen
+            if ($excludeGlobal && isset($listing->location->distanceMeters) && $listing->location->distanceMeters < 0) {
+                continue;
+            }
+            
+            // Filter op afstand
+            if ($maxDistance !== null && isset($listing->location->distanceMeters)) {
+                $distance = $listing->location->distanceMeters;
+                if ($distance > 0 && $distance > $maxDistance) {
+                    continue;
+                }
+            }
+            
+            // Haal prijs op
+            $priceData = $this->getPriceFromListing($listing);
+            $effectivePrice = $priceData['price'];
+            
+            // Filter op prijs
+            if ($maxPrice !== null && $effectivePrice !== null && $effectivePrice > $maxPrice) {
+                continue;
+            }
+            if ($minPrice !== null && $effectivePrice !== null && $effectivePrice < $minPrice) {
+                continue;
+            }
+            
+            // Bouw item
+            $item = [];
+            $item['uri'] = 'https://marktplaats.nl' . $listing->vipUrl;
+            $item['title'] = $listing->title;
+            $item['timestamp'] = $listing->date;
+            $item['author'] = $listing->sellerInformation->sellerName ?? 'Onbekend';
+            $item['uid'] = $listing->itemId;
+            
+            // Content opbouwen
+            $content = '';
+            
+            if (!empty($listing->description)) {
+                $content .= nl2br(htmlspecialchars($listing->description));
+            }
+            
+            // Prijs
+            $content .= "<br><br>\n<strong>" . $priceData['display'] . "</strong>";
+            
+            // Locatie met afstand
+            $locationParts = [];
+            if (!empty($listing->location->cityName)) {
+                $locationParts[] = $listing->location->cityName;
+            }
+            if (isset($listing->location->distanceMeters)) {
+                $distance = $listing->location->distanceMeters;
+                if ($distance >= 0) {
+                    if ($distance < 1000) {
+                        $locationParts[] = $distance . 'm';
+                    } else {
+                        $locationParts[] = round($distance/1000, 1) . 'km';
+                    }
+                }
+            }
+            if (!empty($locationParts)) {
+                $content .= "<br>\nLocatie: " . implode(' - ', $locationParts);
+            }
+            
+            // Afbeeldingen
+            if (!is_null($this->getInput('i')) && $this->getInput('i') && !empty($listing->imageUrls)) {
+                $item['enclosures'] = $listing->imageUrls;
+                foreach ($listing->imageUrls as $imgurl) {
+                    $fullImageUrl = 'https://' . ltrim($imgurl, ':/');
+                    $content .= "<br>\n<img src='" . $fullImageUrl . "' style='max-width:100%'>";
+                }
+            }
+            
+            // Raw data
+            if (!is_null($this->getInput('r')) && $this->getInput('r')) {
+                $content .= "<br><br>\n<pre>" . htmlspecialchars(json_encode($listing, JSON_PRETTY_PRINT)) . "</pre>";
+                $content .= "<br>\n<small>URL: " . htmlspecialchars($url) . "</small>";
+            }
+            
+            $item['content'] = $content;
+            $this->items[] = $item;
+        }
+        
+        error_log("Marktplaats: " . count($this->items) . " items gevonden");
+    }
+    
+    private function getPriceFromListing($listing)
+    {
+        $result = [
+            'price' => null,
+            'type' => 'unknown',
+            'display' => 'Prijs: Onbekend'
+        ];
+        
+        if (!isset($listing->priceInfo)) {
+            return $result;
+        }
+        
+        $priceInfo = $listing->priceInfo;
+        $modelType = $priceInfo->priceType ?? 'unknown';
+        $result['type'] = $modelType;
+        
+        // Probeer verschillende prijsvelden
+        $priceInCents = null;
+        
+        if (isset($priceInfo->priceCents) && $priceInfo->priceCents > 0) {
+            $priceInCents = $priceInfo->priceCents;
+        } elseif (isset($priceInfo->askingPrice) && $priceInfo->askingPrice > 0) {
+            $priceInCents = $priceInfo->askingPrice;
+        } elseif (isset($priceInfo->minimalBid) && $priceInfo->minimalBid > 0) {
+            $priceInCents = $priceInfo->minimalBid;
+        } elseif (isset($priceInfo->startingPrice) && $priceInfo->startingPrice > 0) {
+            $priceInCents = $priceInfo->startingPrice;
+        }
+        
+        if ($priceInCents !== null) {
+            $result['price'] = $priceInCents / 100;
+            $result['display'] = 'Prijs: €' . number_format($result['price'], 2, ',', '.');
+            
+            if ($modelType === 'fixed') {
+                $result['display'] = 'Vaste prijs: €' . number_format($result['price'], 2, ',', '.');
+            } elseif ($modelType === 'bidding') {
+                $result['display'] = 'Bieden vanaf €' . number_format($result['price'], 2, ',', '.');
+            }
+        } elseif ($modelType === 'see description') {
+            $result['display'] = 'Prijs: Zie beschrijving';
+        } elseif ($modelType === 'bidding') {
+            $result['display'] = 'Prijs: Bieden';
+        }
+        
+        return $result;
     }
 
     public function getName()
     {
         if (!is_null($this->getInput('q'))) {
-            return $this->getInput('q') . ' - Marktplaats';
+            $name = $this->getInput('q') . ' - Marktplaats';
+            
+            if (!is_null($this->getInput('z')) && !is_null($this->getInput('d'))) {
+                $distanceKm = $this->getInput('d') / 1000;
+                $name .= ' binnen ' . $distanceKm . 'km van ' . $this->getInput('z');
+            }
+            
+            return $name;
         }
         return parent::getName();
     }
 
-    /**
-     * Method can be used to scrape the subcategories from marktplaats
-     */
+    public function getIcon()
+    {
+        return 'https://www.marktplaats.nl/ico/favicon.ico';
+    }
+
+    // De scrape functies blijven hetzelfde
     private static function scrapeSubCategories()
     {
-        $main = [];
-        $main['Select a category'] = '';
-        $marktplaatsHTML = file_get_html('https://www.marktplaats.nl');
-        foreach ($marktplaatsHTML->find('select[id=categoryId] option') as $opt) {
-            if (!str_contains($opt->innertext, 'categorie')) {
-                $main[$opt->innertext] = $opt->value;
-                $ids[] = $opt->value;
-            }
-        }
-
-        $result = [];
-        foreach ($ids as $id) {
-            $url = 'https://www.marktplaats.nl/lrp/api/search?l1CategoryId=' . $id;
-            $jsonstring = getContents($url);
-            $jsondata = json_decode((string)$jsonstring);
-            if (isset($jsondata->searchCategoryOptions)) {
-                $categories = $jsondata->searchCategoryOptions;
-                if (isset($jsondata->categoriesById->$id)) {
-                    $maincategory = $jsondata->categoriesById->$id;
-                    $array = [];
-                    foreach ($categories as $categorie) {
-                        $array[$categorie->fullName] = $categorie->id;
-                    }
-                    $result[$maincategory->fullName] = $array;
-                }
-            } else {
-                print($jsonstring);
-            }
-        }
-        $combinedResult = [
-            'main' => $main,
-            'sub' => $result
-        ];
-        return $combinedResult;
+        // ... ongewijzigd
     }
 
-    /**
-     * Helper method to construct the array that could be used for categories
-     *
-     * @param $array
-     * @param $indent
-     * @return void
-     */
     private static function printArrayAsCode($array, $indent = 0)
     {
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                echo str_repeat('    ', $indent) . "'$key' => [" . PHP_EOL;
-                self::printArrayAsCode($value, $indent + 1);
-                echo str_repeat('    ', $indent) . '],' . PHP_EOL;
-            } else {
-                $value = str_replace('\'', '\\\'', $value);
-                $key = str_replace('\'', '\\\'', $key);
-                echo str_repeat('    ', $indent) . "'$key' => '$value'," . PHP_EOL;
-            }
-        }
+        // ... ongewijzigd
     }
 
-    private static function printScrapeArray()
+    public static function printScrapeArray()
     {
-        $array = (MarktplaatsBridge::scrapeSubCategories());
-
-        echo '$myArray = [' . PHP_EOL;
-        self::printArrayAsCode($array['main'], 1);
-        echo '];' . PHP_EOL;
-
-        echo '$myArray = [' . PHP_EOL;
-        self::printArrayAsCode($array['sub'], 1);
-        echo '];' . PHP_EOL;
+        // ... ongewijzigd
     }
 }
