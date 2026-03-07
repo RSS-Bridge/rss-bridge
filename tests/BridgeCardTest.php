@@ -15,6 +15,7 @@ class BridgeCardTest extends TestCase
             'values' => [],
         ];
         $this->assertSame('<select id="id" name="name">' . "\n" . '</select>' . "\n", FrontpageAction::getListInput($entry, 'id', 'name'));
+        $this->assertSame('<select id="id" name="name[]" multiple>' . "\n" . '</select>' . "\n", FrontpageAction::getListInput($entry, 'id', 'name', true));
 
         $entry = [
             'defaultValue' => 2,
@@ -25,6 +26,10 @@ class BridgeCardTest extends TestCase
         $this->assertSame(
             '<select id="id" name="name">' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n",
             FrontpageAction::getListInput($entry, 'id', 'name')
+        );
+        $this->assertSame(
+            '<select id="id" name="name[]" multiple>' . "\n" . '<option value="bar">foo</option>' . "\n" . '</select>' . "\n",
+            FrontpageAction::getListInput($entry, 'id', 'name', true)
         );
 
         // optgroup
@@ -38,6 +43,27 @@ class BridgeCardTest extends TestCase
             '<select id="id" name="name">' . "\n" . '<optgroup label="kek"><option value="b">f</option>' . "\n" . '</optgroup></select>' . "\n",
             FrontpageAction::getListInput($entry, 'id', 'name')
         );
+        $this->assertSame(
+            '<select id="id" name="name[]" multiple>' . "\n" . '<optgroup label="kek"><option value="b">f</option>' . "\n" . '</optgroup></select>' . "\n",
+            FrontpageAction::getListInput($entry, 'id', 'name', true)
+        );
+
+        // multiple default values
+        $entry = [
+            'defaultValue' => [ 'a', 'c', ],
+            'values' => ['kek' => [
+                'f' => 'b',
+                'a' => 'g',
+            ]],
+        ];
+        $expected = <<<EOT
+<select id="id" name="name[]" multiple>
+<optgroup label="kek"><option value="b">f</option>
+<option value="g" selected>a</option>
+</optgroup></select>
+
+EOT;
+        $this->assertSame($expected, FrontpageAction::getListInput($entry, 'id', 'name', true));
     }
 
     public function test2()

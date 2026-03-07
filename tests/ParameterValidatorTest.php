@@ -37,4 +37,36 @@ class ParameterValidatorTest extends TestCase
         ];
         $this->assertNotEmpty($sut->validateInput($input, $parameters));
     }
+
+    public function test3()
+    {
+        $sut = new \ParameterValidator();
+        $input = [ 'categories' => [ 'economy', 'politics', 'entertainment', ], ];
+        $parameters = [
+            [
+                'categories' => [
+                    'name'   => 'Categories',
+                    'type'   => 'multi-list',
+                    'values' => [ 'economy', 'politics', 'entertainment', ],
+                ],
+            ]
+        ];
+        $this->assertSame([], $sut->validateInput($input, $parameters));
+    }
+
+    public function test4()
+    {
+        $sut = new \ParameterValidator();
+        $input = [ 'categories' => [ 'economy', 'politics', 'entertainment', ], ];
+        $parameters = [
+            [
+                'category' => [
+                    'name'   => 'Categories',
+                    'type'   => 'multi-list',
+                    'values' => [ 'economy', 'politics', 'entertainment', ],
+                ],
+            ]
+        ];
+        $this->assertNotEmpty($sut->validateInput($input, $parameters));
+    }
 }
