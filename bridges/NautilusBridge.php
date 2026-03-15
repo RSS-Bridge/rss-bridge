@@ -90,9 +90,17 @@ class NautilusBridge extends FeedExpander
 
     protected function parseItem(array $item)
     {
-        $content = '';
-
         $dom = getSimpleHTMLDOMCached($item['uri'], 7 * 24 * 60 * 60);
+        $next_data = $this->extractNextData($dom);
+        if ($next_data !== null) {
+            $content = $this->parseNextDataContent($next_data);
+            if ($content !== '') {
+                $item['content'] = $content;
+                return $item;
+            }
+        }
+
+        $content = '';
         $feature_image = $dom->find('img.article-banner-img', 0);
         if ($feature_image) {
             $src = $feature_image->getAttribute('src');
@@ -100,30 +108,129 @@ class NautilusBridge extends FeedExpander
         }
 
         $article_main = $dom->find('div.article-content', 0);
+        if (!$article_main) {
+            $item['content'] = $content;
+            return $item;
+        }
 
+        $article_main = $this->prepareArticleContent($article_main);
+        $content .= $article_main->innertext;
+
+        $item['content'] = $content;
+        return $item;
+    }
+
+    private function extractNextData($dom): ?array
+    {
+        $script = $dom->find('script#__NEXT_DATA__', 0);
+        if (!$script) {
+            $script = $dom->getElementById('__NEXT_DATA__');
+        }
+
+        if (!$script) {
+            return null;
+        }
+
+        $decoded = json_decode(html_entity_decode($script->innertext), true);
+
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    private function parseNextDataContent(array $next_data): string
+    {
+        $page_props = $next_data['props']['pageProps'] ?? [];
+        $content = '';
+
+        $featured_image = $page_props['post']['featuredImage']['node'] ?? [];
+        $featured_image_url = $featured_image['sourceUrl'] ?? '';
+        if ($featured_image_url !== '') {
+            $content .= '<figure><img src="' . htmlspecialchars($featured_image_url) . '"';
+
+            $featured_image_alt = trim($featured_image['altText'] ?? '');
+            if ($featured_image_alt !== '') {
+                $content .= ' alt="' . htmlspecialchars($featured_image_alt) . '"';
+            }
+
+            $content .= '></figure>';
+        }
+
+        $blocks = $page_props['blocks'] ?? ($page_props['post']['contentBlocks']['blocks'] ?? []);
+        if (!is_array($blocks) || count($blocks) === 0) {
+            return $content;
+        }
+
+        $article_html = $this->renderBlocks($blocks);
+        if ($article_html === '') {
+            return $content;
+        }
+
+        $article_main = str_get_html('<div>' . $article_html . '</div>');
+        if (!$article_main) {
+            return $content . defaultLinkTo($article_html, self::URI);
+        }
+
+        $article_main = $this->prepareArticleContent($article_main);
+
+        return $content . $article_main->innertext;
+    }
+
+    private function prepareArticleContent($article_main)
+    {
         // Mostly YouTube videos
-        $iframes = $article_main->find('iframe');
-        foreach ($iframes as $iframe) {
+        foreach ($article_main->find('iframe') as $iframe) {
             $iframe->outertext = '<a href="' . $iframe->src . '">' . $iframe->src . '</a>';
         }
 
         $article_main = defaultLinkTo($article_main, self::URI);
 
-        $ads = $article_main->find('div.article-ad');
-        foreach ($ads as $ad) {
-            $ad->parent->removeChild($ad);
-        }
-        $ads = $article_main->find('div.primis-ad');
-        foreach ($ads as $ad) {
-            $ad->parent->removeChild($ad);
-        }
-        $blocks = $article_main->find('div.article-collection_box');
-        foreach ($blocks as $block) {
-            $block->parent->removeChild($block);
-        }
-        $content .= $article_main->innertext;
+        $this->removeNodes($article_main->find('div.article-ad'));
+        $this->removeNodes($article_main->find('div.primis-ad'));
+        $this->removeNodes($article_main->find('div.article-collection_box'));
+        $this->removeNodes($article_main->find('img[src*="nautilus-favicon-14.png"]'));
 
-        $item['content'] = $content;
-        return $item;
+        foreach ($article_main->find('p') as $paragraph) {
+            $text = trim(html_entity_decode($paragraph->plaintext, ENT_QUOTES | ENT_HTML5));
+            if (strpos($text, 'Subscribe to our free newsletter') !== false) {
+                $paragraph->outertext = '';
+            }
+        }
+
+        return $article_main;
+    }
+
+    private function removeNodes($nodes): void
+    {
+        foreach ($nodes as $node) {
+            if ($node->parent) {
+                $node->parent->removeChild($node);
+            }
+        }
+    }
+
+    private function renderBlocks(array $blocks): string
+    {
+        $html = '';
+
+        foreach ($blocks as $block) {
+            if (!is_array($block)) {
+                continue;
+            }
+
+            if (!empty($block['innerHTML']) && is_string($block['innerHTML'])) {
+                $html .= $block['innerHTML'];
+                continue;
+            }
+
+            if (isset($block['innerBlocks']) && is_array($block['innerBlocks'])) {
+                $html .= $this->renderBlocks($block['innerBlocks']);
+                continue;
+            }
+
+            if (isset($block['blocks']) && is_array($block['blocks'])) {
+                $html .= $this->renderBlocks($block['blocks']);
+            }
+        }
+
+        return $html;
     }
 }
