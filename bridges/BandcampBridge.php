@@ -165,7 +165,7 @@ class BandcampBridge extends BridgeAbstract
 
                 $regex = '/band_id=(\d+)/';
                 if (preg_match($regex, $html, $matches) == false) {
-                    throwServerException('Unable to find band ID on: ' . $this->getURI());
+                    throwClientException('Unable to find band ID on: ' . $this->getURI());
                 }
                 $band_id = $matches[1];
 
@@ -196,7 +196,7 @@ class BandcampBridge extends BridgeAbstract
                     case 'By album':
                         $regex = '/album=(\d+)/';
                         if (preg_match($regex, $html, $matches) == false) {
-                            throwServerException('Unable to find album ID on: ' . $this->getURI());
+                            throwClientException('Unable to find album ID on: ' . $this->getURI());
                         }
                         $album_id = $matches[1];
 
