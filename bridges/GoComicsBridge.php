@@ -56,8 +56,7 @@ class GoComicsBridge extends BridgeAbstract
             $html = getSimpleHTMLDOMCached($link, 86400, $header);
 
             $imagelink = $html->find('meta[property="og:image"]', 0)->content;
-            $parts = explode('/', $link);
-            $date = DateTime::createFromFormat('Y/m/d', implode('/', array_slice($parts, -3)));
+
             $title = $html->find('meta[property="og:title"]', 0)->content;
             preg_match('/by (.*?) for/', $title, $authormatches);
             $author = $authormatches[1] ?? 'GoComics';
@@ -70,11 +69,22 @@ class GoComicsBridge extends BridgeAbstract
             if ($this->getInput('date-in-title') === true) {
                 $item['title'] = $title;
             }
-            $item['timestamp'] = $date->setTime(0, 0, 0)->getTimestamp();
+
+            $parts = explode('/', $link);
+            $date = DateTime::createFromFormat('Y/m/d', implode('/', array_slice($parts, -3)));
+            if ($date) {
+                $item['timestamp'] = $date->setTime(0, 0, 0)->getTimestamp();
+            }
+
             $item['content'] = '<img src="' . $imagelink . '" />';
 
-            $link = rtrim(self::URI, '/') . $html->find('a[class*="ComicNavigation_controls__button_previous__"]', 0)->href;
             $this->items[] = $item;
+
+            $button_previous = $html->find('a[class*="__controls__button_previous"]', 0);
+            if (! $button_previous) {
+                break;
+            }
+            $link = rtrim(self::URI, '/') . $button_previous->href;
         }
     }
 
