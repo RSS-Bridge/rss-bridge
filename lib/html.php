@@ -601,6 +601,9 @@ EOD
         <img srcset="%s" src="%s" alt="Video thumbnail" title="YouTube video thumbnail" referrerpolicy="no-referrer" />
     </picture>
 </a>
-EOD, $videoUri, $webpSrcset, $jpegSrcset, $fallbackUri);
+<p>
+<a href="%s">%s</a>
+</p>
+EOD, $videoUri, $webpSrcset, $jpegSrcset, $fallbackUri, $videoUri, $videoUri);
     }
 }

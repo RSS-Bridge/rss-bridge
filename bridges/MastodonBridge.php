@@ -104,19 +104,27 @@ class MastodonBridge extends BridgeAbstract
                         // Sometimes fetchAP returns null. Someone should figure out why. json_decode failure?
                         break;
                     }
-                    $rtUser = $this->loadCacheValue($rtContent['attributedTo']);
-                    if (!$rtUser) {
-                        // We fetch the author, since we cannot always assume the format of the URL.
-                        $user = $this->fetchAP($rtContent['attributedTo']);
-                        preg_match('/https?:\/\/([a-z0-9-\.]{0,})\//', $rtContent['attributedTo'], $matches);
-                        // We assume that the server name as indicated by the path is the actual server name,
-                        // since using webfinger to delegate domains is not officially supported, and it only
-                        // seems to work in one way.
-                        $rtUser = '@' . $user['preferredUsername'] . '@' . $matches[1];
-                        $this->saveCacheValue($rtContent['attributedTo'], $rtUser);
+
+                    /** @var string|string[] $attributedTo */
+                    $attributedTo = $rtContent['attributedTo'];
+
+                    if (is_string($attributedTo)) {
+                        $rtUser = $this->loadCacheValue($attributedTo);
+                        if (!$rtUser) {
+                            // We fetch the author, since we cannot always assume the format of the URL.
+                            $user = $this->fetchAP($attributedTo);
+                            preg_match('/https?:\/\/([a-z0-9-\.]{0,})\//', $attributedTo, $matches);
+                            // We assume that the server name as indicated by the path is the actual server name,
+                            // since using webfinger to delegate domains is not officially supported, and it only
+                            // seems to work in one way.
+                            $rtUser = '@' . $user['preferredUsername'] . '@' . $matches[1];
+                            $this->saveCacheValue($attributedTo, $rtUser);
+                        }
+                        $item['author'] = $rtUser;
+                        $item['title'] = 'Shared a status by ' . $rtUser . ': ';
+                    } else {
+                        // TODO
                     }
-                    $item['author'] = $rtUser;
-                    $item['title'] = 'Shared a status by ' . $rtUser . ': ';
                     $item = $this->parseObject($rtContent, $item);
                 } catch (HttpException $e) {
                     $item['title'] = 'Shared an unreachable status: ' . $content['object'];

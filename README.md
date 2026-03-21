@@ -442,7 +442,7 @@ Run linter:
 
     ./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
 
-https://github.com/squizlabs/PHP_CodeSniffer/wiki
+https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki
 
 ### How to spawn a minimal development environment
 
