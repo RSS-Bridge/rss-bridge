@@ -60,7 +60,7 @@ class PlaySrfBridge extends BridgeAbstract
                 $content .= 'allow="geolocation *; autoplay; encrypted-media"></iframe></div>';
             }
 
-            $content .= $ep['description'] === '' ? '<p>' . $ep['lead'] . '</p>' : '<p>' . $ep['description'] . '</p>';
+            $content .= $ep['description'] === '' ? '<p>' . nl2br($ep['lead'], false) . '</p>' : '<p>' . nl2br($ep['description'], false) . '</p>';
 
             $item = [];
             $item['uri'] = 'https://www.srf.ch/play/tv/-/video/-?urn=' . $ep['urn'];
