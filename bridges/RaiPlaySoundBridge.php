@@ -57,6 +57,7 @@ class RaiPlaySoundBridge extends BridgeAbstract
             $item['enclosures'] = [$data['audio']['url'], self::URI . $data['images']['square']];
             $item['categories'] = array_merge($data['track_info']['genres'], $data['track_info']['sub_genres']);
             $item['uid'] = $data['podcast_info']['uniquename'];
+            $item['duration'] = $data['audio']['duration'];
             $this->items[] = $item;
         }
     }
