@@ -80,10 +80,18 @@ class TelegramBridge extends BridgeAbstract
 
                 $item = [];
 
-                $item['uri'] = $message->find('a.tgme_widget_message_date', 0)->href;
+                $var = $message->find('a.tgme_widget_message_date', 0);
+                if ($var) {
+                    $item['uri'] = $var->href;
+                }
                 $item['content'] = $this->processContent($message);
                 $item['title'] = $this->itemTitle;
-                $item['timestamp'] = $message->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
+
+                $var1 = $message->find('span.tgme_widget_message_meta', 0);
+                if ($var1) {
+                    $item['timestamp'] = $var1->find('time', 0)->datetime;
+                }
+
                 $item['enclosures'] = $this->enclosures;
 
                 $messageOwner = $message->find('a.tgme_widget_message_owner_name', 0);
