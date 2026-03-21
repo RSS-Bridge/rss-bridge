@@ -50,10 +50,13 @@ class RaiPlaySoundBridge extends BridgeAbstract
             $data = json_decode(getContents(self::URI . $ep), true);
             $item = [];
             $item['uri'] = self::URI . $data['weblink'];
-            $item['title'] = $data['episode_title'];
-            $item['content'] = $data['description'];
-            $item['enclosures'] = [$data['audio']['url']];
+            $item['title'] = $data['track_info']['episode_title'];
+            $item['timestamp'] = $data['track_info']['date'];
             $item['author'] = $data['podcast_info']['title'];
+            $item['content'] = $data['description'];
+            $item['enclosures'] = [$data['audio']['url'], self::URI . $data['images']['square']];
+            $item['categories'] = array_merge($data['track_info']['genres'], $data['track_info']['sub_genres']);
+            $item['uid'] = $data['podcast_info']['uniquename'];
             $this->items[] = $item;
         }
     }
