@@ -7,7 +7,7 @@
  */
 class TwitterV2Bridge extends BridgeAbstract
 {
-    const NAME = 'Twitter V2 Bridge';
+    const NAME = 'Twitter V2';
     const URI = 'https://twitter.com/';
     const API_URI = 'https://api.twitter.com/2';
     const DESCRIPTION = 'Returns tweets (using Twitter API v2). See the 

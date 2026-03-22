@@ -3,7 +3,7 @@
 class NYTBridge extends FeedExpander
 {
     const MAINTAINER = 'IceWreck';
-    const NAME = 'New York Times Bridge';
+    const NAME = 'New York Times';
     const URI = 'https://www.nytimes.com/';
     const CACHE_TIMEOUT = 900; // 15 minutes
     const DESCRIPTION = 'RSS feed for the New York Times';

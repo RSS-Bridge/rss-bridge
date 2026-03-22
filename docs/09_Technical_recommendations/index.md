@@ -15,7 +15,7 @@ and load a valid URL (not the base URL!).
 <?php
 class TestBridge extends BridgeAbstract
 {
-    const NAME = 'Unnamed bridge';
+    const NAME = 'Unnamed';
     const URI = '';
     const DESCRIPTION = 'No description provided';
     const MAINTAINER = 'No maintainer';

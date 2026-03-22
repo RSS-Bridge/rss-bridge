@@ -2,7 +2,7 @@
 
 class StorytelBridge extends BridgeAbstract
 {
-    const NAME = 'Storytel List Bridge';
+    const NAME = 'Storytel List';
     const URI = 'https://www.storytel.com/tr';
     const DESCRIPTION = 'Fetches books from a Storytel list, including title, author, and cover image.';
     const MAINTAINER = 'Okbaydere';

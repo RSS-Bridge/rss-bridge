@@ -4,7 +4,7 @@ class NovelUpdatesBridge extends BridgeAbstract
 {
     const MAINTAINER = 'albirew';
     const NAME = 'Novel Updates';
-    const URI = 'https://www.novelupdates.com/';
+    const URI = 'https://www.novelupdates.com';
     const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'Returns releases from Novel Updates';
     const PARAMETERS = [ [
@@ -31,31 +31,19 @@ class NovelUpdatesBridge extends BridgeAbstract
         $fullhtml = getSimpleHTMLDOM($this->getURI());
 
         $this->seriesTitle = $fullhtml->find('div.seriestitlenu', 0)->plaintext;
-        // dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259
-        // forcefully removes tbody
-        $html = $fullhtml->find('table#myTable', 0)->innertext;
-        $html = stristr($html, '<tbody>'); //strip thead
-        $html = stristr($html, '<tr>'); //remove tbody
-        $html = str_get_html(stristr($html, '</tbody>', true)); //remove last tbody and get back as an array
+        $html = $fullhtml->find('table#myTable tbody', 0);
         foreach ($html->find('tr') as $element) {
             $item = [];
-            $item['uri'] = $element->find('td', 2)->find('a', 0)->href;
-            $item['title'] = $element->find('td', 2)->find('a', 0)->plaintext;
-            $item['team'] = $element->find('td', 1)->innertext;
+            $item['title'] = $element->find('td', 2)->find('span', 0)->plaintext;
+            $item['author'] = $element->find('a', 0)->plaintext;
             $item['timestamp'] = strtotime($element->find('td', 0)->plaintext);
-            $item['content'] = '<a href="'
-                . $item['uri']
-                . '">'
-                . $this->seriesTitle
+            $item['content'] = $this->seriesTitle
                 . ' - '
                 . $item['title']
-                . '</a> by '
-                . $item['team']
-                . '<br><a href="'
-                . $item['uri']
-                . '">'
-                . $fullhtml->find('div.seriesimg', 0)->innertext
-                . '</a>';
+                . ' - by '
+                . $item['author']
+                . '<br>'
+                . $fullhtml->find('div.seriesimg', 0)->innertext;
 
             $this->items[] = $item;
         }

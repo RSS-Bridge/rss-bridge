@@ -3,7 +3,7 @@
 class OpenwhydBridge extends BridgeAbstract
 {
     const MAINTAINER = 'kranack';
-    const NAME = 'Openwhyd Bridge';
+    const NAME = 'Openwhyd';
     const URI = 'https://openwhyd.org';
     const CACHE_TIMEOUT = 600; // 10min
     const DESCRIPTION = 'Returns 10 newest music from user profile';
@@ -61,6 +61,6 @@ class OpenwhydBridge extends BridgeAbstract
 
     public function getName()
     {
-        return (!empty($this->userName) ? $this->userName . ' - ' : '') . 'Openwhyd Bridge';
+        return (!empty($this->userName) ? $this->userName . ' - ' : '') . 'Openwhyd';
     }
 }

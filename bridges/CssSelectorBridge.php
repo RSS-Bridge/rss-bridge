@@ -3,7 +3,7 @@
 class CssSelectorBridge extends BridgeAbstract
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'CSS Selector Bridge';
+    const NAME = 'CSS Selector';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge/';
     const DESCRIPTION = 'Convert any site to RSS feed using CSS selectors (Advanced Users)';
     const PARAMETERS = [

@@ -3,7 +3,7 @@
 class ZeitBridge extends FeedExpander
 {
     const MAINTAINER = 'Mynacol';
-    const NAME = 'Zeit Online Bridge';
+    const NAME = 'Zeit Online';
     const URI = 'https://www.zeit.de/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';

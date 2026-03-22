@@ -6,7 +6,7 @@
 class ReporterreBridge extends BridgeAbstract
 {
     const MAINTAINER = 'nyutag';
-    const NAME = 'Reporterre Bridge';
+    const NAME = 'Reporterre';
     const URI = 'https://www.reporterre.net/';
     const DESCRIPTION = 'Returns the newest articles. See also their official feed https://reporterre.net/spip.php?page=backend-simple';
 

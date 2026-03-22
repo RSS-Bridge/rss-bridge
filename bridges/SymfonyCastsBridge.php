@@ -2,7 +2,7 @@
 
 class SymfonyCastsBridge extends BridgeAbstract
 {
-    const NAME = 'SymfonyCasts Bridge';
+    const NAME = 'SymfonyCasts';
     const URI = 'https://symfonycasts.com/';
     const DESCRIPTION = 'Follow new updates on symfonycasts.com';
     const MAINTAINER = 'Park0';

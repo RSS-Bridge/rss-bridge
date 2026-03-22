@@ -3,7 +3,7 @@
 class PicnobBridge extends BridgeAbstract
 {
         const MAINTAINER = 'sysadminstory';
-        const NAME = 'Picnob Bridge';
+        const NAME = 'Picnob';
         const URI = 'https://www.picnob.com/';
         const CACHE_TIMEOUT = 3600; // 1h
         const DESCRIPTION = 'Returns Picnob (Instagram viewer) posts by user or by hashtag';
@@ -94,11 +94,11 @@ HTML,
         public function getName()
         {
             if (!is_null($this->getInput('u'))) {
-                    return 'Username ' . $this->getInput('u') . ' - Picnob Bridge';
+                    return 'Username ' . $this->getInput('u') . ' - Picnob';
             }
 
             if (!is_null($this->getInput('h'))) {
-                    return 'Hashtag ' . $this->getInput('h') . ' - Picnob Bridge';
+                    return 'Hashtag ' . $this->getInput('h') . ' - Picnob';
             }
 
                 return parent::getName();

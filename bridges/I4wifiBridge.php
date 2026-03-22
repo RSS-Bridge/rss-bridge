@@ -7,7 +7,7 @@
 
 class I4wifiBridge extends BridgeAbstract
 {
-    const NAME = 'i4wifi Bridge';
+    const NAME = 'i4wifi';
     const URI = 'https://www.i4wifi.cz';
     const DESCRIPTION = 'Product news not only from the wireless, network and security technology sector from i4wifi.cz - Czech Republic';
     const MAINTAINER = 'pprenghyorg';

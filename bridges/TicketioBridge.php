@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class TicketioBridge extends BridgeAbstract
 {
-    const NAME = 'Ticket.io Bridge';
+    const NAME = 'Ticket.io';
     const URI = 'https://www.ticket.io';
     const DESCRIPTION = 'Provides updates for available events in a specific ticketshop on ticket.io';
     const MAINTAINER = 'SebLaus';

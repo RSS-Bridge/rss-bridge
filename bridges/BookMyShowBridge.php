@@ -3,7 +3,7 @@
 class BookMyShowBridge extends BridgeAbstract
 {
     const MAINTAINER = 'captn3m0';
-    const NAME = 'BookMyShow Bridge';
+    const NAME = 'BookMyShow';
     const URI = 'https://in.bookmyshow.com';
     const MOVIES_IMAGE_BASE_FORMAT = 'https://in.bmscdn.com/iedb/movies/images/mobile/thumbnail/large/%s.jpg';
     const DESCRIPTION = 'Returns the latest events on BookMyShow';

@@ -3,7 +3,7 @@
 class EconomistBridge extends FeedExpander
 {
     const MAINTAINER = 'bockiii, sqrtminusone';
-    const NAME = 'Economist Bridge';
+    const NAME = 'Economist';
     const URI = 'https://www.economist.com/';
     const CACHE_TIMEOUT = 3600; //1hour
     const DESCRIPTION = 'Returns the latest articles for the selected category';

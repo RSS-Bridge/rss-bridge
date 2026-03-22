@@ -2,7 +2,7 @@
 
 class CachetBridge extends BridgeAbstract
 {
-    const NAME = 'Cachet Bridge';
+    const NAME = 'Cachet';
     const URI = 'https://cachethq.io/';
     const DESCRIPTION = 'Returns status updates from any Cachet installation';
     const MAINTAINER  = 'klimplant';

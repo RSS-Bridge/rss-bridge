@@ -2,7 +2,7 @@
 
 class HuntShowdownNewsBridge extends BridgeAbstract
 {
-    const NAME = 'Hunt Showdown News Bridge';
+    const NAME = 'Hunt Showdown News';
     const MAINTAINER = 'deffy92';
     const URI = 'https://www.huntshowdown.com';
     const DESCRIPTION = 'Returns the latest news from HuntShowdown.com/news';

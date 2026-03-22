@@ -3,7 +3,7 @@
 class DeutscheWelleBridge extends FeedExpander
 {
     const MAINTAINER = 'No maintainer';
-    const NAME = 'Deutsche Welle Bridge';
+    const NAME = 'Deutsche Welle';
     const URI = 'https://www.dw.com';
     const DESCRIPTION = 'Returns the full articles instead of only the intro';
     const CACHE_TIMEOUT = 3600;
@@ -112,11 +112,9 @@ class DeutscheWelleBridge extends FeedExpander
             $img->height = null;
         }
 
-        // remove bad img src's added by defaultLinkTo() above
-        // these images should have src="" and will then use
-        // the srcset attribute to load the best image for the displayed size
-        foreach ($article->find('figure > picture > img') as $img) {
-            $img->src = '';
+        // Remove inline SVG icons that are not part of the article content
+        foreach ($article->find('svg') as $svg) {
+            $svg->outertext = '';
         }
 
         // replace lazy-loaded images

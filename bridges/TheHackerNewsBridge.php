@@ -3,7 +3,7 @@
 class TheHackerNewsBridge extends BridgeAbstract
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'The Hacker News Bridge';
+    const NAME = 'The Hacker News';
     const URI = 'https://thehackernews.com/';
     const DESCRIPTION = 'Cyber Security, Hacking, Technology News.';
 

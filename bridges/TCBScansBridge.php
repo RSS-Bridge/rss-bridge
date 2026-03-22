@@ -2,7 +2,7 @@
 
 class TCBScansBridge extends BridgeAbstract
 {
-    const NAME = 'TCB Scans Bridge';
+    const NAME = 'TCB Scans';
     const URI = 'https://tcbscans.me/';
     const DESCRIPTION = 'Returns the latest chapter from a TCB Scans project';
     const MAINTAINER = 'osvfj';

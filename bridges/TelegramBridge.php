@@ -2,7 +2,7 @@
 
 class TelegramBridge extends BridgeAbstract
 {
-    const NAME = 'Telegram Bridge';
+    const NAME = 'Telegram';
     const URI = 'https://t.me';
     const DESCRIPTION = 'Returns newest posts from a *public* Telegram channel';
     const MAINTAINER = 'VerifiedJoseph';
@@ -36,6 +36,7 @@ class TelegramBridge extends BridgeAbstract
 
     const CACHE_TIMEOUT = 60 * 60; // 1h
     private $feedName = '';
+    private $feedIcon = '';
 
     private $enclosures = [];
     private $itemTitle = '';
@@ -55,9 +56,18 @@ class TelegramBridge extends BridgeAbstract
 
             $dom = getSimpleHTMLDOM($url);
 
-            $channelTitle = $dom->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
-            $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
-            $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
+            if (!$this->feedName) {
+                $channelTitle = $dom->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
+                $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
+                $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
+            }
+
+            if (!$this->feedIcon) {
+                $photoImg = $dom->find('i.tgme_page_photo_image img', 0);
+                if ($photoImg) {
+                    $this->feedIcon = $photoImg->src;
+                }
+            }
 
             $messages = $dom->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
             if (!$channelTitle && !$messages) {
@@ -70,10 +80,18 @@ class TelegramBridge extends BridgeAbstract
 
                 $item = [];
 
-                $item['uri'] = $message->find('a.tgme_widget_message_date', 0)->href;
+                $var = $message->find('a.tgme_widget_message_date', 0);
+                if ($var) {
+                    $item['uri'] = $var->href;
+                }
                 $item['content'] = $this->processContent($message);
                 $item['title'] = $this->itemTitle;
-                $item['timestamp'] = $message->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
+
+                $var1 = $message->find('span.tgme_widget_message_meta', 0);
+                if ($var1) {
+                    $item['timestamp'] = $var1->find('time', 0)->datetime;
+                }
+
                 $item['enclosures'] = $this->enclosures;
 
                 $messageOwner = $message->find('a.tgme_widget_message_owner_name', 0);
@@ -173,6 +191,14 @@ class TelegramBridge extends BridgeAbstract
             return $this->feedName . ' - Telegram';
         }
         return parent::getName();
+    }
+
+    public function getIcon()
+    {
+        if ($this->feedIcon) {
+            return $this->feedIcon;
+        }
+        return parent::getIcon();
     }
 
     private function processReply($messageDiv)

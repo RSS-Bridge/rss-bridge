@@ -20,7 +20,7 @@
         type="button"
 	    id="findfeed"
         name="findfeed"
-    />Find Feed from URL</button>
+    >Find Feed from URL</button>
     <section id="findfeedresults">
     </section>
 

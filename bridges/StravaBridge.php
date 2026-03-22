@@ -2,7 +2,7 @@
 
 class StravaBridge extends BridgeAbstract
 {
-    const NAME = 'Strava Bridge';
+    const NAME = 'Strava';
     const DESCRIPTION = "Returns an athlete's recent activities";
     const URI = 'https://www.strava.com';
     const PARAMETERS = [

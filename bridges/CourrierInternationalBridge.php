@@ -3,7 +3,7 @@
 class CourrierInternationalBridge extends FeedExpander
 {
     const MAINTAINER = 'teromene';
-    const NAME = 'Courrier International Bridge';
+    const NAME = 'Courrier International';
     const URI = 'https://www.courrierinternational.com/';
     const CACHE_TIMEOUT = 300; // 5 min
     const DESCRIPTION = 'Returns the newest articles';

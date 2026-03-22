@@ -3,7 +3,7 @@
 class ReutersBridge extends BridgeAbstract
 {
     const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
-    const NAME = 'Reuters Bridge';
+    const NAME = 'Reuters';
     const URI = 'https://www.reuters.com';
     const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = 'Returns news from Reuters';
@@ -535,18 +535,7 @@ class ReutersBridge extends BridgeAbstract
 EOD;
                             break;
                         case 'youtube':
-                            $url = "https://www.youtube.com/embed/$cid";
-                            $embed .= <<<EOD
-<‌iframe
-	width="560" 
-	height="315" 
-	src="{$url}"
-	frameborder="0" 
-	allowfullscreen
-	referrerpolicy="strict-origin"
->
-</iframe>
-EOD;
+                            $embed .= handleYoutube($cid);
                             break;
                     }
                     $description .= $embed;

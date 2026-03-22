@@ -2,7 +2,7 @@
 
 class TwitterBridge extends BridgeAbstract
 {
-    const NAME = 'Twitter Bridge';
+    const NAME = 'Twitter';
     const URI = 'https://twitter.com/';
     const API_URI = 'https://api.twitter.com';
     const GUEST_TOKEN_USES = 100;

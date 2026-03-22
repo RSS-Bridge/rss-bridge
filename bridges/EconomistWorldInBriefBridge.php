@@ -3,7 +3,7 @@
 class EconomistWorldInBriefBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'Economist the World in Brief Bridge';
+    const NAME = 'Economist the World in Brief';
     const URI = 'https://www.economist.com/the-world-in-brief';
 
     const CACHE_TIMEOUT = 3600; // 1 hour

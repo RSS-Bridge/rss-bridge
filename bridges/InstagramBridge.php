@@ -3,7 +3,7 @@
 class InstagramBridge extends BridgeAbstract
 {
     // const MAINTAINER = 'pauder';
-    const NAME = 'Instagram Bridge';
+    const NAME = 'Instagram';
     const URI = 'https://www.instagram.com/';
     const DESCRIPTION = 'Returns the newest images';
 
@@ -349,7 +349,7 @@ class InstagramBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('u'))) {
-            return $this->getInput('u') . ' - Instagram Bridge';
+            return $this->getInput('u') . ' - Instagram';
         }
 
         return parent::getName();

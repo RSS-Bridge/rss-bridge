@@ -2,7 +2,7 @@
 
 class MangaReaderBridge extends BridgeAbstract
 {
-    const NAME = 'MangaReader Bridge';
+    const NAME = 'MangaReader';
     const URI = 'https://mangareader.to';
     const DESCRIPTION = 'Fetches the latest chapters from MangaReader.to.';
     const MAINTAINER = 'cubethethird';

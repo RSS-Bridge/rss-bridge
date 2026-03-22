@@ -3,7 +3,7 @@
 class OllamaBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'Ollama Blog Bridge';
+    const NAME = 'Ollama Blog';
     const URI = 'https://ollama.com';
 
     const CACHE_TIMEOUT = 3600; // 1 hour

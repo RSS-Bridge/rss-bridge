@@ -2,7 +2,7 @@
 
 class CodebergBridge extends BridgeAbstract
 {
-    const NAME = 'Codeberg Bridge';
+    const NAME = 'Codeberg';
     const URI = 'https://codeberg.org/';
     const DESCRIPTION = 'Returns commits, issues, pull requests or releases for a repository.';
     const MAINTAINER = 'VerifiedJoseph';

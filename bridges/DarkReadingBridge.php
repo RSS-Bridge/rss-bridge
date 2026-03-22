@@ -3,7 +3,7 @@
 class DarkReadingBridge extends FeedExpander
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'Dark Reading Bridge';
+    const NAME = 'Dark Reading';
     const URI = 'https://www.darkreading.com/';
     const DESCRIPTION = 'Returns the newest articles from Dark Reading';
 

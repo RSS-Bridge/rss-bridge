@@ -3,7 +3,7 @@
 class UsbekEtRicaBridge extends BridgeAbstract
 {
     const MAINTAINER = 'logmanoriginal';
-    const NAME = 'Usbek & Rica Bridge';
+    const NAME = 'Usbek & Rica';
     const URI = 'https://usbeketrica.com';
     const DESCRIPTION = 'Returns latest articles from the front page';
 

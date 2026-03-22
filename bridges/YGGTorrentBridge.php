@@ -6,7 +6,7 @@
 class YGGTorrentBridge extends BridgeAbstract
 {
     const MAINTAINER = 'teromene';
-    const NAME = 'Yggtorrent Bridge';
+    const NAME = 'Yggtorrent';
     const URI = 'https://www3.yggtorrent.qa';
     const DESCRIPTION = 'Returns torrent search from Yggtorrent';
 

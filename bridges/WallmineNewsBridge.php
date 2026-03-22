@@ -2,7 +2,7 @@
 
 class WallmineNewsBridge extends BridgeAbstract
 {
-    const NAME = 'Wallmine News Bridge';
+    const NAME = 'Wallmine News';
     const URI = 'https://wallmine.com';
     const DESCRIPTION = 'Returns financial news';
     const MAINTAINER = 'VerifiedJoseph';

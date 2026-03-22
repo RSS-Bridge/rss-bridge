@@ -3,7 +3,7 @@
 class AcrimedBridge extends FeedExpander
 {
     const MAINTAINER = 'qwertygc';
-    const NAME = 'Acrimed Bridge';
+    const NAME = 'Acrimed';
     const URI = 'https://www.acrimed.org/';
     const CACHE_TIMEOUT = 4800; //2hours
     const DESCRIPTION = 'Returns the newest articles';

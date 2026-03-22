@@ -3,7 +3,7 @@
 class KleinanzeigenBridge extends BridgeAbstract
 {
     const MAINTAINER = 'knrdl';
-    const NAME = 'Kleinanzeigen Bridge';
+    const NAME = 'Kleinanzeigen';
     const URI = 'https://www.kleinanzeigen.de';
     const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = '(ebay) Kleinanzeigen';

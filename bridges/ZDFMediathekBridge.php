@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class ZDFMediathekBridge extends BridgeAbstract
 {
-    const NAME = 'ZDF-Mediathek Bridge';
+    const NAME = 'ZDF-Mediathek';
     const URI = 'https://www.zdf.de/';
     const DESCRIPTION = 'Feed of any show,series,documentary etc. in the ZDF-Mediathek, specified by its path';
     const MAINTAINER = 'nabakolu';

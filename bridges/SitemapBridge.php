@@ -3,7 +3,7 @@
 class SitemapBridge extends CssSelectorBridge
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'Sitemap Bridge';
+    const NAME = 'Sitemap';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge/';
     const DESCRIPTION = 'Convert any site to RSS feed using SEO Sitemap and CSS selectors (Advanced Users)';
     const PARAMETERS = [

@@ -3,7 +3,7 @@
 class EngadgetBridge extends FeedExpander
 {
     const MAINTAINER = 'IceWreck';
-    const NAME = 'Engadget Bridge';
+    const NAME = 'Engadget';
     const URI = 'https://www.engadget.com/';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'Article content for Engadget.';

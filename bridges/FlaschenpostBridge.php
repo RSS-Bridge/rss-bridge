@@ -2,7 +2,7 @@
 
 class FlaschenpostBridge extends BridgeAbstract
 {
-    const NAME = 'Flaschenpost Bridge';
+    const NAME = 'Flaschenpost';
     const URI = 'https://www.flaschenpost.de/';
     const DESCRIPTION = 'Aktuelle Angebote auf Flaschenpost.de';
     const MAINTAINER = 'sal0max';

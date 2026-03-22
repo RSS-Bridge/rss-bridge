@@ -22,7 +22,7 @@ class XenForoBridge extends BridgeAbstract
     const XENFORO_VERSION_2 = '2.0';
 
     // RSS-Bridge constants
-    const NAME = 'XenForo Bridge';
+    const NAME = 'XenForo';
     const URI = 'https://xenforo.com/';
     const DESCRIPTION = 'Generates feeds for threads in forums powered by XenForo';
     const MAINTAINER = 'logmanoriginal';

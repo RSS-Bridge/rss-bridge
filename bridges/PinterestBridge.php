@@ -3,7 +3,7 @@
 class PinterestBridge extends FeedExpander
 {
     const MAINTAINER = 'pauder';
-    const NAME = 'Pinterest Bridge';
+    const NAME = 'Pinterest';
     const URI = 'https://www.pinterest.com';
     const DESCRIPTION = 'Returns the newest images on a board';
 

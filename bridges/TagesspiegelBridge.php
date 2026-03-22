@@ -3,7 +3,7 @@
 class TagesspiegelBridge extends FeedExpander
 {
     const MAINTAINER = 'AlexanderS';
-    const NAME = 'Tagesspiegel Bridge';
+    const NAME = 'Tagesspiegel';
     const URI = 'https://www.tagesspiegel.de/';
     const CACHE_TIMEOUT = 3600; // 60min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';

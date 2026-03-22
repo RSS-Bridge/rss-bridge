@@ -3,7 +3,7 @@
 class CrewbayBridge extends BridgeAbstract
 {
     const MAINTAINER = 'couraudt';
-    const NAME = 'Crewbay Bridge';
+    const NAME = 'Crewbay';
     const URI = 'https://www.crewbay.com';
     const DESCRIPTION = 'Returns the newest sailing offers.';
     const PARAMETERS = [

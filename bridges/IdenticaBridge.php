@@ -3,7 +3,7 @@
 class IdenticaBridge extends BridgeAbstract
 {
     const MAINTAINER = 'mitsukarenai';
-    const NAME = 'Identica Bridge';
+    const NAME = 'Identica';
     const URI = 'https://identi.ca/';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns user timelines';
@@ -39,7 +39,7 @@ class IdenticaBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('u'))) {
-            return $this->getInput('u') . ' - Identica Bridge';
+            return $this->getInput('u') . ' - Identica';
         }
 
         return parent::getName();

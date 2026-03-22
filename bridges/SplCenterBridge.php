@@ -2,7 +2,7 @@
 
 class SplCenterBridge extends FeedExpander
 {
-    const NAME = 'Southern Poverty Law Center Bridge';
+    const NAME = 'Southern Poverty Law Center';
     const URI = 'https://www.splcenter.org';
     const DESCRIPTION = 'Returns the newest posts from the Southern Poverty Law Center';
     const MAINTAINER = 'VerifiedJoseph';

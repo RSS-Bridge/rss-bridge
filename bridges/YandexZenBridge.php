@@ -2,7 +2,7 @@
 
 class YandexZenBridge extends BridgeAbstract
 {
-    const NAME = 'YandexZen Bridge';
+    const NAME = 'YandexZen';
     const URI = 'https://dzen.ru';
     const DESCRIPTION = 'Latest posts from the specified channel.';
     const MAINTAINER = 'llamasblade';

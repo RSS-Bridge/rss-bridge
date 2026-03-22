@@ -2,7 +2,7 @@
 
 class HotUKDealsBridge extends PepperBridgeAbstract
 {
-    const NAME = 'HotUKDeals bridge';
+    const NAME = 'HotUKDeals';
     const URI = 'https://www.hotukdeals.com/';
     const DESCRIPTION = 'Return the HotUKDeals search result using keywords';
     const MAINTAINER = 'sysadminstory';

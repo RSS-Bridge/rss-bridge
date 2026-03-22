@@ -3,7 +3,7 @@
 class AllocineFRSortiesBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Simounet';
-    const NAME = 'AlloCiné Sorties Bridge';
+    const NAME = 'AlloCiné Sorties';
     const CACHE_TIMEOUT = 25200; // 7h
     const BASE_URI = 'https://www.allocine.fr';
     const URI = self::BASE_URI . '/film/sorties-semaine/';

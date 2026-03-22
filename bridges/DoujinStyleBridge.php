@@ -2,7 +2,7 @@
 
 class DoujinStyleBridge extends BridgeAbstract
 {
-    const NAME = 'DoujinStyle Bridge';
+    const NAME = 'DoujinStyle';
     const URI = 'https://doujinstyle.com/';
     const DESCRIPTION = 'Returns submissions from DoujinStyle';
     const MAINTAINER = 'mrtnvgr';

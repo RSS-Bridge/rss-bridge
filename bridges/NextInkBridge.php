@@ -3,7 +3,7 @@
 class NextInkBridge extends FeedExpander
 {
     const MAINTAINER = 'ORelio';
-    const NAME = 'Next.Ink Bridge';
+    const NAME = 'Next.Ink';
     const URI = 'https://www.next.ink/';
     const DESCRIPTION = 'Returns the newest articles.';
 

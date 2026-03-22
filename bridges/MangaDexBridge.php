@@ -2,7 +2,7 @@
 
 class MangaDexBridge extends BridgeAbstract
 {
-    const NAME = 'MangaDex Bridge';
+    const NAME = 'MangaDex';
     const URI = 'https://mangadex.org/';
     const API_ROOT = 'https://api.mangadex.org/';
     const DESCRIPTION = 'Returns MangaDex items using the API';

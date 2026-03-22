@@ -3,7 +3,7 @@
 class InternationalInstituteForStrategicStudiesBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'International Institute For Strategic Studies Bridge';
+    const NAME = 'International Institute For Strategic Studies';
     const URI = 'https://www.iiss.org';
 
     const CACHE_TIMEOUT = 3600; // 1 hour

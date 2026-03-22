@@ -7,7 +7,7 @@
  */
 class IvooxBridge extends BridgeAbstract
 {
-    const NAME = 'Ivoox Bridge';
+    const NAME = 'Ivoox';
     const URI = 'https://www.ivoox.com/';
     const CACHE_TIMEOUT = 10800; // 3h
     const DESCRIPTION = 'Returns the 10 newest episodes by keyword search';

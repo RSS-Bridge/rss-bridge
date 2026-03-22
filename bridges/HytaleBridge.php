@@ -2,7 +2,7 @@
 
 class HytaleBridge extends BridgeAbstract
 {
-    const NAME = 'Hytale Bridge';
+    const NAME = 'Hytale';
     const URI = 'https://hytale.com/news';
     const DESCRIPTION = 'All blog posts from Hytale\'s news blog.';
     const MAINTAINER = 'llamasblade';

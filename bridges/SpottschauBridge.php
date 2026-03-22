@@ -2,7 +2,7 @@
 
 class SpottschauBridge extends BridgeAbstract
 {
-    const NAME = 'Härringers Spottschau Bridge';
+    const NAME = 'Härringers Spottschau';
     const URI = 'https://spottschau.com/';
     const DESCRIPTION = 'Der Fußball-Comic';
     const MAINTAINER = 'sal0max';

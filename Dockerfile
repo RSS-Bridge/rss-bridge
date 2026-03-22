@@ -29,22 +29,22 @@ RUN set -xe && \
       patchelf \
       && \
     # install curl-impersonate library
-    curlimpersonate_version=1.0.0rc2 && \
+    curlimpersonate_version=1.2.5 && \
     { \
         { \
             [ $(arch) = 'aarch64' ] && \
             archive="libcurl-impersonate-v${curlimpersonate_version}.aarch64-linux-gnu.tar.gz" && \
-            sha512sum="c8add80e7a0430a074edea1a11f73d03044c48e848e164af2d6f362866623e29bede207a50f18f95b1bc5ab3d33f5c31408be60a6da66b74a0d176eebe299116" \
+            sha512sum="cd340819d27c03e6833e746c1de181aa828f5986f4152fe0d55d5ea1b0a7c5328db129f9146d6369d2c2e20facd7c0a67e32cc916dddc74d1557106f89636dd0" \
         ; } \
         || { \
             [ $(arch) = 'armv7l' ] && \
             archive="libcurl-impersonate-v${curlimpersonate_version}.arm-linux-gnueabihf.tar.gz" && \
-            sha512sum="d0403ca4ad55a8d499b120e5675c7b5a0dc4946af49c933e91fc24455ffe5e122aa21ee95554612ff5d1bd6faea1556e1e1b9c821918e2644cc9bcbddc05747a" \
+            sha512sum="143e57779c4872557e8becfd91bf9c92d9085b1c964d103a39b6e85253e3f3257796d205de4b49f6bc25c8ad0a39e5d4ec4f51391037e27d32d6355e52c5d346" \
         ; } \
         || { \
             [ $(arch) = 'x86_64' ] && \
             archive="libcurl-impersonate-v${curlimpersonate_version}.x86_64-linux-gnu.tar.gz" && \
-            sha512sum="35cafda2b96df3218a6d8545e0947a899837ede51c90f7ef2980bd2d99dbd67199bc620000df28b186727300b8c7046d506807fb48ee0fbc068dc8ae01986339" \
+            sha512sum="816e7d08110f2f5a6e7e2364e7c1d9ec0cc371e9b5024e0239db937379f057bb40ec80e56d0c49cdaf80b7f560888511c1bda5516b850a6d54c46a2eccc94dc6" \
         ; } \
     } && \
     curl -LO "https://github.com/lexiforest/curl-impersonate/releases/download/v${curlimpersonate_version}/${archive}" && \
@@ -57,7 +57,7 @@ RUN set -xe && \
     rm -rf /var/lib/apt/lists/*
 
 ENV LD_PRELOAD=/usr/local/lib/curl-impersonate/libcurl-impersonate.so
-ENV CURL_IMPERSONATE=chrome131
+ENV CURL_IMPERSONATE=chrome142
 
 # logs should go to stdout / stderr
 RUN ln -sfT /dev/stderr /var/log/nginx/error.log; \

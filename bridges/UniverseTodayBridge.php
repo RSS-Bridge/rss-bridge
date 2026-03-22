@@ -3,7 +3,7 @@
 class UniverseTodayBridge extends FeedExpander
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'Universe Today Bridge';
+    const NAME = 'Universe Today';
     const URI = 'https://www.universetoday.com/';
     const DESCRIPTION = 'Returns the latest articles from Universe Today.';
 

@@ -3,7 +3,7 @@
 class FreeCodeCampBridge extends FeedExpander
 {
     const MAINTAINER = 'IceWreck';
-    const NAME = 'FreeCodecamp Bridge';
+    const NAME = 'FreeCodecamp';
     const URI = 'https://www.freecodecamp.org';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'RSS feed for FreeCodeCamp';

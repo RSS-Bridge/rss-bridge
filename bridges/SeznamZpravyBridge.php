@@ -2,7 +2,7 @@
 
 class SeznamZpravyBridge extends BridgeAbstract
 {
-    const NAME = 'Seznam Zprávy Bridge';
+    const NAME = 'Seznam Zprávy';
     const URI = 'https://seznamzpravy.cz';
     const DESCRIPTION = 'Returns newest stories from Seznam Zprávy';
     const MAINTAINER = 'thezeroalpha';

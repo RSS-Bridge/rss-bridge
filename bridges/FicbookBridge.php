@@ -2,7 +2,7 @@
 
 class FicbookBridge extends BridgeAbstract
 {
-    const NAME = 'Ficbook Bridge';
+    const NAME = 'Ficbook';
     const URI = 'https://ficbook.net/';
     const DESCRIPTION = 'No description provided';
     const MAINTAINER = 'logmanoriginal';

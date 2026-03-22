@@ -3,7 +3,7 @@
 class GolemBridge extends FeedExpander
 {
     const MAINTAINER = 'Mynacol';
-    const NAME = 'Golem Bridge';
+    const NAME = 'Golem';
     const URI = 'https://www.golem.de/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';
@@ -133,11 +133,7 @@ class GolemBridge extends FeedExpander
             if (array_key_exists($i, $embedSrcs)) {
                 $src = $embedSrcs[$i];
                 if (preg_match('/youtube(-nocookie)?\.com/', $src, $match)) {
-                    $placeholders[$i]->innertext = <<<EOT
-                    <iframe width="560" height="315" src="$src" title="YouTube video player" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin" allowfullscreen></iframe>';
-                    EOT;
+                    $placeholders[$i]->innertext = handleYoutube($src);
                 }
             }
         }

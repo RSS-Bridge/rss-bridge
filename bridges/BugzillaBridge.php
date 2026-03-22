@@ -2,7 +2,7 @@
 
 class BugzillaBridge extends BridgeAbstract
 {
-    const NAME = 'Bugzilla Bridge';
+    const NAME = 'Bugzilla';
     const URI = 'https://www.bugzilla.org/';
     const DESCRIPTION = 'Bridge for any Bugzilla instance';
     const MAINTAINER = 'Yaman Qalieh';

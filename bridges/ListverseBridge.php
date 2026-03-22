@@ -3,7 +3,7 @@
 class ListverseBridge extends FeedExpander
 {
     const MAINTAINER = 'IceWreck';
-    const NAME = 'Listverse Bridge';
+    const NAME = 'Listverse';
     const URI = 'https://listverse.com/';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'RSS feed for Listverse';

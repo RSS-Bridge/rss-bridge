@@ -3,7 +3,7 @@
 class PhoronixBridge extends FeedExpander
 {
     const MAINTAINER = 'IceWreck';
-    const NAME = 'Phoronix Bridge';
+    const NAME = 'Phoronix';
     const URI = 'https://www.phoronix.com';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'RSS feed for Linux news website Phoronix';

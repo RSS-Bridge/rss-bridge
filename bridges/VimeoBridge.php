@@ -2,7 +2,7 @@
 
 class VimeoBridge extends BridgeAbstract
 {
-    const NAME = 'Vimeo Bridge';
+    const NAME = 'Vimeo';
     const URI = 'https://vimeo.com/';
     const DESCRIPTION = 'Returns search results from Vimeo';
     const MAINTAINER = 'logmanoriginal';
