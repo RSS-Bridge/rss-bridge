@@ -19,7 +19,7 @@ class Rule34Bridge extends GelbooruBridge
             '<a href="%s"><img src="%s" /></a>',
             htmlspecialchars($fullImageUrl),
             htmlspecialchars($thumbnailUrl)
-        );        
+        );
         $content .= '<br><br>';
 
         $content .= '<b>Dimensions:</b> ' . $element->width . ' x ' . $element->height . '<br>';
