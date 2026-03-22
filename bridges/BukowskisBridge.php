@@ -195,7 +195,7 @@ class BukowskisBridge extends BridgeAbstract
         foreach ($html->find('div.c-lot-index-lot') as $lot) {
             $title = $lot->find('div.c-lot-index-lot__title', 0)->plaintext;
             $artist = $lot->find('div.c-lot-index-lot__artist', 0)->plaintext;
-            $relative_url = $lot->find('a.c-lot-index-lot__title-link', 0)->href;
+            $relative_url = $lot->find('a.c-lot-index-lot__link', 0)->href;
             $images = json_decode(
                 htmlspecialchars_decode(
                     $lot
