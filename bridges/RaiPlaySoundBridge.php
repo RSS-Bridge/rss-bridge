@@ -27,15 +27,36 @@ class RaiPlaySoundBridge extends BridgeAbstract
      */
     private $title;
 
+    /**
+     * Holds the URI of the show
+     *
+     * @var string
+     */
+    private $uri;
+
+    /**
+     * Holds the icon of the feed
+     *
+     */
+    private $icon;
+
     public function collectData(): void
     {
         $url = $this->getInput('path');
         $limit = $this->getInput('limit');
         $html = getContents($url);
-
         $dom = getSimpleHTMLDOM($url);
         $h1 = $dom->find('h1');
-        $this->title = $h1[0]->plaintext . self::NAME;
+        if (str_contains($url, '/programmi/') === true) {
+            $img = $dom->find('img.banner-image')[0]->getAttribute('src');
+            $img = str_replace('/resizegd/252x252', '', $img);
+        } elseif ($dom->find('#rps-player-fake img') !== null) {
+            $img = $dom->find('#rps-player-fake img')[0]->getAttribute('src');
+            $img = str_replace('/cropgd/184x184', '', $img);
+        }
+        $this->icon = $img ? self::URI . $img : null;
+        $this->title = $h1[0]->plaintext . ' | ' . self::NAME;
+        $this->uri = $url;
         $episodesJson = [];
 
         foreach ($dom->find('rps-playlist-action') as $el) {
@@ -69,5 +90,23 @@ class RaiPlaySoundBridge extends BridgeAbstract
             return $this->title;
         }
         return parent::getName();
+    }
+
+    /** {@inheritdoc} */
+    public function getURI()
+    {
+        if (!empty($this->uri)) {
+            return $this->uri;
+        }
+        return parent::getURI();
+    }
+
+    /** {@inheritdoc} */
+    public function getIcon()
+    {
+        if (!empty($this->icon)) {
+            return $this->icon;
+        }
+        return parent::getIcon();
     }
 }

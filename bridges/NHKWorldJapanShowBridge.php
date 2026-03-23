@@ -190,8 +190,15 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
     public function getName()
     {
         if (($this->getInput('show')) && ($this->getInput('language'))) {
-            $html = getSimpleHTMLDOMCached($this->getURI());
-            return html_entity_decode($html->find('meta[property="og:title"]', 0)->content, ENT_QUOTES, 'UTF-8');
+            try {
+                $html = getSimpleHTMLDOMCached($this->getURI());
+                return html_entity_decode($html->find('meta[property="og:title"]', 0)->content, ENT_QUOTES, 'UTF-8');
+            } catch (\Exception $e) {
+                if ((int)$e->getCode() === 404) {
+                    throw new \Exception('Error: NHK World-Japan show was not found.  Not all shows are available in all languages.', 404);
+                }
+                throw $e;
+            }
         }
 
         return parent::getName();
@@ -204,38 +211,54 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = getContents('https://api.nhkworld.jp/nwapi/vodesdlist/v7b/program/' . $this->getInput('show') . '/' . $this->getInput('language') . '/all/all.json');
+        $lang = $this->getInput('language');
+        $show = $this->getInput('show');
+        $json = getContents('https://api.nhkworld.jp/showsapi/v1/' . $lang . '/video_programs/' . $show . '/video_episodes?schedule=false&sort=-date&limit=10');
         $data = json_decode($json, true);
 
-        if (isset($data['data']['episodes']) && is_array($data['data']['episodes'])) {
-            foreach ($data['data']['episodes'] as $program) {
-                $title = $program['sub_title_clean'] ?? '';
-                $author = $program['title_clean'] ?? '';
+        if (isset($data['items']) && is_array($data['items'])) {
+            foreach ($data['items'] as $program) {
+                $title = $program['title'] ?? '';
+                $author = $program['video_program']['title'] ?? '';
                 $description = $program['description'] ?? '';
                 $url = $program['url'];
-                $vod_id = $program['vod_id'];
-                $iframeurl = self::URI . '/nhkworld/common/player/tv/vod/world/player/?opid=' . $vod_id;
-                $movielength = $program['movie_lengh'] ?? 'Unknown length';
-                $onair = $program['onair'] ?? round(microtime(true) * 1000);
-                $vod_to = $program['vod_to'] ?? round(microtime(true) * 1000);
+                $vod_src = $program['video']['url'] ?? '';
+                $vod_analytics = $program['video']['analytics'] ?? '';
+                $vod_lang = $program['lang'] ?? ''; // language selection is currently based on URL, value ignored, but passing anyway
+                $iframeurl = self::URI . '/nhkworld/common/player/world-player/iframe/player.html?playerId=tVideoEpisodePlayer';
+                $iframeurl .= '&src=' . rawurlencode($vod_src) . '&analyticsCookie=true&analyticsContentId=' . urlencode($vod_analytics);
+                $iframeurl .= '&languageCode=' . $vod_lang . '&subtitle=' . $vod_lang . '&playspeed=1&quality=auto&volume=1';
+                $movielength = $program['video']['duration'] ?? '';
+                $onair = new DateTime($program['video']['published_at']);
+                $vod_to = new DateTime($program['video']['expired_at']);
+                $thumburl = $program['images'] ? (end($program['images'])['url'] ?? '') : ''; // last image is the largest
 
                 switch ($this->getInput('embedoption')) {
                     case 'embed':
-                        $embedhtml = '<iframe src="' . $iframeurl . '" width="640" height="360" frameborder="0" allowfullscreen referrerpolicy="no-referrer">';
-                        $embedhtml .= '<img src="' . self::URI . $program['image'] . '" alt="Video thumbnail" width="640" height="360"></iframe><br><br>';
+                        $embedhtml = '<iframe src="' . $iframeurl;
+                        $embedhtml .= '" width="640" height="360" frameborder="0" allow="fullscreen; autoplay; encrypted-media" allowfullscreen">';
+                        $embedhtml .= '<img src="' . self::URI . $thumburl . '" alt="Video thumbnail" width="640" height="360"></iframe><br><br>';
                         break;
                     case 'thumb':
-                        $embedhtml = '<img src="' . self::URI . $program['image'] . '" alt="Video thumbnail"><br><br>';
+                        $embedhtml = '<img src="' . self::URI . $thumburl . '" alt="Video thumbnail"><br><br>';
                         break;
                     default:
                         $embedhtml = '';
                 }
 
-                $dt = new DateTime('@' . ($onair / 1000));
-                $dt->setTimezone(new DateTimeZone('UTC'));
-                $broadcastdate = ($this->getInput('language') === 'en') ? $dt->format('F j, Y') : $dt->format('Y-m-d');
-                $voddate = ($this->getInput('language') === 'en') ? date('F j, Y', $vod_to / 1000) : date('Y-m-d', $vod_to / 1000);
+                $broadcastdate = ($this->getInput('language') === 'en') ? $onair->format('F j, Y') : $onair->format('Y-m-d');
+                $voddate = ($this->getInput('language') === 'en') ? $vod_to->format('F j, Y') : $vod_to->format('Y-m-d');
                 $spantag = '<span dir="' . (in_array($this->getInput('language'), self::$rtlLanguages) ? 'rtl' : 'ltr') . '">';
+
+                if (!is_numeric($movielength)) {
+                    $movielength = 'Unknown length';
+                } else {
+                    $mov_secondsraw = (int)floor((float)$movielength);
+                    $mov_hours   = intdiv($mov_secondsraw, 3600);
+                    $mov_minutes = intdiv($mov_secondsraw % 3600, 60);
+                    $mov_seconds = $mov_secondsraw % 60;
+                    $movielength = ($mov_seconds >= 3600) ? sprintf('%02d:%02d:%02d', $mov_hours, $mov_minutes, $mov_seconds) : sprintf('%d:%02d', $mov_minutes, $mov_seconds);
+                }
 
                 $description = $spantag . $description;
                 $description .= '<br><br>';
@@ -244,7 +267,7 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
 
                 $description .= $embedhtml;
 
-                $description .= '<a href="' . $iframeurl . '" referrerpolicy="no-referrer">' . $this->getLocaleString('watchdirectly') . '</a>';
+                $description .= '<a href="' . $iframeurl . '">' . $this->getLocaleString('watchdirectly') . '</a>';
                 $description .= '<br><a href="' . self::URI . $url . '" referrerpolicy="no-referrer">' . $this->getLocaleString('watchonplayer') . '</a>';
                 $description .= '</span>';
 
@@ -253,7 +276,7 @@ class NHKWorldJapanShowBridge extends BridgeAbstract
                 $item['uid'] = self::URI . $url;
                 $item['title'] = $title;
                 $item['author'] = $author;
-                $item['timestamp'] = $onair / 1000;
+                $item['timestamp'] = $onair->getTimestamp();
                 $item['content'] = $description;
 
                 $this->items[] = $item;
