@@ -51,7 +51,7 @@ class NewgroundsBridge extends BridgeAbstract
         }
         */
 
-        $html = $this->postFASimpleHTMLDOM();
+        $html = $this->postFASimpleHTMLDOM($this->getURI());
 
         $posts = $html->find('.item-portalitem-art-medium');
 
@@ -65,6 +65,41 @@ class NewgroundsBridge extends BridgeAbstract
             $title = $post->find('h4')[0]->innertext;
             //This kind of sucks but it works so
             if ($this->getInput('Nsfw') === false && $Restricted == '<div class="nohue-ngicon-small-rated-a" title="Rated A"></div>') {
+                $item['title'] = 'NSFW: ' . $item['uri'];
+                $item['content'] = <<<EOD
+<a href="{$item['uri']}">
+{$item['title']}
+</a>
+EOD;
+            } else {
+                $item['title'] = $title;
+                $item['content'] = <<<EOD
+<a href="{$item['uri']}">
+<img
+    style="align:top; width:270px; border:1px solid black;"
+    alt="{$item['title']}"
+    src="{$post->find('img')[0]->src}"
+    title="{$item['title']}" />
+</a>
+EOD;
+            }
+
+            $this->items[] = $item;
+        }
+                $html = $this->postFASimpleHTMLDOM($this->getURImovies());
+
+        $posts = $html->find('.portalsubmission-cell');
+
+        foreach ($posts as $post) {
+            $item = [];
+
+            $item['author'] = $username;
+            $item['uri'] = $post->href;
+
+            $Restricted = $post->find('div')[2]->outertext;
+            $title = $post->find('h4')[0]->innertext;
+            //This kind of sucks but it works so
+            if ($this->getInput('Nsfw') === false && $Restricted == '<div class="nohue-ngicon-small-rated-a"></div>') {
                 $item['title'] = 'NSFW: ' . $item['uri'];
                 $item['content'] = <<<EOD
 <a href="{$item['uri']}">
@@ -103,6 +138,13 @@ EOD;
         }
         return parent::getURI();
     }
+    public function getURImovies()
+    {
+        if ($this->getInput('username')) {
+            return sprintf('https://%s.newgrounds.com/movies', $this->getInput('username'));
+        }
+        return parent::getURI();
+    }
 
     public function getURIMODIFIED()
     {
@@ -112,15 +154,15 @@ EOD;
         return parent::getURIMODIFIED();
     }
 
-    private function postFASimpleHTMLDOM()
+    private function postFASimpleHTMLDOM($url)
     {
         $header = [
                 'Host: ' . parse_url($this->getURIMODIFIED(), PHP_URL_HOST),
                 'Cookie: ' . $this->NG_AUTH_COOKIE
             ];
 
-        $html = getSimpleHTMLDOM($this->getURI(), $header);
-        $html = defaultLinkTo($html, $this->getURI());
+        $html = getSimpleHTMLDOM($url, $header);
+        $html = defaultLinkTo($html, $url);
         return $html;
     }
 }
