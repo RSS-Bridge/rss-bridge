@@ -577,7 +577,7 @@ allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; pic
 referrerpolicy="strict-origin" allowfullscreen></iframe>'
 EOD
          , $embedUri);
-    } elseif ($useIframe == 'rssbridge'){
+    } elseif ($useIframe == 'rssbridge') {
         $rssbridgedir = dirname($_SERVER['PHP_SELF']);
         $embedUri = 'https://' . $_SERVER['SERVER_NAME'] . $rssbridgedir . '/lib/youtubeiframe.html?v=' . $videoID;
 
