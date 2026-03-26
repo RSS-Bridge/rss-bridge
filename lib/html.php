@@ -579,7 +579,7 @@ EOD
          , $embedUri);
     } elseif ($useIframe == 'rssbridge'){
         $rssbridgedir = dirname($_SERVER['PHP_SELF']);
-        $embedUri = 'https://' . $_SERVER['SERVER_NAME'] . $rssbridgedir . '/youtubeiframe.html?v=' . $videoID;
+        $embedUri = 'https://' . $_SERVER['SERVER_NAME'] . $rssbridgedir . '/lib/youtubeiframe.html?v=' . $videoID;
 
         return sprintf(<<<EOD
 <iframe width="560" height="315" src="%s" title="YouTube video player" frameborder="0"
