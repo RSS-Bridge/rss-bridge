@@ -564,7 +564,7 @@ function handleYoutube(string $string)
         return '';
     }
 
-    if ($useIframe == 'iframe') {
+    if ($useIframe == 'youtube' || $useIframe == true) {
         if ($useNocookie) {
             $embedUri = 'https://www.youtube-nocookie.com/embed/' . $videoID;
         } else {
