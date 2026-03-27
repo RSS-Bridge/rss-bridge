@@ -178,7 +178,7 @@ class GolemBridge extends FeedExpander
 
         foreach (
             $article->find('div.go-article-header__intro, p, h1, h2, h3, pre, ul, ol, .go-media img[src*="."], .go-media figcaption,
-                    table, iframe, video') as $element
+                    table, iframe, video, img') as $element
         ) {
             if (!str_contains($prevcontent, $element)) {
                 $item .= $element;
