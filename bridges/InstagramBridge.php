@@ -54,9 +54,14 @@ class InstagramBridge extends BridgeAbstract
                 ],
                 'defaultValue' => 'all'
             ],
+            'image_resolution' => [
+                'name' => 'Scale images to ',
+                'exampleValue' => '360',
+                'required' => true
+            ],
             'direct_links' => [
                 'name' => 'Use direct media links',
-                'type' => 'checkbox',
+                'type' => 'checkbox'
             ]
         ]
 
@@ -201,10 +206,25 @@ class InstagramBridge extends BridgeAbstract
                     $item['enclosures'] = $data[1];
                     break;
                 case 'GraphImage':
-                    $item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
-                    $item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
+                    $imageOriginal = imagecreatefromstring(file_get_contents($mediaURI));
+                    if ($imageOriginal) {
+                        $imageSmall = imagescale($imageOriginal, $this->getResolution());
+                        $stream = fopen('php://temp', 'r+');
+                        imagepng($imageSmall, $stream);
+                        rewind($stream);
+                        $image = stream_get_contents($stream);
+                        $imageData = 'data:image/png;base64,' . base64_encode($image);
+                        unset($imageOriginal);
+                        unset($imageSmall);
+                        unset($image);
+                    } else {
+                        $imageData = htmlentities($mediaURI);
+                    }
+                    $item['content'] = '<a href="' . htmlentities($mediaURI) . '" target="_blank">';
+                    $item['content'] .= '<img src="' . $imageData . '" alt="' . $item['title'] . '" />';
                     $item['content'] .= '</a><br><br>' . nl2br(preg_replace($pattern, $replace, htmlentities($textContent)));
                     $item['enclosures'] = [$mediaURI];
+                    unset($imageData);
                     break;
                 case 'GraphVideo':
                     $data = $this->getInstagramVideoData($item['uri'], $mediaURI, $media, $textContent);
@@ -242,10 +262,25 @@ class InstagramBridge extends BridgeAbstract
                 if (in_array($singleMedia->display_url, $enclosures)) {
                     continue; // check if not added yet
                 }
-                $content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
-                $content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
+                $imageOriginal = imagecreatefromstring(file_get_contents($singleMedia->display_url));
+                if ($imageOriginal) {
+                    $imageSmall = imagescale($imageOriginal, $this->getResolution());
+                    $stream = fopen('php://temp', 'r+');
+                    imagepng($imageSmall, $stream);
+                    rewind($stream);
+                    $image = stream_get_contents($stream);
+                    $imageData = 'data:image/png;base64,' . base64_encode($image);
+                    unset($imageOriginal);
+                    unset($imageSmall);
+                    unset($image);
+                } else {
+                    $imageData = htmlentities($singleMedia->display_url);
+                }
+                $content .= '<a href="' . htmlentities($singleMedia->display_url) . '" target="_blank">';
+                $content .= '<img src="' . $imageData . '" alt="' . $postTitle . '" />';
                 $content .= '</a><br>';
                 array_push($enclosures, $singleMedia->display_url);
+                unset($imageData);
             }
         }
         $content .= '<br>' . nl2br(htmlentities($textContent));
@@ -365,6 +400,15 @@ class InstagramBridge extends BridgeAbstract
             return self::URI . 'explore/locations/' . urlencode($this->getInput('l'));
         }
         return parent::getURI();
+    }
+
+    public function getResolution()
+    {
+        if (!is_null($this->getInput('image_resolution'))) {
+            return $this->getInput('image_resolution');
+        }
+
+        return parent::getResolution();
     }
 
     public function detectParameters($url)
