@@ -64,6 +64,7 @@ class CaschyBridge extends FeedExpander
             $ytResult = handleYoutube($ytvideo->innertext);
             if ($ytResult)
                 $ytvideo->innertext = $ytResult;
+        }
 
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
