@@ -215,7 +215,6 @@ function getSimpleHTMLDOM(
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached(
     $url,
@@ -228,7 +227,7 @@ function getSimpleHTMLDOMCached(
     $stripRN = true,
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
-) {
+): \simple_html_dom {
     global $container;
 
     /** @var CacheInterface $cache */
