@@ -59,6 +59,13 @@ class CaschyBridge extends FeedExpander
         ) {
             $element->remove();
         }
+
+        foreach ($article->find('.video-container') as &$ytvideo) {
+            $ytResult = handleYoutube($ytvideo->innertext);
+            if ($ytResult)
+                $ytvideo->innertext = $ytResult;
+        }
+
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 
