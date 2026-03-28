@@ -2,7 +2,7 @@
 
 class BAEBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'couraudt';
+    const MAINTAINER = 'couraudt, hrenard';
     const NAME = 'Bourse Aux Equipiers';
     const URI = 'https://www.bourse-aux-equipiers.com';
     const DESCRIPTION = 'Returns the newest sailing offers.';
@@ -31,9 +31,13 @@ class BAEBridge extends BridgeAbstract
         $url = $this->getURI();
         $html = getSimpleHTMLDOM($url);
 
+        $tz = new DateTimeZone('Europe/Paris');
+        $now = new DateTime("now", new DateTimeZone('Europe/Paris'));
+        $tzOffset = $tz->getOffset($now);
+
         $annonces = $html->find('main article');
         foreach ($annonces as $annonce) {
-            $detail = $annonce->find('footer a', 0);
+            $detail = $annonce->find('a', 0);
 
             $htmlDetail = getSimpleHTMLDOMCached(parent::getURI() . $detail->href);
             if (!$htmlDetail) {
@@ -44,8 +48,9 @@ class BAEBridge extends BridgeAbstract
 
             $item['title'] = $annonce->find('header h2', 0)->plaintext;
             $item['uri'] = parent::getURI() . $detail->href;
+            $item['author'] = $htmlDetail->find('aside.membre > h2', 0)->innertext;
 
-            $content = $htmlDetail->find('article p', 0)->innertext;
+            $content = $htmlDetail->find('article > p', 0)->innertext;
             if (!empty($this->getInput('keyword'))) {
                 $keyword = $this->removeAccents(strtolower($this->getInput('keyword')));
                 $cleanTitle = $this->removeAccents(strtolower($item['title']));
@@ -60,6 +65,21 @@ class BAEBridge extends BridgeAbstract
             $content .= '<hr>';
             $content .= $htmlDetail->find('section', 0)->innertext;
             $item['content'] = defaultLinkTo($content, parent::getURI());
+
+            $timestampStr = $htmlDetail->find('article > header > p > small', 0)->innertext;
+            $timestampStr = explode(',', $timestampStr)[1];
+            $timestampStr = str_replace(' déposée ', '', $timestampStr);
+            $timestampStr = str_replace('hier', 'yesterday', $timestampStr);
+            $timestampStr = str_replace('aujourd\'hui', 'today', $timestampStr);
+            $timestampStr = str_replace('le ', '', $timestampStr);
+            $timestampStr = str_replace('à ', '', $timestampStr);
+            $timestampStr = str_replace('h', ':', $timestampStr);
+            $timestampStrSplit = explode('/', $timestampStr);
+            if (count($timestampStrSplit) === 3) {
+                $timestampStr = join("/", [$timestampStrSplit[1], $timestampStrSplit[0], $timestampStrSplit[2]]);
+            }
+            $item['timestamp'] = strtotime($timestampStr) - $tzOffset;
+
             $image = $htmlDetail->find('#zoom', 0);
             if ($image) {
                 $item['enclosures'] = [parent::getURI() . $image->getAttribute('src')];
@@ -73,7 +93,7 @@ class BAEBridge extends BridgeAbstract
         $uri = parent::getURI();
         if (!empty($this->getInput('type'))) {
             if ($this->getInput('type') == 'boat') {
-                $uri .= '/embarquements.html';
+                $uri .= '/navigations.html';
             } elseif ($this->getInput('type') == 'skipper') {
                 $uri .= '/skippers.html';
             } else {
