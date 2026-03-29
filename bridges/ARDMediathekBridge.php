@@ -63,19 +63,15 @@ class ARDMediathekBridge extends BridgeAbstract
 
         date_default_timezone_set('Europe/Berlin');
 
-        $pathComponents = explode('/', $this->getInput('path'));
-        if (empty($pathComponents)) {
-            throwClientException('Path may not be empty');
+        // ARD IDs always start with Y3JpZDov that we can use for finding the correct part of the URL
+        // Extract ARD show ID from full URL or plain ID
+        preg_match('~(Y3JpZDov[^/]+)~', $this->getInput('path'), $matches);
+
+        if (empty($matches[1])) {
+            throwClientException('Could not extract show ID');
         }
-        if (count($pathComponents) < 2) {
-            $showID = $pathComponents[0];
-        } else {
-            $lastKey = count($pathComponents) - 1;
-            $showID = $pathComponents[$lastKey];
-            if (strlen($showID) === 0) {
-                $showID = $pathComponents[$lastKey - 1];
-            }
-        }
+
+        $showID = $matches[1];
 
         $url = self::APIENDPOINT . $showID . '?pageSize=' . self::PAGESIZE;
         $rawJSON = getContents($url);
