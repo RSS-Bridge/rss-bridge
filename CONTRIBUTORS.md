@@ -149,6 +149,7 @@
 * [obsiwitch](https://github.com/obsiwitch)
 * [Ololbu](https://github.com/Ololbu)
 * [ORelio](https://github.com/ORelio)
+* [orionblur](https://github.com/orionblur)
 * [otakuf](https://github.com/otakuf)
 * [Park0](https://github.com/Park0)
 * [Paroleen](https://github.com/Paroleen)
