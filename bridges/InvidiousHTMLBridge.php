@@ -38,27 +38,23 @@ class InvidiousHTMLBridge extends BridgeAbstract
     private $video_info = [];
 
     public function collectData() {
+      $this->collectFeedData('videos');
+
+      if ($this->getInput('includeshorts')) {
+        $this->collectFeedData('shorts');
+      }
+    }
+
+    private function collectFeedData($feed_type) {
       $max_releases = $this->getInput('max_releases');
 
-      $videos_html = $this->getFeedType('videos');
+      $html = $this->getFeedType($feed_type);
 
       $i = 0;
-      foreach ($videos_html->find('.pure-u-md-1-4') as $yt_item) {
+      foreach ($html->find('.pure-u-md-1-4') as $yt_item) {
         if ($max_releases == null || $i < $max_releases) {
           $this->collectVideoData($yt_item);
           $i += 1;
-        }
-      }
-
-      if ($this->getInput('includeshorts')) {
-        $shorts_html = $this->getFeedType('shorts');
-
-        $i = 0;
-        foreach ($shorts_html->find('.pure-u-md-1-4') as $yt_item) {
-          if ($max_releases == null || $i < $max_releases) {
-            $this->collectVideoData($yt_item);
-            $i += 1;
-          }
         }
       }
     }
