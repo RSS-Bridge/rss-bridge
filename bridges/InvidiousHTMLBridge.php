@@ -26,23 +26,39 @@ class InvidiousHTMLBridge extends BridgeAbstract
             'name' => 'Include shorts',
             'type' => 'checkbox',
             'title' => 'Include shorts'
+        ],
+        'max_releases' => [
+            'name' => 'max. number of releases',
+            'type' => 'number',
+            'title' => 'Maximum number of releases to include. Same for both videos and shorts.',
+            'exampleValue' => 5,
         ]
     ]];
 
     private $video_info = [];
 
     public function collectData() {
+      $max_releases = $this->getInput('max_releases');
+
       $videos_html = $this->getFeedType('videos');
 
+      $i = 0;
       foreach ($videos_html->find('.pure-u-md-1-4') as $yt_item) {
-        $this->collectVideoData($yt_item);
+        if ($max_releases == null || $i < $max_releases) {
+          $this->collectVideoData($yt_item);
+          $i += 1;
+        }
       }
 
       if ($this->getInput('includeshorts')) {
         $shorts_html = $this->getFeedType('shorts');
 
+        $i = 0;
         foreach ($shorts_html->find('.pure-u-md-1-4') as $yt_item) {
-          $this->collectVideoData($yt_item);
+          if ($max_releases == null || $i < $max_releases) {
+            $this->collectVideoData($yt_item);
+            $i += 1;
+          }
         }
       }
     }
