@@ -10,12 +10,17 @@ class InvidiousHTMLBridge extends BridgeAbstract
         'invidious' => [
             'name' => 'Invidious host',
             'required' => true,
-            'exampleValue' => 'invidious.avyx.home',
+            'exampleValue' => 'iv.domain.tld',
         ],
         'channel' => [
             'name' => 'Channel ID',
             'required' => true,
             'exampleValue' => 'UC7YOGHUfC1Tb6E4pudI9STA',
+        ],
+        'includedescription' => [
+            'name' => 'Include description',
+            'type' => 'checkbox',
+            'title' => 'Include description'
         ],
         'hideshorts' => [
             'name' => 'Include shorts',
@@ -23,6 +28,8 @@ class InvidiousHTMLBridge extends BridgeAbstract
             'title' => 'Include shorts'
         ]
     ]];
+
+    private $video_info = [];
 
     public function collectData()
     {
@@ -36,11 +43,21 @@ class InvidiousHTMLBridge extends BridgeAbstract
     }
 
     private function collectVideoData($yt_item) {
-      $video_id = $this->findVideoID($yt_item);
-      $video_title = $this->findVideoTitle($yt_item);
+      $this->video_info['id']            = $this->findVideoID($yt_item);
+      $this->video_info['title']         = $this->findVideoTitle($yt_item);
+      $this->video_info['description']   = $this->findVideoDescription($yt_item);
+      $this->video_info['thumbnail_uri'] = $this->findVideoThumbnailURI($yt_item);
 
-      $item['title'] = $video_title;
-      $item['content'] = $video_id;
+      $this->addItem();
+    }
+
+    private function addItem() {
+      $item['uri']        = 'https://' . $this->getInput('invidious') . '/watch?v=' . $this->video_info['id'];
+      $item['title']      = $this->video_info['title'];
+      $item['timestamp']  = '';
+      $item['author']     = $this->getInput('channel');
+      $item['content']    = sprintf('<a href="%s"><img src="%s" /></a><br /><div>%s</div>', $item['uri'], $this->video_info['thumbnail_uri'], $this->video_info['description']);
+      $item['uid']        = $this->video_info['id'];
 
       $this->items[] = $item;
     }
@@ -57,5 +74,22 @@ class InvidiousHTMLBridge extends BridgeAbstract
       $a = $yt_item->getElementsByTagName('a')[1];
       $p = $a->firstChild();
       return $p->innertext;
+    }
+
+    private function findVideoDescription($yt_item) {
+      if (!$this->getInput('includedescription')) {
+        return '';
+      }
+
+      $url = 'https://' . $this->getInput('invidious') . '/watch?v=' . $this->video_info['id'];
+
+      $html = getSimpleHTMLDOMCached($url);
+      $document_wrapper = $html->getElementById('descriptionWrapper');
+      return $document_wrapper->innertext;
+    }
+
+    private function findVideoThumbnailURI($yt_item) {
+      $img = $yt_item->getElementByTagName('img');
+      return 'https://' . $this->getInput('invidious') . $img->src;
     }
 }
