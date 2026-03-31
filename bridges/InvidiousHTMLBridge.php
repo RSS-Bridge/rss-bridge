@@ -22,7 +22,7 @@ class InvidiousHTMLBridge extends BridgeAbstract
             'type' => 'checkbox',
             'title' => 'Include description'
         ],
-        'hideshorts' => [
+        'includeshorts' => [
             'name' => 'Include shorts',
             'type' => 'checkbox',
             'title' => 'Include shorts'
@@ -31,15 +31,25 @@ class InvidiousHTMLBridge extends BridgeAbstract
 
     private $video_info = [];
 
-    public function collectData()
-    {
-      $url = 'https://' . $this->getInput('invidious') . '/channel/' . $this->getInput('channel') . '/videos';
+    public function collectData() {
+      $videos_html = $this->getFeedType('videos');
 
-      $html = getSimpleHTMLDOMCached($url);
-
-      foreach ($html->find('.pure-u-md-1-4') as $yt_item) {
+      foreach ($videos_html->find('.pure-u-md-1-4') as $yt_item) {
         $this->collectVideoData($yt_item);
       }
+
+      if ($this->getInput('includeshorts')) {
+        $shorts_html = $this->getFeedType('shorts');
+
+        foreach ($shorts_html->find('.pure-u-md-1-4') as $yt_item) {
+          $this->collectVideoData($yt_item);
+        }
+      }
+    }
+
+    private function getFeedType($feed_type) {
+      $url = 'https://' . $this->getInput('invidious') . '/channel/' . $this->getInput('channel') . '/' . $feed_type;
+      return getSimpleHTMLDOMCached($url);
     }
 
     private function collectVideoData($yt_item) {
