@@ -71,6 +71,7 @@ class InvidiousHTMLBridge extends BridgeAbstract
       $this->video_info['title']         = $this->findVideoTitle($yt_item);
       $this->video_info['description']   = $this->findVideoDescription($yt_item);
       $this->video_info['thumbnail_uri'] = $this->findVideoThumbnailURI($yt_item);
+      $this->video_info['date-uploaded'] = $this->findVideoUploadDate($yt_item);
 
       $this->addItem();
     }
@@ -78,7 +79,7 @@ class InvidiousHTMLBridge extends BridgeAbstract
     private function addItem() {
       $item['uri']        = 'https://' . $this->getInput('invidious') . '/watch?v=' . $this->video_info['id'];
       $item['title']      = $this->video_info['title'];
-      $item['timestamp']  = '';
+      $item['timestamp']  = $this->video_info['date-uploaded'];
       $item['author']     = $this->video_info['channel_name'];
       $item['content']    = sprintf('<a href="%s"><img src="%s" /></a><br /><div>%s</div>', $item['uri'], $this->video_info['thumbnail_uri'], $this->video_info['description']);
       $item['uid']        = $this->video_info['id'];
@@ -120,5 +121,37 @@ class InvidiousHTMLBridge extends BridgeAbstract
     private function findVideoChannelName($html) {
       $span = $html->find('span.channel-name', 0);
       return $span->innertext;
+    }
+
+    private function findVideoUploadDate($yt_item) {
+      $p = $yt_item->find('p.video-data', 0);
+      return $this->parseRelativeTime($p->innertext);
+    }
+
+    private function parseRelativeTime($relativeTime) {
+      $now = new DateTime();
+      $relativeTime = trim($relativeTime);
+
+      // Match pattern: "Shared X unit(s) ago"
+      if (!preg_match('/shared\s+(\d+)\s+(second|minute|hour|day|week|month|year)s?\s+ago/i', $relativeTime, $matches)) {
+          throw new InvalidArgumentException("Cannot parse: '$relativeTime'");
+      }
+
+      $value = (int) $matches[1];
+      $unit  = $matches[2];
+
+      $intervalMap = [
+          'second' => "PT{$value}S",
+          'minute' => "PT{$value}M",
+          'hour'   => "PT{$value}H",
+          'day'    => "P{$value}D",
+          'week'   => "P{$value}W",
+          'month'  => "P{$value}M",
+          'year'   => "P{$value}Y",
+      ];
+
+      $now->sub(new DateInterval($intervalMap[$unit]));
+
+      return $now->format('Y-m-d H:i:s');
     }
 }
