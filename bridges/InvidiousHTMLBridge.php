@@ -50,6 +50,8 @@ class InvidiousHTMLBridge extends BridgeAbstract
 
       $html = $this->getFeedType($feed_type);
 
+      $this->video_info['channel_name'] = $this->findVideoChannelName($html);
+
       $i = 0;
       foreach ($html->find('.pure-u-md-1-4') as $yt_item) {
         if ($max_releases == null || $i < $max_releases) {
@@ -77,7 +79,7 @@ class InvidiousHTMLBridge extends BridgeAbstract
       $item['uri']        = 'https://' . $this->getInput('invidious') . '/watch?v=' . $this->video_info['id'];
       $item['title']      = $this->video_info['title'];
       $item['timestamp']  = '';
-      $item['author']     = $this->getInput('channel');
+      $item['author']     = $this->video_info['channel_name'];
       $item['content']    = sprintf('<a href="%s"><img src="%s" /></a><br /><div>%s</div>', $item['uri'], $this->video_info['thumbnail_uri'], $this->video_info['description']);
       $item['uid']        = $this->video_info['id'];
 
@@ -113,5 +115,10 @@ class InvidiousHTMLBridge extends BridgeAbstract
     private function findVideoThumbnailURI($yt_item) {
       $img = $yt_item->getElementByTagName('img');
       return 'https://' . $this->getInput('invidious') . $img->src;
+    }
+
+    private function findVideoChannelName($html) {
+      $span = $html->find('span.channel-name', 0);
+      return $span->innertext;
     }
 }
