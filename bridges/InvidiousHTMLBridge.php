@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class InvidiousHTMLBridge extends BridgeAbstract
 {
     const NAME = 'Invidious HTML Scraper';
