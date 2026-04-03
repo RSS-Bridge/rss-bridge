@@ -6,30 +6,31 @@ class TheBellBridge extends BridgeAbstract
 {
     const NAME = 'The Bell';
     const URI = 'https://thebell.io';
-    const DESCRIPTION = 'Returns latest articles from news source The Bell';
+    const DESCRIPTION = 'Returns latest articles from news site The Bell';
     const MAINTAINER = 'anlar';
     const CACHE_TIMEOUT = 3600;
 
     const API_URL = 'https://thebell.io/api/v2/graphql';
 
     const PARAMETERS = [[
-        'limit' => [
-            'name'         => 'Item limit',
-            'type'         => 'number',
-            'required'     => false,
-            'defaultValue' => 10,
-        ],
         'category' => [
-            'name'     => 'Category',
-            'type'     => 'text',
+            'name'=> 'Category',
+            'type'=> 'text',
+            'title' => 'Category slug (news, morning-news, exclusive, etc)',
             'required' => false,
-            'exampleValue' => 'evening-news',
         ],
+        'limit' => self::LIMIT,
     ]];
+
+    const TEST_DETECT_PARAMETERS = [
+        'https://thebell.io/category/exclusive' => ['category' => 'exclusive'],
+        'https://thebell.io/' => [],
+    ];
 
     public function collectData()
     {
-        $limit = (int) ($this->getInput('limit') ?: 10);
+        // default number of articles in API itself - 20
+        $limit = (int) ($this->getInput('limit') ?: 20);
 
         $category = $this->getInput('category');
 
