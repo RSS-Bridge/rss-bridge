@@ -13,8 +13,8 @@ class TheBellBridge extends BridgeAbstract
 
     const PARAMETERS = [[
         'category' => [
-            'name'=> 'Category',
-            'type'=> 'text',
+            'name' => 'Category',
+            'type' => 'text',
             'title' => 'Category slug (news, morning-news, exclusive, etc)',
             'required' => false,
         ],
