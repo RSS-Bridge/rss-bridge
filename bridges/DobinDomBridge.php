@@ -4,7 +4,7 @@ class DobinDomBridge extends BridgeAbstract
 {
     const NAME = 'DobinDom (ДобинДом)';
     const URI = 'https://dobindom.ru';
-    const DESCRIPTION = 'Returns archived videos from DobinDom';
+    const DESCRIPTION = 'Broadcast recordings from DobinDom (ДобинДом), a Russian online platform for live-streamed psychology classes. Requires a subscriber account.';
     const MAINTAINER = 'anlar';
 
     const API_BASE = 'https://dobindom.ru/dobindom/backend';
