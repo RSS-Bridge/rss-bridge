@@ -78,6 +78,14 @@ class DobinDomBridge extends BridgeAbstract
         return $data['token'];
     }
 
+    public function detectParameters($url)
+    {
+        if (preg_match('/^https?:\/\/dobindom\.ru(\/|$)/i', $url)) {
+            return [];
+        }
+        return null;
+    }
+
     private function fetchArchive(string $token): array
     {
         $headers = [
