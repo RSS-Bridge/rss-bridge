@@ -100,3 +100,12 @@ GQL;
             ];
         }
     }
+
+    public function detectParameters($url)
+    {
+        if (preg_match('/^https?:\/\/thebell\.io(\/|$)/i', $url)) {
+            return [];
+        }
+        return null;
+    }
+}
