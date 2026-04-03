@@ -13,6 +13,7 @@ RUN set -xe && \
       nss-plugin-pem \
       php-curl \
       php-fpm \
+	  php-gd \
       php-intl \
       # php-json is enabled by default with PHP 8.2 in Debian 12
       php-mbstring \
