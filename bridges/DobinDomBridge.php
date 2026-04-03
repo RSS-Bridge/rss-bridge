@@ -65,7 +65,11 @@ class DobinDomBridge extends BridgeAbstract
             ]),
         ];
 
-        $response = getContents(self::API_BASE . '/api/auth/login/', [], $opts);
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ];
+        $response = getContents(self::API_BASE . '/api/auth/login/', $headers, $opts);
         $data = Json::decode($response);
 
         if (empty($data['token'])) {
@@ -81,6 +85,7 @@ class DobinDomBridge extends BridgeAbstract
     {
         $headers = [
             'Authorization: Bearer ' . $token,
+            'Accept: application/json',
         ];
 
         $response = getContents(self::API_BASE . '/kinescope/archive/', $headers);
