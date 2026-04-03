@@ -8,7 +8,6 @@ class TheBellBridge extends BridgeAbstract
     const URI = 'https://thebell.io';
     const DESCRIPTION = 'Returns latest articles from news site The Bell';
     const MAINTAINER = 'anlar';
-    const CACHE_TIMEOUT = 3600;
 
     const API_URL = 'https://thebell.io/api/v2/graphql';
 
