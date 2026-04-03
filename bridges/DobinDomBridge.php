@@ -55,6 +55,12 @@ class DobinDomBridge extends BridgeAbstract
         }
     }
 
+    public function getIcon()
+    {
+        // default location favicon.ico is broken
+        return self::URI . '/favicon.svg';
+    }
+
     private function authenticate(): string
     {
         $opts = [
