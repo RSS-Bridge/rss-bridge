@@ -19,18 +19,27 @@ class TheBellBridge extends BridgeAbstract
             'required'     => false,
             'defaultValue' => 10,
         ],
+        'category' => [
+            'name'     => 'Category',
+            'type'     => 'text',
+            'required' => false,
+            'exampleValue' => 'evening-news',
+        ],
     ]];
 
     public function collectData()
     {
         $limit = (int) ($this->getInput('limit') ?: 10);
 
+        $category = $this->getInput('category');
+
         $query = <<<'GQL'
-query GetLatestArticles($first: Int!) {
+query GetLatestArticles($first: Int!, $category: String) {
   published_posts(
     first: $first
     orderBy: "published_at"
     orderDirection: "DESC"
+    category: $category
   ) {
     edges {
       node {
@@ -66,7 +75,10 @@ GQL;
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS    => json_encode([
                 'query'     => $query,
-                'variables' => ['first' => $limit],
+                'variables' => array_filter([
+                    'first'    => $limit,
+                    'category' => $category ?: null,
+                ], fn($v) => $v !== null),
             ]),
         ];
 
@@ -103,6 +115,9 @@ GQL;
 
     public function detectParameters($url)
     {
+        if (preg_match('/^https?:\/\/thebell\.io\/category\/([\w-]+)/i', $url, $m)) {
+            return ['category' => $m[1]];
+        }
         if (preg_match('/^https?:\/\/thebell\.io(\/|$)/i', $url)) {
             return [];
         }
