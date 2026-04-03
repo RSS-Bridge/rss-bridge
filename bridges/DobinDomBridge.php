@@ -6,7 +6,6 @@ class DobinDomBridge extends BridgeAbstract
     const URI = 'https://dobindom.ru';
     const DESCRIPTION = 'Returns archived videos from DobinDom';
     const MAINTAINER = 'anlar';
-    const CACHE_TIMEOUT = 3600;
 
     const API_BASE = 'https://dobindom.ru/dobindom/backend';
 
@@ -76,14 +75,6 @@ class DobinDomBridge extends BridgeAbstract
         }
 
         return $data['token'];
-    }
-
-    public function detectParameters($url)
-    {
-        if (preg_match('/^https?:\/\/dobindom\.ru(\/|$)/i', $url)) {
-            return [];
-        }
-        return null;
     }
 
     private function fetchArchive(string $token): array
