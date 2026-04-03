@@ -108,7 +108,8 @@ GQL;
                 'uri'        => self::URI . '/' . $node['slug'],
                 'timestamp'  => (int) ($node['published_at'] / 1000),
                 'author'     => implode(', ', $authors),
-                'content'    => $node['content'],
+                // handle relative URL's in srcset (not supported in defaultLinkTo()
+                'content'    => str_replace('/storage_v', self::URI . '/storage_v', $node['content']),
                 'categories' => array_merge($categories, $tags),
             ];
         }
