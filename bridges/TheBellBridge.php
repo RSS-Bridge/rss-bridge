@@ -14,9 +14,22 @@ class TheBellBridge extends BridgeAbstract
     const PARAMETERS = [[
         'category' => [
             'name' => 'Category',
-            'type' => 'text',
+            'type' => 'list',
             'title' => 'Category slug (news, morning-news, exclusive, etc)',
             'required' => false,
+            'values' => [
+                'Все' => null,
+                'Новости' => 'news',
+                'Утренняя рассылка' => 'morning-news',
+                'Вечерняя рассылка' => 'evening-news',
+                'Итоги недели' => 'itogi-nedeli',
+                'Технорассылка' => 'rassylka-o-tehnologiyah',
+                'Bell.Инвестиции' => 'bell-investitsii',
+                'Истории' => 'istorii',
+                'Эксклюзив' => 'exclusive',
+                'The Bell объясняет' => 'the-bell-obyasnyaet',
+                'Это Осетинская' => 'eto-osetinskaya',
+            ]
         ],
         'limit' => self::LIMIT,
     ]];
