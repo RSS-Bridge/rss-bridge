@@ -16,7 +16,6 @@ class TheBellBridge extends BridgeAbstract
             'name' => 'Category',
             'type' => 'list',
             'title' => 'Category slug (news, morning-news, exclusive, etc)',
-            'required' => false,
             'values' => [
                 'Все' => null,
                 'Новости' => 'news',
