@@ -30,7 +30,11 @@ class TheBellBridge extends BridgeAbstract
                 'Это Осетинская' => 'eto-osetinskaya',
             ]
         ],
-        'limit' => self::LIMIT,
+        'limit' => self::LIMIT + [
+            // default number of articles in API itself - 20
+            'defaultValue' => 20,
+            'required'     => true,
+        ],
     ]];
 
     const TEST_DETECT_PARAMETERS = [
@@ -51,8 +55,7 @@ class TheBellBridge extends BridgeAbstract
 
     public function collectData()
     {
-        // default number of articles in API itself - 20
-        $limit = (int) ($this->getInput('limit') ?: 20);
+        $limit = (int) $this->getInput('limit');
 
         $category = $this->getInput('category');
 
