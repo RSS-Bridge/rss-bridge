@@ -38,6 +38,17 @@ class TheBellBridge extends BridgeAbstract
         'https://thebell.io/' => [],
     ];
 
+    public function getName()
+    {
+        $category = $this->getInput('category');
+        if ($category) {
+            $labels = array_flip(self::PARAMETERS[0]['category']['values']);
+            $label = $labels[$category] ?? $category;
+            return self::NAME . ' - ' . $label;
+        }
+        return self::NAME;
+    }
+
     public function collectData()
     {
         // default number of articles in API itself - 20
