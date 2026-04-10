@@ -55,7 +55,12 @@ class SplCenterBridge extends FeedExpander
     public function getURI()
     {
         if (!is_null($this->getInput('content'))) {
-            return self::URI . '/resources/' . $this->getInput('content');
+            $content = $this->getInput('content');
+            if ($content == 'news') {
+                $content = 'stories';
+            }
+
+            return self::URI . '/resources/' . $content;
         }
 
         return parent::getURI();
