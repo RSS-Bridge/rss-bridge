@@ -225,6 +225,24 @@ class HeiseBridge extends FeedExpander
             $article = str_get_html($article->outertext);
         }
 
+        // fix mastodon embeds
+        foreach ($article->find('embetty-mastodon') as &$post) {
+            $url = $post->status;
+            $parsedUrl = parse_url($url);
+            $baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+            if (isset($parsedUrl['port'])) {
+                $baseUrl .= ':' . $pasedurl['port'];
+            }
+            $post->innertext = <<<EOD
+<blockquote class='mastodon-embed' data-embed-url='$url/embed'
+    style='background: #FCF8FF; border-radius: 8px; border: 1px solid #C9C4DA;
+    margin: 0; max-width: 540px; min-width: 270px; overflow: hidden; padding: 0;'>
+<a href='$url' target='_blank'>Embedded Mastodon post: $url</a>
+</blockquote>
+<script data-allowed-prefixes='$baseUrl' async src='$baseUrl/embed.js'></script>
+EOD;
+        }
+
         $categories = $article->find('.article-footer__topics ul.topics li.topics__item a-topic a');
         foreach ($categories as $category) {
             $item['categories'][] = trim($category->plaintext);
