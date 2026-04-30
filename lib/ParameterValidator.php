@@ -31,6 +31,9 @@ class ParameterValidator
                     case 'list':
                         $input[$name] = $this->validateListValue($value, $contextParameters[$name]['values']);
                         break;
+                    case 'multi-list':
+                        $input[$name] = $this->validateMultiListValue($value, $contextParameters[$name]['values']);
+                        break;
                     default:
                     case 'text':
                         if (isset($contextParameters[$name]['pattern'])) {
@@ -122,6 +125,9 @@ class ParameterValidator
 
     private function validateTextValue($value, $pattern = null)
     {
+        if (!is_scalar($value)) {
+            return null;
+        }
         if (is_null($pattern)) {
             // No filtering taking place
             $filteredValue = filter_var($value);
@@ -136,6 +142,9 @@ class ParameterValidator
 
     private function validateNumberValue($value)
     {
+        if (!is_scalar($value)) {
+            return null;
+        }
         $filteredValue = filter_var($value, FILTER_VALIDATE_INT);
         if ($filteredValue === false) {
             return null;
@@ -145,11 +154,17 @@ class ParameterValidator
 
     private function validateCheckboxValue($value)
     {
+        if (!is_scalar($value)) {
+            return null;
+        }
         return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 
     private function validateListValue($value, $expectedValues)
     {
+        if (!is_scalar($value)) {
+            return null;
+        }
         $filteredValue = filter_var($value);
         if ($filteredValue === false) {
             return null;
@@ -164,5 +179,21 @@ class ParameterValidator
             return null;
         }
         return $filteredValue;
+    }
+
+    private function validateMultiListValue($values, $expectedValues)
+    {
+        if (!is_array($values)) {
+            return null;
+        }
+        $filteredValues = [];
+        foreach ($values as $v) {
+            $filteredValue = $this->validateListValue($v, $expectedValues);
+            if ($filteredValue === null) {
+                return null;
+            }
+            $filteredValues[] = $filteredValue;
+        }
+        return $filteredValues;
     }
 }
