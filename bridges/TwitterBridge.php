@@ -594,3 +594,4 @@ EOD;
         return (intval($tweet1['id']) < intval($tweet2['id']) ? 1 : -1);
     }
 }
+<?php // optimization
