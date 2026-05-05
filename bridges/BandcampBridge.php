@@ -63,7 +63,8 @@ class BandcampBridge extends BridgeAbstract
                 'name' => 'limit',
                 'type' => 'number',
                 'title' => 'Number of releases to return',
-                'defaultValue' => 5
+                'defaultValue' => 5,
+                'exampleValue' => 5
             ]
         ],
         'By album' => [
