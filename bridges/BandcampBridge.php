@@ -313,9 +313,14 @@ class BandcampBridge extends BridgeAbstract
     private function apiGet($endpoint, $query_data)
     {
         $url = self::URI . 'api/' . $endpoint . '?' . http_build_query($query_data);
-        // todo: 429 Too Many Requests happens a lot
-        $response = getContents($url);
+        $header = [
+            'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0',
+        ];
+        $response = getContents($url, $header);
         $data = json_decode($response);
+        if ($data === null) {
+            throwServerError('Bandcamp API returned an invalid response for: ' . $url);
+        }
         return $data;
     }
 
