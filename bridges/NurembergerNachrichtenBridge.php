@@ -84,6 +84,7 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
         defaultLinkTo($article, self::URI);
 
         $item['uri'] = $link;
+        $item['uid'] = hash('sha256', $link);
 
         $author = $article->find('.article__author', 1);
         if ($author !== null) {

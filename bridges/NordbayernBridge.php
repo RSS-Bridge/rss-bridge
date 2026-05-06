@@ -188,6 +188,7 @@ class NordbayernBridge extends BridgeAbstract
         defaultLinkTo($article, self::URI);
         $content = $article->find('article[id=article]', 0);
         $item['uri'] = $link;
+        $item['uid'] = hash('sha256', $link);
 
         $author = $article->find('.article__author', 1);
         if ($author !== null) {
