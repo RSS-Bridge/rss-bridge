@@ -441,8 +441,14 @@ class YoutubeBridge extends BridgeAbstract
                 $wrapper = $item->videoRenderer;
             } elseif (isset($item->playlistVideoRenderer)) {
                 $wrapper = $item->playlistVideoRenderer;
-            } elseif (isset($item->richItemRenderer)) {
+            } elseif (isset($item->richItemRenderer->content->videoRenderer)) {
                 $wrapper = $item->richItemRenderer->content->videoRenderer;
+            } elseif (isset($item->richItemRenderer->content->lockupViewModel)) {
+                // Newer YouTube layout: richItemRenderer can wrap a lockupViewModel rather than a videoRenderer.
+                $wrapper = $this->wrapLockupViewModel($item->richItemRenderer->content->lockupViewModel);
+                if ($wrapper === null) {
+                    continue;
+                }
             } else {
                 continue;
             }
@@ -501,6 +507,33 @@ class YoutubeBridge extends BridgeAbstract
                 break;
             }
         }
+    }
+
+    private function wrapLockupViewModel($lockup)
+    {
+        $videoId = $lockup->contentId ?? null;
+        $title = $lockup->metadata->lockupMetadataViewModel->title->content ?? null;
+        if (!$videoId || !$title) {
+            return null;
+        }
+
+        $wrapper = new \stdClass();
+        $wrapper->videoId = $videoId;
+        $wrapper->title = (object) ['runs' => [(object) ['text' => $title]]];
+        $wrapper->thumbnailOverlays = [];
+
+        // Duration sits on a thumbnail badge such as "12:07".
+        foreach ($lockup->contentImage->thumbnailViewModel->overlays ?? [] as $overlay) {
+            foreach ($overlay->thumbnailBottomOverlayViewModel->badges ?? [] as $badge) {
+                $text = $badge->thumbnailBadgeViewModel->text ?? null;
+                if (is_string($text) && preg_match('/^\d{1,2}(:\d{2}){1,2}$/', $text)) {
+                    $wrapper->lengthText = (object) ['simpleText' => $text];
+                    break 2;
+                }
+            }
+        }
+
+        return $wrapper;
     }
 
     private function addItem($videoId, $title, $author, $description, $timestamp, $thumbnail = '')
