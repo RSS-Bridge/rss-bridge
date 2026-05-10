@@ -165,6 +165,7 @@
 * [pitchoule](https://github.com/pitchoule)
 * [pmaziere](https://github.com/pmaziere)
 * [Pofilo](https://github.com/Pofilo)
+* [polybjorn](https://github.com/polybjorn)
 * [prysme01](https://github.com/prysme01)
 * [pubak42](https://github.com/pubak42)
 * [Qluxzz](https://github.com/Qluxzz)
