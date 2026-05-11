@@ -30,7 +30,8 @@
         "ext-simplexml": "*",
         "ext-dom": "*",
         "ext-json": "*",
-        "ext-filter": "*"
+        "ext-filter": "*",
+        "mtdowling/jmespath.php": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
