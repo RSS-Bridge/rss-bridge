@@ -26,6 +26,7 @@ class TheBellBridge extends BridgeAbstract
                 'Bell.Инвестиции' => 'bell-investitsii',
                 'Истории' => 'istorii',
                 'Эксклюзив' => 'exclusive',
+                'Расследование' => 'rassledovanie',
                 'The Bell объясняет' => 'the-bell-obyasnyaet',
                 'Это Осетинская' => 'eto-osetinskaya',
             ]
