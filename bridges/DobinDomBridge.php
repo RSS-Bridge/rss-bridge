@@ -34,9 +34,7 @@ class DobinDomBridge extends BridgeAbstract
                 $embedUrl = $video['embed_url'];
 
                 if ($posterUrl) {
-                    $content = '<a href="' . htmlspecialchars($embedUrl) . '">'
-                        . '<img src="' . htmlspecialchars($posterUrl) . '">'
-                        . '</a>';
+                    $content = '<a href="' . htmlspecialchars($embedUrl) . '"><img src="' . htmlspecialchars($posterUrl) . '"></a>';
                 } else {
                     $content = '<a href="' . htmlspecialchars($embedUrl) . '">'
                         . htmlspecialchars($video['title'])
