@@ -553,6 +553,7 @@ function handleYoutube(string $string)
 {
     $useIframe = Configuration::getConfig('youtube', 'iframe');
     $useNocookie = Configuration::getConfig('youtube', 'nocookie');
+    $useRss-Bridge-Iframe = Configuration::getConfig('youtube', 'rss-bridge-iframe');    
 
     // sourced from https://gist.github.com/afeld/1254889?permalink_comment_id=3580082#gistcomment-3580082
     $regex = '#(?:https?://|//)?(?:www\.|m\.|.+\.)?(?:youtu\.be/|youtube(?:-nocookie)\.com/(?:embed/|v/|shorts/|feeds/api/videos/|watch\?v=|watch\?.+&v=))([\w-]{11})#i';
@@ -564,7 +565,7 @@ function handleYoutube(string $string)
         return '';
     }
 
-    if ($useIframe == 'youtube' || $useIframe == true) {
+    if ($useIframe == true) {
         if ($useNocookie) {
             $embedUri = 'https://www.youtube-nocookie.com/embed/' . $videoID;
         } else {
@@ -577,7 +578,7 @@ allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; pic
 referrerpolicy="strict-origin" allowfullscreen></iframe>'
 EOD
          , $embedUri);
-    } elseif ($useIframe == 'rssbridge') {
+    } elseif ($useIframe == true && $useRss-Bridge-Iframe == true) {
         $rssbridgedir = dirname($_SERVER['PHP_SELF']);
         $embedUri = 'https://' . $_SERVER['SERVER_NAME'] . $rssbridgedir . '/templates/youtube-iframe.html?v=' . $videoID;
 
