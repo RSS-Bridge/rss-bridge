@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class NordbayernBridge extends BridgeAbstract
 {
     const MAINTAINER = 'schabi.org';
@@ -120,8 +122,7 @@ class NordbayernBridge extends BridgeAbstract
         $this->handleNewsblock($listSite);
     }
 
-
-    private function getValidImage($picture)
+    private function getValidImage($picture): string
     {
         $img = $picture->find('img', 0);
         if ($img) {
@@ -133,7 +134,7 @@ class NordbayernBridge extends BridgeAbstract
         return '';
     }
 
-    private function getUseFullContent($rawContent)
+    private function getUseFullContent($rawContent): string
     {
         $content = '';
         foreach ($rawContent->children as $element) {
@@ -148,14 +149,14 @@ class NordbayernBridge extends BridgeAbstract
                 $content .= $this->getUseFullContent($element);
             } elseif (
                 $element->tag === 'div' &&
-                !str_contains($element->class, 'article__infobox') &&
-                !str_contains($element->class, 'authorinfo')
+                !str_contains((string) $element->class, 'article__infobox') &&
+                !str_contains((string) $element->class, 'authorinfo')
             ) {
                 $content .= $this->getUseFullContent($element);
             } elseif (
                 $element->tag === 'section' &&
-                (str_contains($element->class, 'article__richtext') ||
-                    str_contains($element->class, 'article__context'))
+                (str_contains((string) $element->class, 'article__richtext') ||
+                    str_contains((string) $element->class, 'article__context'))
             ) {
                 $content .= $this->getUseFullContent($element);
             } elseif ($element->tag === 'picture') {
@@ -169,7 +170,7 @@ class NordbayernBridge extends BridgeAbstract
         return $content;
     }
 
-    private function getTeaser($content)
+    private function getTeaser($content): string
     {
         $teaser = $content->find('p[class=article__teaser]', 0);
         if ($teaser === null) {
@@ -181,7 +182,7 @@ class NordbayernBridge extends BridgeAbstract
         return $teaser;
     }
 
-    private function getArticle($link)
+    private function getArticle(string $link): array
     {
         $item = [];
         $article = getSimpleHTMLDOM($link);
@@ -233,7 +234,7 @@ class NordbayernBridge extends BridgeAbstract
         return $item;
     }
 
-    private function findMostReadSection($main)
+    private function findMostReadSection($main): ?simple_html_dom_node
     {
         foreach ($main->find('section') as $section) {
             $header = $section->find('div[class=modul__header]', 0);
@@ -244,7 +245,7 @@ class NordbayernBridge extends BridgeAbstract
         return null;
     }
 
-    private function isInsideSection($article, $section)
+    private function isInsideSection($article, $section): bool
     {
         if ($section === null) {
             return false;
@@ -259,7 +260,7 @@ class NordbayernBridge extends BridgeAbstract
         return false;
     }
 
-    private function handleNewsblock($listSite)
+    private function handleNewsblock($listSite): void
     {
         $main = $listSite->find('main', 0);
         $meistgelesenSection = $this->findMostReadSection($main);
