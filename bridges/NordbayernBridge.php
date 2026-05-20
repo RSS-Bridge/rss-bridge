@@ -275,6 +275,10 @@ class NordbayernBridge extends BridgeAbstract
             }
 
             $url = $article->find('a', 0)->href;
+            if (!isset($url) || $url == '') {
+                continue;
+            }
+
             $url = urljoin(self::URI, $url);
 
             // skip articles based on category segment in URL
