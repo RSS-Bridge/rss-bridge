@@ -259,7 +259,7 @@ EOD;
         if ($content) {
             $contentElements = $content->find(
                 // phpcs:ignore
-                'p, h3, ul, ol, table, pre, noscript img, noscript iframe, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption, figure figcaption.a-caption div.text'
+                'p, h3, ul, ol, table, pre, noscript img, noscript iframe, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption, figure figcaption.a-caption div.text, div.update-box__datetime'
             );
             $item['content'] .= implode('', $contentElements);
         }
