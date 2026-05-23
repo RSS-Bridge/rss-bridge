@@ -170,7 +170,7 @@ abstract class BridgeAbstract
         }
 
         if (is_null($this->queriedContext)) {
-            throw new \Exception('Required parameter(s) missing');
+            throwClientException('Required parameter(s) missing');
         } elseif ($this->queriedContext === false) {
             throw new \Exception('Mixed context parameters');
         }
