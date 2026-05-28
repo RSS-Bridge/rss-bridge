@@ -69,9 +69,9 @@ class GithubWorkflowBridge extends BridgeAbstract
             }
 
             // Fix for some workflows missing branch as they are configured to only run on one, which causes the script to crash
-            $branch = $row->find("a.d-inline-block", 0)->plaintext;
+            $branch = $row->find("a.d-inline-block", 0);
             if ($branch) {
-                $branch = trim($branch);
+                $branch = trim($branch->plaintext);
                 $branch = "(branch: {$branch}) ";
             } else {
                 $branch = "";
