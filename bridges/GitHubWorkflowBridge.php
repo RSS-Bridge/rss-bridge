@@ -77,9 +77,11 @@ class GithubWorkflowBridge extends BridgeAbstract
                 $branch = "";
             }
 
-            $raw_status = trim(
-                $row->find("svg.octicon", 0)->getAttribute("aria-label"),
-            ); // had to use that syntax instead of `->` because `aria-label` has a hyphen, which is apparently not valid in PHP
+            $status_class = $row->find("svg.octicon", 0);
+            if (!$status_class) {
+                continue; // only triggered on non-final statuses anyways
+            }
+            $raw_status = trim($status_class->getAttribute("aria-label")); // had to use that syntax instead of `->` because `aria-label` has a hyphen, which is apparently not valid in PHP
             $status = match ($raw_status) {
                 "completed successfully:" => "succeeded",
                 "skipped:" => "skipped",
