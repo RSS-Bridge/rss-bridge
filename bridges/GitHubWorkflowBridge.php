@@ -80,14 +80,23 @@ class GithubWorkflowBridge extends BridgeAbstract
                 continue; // only triggered on non-final statuses anyways
             }
             $raw_status = trim($aria_label); // had to use that syntax instead of `->` because `aria-label` has a hyphen, which is apparently not valid in PHP
-            $status = match ($raw_status) {
-                'completed successfully:' => 'succeeded',
-                'skipped:' => 'skipped',
-                'failed:' => 'failed',
-                'cancelled:'
-                    => 'canceled', // I have no idea why GitHub uses the british spelling, but sure
-                default => '',
-            };
+            switch ($raw_status) {
+                case 'completed successfully:':
+                    $status = 'succeeded';
+                    break;
+                case 'skipped:':
+                    $status = 'skipped';
+                    break;
+                case 'failed:':
+                    $status = 'failed';
+                    break;
+                case 'cancelled:': // I have no idea why GitHub uses the british spelling, but sure
+                    $status = 'canceled';
+                    break;
+                default:
+                    $status = '';
+                    break;
+            }
             // Filter out non-final statuses like 'importing' or 'starting'
             if (!$status) {
                 continue;
