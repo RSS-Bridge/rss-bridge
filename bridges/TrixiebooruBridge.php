@@ -13,14 +13,12 @@ class TrixiebooruBridge extends BridgeAbstract
             'q' => [
                 'name' => 'Query (Tags)',
                 'required' => true,
-                'exampleValue' => 'pin-up, princess_luna',
-                'title' => 'Search query (tags, artist, etc.)'
+                'title' => 'Tags for search, separated by commas or spaces (e.g., "tag1, tag2" or "tag1 tag2")'
             ],
             'exclude_tags' => [
                 'name' => 'Blacklist (Exclude tags)',
                 'required' => false,
-                'exampleValue' => 'g5',
-                'title' => 'Comma-separated list of tags to hide. Posts containing ANY of these tags will be excluded from the feed.'
+                'title' => 'Tags for exclude, separated by commas or spaces (e.g., "tag1, tag2" or "tag1 tag2"). Posts containing ANY of these tags will be excluded from the feed.'
             ],
             'f' => [
                 'name' => 'Content Filter',
@@ -63,8 +61,7 @@ class TrixiebooruBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Maximum number of posts to fetch (API allows up to 50)',
-                'defaultValue' => 10,
-                'exampleValue' => 10
+                'defaultValue' => 10
             ],
             'hide_tags' => [
                 'name' => 'Hide tags',
@@ -106,20 +103,48 @@ class TrixiebooruBridge extends BridgeAbstract
         return null;
     }
 
+    private function getNormalizedQuery()
+    {
+        $q = trim($this->getInput('q') ?? '');
+        $excludeTags = trim($this->getInput('exclude_tags') ?? '');
+        
+        $tagsArray = [];
+        
+        if (!empty($q)) {
+            $qNormalized = preg_replace('/[\s,]+/', ', ', $q);
+            $tagsArray = array_filter(array_map('trim', explode(',', $qNormalized)));
+        }
+        
+        if (!empty($excludeTags)) {
+            $excludesNormalized = preg_replace('/[\s,]+/', ', ', $excludeTags);
+            $excludesArray = array_filter(array_map('trim', explode(',', $excludesNormalized)));
+            foreach ($excludesArray as $tag) {
+                $cleanTag = ltrim($tag, '-');
+                if (!empty($cleanTag)) {
+                    $tagsArray[] = '-' . $cleanTag;
+                }
+            }
+        }
+        
+        return implode(', ', $tagsArray);
+    }
+
     public function getName()
     {
-        if (!is_null($this->getInput('q'))) {
-            return self::NAME . ': ' . $this->getInput('q');
+        $q = $this->getNormalizedQuery();
+        if (!empty($q)) {
+            return self::NAME . ': ' . $q;
         }
         return parent::getName();
     }
 
     public function getURI()
     {
-        if (!is_null($this->getInput('q'))) {
+        $q = $this->getNormalizedQuery();
+        if (!empty($q)) {
             $url = self::URI . 'search?';
             $params = [
-                'q' => $this->getInput('q'),
+                'q' => $q,
                 'sf' => $this->getInput('sf') ?? 'created_at',
                 'sd' => $this->getInput('sd') ?? 'desc'
             ];
@@ -133,25 +158,12 @@ class TrixiebooruBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $q = $this->getInput('q') ?? '';
-        $excludeTags = $this->getInput('exclude_tags') ?? '';
+        $q = $this->getNormalizedQuery();
         $f = $this->getInput('f') ?? 56027;
         $sf = $this->getInput('sf') ?? 'created_at';
         $sd = $this->getInput('sd') ?? 'desc';
         $limit = $this->getInput('limit') ?? 20;
         $hideTags = $this->getInput('hide_tags') ?? false;
-
-        if (!empty(trim($excludeTags))) {
-            $excludes = array_map('trim', explode(',', $excludeTags));
-            $excludeQuery = '';
-            foreach ($excludes as $tag) {
-                if (!empty($tag)) {
-                    $cleanTag = ltrim($tag, '-');
-                    $excludeQuery .= ', -' . $cleanTag;
-                }
-            }
-            $q .= $excludeQuery;
-        }
 
         $limit = min(50, max(1, (int)$limit));
 
@@ -181,8 +193,21 @@ class TrixiebooruBridge extends BridgeAbstract
             $postUri = self::URI . 'images/' . $post->id;
             $item['uri'] = $postUri;
 
-            $tagsSlice = array_slice($post->tags, 0, 5);
-            $item['title'] = sprintf('Image %s (%s)', $post->id, implode(', ', $tagsSlice));
+            $artist = '';
+            if (!empty($post->tags) && is_array($post->tags)) {
+                foreach ($post->tags as $tag) {
+                    if (strpos($tag, 'artist:') === 0) {
+                        $artist = substr($tag, 7);
+                        break;
+                    }
+                }
+            }
+            
+            if (!empty($artist)) {
+                $item['title'] = sprintf('Image %s by %s', $post->id, $artist);
+            } else {
+                $item['title'] = sprintf('Image %s', $post->id);
+            }
 
             $item['timestamp'] = strtotime($post->created_at);
             $item['author'] = $post->uploader ?? 'Anonymous';
