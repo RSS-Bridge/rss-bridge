@@ -1,8 +1,8 @@
 <?php
-class DerpibooruBridge extends BridgeAbstract {
-    const NAME = 'Derpibooru Bridge';
-    const URI = 'https://derpibooru.org/';
-    const DESCRIPTION = 'Returns images and videos from Derpibooru search';
+class TrixiebooruBridge extends BridgeAbstract {
+    const NAME = 'Trixiebooru Bridge';
+    const URI = 'https://trixiebooru.org/';
+    const DESCRIPTION = 'Returns images and videos from trixiebooru search';
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 1800; // 30 minutes
 
@@ -76,8 +76,8 @@ class DerpibooruBridge extends BridgeAbstract {
     public function detectParameters($url) {
         $params = array();
         
-        // Handle search page URL: https://derpibooru.org/search?q=[tag]%2C+[tag]&sf=score&sd=desc
-        $regex = '/^(https?:\/\/)?(www\.)?derpibooru\.org\/search(?:\?.*)?/';
+        // Handle search page URL: https://trixiebooru.org/search?q=[tag]%2C+[tag]&sf=score&sd=desc
+        $regex = '/^(https?:\/\/)?(www\.)?trixiebooru\.org\/search(?:\?.*)?/';
         if (preg_match($regex, $url) > 0) {
             $parsedUrl = parse_url($url);
             if (isset($parsedUrl['query'])) {
@@ -95,8 +95,8 @@ class DerpibooruBridge extends BridgeAbstract {
             }
         }
         
-        // Handle tag page URL: https://derpibooru.org/tags/artist-colon-[name]
-        $regex = '/^(https?:\/\/)?(www\.)?derpibooru\.org\/tags\/([^\/&?\n]+)/';
+        // Handle tag page URL: https://trixiebooru.org/tags/artist-colon-[name]
+        $regex = '/^(https?:\/\/)?(www\.)?trixiebooru\.org\/tags\/([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
             $params['q'] = str_replace('-colon-', ':', urldecode($matches[3]));
             return $params;
@@ -145,14 +145,14 @@ class DerpibooruBridge extends BridgeAbstract {
                 if (!empty($tag)) {
                     // Remove existing minus if user accidentally typed it, to avoid double minus
                     $cleanTag = ltrim($tag, '-');
-                    // Derpibooru uses comma for AND, so we append ", -tag"
+                    // trixiebooru uses comma for AND, so we append ", -tag"
                     $excludeQuery .= ', -' . $cleanTag;
                 }
             }
             $q .= $excludeQuery;
         }
         
-        // Derpibooru API strictly limits per_page to a maximum of 50
+        // trixiebooru API strictly limits per_page to a maximum of 50
         $limit = min(50, max(1, (int)$limit));
 
         $query = urlencode($q);
