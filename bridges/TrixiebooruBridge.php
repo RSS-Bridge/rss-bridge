@@ -2,7 +2,7 @@
 
 class TrixiebooruBridge extends BridgeAbstract
 {
-    const NAME = 'Trixiebooru Bridge';
+    const NAME = 'Trixiebooru';
     const URI = 'https://trixiebooru.org/';
     const DESCRIPTION = 'Returns images and videos from Trixiebooru search';
     const MAINTAINER = 'LordArrin';

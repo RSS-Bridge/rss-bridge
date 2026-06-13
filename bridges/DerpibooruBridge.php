@@ -2,7 +2,7 @@
 
 class DerpibooruBridge extends BridgeAbstract
 {
-    const NAME = 'Derpibooru Bridge';
+    const NAME = 'Derpibooru';
     const URI = 'https://derpibooru.org/';
     const DESCRIPTION = 'Returns images and videos from Derpibooru search';
     const MAINTAINER = 'LordArrin';
