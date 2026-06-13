@@ -107,14 +107,14 @@ class DerpibooruBridge extends BridgeAbstract
     {
         $q = trim($this->getInput('q') ?? '');
         $excludeTags = trim($this->getInput('exclude_tags') ?? '');
-        
+
         $tagsArray = [];
-        
+
         if (!empty($q)) {
             $qNormalized = preg_replace('/[\s,]+/', ', ', $q);
             $tagsArray = array_filter(array_map('trim', explode(',', $qNormalized)));
         }
-        
+
         if (!empty($excludeTags)) {
             $excludesNormalized = preg_replace('/[\s,]+/', ', ', $excludeTags);
             $excludesArray = array_filter(array_map('trim', explode(',', $excludesNormalized)));
@@ -125,7 +125,7 @@ class DerpibooruBridge extends BridgeAbstract
                 }
             }
         }
-        
+
         return implode(', ', $tagsArray);
     }
 
@@ -202,7 +202,7 @@ class DerpibooruBridge extends BridgeAbstract
                     }
                 }
             }
-            
+
             if (!empty($artist)) {
                 $item['title'] = sprintf('Image %s by %s', $post->id, $artist);
             } else {
