@@ -79,7 +79,6 @@ class TrixiebooruBridge extends BridgeAbstract
     {
         $params = [];
 
-        // Handle search page URL: https://trixiebooru.org/search?q=[tag]%2C+[tag]&sf=score&sd=desc
         $regex = '/^(https?:\/\/)?(www\.)?trixiebooru\.org\/search(?:\?.*)?/';
         if (preg_match($regex, $url) > 0) {
             $parsedUrl = parse_url($url);
@@ -98,7 +97,6 @@ class TrixiebooruBridge extends BridgeAbstract
             }
         }
 
-        // Handle tag page URL: https://trixiebooru.org/tags/artist-colon-[name]
         $regex = '/^(https?:\/\/)?(www\.)?trixiebooru\.org\/tags\/([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
             $params['q'] = str_replace('-colon-', ':', urldecode($matches[3]));
@@ -143,30 +141,33 @@ class TrixiebooruBridge extends BridgeAbstract
         $limit = $this->getInput('limit') ?? 20;
         $hideTags = $this->getInput('hide_tags') ?? false;
 
-        // Process excluded tags (Blacklist)
         if (!empty(trim($excludeTags))) {
             $excludes = array_map('trim', explode(',', $excludeTags));
             $excludeQuery = '';
             foreach ($excludes as $tag) {
                 if (!empty($tag)) {
-                    // Remove existing minus if user accidentally typed it, to avoid double minus
                     $cleanTag = ltrim($tag, '-');
-                    // Trixiebooru uses comma for AND, so we append ", -tag"
                     $excludeQuery .= ', -' . $cleanTag;
                 }
             }
             $q .= $excludeQuery;
         }
 
-        // Trixiebooru API strictly limits per_page to a maximum of 50
         $limit = min(50, max(1, (int)$limit));
 
         $query = urlencode($q);
         $filter = urlencode($f);
 
-        $apiUrl = self::URI . "api/v1/json/search/images?filter_id={$filter}&q={$query}&sf={$sf}&sd={$sd}&per_page={$limit}";
+        $apiUrl = sprintf(
+            '%sapi/v1/json/search/images?filter_id=%s&q=%s&sf=%s&sd=%s&per_page=%d',
+            self::URI,
+            $filter,
+            $query,
+            $sf,
+            $sd,
+            $limit
+        );
 
-        // Fetch JSON data
         $jsonString = getContents($apiUrl);
         $json = json_decode($jsonString);
 
@@ -180,17 +181,14 @@ class TrixiebooruBridge extends BridgeAbstract
             $postUri = self::URI . 'images/' . $post->id;
             $item['uri'] = $postUri;
 
-            // Use ID and first few tags for a compact title
             $tagsSlice = array_slice($post->tags, 0, 5);
-            $item['title'] = 'Image ' . $post->id . ' (' . implode(', ', $tagsSlice) . ')';
+            $item['title'] = sprintf('Image %s (%s)', $post->id, implode(', ', $tagsSlice));
 
             $item['timestamp'] = strtotime($post->created_at);
             $item['author'] = $post->uploader ?? 'Anonymous';
 
-            // Build HTML content
             $html = '';
 
-            // Check if the post is a video (webm/mp4)
             $isVideo = false;
             if (isset($post->mime_type) && strpos($post->mime_type, 'video/') === 0) {
                 $isVideo = true;
@@ -202,35 +200,54 @@ class TrixiebooruBridge extends BridgeAbstract
             $thumbUrl = $post->representations->medium ?? $post->representations->small ?? $mediaUrl;
 
             if ($isVideo && !empty($mediaUrl)) {
-                // Embed HTML5 video player directly in content
-                $html .= '<p><a href="' . $postUri . '">'
-                    . '<video controls loop muted preload="metadata" style="max-width:100%; height:auto;" src="'
-                    . htmlspecialchars($mediaUrl) . '"></video></a></p>';
+                $html .= sprintf(
+                    '<p><a href="%s"><video controls loop muted preload="metadata" style="max-width:100%%;height:auto;" src="%s"></video></a></p>',
+                    $postUri,
+                    htmlspecialchars($mediaUrl)
+                );
             } elseif (!empty($thumbUrl)) {
-                $html .= '<p><a href="' . $postUri . '"><img src="' . htmlspecialchars($thumbUrl) . '" alt="Image ' . $post->id . '"></a></p>';
+                $html .= sprintf(
+                    '<p><a href="%s"><img src="%s" alt="Image %s"></a></p>',
+                    $postUri,
+                    htmlspecialchars($thumbUrl),
+                    $post->id
+                );
             }
 
             if (!empty($post->description)) {
                 $cleanDesc = $this->cleanDescription($post->description);
                 if (!empty($cleanDesc)) {
-                    $html .= '<p><b>Description:</b><br>' . nl2br(htmlspecialchars($cleanDesc)) . '</p>';
+                    $html .= sprintf(
+                        '<p><b>Description:</b><br>%s</p>',
+                        nl2br(htmlspecialchars($cleanDesc))
+                    );
                 }
             }
 
-            $html .= '<p><b>Size:</b> ' . ($post->width ?? '?') . 'x' . ($post->height ?? '?') . ' | <b>Score:</b> ' . ($post->score ?? 'N/A') . '</p>';
+            $html .= sprintf(
+                '<p><b>Size:</b> %sx%s | <b>Score:</b> %s</p>',
+                $post->width ?? '?',
+                $post->height ?? '?',
+                $post->score ?? 'N/A'
+            );
 
-            // Handle source_urls array safely
             if (!empty($post->source_urls)) {
                 $sources = '';
                 foreach ($post->source_urls as $source) {
-                    $sources .= '<a href="' . htmlspecialchars($source) . '" rel="noopener noreferrer">' . htmlspecialchars($source) . '</a><br>';
+                    $sources .= sprintf(
+                        '<a href="%s" rel="noopener noreferrer">%s</a><br>',
+                        htmlspecialchars($source),
+                        htmlspecialchars($source)
+                    );
                 }
-                $html .= '<p><b>Sources:</b><br>' . $sources . '</p>';
+                $html .= sprintf('<p><b>Sources:</b><br>%s</p>', $sources);
             }
 
-            // List all tags in a single line, comma-separated (only if not hidden)
             if (!$hideTags && !empty($post->tags) && is_array($post->tags)) {
-                $html .= '<p><b>Tags:</b> ' . htmlspecialchars(implode(', ', $post->tags)) . '</p>';
+                $html .= sprintf(
+                    '<p><b>Tags:</b> %s</p>',
+                    htmlspecialchars(implode(', ', $post->tags))
+                );
             }
 
             $item['content'] = $html;
@@ -241,35 +258,16 @@ class TrixiebooruBridge extends BridgeAbstract
 
     private function cleanDescription($text)
     {
-        // Remove markdown links, keep only the text: [text](url) -> text
         $text = preg_replace('/\[([^\]]+)\]\([^)]+\)/', '$1', $text);
-
-        // Remove markdown images: ![alt](url) -> (empty)
         $text = preg_replace('/!\[([^\]]*)\]\([^)]+\)/', '', $text);
-
-        // Remove ALL asterisks (bold/italic markers)
         $text = str_replace('*', '', $text);
-
-        // Remove ALL backslashes
         $text = str_replace('\\', '', $text);
-
-        // Remove markdown headers: # Header -> Header
         $text = preg_replace('/^#+\s+/m', '', $text);
-
-        // Remove markdown blockquotes: > text -> text
         $text = preg_replace('/^>\s+/m', '', $text);
-
-        // Remove markdown code blocks: ```code``` -> code, `code` -> code
         $text = preg_replace('/```([^`]+)```/', '$1', $text);
         $text = preg_replace('/`([^`]+)`/', '$1', $text);
-
-        // Remove markdown horizontal rules: --- or *** or ___
         $text = preg_replace('/^[-*_]{3,}$/m', '', $text);
-
-        // Remove emojis and exotic Unicode characters (keep basic Latin, Cyrillic, numbers, punctuation)
         $text = preg_replace('/[^\x00-\x7F\x{0400}-\x{04FF}\p{P}\s]/u', '', $text);
-
-        // Clean up excessive whitespace
         $text = preg_replace('/\n{3,}/', "\n\n", $text);
         $text = preg_replace('/ {2,}/', ' ', $text);
         $text = trim($text);
