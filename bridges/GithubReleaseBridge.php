@@ -276,8 +276,23 @@ class GitHubReleaseBridge extends BridgeAbstract
             $html
         );
 
-        // Styles
-        return '<div style="font-size:14px; line-height:1.6; word-wrap:break-word;"><style>code { background-color:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:13px; } pre { background-color:#f0f0f0; padding:12px; border-radius:4px; overflow-x:auto; } pre code { background:none; padding:0; } ul { list-style-type:disc; padding-left:24px; margin:8px 0; } ol { list-style-type:decimal; padding-left:24px; margin:8px 0; } li { margin:4px 0; } blockquote { border-left:3px solid #ddd; padding-left:12px; margin-left:0; color:#555; } a { color:#0366d6; text-decoration:none; } a:hover { text-decoration:underline; }</style>' . $html . '</div>';
+        // Styles (for angry checker)
+        $styles = <<<'CSS'
+code { background-color:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:13px; }
+pre { background-color:#f0f0f0; padding:12px; border-radius:4px; overflow-x:auto; }
+pre code { background:none; padding:0; }
+ul { list-style-type:disc; padding-left:24px; margin:8px 0; }
+ol { list-style-type:decimal; padding-left:24px; margin:8px 0; }
+li { margin:4px 0; }
+blockquote { border-left:3px solid #ddd; padding-left:12px; margin-left:0; color:#555; }
+a { color:#0366d6; text-decoration:none; }
+a:hover { text-decoration:underline; }
+CSS;
+
+        return '<div style="font-size:14px; line-height:1.6; word-wrap:break-word;">'
+            . '<style>' . $styles . '</style>'
+            . $html
+            . '</div>';
     }
 
     public function getName()
