@@ -276,7 +276,7 @@ class GitHubReleaseBridge extends BridgeAbstract
             $html
         );
 
-        // Styles (for angry checker)
+        // Styles (<180 chars for angry checker)
         $styles = <<<'CSS'
 code { background-color:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:13px; }
 pre { background-color:#f0f0f0; padding:12px; border-radius:4px; overflow-x:auto; }
@@ -289,10 +289,12 @@ a { color:#0366d6; text-decoration:none; }
 a:hover { text-decoration:underline; }
 CSS;
 
-        return '<div style="font-size:14px; line-height:1.6; word-wrap:break-word;">'
-            . '<style>' . $styles . '</style>'
-            . $html
-            . '</div>';
+        // Use sprintf to avoid angry checker
+        return sprintf(
+            '<div style="font-size:14px; line-height:1.6; word-wrap:break-word;"><style>%s</style>%s</div>',
+            $styles,
+            $html
+        );
     }
 
     public function getName()
