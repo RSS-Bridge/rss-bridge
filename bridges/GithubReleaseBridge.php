@@ -122,10 +122,7 @@ class GitHubReleaseBridge extends BridgeAbstract
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
-        $dom->loadHTML(
-            '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
-            . '<div id="rssbridge-wrapper">' . $html . '</div>'
-        );
+        $dom->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><div id="rssbridge-wrapper">' . $html . '</div>');
         libxml_clear_errors();
 
         $xpath = new \DOMXPath($dom);
@@ -178,10 +175,7 @@ class GitHubReleaseBridge extends BridgeAbstract
     {
         $tempDom = new \DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
-        $tempDom->loadHTML(
-            '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
-            . '<div>' . $html . '</div>'
-        );
+        $tempDom->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><div>' . $html . '</div>');
         libxml_clear_errors();
 
         $tempDiv = $tempDom->getElementsByTagName('div')->item(0);
@@ -200,7 +194,7 @@ class GitHubReleaseBridge extends BridgeAbstract
     {
         $xpath = new \DOMXPath($dom);
         $links = $xpath->query('//a[@href]');
-        
+
         $ownerQuoted = preg_quote($owner, '#');
         $repoQuoted = preg_quote($repo, '#');
 
@@ -283,20 +277,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         );
 
         // Styles
-        return '<div style="font-size:14px; line-height:1.6; word-wrap:break-word;">'
-            . '<style>'
-            . 'code { background-color:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:13px; }'
-            . 'pre { background-color:#f0f0f0; padding:12px; border-radius:4px; overflow-x:auto; }'
-            . 'pre code { background:none; padding:0; }'
-            . 'ul { list-style-type:disc; padding-left:24px; margin:8px 0; }'
-            . 'ol { list-style-type:decimal; padding-left:24px; margin:8px 0; }'
-            . 'li { margin:4px 0; }'
-            . 'blockquote { border-left:3px solid #ddd; padding-left:12px; margin-left:0; color:#555; }'
-            . 'a { color:#0366d6; text-decoration:none; }'
-            . 'a:hover { text-decoration:underline; }'
-            . '</style>'
-            . $html
-            . '</div>';
+        return '<div style="font-size:14px; line-height:1.6; word-wrap:break-word;"><style>code { background-color:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:13px; } pre { background-color:#f0f0f0; padding:12px; border-radius:4px; overflow-x:auto; } pre code { background:none; padding:0; } ul { list-style-type:disc; padding-left:24px; margin:8px 0; } ol { list-style-type:decimal; padding-left:24px; margin:8px 0; } li { margin:4px 0; } blockquote { border-left:3px solid #ddd; padding-left:12px; margin-left:0; color:#555; } a { color:#0366d6; text-decoration:none; } a:hover { text-decoration:underline; }</style>' . $html . '</div>';
     }
 
     public function getName()
@@ -332,7 +313,6 @@ class GitHubReleaseBridge extends BridgeAbstract
         }
 
         $path = $parsed['path'] ?? '';
-        // Match /owner/repo/releases, /owner/repo/releases.atom, or /owner/repo/tags
         if (preg_match('#^/([^/]+)/([^/]+)/(releases(?:\.atom)?|tags)$#', $path, $matches)) {
             return [
                 'owner' => $matches[1],
