@@ -45,11 +45,14 @@ class MSISupportBridge extends BridgeAbstract
     public function getName()
     {
         $info = $this->getProductInfo();
-        if (!$info || empty($info['product'])) {
+        if (!$info) {
             return parent::getName();
         }
         
-        $name = str_replace('-', ' ', $info['product']);
+        // sub_product
+        $displayName = !empty($info['sub_product']) ? $info['sub_product'] : $info['product'];
+        $name = str_replace('-', ' ', $displayName);
+        
         if (!empty($info['fragment'])) {
             $fragmentName = strtolower($info['fragment']) === 'bios' ? 'BIOS' : ucfirst($info['fragment']);
             $name .= ' (' . $fragmentName . ')';
@@ -91,10 +94,21 @@ class MSISupportBridge extends BridgeAbstract
         $product = array_pop($segments);
         $category = array_pop($segments);
 
+        // extract sub_product if present
+        $subProduct = '';
+        if (!empty($parsedUrl['query'])) {
+            $queryParams = [];
+            parse_str($parsedUrl['query'], $queryParams);
+            if (!empty($queryParams['sub_product'])) {
+                $subProduct = $queryParams['sub_product'];
+            }
+        }
+
         $this->productInfo = [
             'product' => $product,
             'category' => $category,
-            'fragment' => $parsedUrl['fragment'] ?? ''
+            'fragment' => $parsedUrl['fragment'] ?? '',
+            'sub_product' => $subProduct
         ];
 
         return $this->productInfo;
@@ -113,8 +127,11 @@ class MSISupportBridge extends BridgeAbstract
             return null;
         }
 
+        // sub_product
+        $apiProduct = !empty($info['sub_product']) ? $info['sub_product'] : $info['product'];
+
         try {
-            $url = self::API_BASE_URL . '?product=' . urlencode($info['product']) . '&type=' . urlencode($type);
+            $url = self::API_BASE_URL . '?product=' . urlencode($apiProduct) . '&type=' . urlencode($type);
             $json = getContents($url, ['Accept: application/json']);
             $data = json_decode($json, true);
             
@@ -179,6 +196,9 @@ class MSISupportBridge extends BridgeAbstract
         $itemTitle = "[{$subCategory}] {$title}" . (!empty($version) ? " - {$version}" : '');
         
         $uri = "https://www.msi.com/{$info['category']}/{$info['product']}/support";
+        if (!empty($info['sub_product'])) {
+            $uri .= '?sub_product=' . urlencode($info['sub_product']);
+        }
         if (!empty($info['fragment'])) {
             $uri .= '#' . $info['fragment'];
         }
