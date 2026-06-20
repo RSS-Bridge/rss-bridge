@@ -40,7 +40,9 @@ class BoostyBridge extends BridgeAbstract
         $this->blogName = (string)$this->getInput('blog');
         foreach ($this->fetchPosts() as $p) {
             $item = $this->buildItem($p);
-            if ($item) $this->items[] = $item;
+            if ($item) {
+                $this->items[] = $item;
+            }
         }
     }
 
@@ -52,14 +54,20 @@ class BoostyBridge extends BridgeAbstract
             'Accept: application/json',
             'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',
         ]));
-        if (!isset($data['data']) || !is_array($data['data'])) throw new \Exception('Failed to fetch data from Boosty API');
-        if (!empty($data['data'][0]['user']['avatarUrl'])) $this->blogAvatar = (string)$data['data'][0]['user']['avatarUrl'];
+        if (!isset($data['data']) || !is_array($data['data'])) {
+            throw new \Exception('Failed to fetch data from Boosty API');
+        }
+        if (!empty($data['data'][0]['user']['avatarUrl'])) {
+            $this->blogAvatar = (string)$data['data'][0]['user']['avatarUrl'];
+        }
         return $data['data'];
     }
 
     private function buildItem(array $p): ?array
     {
-        if (!($p['isPublished'] ?? false)) return null;
+        if (!($p['isPublished'] ?? false)) {
+            return null;
+        }
         $paid = $this->isPaid($p);
         $title = ($paid ? '[Paid] ' : '') . ($p['title'] ?? 'Untitled');
         $content = $paid ? $this->renderPaywall($p) : $this->renderFree($p);
@@ -79,10 +87,14 @@ class BoostyBridge extends BridgeAbstract
             $lv = $p['subscriptionLevel'];
             $h .= '<p' . $s('pp') . '><strong>Subscription:</strong> ' . $this->esc($lv['name'] ?? 'Unknown') . '</p>';
             $pr = $this->price($lv['currencyPrices'] ?? []);
-            if ($pr) $h .= '<p' . $s('pp') . '><strong>Price:</strong> ' . $this->esc($pr) . '/month</p>';
+            if ($pr) {
+                $h .= '<p' . $s('pp') . '><strong>Price:</strong> ' . $this->esc($pr) . '/month</p>';
+            }
         } elseif (isset($p['price']) && $p['price'] > 0) {
             $pr = $this->price($p['currencyPrices'] ?? [], $p['price']);
-            if ($pr) $h .= '<p' . $s('pp') . '><strong>Price:</strong> ' . $this->esc($pr) . '</p>';
+            if ($pr) {
+                $h .= '<p' . $s('pp') . '><strong>Price:</strong> ' . $this->esc($pr) . '</p>';
+            }
         }
         return $h . '</div>';
     }
@@ -111,31 +123,51 @@ class BoostyBridge extends BridgeAbstract
             $type = $b['type'] ?? '';
             $mod = $b['modificator'] ?? '';
             if ($type === 'text' && $mod === 'BLOCK_END') {
-                if ($buf) { $out .= '<p>' . implode('', $buf) . '</p>'; $buf = []; }
+                if ($buf) {
+                    $out .= '<p>' . implode('', $buf) . '</p>';
+                    $buf = [];
+                }
                 continue;
             }
             if ($type === 'text') {
                 $r = $this->draft($b['content'] ?? '');
-                if ($r !== '') $buf[] = $r;
+                if ($r !== '') {
+                    $buf[] = $r;
+                }
             } elseif ($type === 'link') {
                 $r = $this->renderLink($b);
-                if ($r !== '') $buf[] = $r;
+                if ($r !== '') {
+                    $buf[] = $r;
+                }
             } else {
-                if ($buf) { $out .= '<p>' . implode('', $buf) . '</p>'; $buf = []; }
-                if (isset(self::MEDIA[$type])) $out .= $this->renderMedia($b);
+                if ($buf) {
+                    $out .= '<p>' . implode('', $buf) . '</p>';
+                    $buf = [];
+                }
+                if (isset(self::MEDIA[$type])) {
+                    $out .= $this->renderMedia($b);
+                }
             }
         }
-        if ($buf) $out .= '<p>' . implode('', $buf) . '</p>';
-        if (!empty($p['poll']) && is_array($p['poll'])) $out .= $this->renderPoll($p['poll']);
+        if ($buf) {
+            $out .= '<p>' . implode('', $buf) . '</p>';
+        }
+        if (!empty($p['poll']) && is_array($p['poll'])) {
+            $out .= $this->renderPoll($p['poll']);
+        }
         return $out;
     }
 
     private function renderLink(array $b): string
     {
         $url = $b['url'] ?? '';
-        if ($url === '') return '';
+        if ($url === '') {
+            return '';
+        }
         $title = $this->draft($b['content'] ?? '');
-        if ($title === '') $title = $this->esc($url);
+        if ($title === '') {
+            $title = $this->esc($url);
+        }
         return '<a href="' . $this->esc($url) . '">' . $title . '</a>';
     }
 
@@ -143,12 +175,16 @@ class BoostyBridge extends BridgeAbstract
     {
         $type = $b['type'] ?? '';
         $url = $this->esc($b['url'] ?? ($b['preview'] ?? ($b['defaultPreview'] ?? '')));
-        if ($url === '') return '';
+        if ($url === '') {
+            return '';
+        }
         if ($type === 'image' || $type === 'ok_video') {
             return '<p><img src="' . $url . '"' . $this->style('img') . ' alt=""></p>';
         }
         $title = $this->esc($b['title'] ?? ($b['track'] ?? 'File'));
-        if ($type === 'audio_file' && !empty($b['artist'])) $title = $this->esc($b['artist']) . ' - ' . $title;
+        if ($type === 'audio_file' && !empty($b['artist'])) {
+            $title = $this->esc($b['artist']) . ' - ' . $title;
+        }
         return '<p><a href="' . $url . '">' . $title . '</a></p>';
     }
 
@@ -157,10 +193,18 @@ class BoostyBridge extends BridgeAbstract
         $s = fn(string $k): string => $this->style($k);
         $h = '<div' . $s('poll') . '>';
         $title = $poll['title'] ?? '';
-        if (is_array($title)) $title = implode(' ', $title);
-        if ($title !== '') $h .= '<p' . $s('poll_t') . '>Poll: ' . $this->esc($title) . '</p>';
+        if (is_array($title)) {
+            $title = implode(' ', $title);
+        }
+        if ($title !== '') {
+            $h .= '<p' . $s('poll_t') . '>Poll: ' . $this->esc($title) . '</p>';
+        }
         $total = (int)($poll['counter'] ?? 0);
-        if ($total === 0) foreach ($poll['options'] ?? [] as $o) $total += (int)($o['counter'] ?? 0);
+        if ($total === 0) {
+            foreach ($poll['options'] ?? [] as $o) {
+                $total += (int)($o['counter'] ?? 0);
+            }
+        }
         $vis = $this->pollVisible($poll, $total);
         foreach ($poll['options'] ?? [] as $o) {
             if ($vis) {
@@ -168,44 +212,71 @@ class BoostyBridge extends BridgeAbstract
                 $f = isset($o['fraction']) ? (float)$o['fraction'] : ($total > 0 ? ($c / $total) * 100.0 : 0.0);
                 $f = max(0.0, min(100.0, $f));
                 $fd = rtrim(rtrim(number_format($f, 1, '.', ''), '0'), '.');
-                $h .= '<div' . $s('poll_o') . '><div' . $s('poll_r') . '>'
-                    . '<span>' . $this->esc($o['text'] ?? '') . '</span>'
-                    . '<span' . $s('poll_m') . '>' . $fd . '% (' . $c . ')</span></div>'
-                    . '<table cellpadding="0" cellspacing="0" border="0"' . $s('pg_table') . '><tr>'
-                    . '<td style="width:' . $f . '%;' . self::CSS['pg_fill'] . '"></td>'
-                    . '<td' . $s('pg_empty') . '></td></tr></table></div>';
+                
+                $h .= '<div' . $s('poll_o') . '>';
+                $h .= '<div' . $s('poll_r') . '>';
+                $h .= '<span>' . $this->esc($o['text'] ?? '') . '</span>';
+                $h .= '<span' . $s('poll_m') . '>' . $fd . '% (' . $c . ')</span>';
+                $h .= '</div>';
+                $h .= '<table cellpadding="0" cellspacing="0" border="0"' . $s('pg_table') . '>';
+                $h .= '<tr>';
+                $h .= '<td style="width:' . $f . '%;' . self::CSS['pg_fill'] . '"></td>';
+                $h .= '<td' . $s('pg_empty') . '></td>';
+                $h .= '</tr>';
+                $h .= '</table>';
+                $h .= '</div>';
             } else {
                 $h .= '<div' . $s('poll_o') . '><span>' . $this->esc($o['text'] ?? '') . '</span></div>';
             }
         }
         $h .= '<p' . $s('poll_f') . '>Total votes: ' . $total;
-        if (!empty($poll['isMultiple'])) $h .= ' � Multiple choice';
-        if (!empty($poll['isFinished'])) $h .= ' � Finished';
-        if (!$vis) $h .= ' � Results hidden';
+        if (!empty($poll['isMultiple'])) {
+            $h .= ' � Multiple choice';
+        }
+        if (!empty($poll['isFinished'])) {
+            $h .= ' � Finished';
+        }
+        if (!$vis) {
+            $h .= ' � Results hidden';
+        }
         return $h . '</p></div>';
     }
 
     private function pollVisible(array $poll, int $total): bool
     {
-        if (!empty($poll['isFinished']) || !empty($poll['showResults']) || !empty($poll['isResultVisible'])) return true;
+        if (!empty($poll['isFinished']) || !empty($poll['showResults']) || !empty($poll['isResultVisible'])) {
+            return true;
+        }
         foreach ($poll['options'] ?? [] as $o) {
-            if (array_key_exists('fraction', $o) || (isset($o['counter']) && $o['counter'] > 0)) return true;
+            if (array_key_exists('fraction', $o) || (isset($o['counter']) && $o['counter'] > 0)) {
+                return true;
+            }
         }
         return false;
     }
 
     private function draft(string $content): string
     {
-        if ($content === '') return '';
+        if ($content === '') {
+            return '';
+        }
         try {
             $d = json_decode($content, true);
-            if (!is_array($d) || !isset($d[0])) return '';
+            if (!is_array($d) || !isset($d[0])) {
+                return '';
+            }
             $text = $d[0];
-            if (!is_string($text)) $text = is_array($text) ? implode('', $text) : (string)$text;
-            if ($text === '') return '';
+            if (!is_string($text)) {
+                $text = is_array($text) ? implode('', $text) : (string)$text;
+            }
+            if ($text === '') {
+                return '';
+            }
             $utf16 = mb_convert_encoding($text, 'UTF-16LE', 'UTF-8');
             $units = [];
-            for ($i = 0, $len = strlen($utf16); $i < $len; $i += 2) $units[] = substr($utf16, $i, 2);
+            for ($i = 0, $len = strlen($utf16); $i < $len; $i += 2) {
+                $units[] = substr($utf16, $i, 2);
+            }
             $styles = (isset($d[2]) && is_array($d[2])) ? $d[2] : [];
             return str_replace("\n", '<br>', $this->applyStyles($units, $styles));
         } catch (\Exception $e) {
@@ -219,21 +290,35 @@ class BoostyBridge extends BridgeAbstract
         $tags = array_fill(0, $n + 1, '');
         $ev = [];
         foreach ($styles as $s) {
-            if (count($s) < 3) continue;
+            if (count($s) < 3) {
+                continue;
+            }
             $tag = $this->tag((int)($s[0] ?? -1));
-            if (!$tag) continue;
+            if (!$tag) {
+                continue;
+            }
             $a = (int)($s[1] ?? 0);
             $b = $a + (int)($s[2] ?? 0);
-            if ($a < 0 || $b > $n || $a >= $b) continue;
+            if ($a < 0 || $b > $n || $a >= $b) {
+                continue;
+            }
             $d = count($ev) / 2 + 1;
             $ev[] = ['p' => $a, 't' => "<{$tag}>", 'k' => 0, 'd' => $d];
             $ev[] = ['p' => $b, 't' => "</{$tag}>", 'k' => 1, 'd' => $d];
         }
         if ($ev) {
-            usort($ev, fn($x, $y) => $x['p'] !== $y['p'] ? $x['p'] - $y['p'] 
-                : ($x['k'] !== $y['k'] ? ($x['k'] ? -1 : 1) 
-                : ($x['k'] ? $y['d'] - $x['d'] : $x['d'] - $y['d'])));
-            foreach ($ev as $e) $tags[$e['p']] .= $e['t'];
+            usort($ev, function ($x, $y) {
+                if ($x['p'] !== $y['p']) {
+                    return $x['p'] - $y['p'];
+                }
+                if ($x['k'] !== $y['k']) {
+                    return $x['k'] ? -1 : 1;
+                }
+                return $x['k'] ? $y['d'] - $x['d'] : $x['d'] - $y['d'];
+            });
+            foreach ($ev as $e) {
+                $tags[$e['p']] .= $e['t'];
+            }
         }
         $out = '';
         for ($i = 0; $i <= $n; $i++) {
@@ -258,8 +343,12 @@ class BoostyBridge extends BridgeAbstract
 
     private function price(array $cp, $fb = null): ?string
     {
-        if (isset($cp['RUB'])) return $cp['RUB'] . ' RUB';
-        if (isset($cp['USD'])) return $cp['USD'] . ' USD';
+        if (isset($cp['RUB'])) {
+            return $cp['RUB'] . ' RUB';
+        }
+        if (isset($cp['USD'])) {
+            return $cp['USD'] . ' USD';
+        }
         return $fb !== null ? (string)$fb : null;
     }
 
