@@ -48,16 +48,15 @@ class MSISupportBridge extends BridgeAbstract
         if (!$info) {
             return parent::getName();
         }
-        
-        // sub_product
+
         $displayName = !empty($info['sub_product']) ? $info['sub_product'] : $info['product'];
         $name = str_replace('-', ' ', $displayName);
-        
+
         if (!empty($info['fragment'])) {
             $fragmentName = strtolower($info['fragment']) === 'bios' ? 'BIOS' : ucfirst($info['fragment']);
             $name .= ' (' . $fragmentName . ')';
         }
-        
+
         return $name;
     }
 
@@ -80,7 +79,9 @@ class MSISupportBridge extends BridgeAbstract
         $parsedUrl = parse_url($url);
         $segments = array_values(array_filter(
             explode('/', trim($parsedUrl['path'] ?? '', '/')),
-            function ($s) { return $s !== ''; }
+            function ($s) {
+                return $s !== '';
+            }
         ));
 
         if (count($segments) < 2) {
@@ -94,7 +95,6 @@ class MSISupportBridge extends BridgeAbstract
         $product = array_pop($segments);
         $category = array_pop($segments);
 
-        // extract sub_product if present
         $subProduct = '';
         if (!empty($parsedUrl['query'])) {
             $queryParams = [];
@@ -105,9 +105,9 @@ class MSISupportBridge extends BridgeAbstract
         }
 
         $this->productInfo = [
-            'product' => $product,
-            'category' => $category,
-            'fragment' => $parsedUrl['fragment'] ?? '',
+            'product'     => $product,
+            'category'    => $category,
+            'fragment'    => $parsedUrl['fragment'] ?? '',
             'sub_product' => $subProduct
         ];
 
@@ -127,14 +127,13 @@ class MSISupportBridge extends BridgeAbstract
             return null;
         }
 
-        // sub_product
         $apiProduct = !empty($info['sub_product']) ? $info['sub_product'] : $info['product'];
 
         try {
             $url = self::API_BASE_URL . '?product=' . urlencode($apiProduct) . '&type=' . urlencode($type);
             $json = getContents($url, ['Accept: application/json']);
             $data = json_decode($json, true);
-            
+
             return ($data && isset($data['result']['downloads'])) ? $data['result']['downloads'] : null;
         } catch (Exception $e) {
             return null;
@@ -146,7 +145,7 @@ class MSISupportBridge extends BridgeAbstract
         if (!is_array($array) || empty($array)) {
             return false;
         }
-        
+
         $i = 0;
         foreach ($array as $key => $val) {
             if ($key !== $i++) {
@@ -166,11 +165,11 @@ class MSISupportBridge extends BridgeAbstract
         if (empty($html)) {
             return '';
         }
-        
+
         $text = $this->decodeHtml($html);
         $text = preg_replace('/\s*(?:style|on\w+)\s*=\s*(["\']).*?\1/i', '', $text);
-        $text = strip_tags($text, '<a><br><br/><p>');
-        
+        $text = strip_tags($text, '<a><br><p>');
+
         $linkStyle = self::CSS['link'];
         $text = preg_replace_callback('/<a\s+([^>]*?)>/is', function ($m) use ($linkStyle) {
             $attrs = $m[1];
@@ -185,7 +184,7 @@ class MSISupportBridge extends BridgeAbstract
             }
             return '<a ' . trim($attrs) . '>';
         }, $text);
-        
+
         return nl2br($text);
     }
 
@@ -194,7 +193,7 @@ class MSISupportBridge extends BridgeAbstract
         $title = $this->decodeHtml($file['download_title'] ?? $subCategory);
         $version = $this->decodeHtml($file['download_version'] ?? '');
         $itemTitle = "[{$subCategory}] {$title}" . (!empty($version) ? " - {$version}" : '');
-        
+
         $uri = "https://www.msi.com/{$info['category']}/{$info['product']}/support";
         if (!empty($info['sub_product'])) {
             $uri .= '?sub_product=' . urlencode($info['sub_product']);
@@ -202,37 +201,46 @@ class MSISupportBridge extends BridgeAbstract
         if (!empty($info['fragment'])) {
             $uri .= '#' . $info['fragment'];
         }
-        
+
         $content = '<div style="' . self::CSS['item'] . '">';
-        
+
         if (!empty($file['download_description'])) {
-            $content .= '<p style="' . self::CSS['p'] . '"><span style="' . self::CSS['label'] . '">Description:</span><br>' . $this->cleanDescription($file['download_description']) . '</p>';
+            $desc = $this->cleanDescription($file['download_description']);
+            $content .= '<p style="' . self::CSS['p'] . '">'
+                . '<span style="' . self::CSS['label'] . '">Description:</span><br>'
+                . $desc . '</p>';
         }
         if (!empty($file['os'])) {
-            $content .= '<p style="' . self::CSS['p'] . '"><span style="' . self::CSS['label'] . '">OS:</span> ' . htmlspecialchars($this->decodeHtml($file['os']), ENT_QUOTES, 'UTF-8') . '</p>';
+            $os = htmlspecialchars($this->decodeHtml($file['os']), ENT_QUOTES, 'UTF-8');
+            $content .= '<p style="' . self::CSS['p'] . '">'
+                . '<span style="' . self::CSS['label'] . '">OS:</span> ' . $os . '</p>';
         }
         if (!empty($file['download_size'])) {
             $sizeMb = round($file['download_size'] / (1024 * 1024), 2);
-            $content .= '<p style="' . self::CSS['p'] . '"><span style="' . self::CSS['label'] . '">Size:</span> ' . $sizeMb . ' MB</p>';
+            $content .= '<p style="' . self::CSS['p'] . '">'
+                . '<span style="' . self::CSS['label'] . '">Size:</span> ' . $sizeMb . ' MB</p>';
         }
         if (!$hideAttachments && !empty($file['download_url'])) {
+            $downloadUrl = htmlspecialchars($file['download_url']);
             $downloadStyle = self::CSS['download'];
-            $content .= '<p style="' . self::CSS['p'] . '"><a href="' . htmlspecialchars($file['download_url']) . '" style="' . $downloadStyle . '" target="_blank" rel="noopener noreferrer">Download</a></p>';
+            $content .= '<p style="' . self::CSS['p'] . '">'
+                . '<a href="' . $downloadUrl . '" style="' . $downloadStyle . '" '
+                . 'target="_blank" rel="noopener noreferrer">Download</a></p>';
         }
-        
+
         $content .= '</div>';
-        
+
         $item = [
-            'title' => $itemTitle,
-            'uri' => $uri,
+            'title'   => $itemTitle,
+            'uri'     => $uri,
             'content' => $content,
-            'uid' => $file['download_id'] ?? md5($itemTitle)
+            'uid'     => $file['download_id'] ?? md5($itemTitle)
         ];
-        
+
         if (!empty($file['download_release'])) {
             $item['timestamp'] = strtotime($file['download_release']);
         }
-        
+
         return $item;
     }
 
@@ -240,25 +248,31 @@ class MSISupportBridge extends BridgeAbstract
     {
         $info = $this->getProductInfo();
         if (!$info || !$info['product'] || !$info['category']) {
-            returnClientError('Invalid URL format or could not extract product info. Expected format: https://www.msi.com/Category/Product-ID/support');
+            throwClientException(
+                'Invalid URL format or could not extract product info. '
+                . 'Expected format: https://www.msi.com/Category/Product-ID/support'
+            );
         }
 
         $hideAttachments = (bool) $this->getInput('hide_download_button');
         $allItems = [];
-        
+
         foreach ($this->getDownloadTypes() as $type) {
             $downloads = $this->fetchApiData($type);
             if (!$downloads) {
                 continue;
             }
-            
+
             foreach ($downloads as $subCategory => $files) {
                 if (!$this->isSequentialArray($files)) {
                     continue;
                 }
-                
+
                 foreach ($files as $file) {
-                    if (!is_array($file) || (empty($file['download_url']) && empty($file['download_title']))) {
+                    if (!is_array($file)) {
+                        continue;
+                    }
+                    if (empty($file['download_url']) && empty($file['download_title'])) {
                         continue;
                     }
                     $allItems[] = $this->buildFeedItem($file, $subCategory, $info, $hideAttachments);
