@@ -7,7 +7,7 @@ class GitHubReleaseBridge extends BridgeAbstract
     const NAME = 'GitHub Releases';
     const URI = 'https://github.com';
     const DESCRIPTION = 'Returns releases for a GitHub repository (excludes tag-only entries)';
-    const MAINTAINER = 'kiliankoe';
+    const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 3600;
 
     const CONFIGURATION = [
