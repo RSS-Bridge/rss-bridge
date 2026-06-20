@@ -206,26 +206,20 @@ class MSISupportBridge extends BridgeAbstract
 
         if (!empty($file['download_description'])) {
             $desc = $this->cleanDescription($file['download_description']);
-            $content .= '<p style="' . self::CSS['p'] . '">'
-                . '<span style="' . self::CSS['label'] . '">Description:</span><br>'
-                . $desc . '</p>';
+            $content .= '<p style="' . self::CSS['p'] . '"><span style="' . self::CSS['label'] . '">Description:</span><br>' . $desc . '</p>';
         }
         if (!empty($file['os'])) {
             $os = htmlspecialchars($this->decodeHtml($file['os']), ENT_QUOTES, 'UTF-8');
-            $content .= '<p style="' . self::CSS['p'] . '">'
-                . '<span style="' . self::CSS['label'] . '">OS:</span> ' . $os . '</p>';
+            $content .= '<p style="' . self::CSS['p'] . '"><span style="' . self::CSS['label'] . '">OS:</span> ' . $os . '</p>';
         }
         if (!empty($file['download_size'])) {
             $sizeMb = round($file['download_size'] / (1024 * 1024), 2);
-            $content .= '<p style="' . self::CSS['p'] . '">'
-                . '<span style="' . self::CSS['label'] . '">Size:</span> ' . $sizeMb . ' MB</p>';
+            $content .= '<p style="' . self::CSS['p'] . '"><span style="' . self::CSS['label'] . '">Size:</span> ' . $sizeMb . ' MB</p>';
         }
         if (!$hideAttachments && !empty($file['download_url'])) {
             $downloadUrl = htmlspecialchars($file['download_url']);
             $downloadStyle = self::CSS['download'];
-            $content .= '<p style="' . self::CSS['p'] . '">'
-                . '<a href="' . $downloadUrl . '" style="' . $downloadStyle . '" '
-                . 'target="_blank" rel="noopener noreferrer">Download</a></p>';
+            $content .= '<p style="' . self::CSS['p'] . '"><a href="' . $downloadUrl . '" style="' . $downloadStyle . '" target="_blank" rel="noopener noreferrer">Download</a></p>';
         }
 
         $content .= '</div>';
@@ -248,10 +242,7 @@ class MSISupportBridge extends BridgeAbstract
     {
         $info = $this->getProductInfo();
         if (!$info || !$info['product'] || !$info['category']) {
-            throwClientException(
-                'Invalid URL format or could not extract product info. '
-                . 'Expected format: https://www.msi.com/Category/Product-ID/support'
-            );
+            throwClientException('Invalid URL format or could not extract product info. Expected format: https://www.msi.com/Category/Product-ID/support');
         }
 
         $hideAttachments = (bool) $this->getInput('hide_download_button');
