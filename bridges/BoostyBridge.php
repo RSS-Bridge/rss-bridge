@@ -4,7 +4,7 @@ class BoostyBridge extends BridgeAbstract
 {
     const NAME = 'Boosty';
     const URI = 'https://boosty.to';
-    const DESCRIPTION = 'Parser for Boosty posts into RSS feed';
+    const DESCRIPTION = 'Parser for Boosty (free posts and paid announcements)';
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 3600;
 
@@ -148,7 +148,7 @@ class BoostyBridge extends BridgeAbstract
             return '<p><img src="' . $url . '"' . $this->style('img') . ' alt=""></p>';
         }
         $title = $this->esc($b['title'] ?? ($b['track'] ?? 'File'));
-        if ($type === 'audio_file' && !empty($b['artist'])) $title = $this->esc($b['artist']) . ' — ' . $title;
+        if ($type === 'audio_file' && !empty($b['artist'])) $title = $this->esc($b['artist']) . ' - ' . $title;
         return '<p><a href="' . $url . '">' . $title . '</a></p>';
     }
 
