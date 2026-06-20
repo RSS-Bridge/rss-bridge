@@ -9,7 +9,6 @@ class MSISupportBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 14400;
     const VALID_TYPES = ['bios', 'driver', 'manual', 'utility'];
     const API_BASE_URL = 'https://www.msi.com/api/v1/product/support/panel';
-    
     const PARAMETERS = [
         [
             'url' => [
@@ -219,7 +218,8 @@ class MSISupportBridge extends BridgeAbstract
         if (!$hideAttachments && !empty($file['download_url'])) {
             $downloadUrl = htmlspecialchars($file['download_url']);
             $downloadStyle = self::CSS['download'];
-            $content .= '<p style="' . self::CSS['p'] . '"><a href="' . $downloadUrl . '" style="' . $downloadStyle . '" target="_blank" rel="noopener noreferrer">Download</a></p>';
+            $content .= '<p style="' . self::CSS['p'] . '">'
+                . '<a href="' . $downloadUrl . '" style="' . $downloadStyle . '" target="_blank" rel="noopener noreferrer">Download</a></p>';
         }
 
         $content .= '</div>';
