@@ -220,8 +220,12 @@ class MSISupportBridge extends BridgeAbstract
         if (!$hideAttachments && !empty($file['download_url'])) {
             $downloadUrl = htmlspecialchars($file['download_url']);
             $downloadStyle = self::CSS['download'];
-            $content .= '<p style="' . self::CSS['p'] . '">'
-                . '<a href="' . $downloadUrl . '" style="' . $downloadStyle . '" target="_blank" rel="noopener noreferrer">Download</a></p>';
+            $content .= sprintf(
+                '<p style="%s"><a href="%s" style="%s" target="_blank" rel="noopener noreferrer">Download</a></p>',
+                self::CSS['p'],
+                $downloadUrl,
+                $downloadStyle
+            );
         }
 
         $content .= '</div>';
