@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 class Rule34Bridge extends GelbooruBridge
 {
-    const MAINTAINER = 'LordArrin';
     const NAME = 'Rule34';
     const URI = 'https://api.rule34.xxx/';
-    const VIEW_URI = 'https://rule34.xxx/';
     const DESCRIPTION = 'Returns images from rule34.xxx search';
+    const MAINTAINER = 'LordArrin';
+    const CACHE_TIMEOUT = 1800; // 30 minutes
+    const VIEW_URI = 'https://rule34.xxx/';
 
     const PARAMETERS = [
         'global' => [

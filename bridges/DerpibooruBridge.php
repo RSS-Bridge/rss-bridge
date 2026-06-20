@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class DerpibooruBridge extends BridgeAbstract
 {
     const NAME = 'Derpibooru';
