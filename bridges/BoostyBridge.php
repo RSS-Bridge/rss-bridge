@@ -212,7 +212,6 @@ class BoostyBridge extends BridgeAbstract
                 $f = isset($o['fraction']) ? (float)$o['fraction'] : ($total > 0 ? ($c / $total) * 100.0 : 0.0);
                 $f = max(0.0, min(100.0, $f));
                 $fd = rtrim(rtrim(number_format($f, 1, '.', ''), '0'), '.');
-                
                 $h .= '<div' . $s('poll_o') . '>';
                 $h .= '<div' . $s('poll_r') . '>';
                 $h .= '<span>' . $this->esc($o['text'] ?? '') . '</span>';
