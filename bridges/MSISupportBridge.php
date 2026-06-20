@@ -4,7 +4,7 @@ class MSISupportBridge extends BridgeAbstract
 {
     const NAME = 'MSI Support';
     const URI = 'https://www.msi.com/';
-    const DESCRIPTION = 'Returns BIOS, drivers, manuals, and utilities updates for MSI products via internal API.';
+    const DESCRIPTION = 'Returns BIOS, drivers, manuals, and utilities updates for MSI products via internal API';
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 14400;
     const VALID_TYPES = ['bios', 'driver', 'manual', 'utility'];
