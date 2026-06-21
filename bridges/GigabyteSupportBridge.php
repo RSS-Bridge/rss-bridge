@@ -126,14 +126,16 @@ class GigabyteSupportBridge extends BridgeAbstract
         if (empty($text)) {
             return '';
         }
-        $text = trim(preg_replace('/Checksum\s*:\s*\S+/i', '', $text));
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace('/Checksum\s*:\s*\S+/i', '', $text);
         if ($keepLinks) {
-            $text = preg_replace('/<li[^>]*>/i', '<br>• ', $text);
+            $text = preg_replace('/<li[^>]*>/i', '[[SEP]]', $text);
             $text = preg_replace('/<\/li>/i', '', $text);
-            $text = strip_tags($text, '<a><br>');
-            $text = preg_replace('/<br\s*\/?>/i', '<br>', $text);
+            $text = preg_replace('/<br\s*\/?>/i', '[[SEP]]', $text);
+            $text = preg_replace('/<\/?p[^>]*>/i', '[[SEP]]', $text);
+            $text = preg_replace('/<\/?div[^>]*>/i', '[[SEP]]', $text);
             $linkStyle = self::CSS['link'];
-            $text = preg_replace_callback('/<a\s+([^>]*?)>/is', function ($m) use ($linkStyle) {
+            $text = preg_replace_callback('/<a\s+([^>]*?)>(.*?)<\/a>/is', function ($m) use ($linkStyle) {
                 $attrs = $m[1];
                 if (stripos($attrs, 'target=') === false) {
                     $attrs .= ' target="_blank"';
@@ -144,12 +146,18 @@ class GigabyteSupportBridge extends BridgeAbstract
                 if (stripos($attrs, 'style=') === false) {
                     $attrs .= ' style="' . $linkStyle . '"';
                 }
-                return '<a ' . trim($attrs) . '>';
+                return '<a ' . trim($attrs) . '>' . $m[2] . '</a>';
             }, $text);
-            $text = preg_replace('/\s+/', ' ', $text);
-            $text = str_replace([' <br>', '<br> ', ' <br> '], '<br>', $text);
-            $text = preg_replace('/^(<br\s*\/?>\s*)+/', '', $text);
-            return trim($text);
+            $text = strip_tags($text);
+            $parts = preg_split('/\[\[SEP\]\]|\n|\r\n?/', $text);
+            $cleanParts = [];
+            foreach ($parts as $part) {
+                $part = preg_replace('/\s+/', ' ', trim($part));
+                if (!empty($part)) {
+                    $cleanParts[] = $part;
+                }
+            }
+            return implode('<br>', $cleanParts);
         }
         $text = preg_replace('/\s+/', ' ', $text);
         $text = preg_replace('/<br\s*\/?>/i', ', ', $text);
@@ -165,7 +173,10 @@ class GigabyteSupportBridge extends BridgeAbstract
             return '';
         }
         $url = $match[1];
-        return strpos($url, '/') === 0 ? 'https://www.gigabyte.com' . $url : $url;
+        if (strpos($url, '/') === 0) {
+            return 'https://www.gigabyte.com' . $url;
+        }
+        return $url;
     }
 
     private function parseTableRow(string $row, bool $hasOs): ?array
@@ -227,10 +238,14 @@ class GigabyteSupportBridge extends BridgeAbstract
         if (empty($value)) {
             return '';
         }
-        $displayValue = $allowHtml 
-            ? preg_replace('/^(<br\s*\/?>\s*)+/', '', trim($value)) 
-            : htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
-        return sprintf('<p style="%s"><span style="%s">%s:</span>%s%s</p>', self::CSS['p'], self::CSS['label'], $label, $lineBreak ? '<br>' : ' ', $displayValue);
+        $displayValue = $allowHtml ? $value : htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+        $displayValue = preg_replace('/^(?:\s|<br\s*\/?>)+/i', '', $displayValue);
+        $displayValue = ltrim($displayValue);
+        if (empty($displayValue)) {
+            return '';
+        }
+        $separator = $lineBreak ? '<br>' : ' ';
+        return sprintf('<p style="%s"><span style="%s">%s:</span>%s%s</p>', self::CSS['p'], self::CSS['label'], $label, $separator, $displayValue);
     }
 
     private function buildFeedItem(array $data, array $info, bool $hideAttachments): array
@@ -255,7 +270,12 @@ class GigabyteSupportBridge extends BridgeAbstract
         $content .= $this->render('Size', $data['size']);
         if (!$hideAttachments && !empty($data['download'])) {
             $downloadUrl = htmlspecialchars($data['download'], ENT_QUOTES, 'UTF-8');
-            $content .= sprintf('<p style="%s"><a href="%s" style="%s" target="_blank" rel="noopener noreferrer">Download</a></p>', self::CSS['p'], $downloadUrl, self::CSS['download']);
+            $content .= sprintf(
+                '<p style="%s"><a href="%s" style="%s" target="_blank" rel="noopener noreferrer">Download</a></p>',
+                self::CSS['p'],
+                $downloadUrl,
+                self::CSS['download']
+            );
         }
         $content .= '</div>';
         $item = ['title' => $itemTitle, 'uri' => $uri, 'content' => $content, 'uid' => md5($itemTitle . $data['version'])];
