@@ -1,22 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 class Vk2Bridge extends BridgeAbstract
 {
-    const MAINTAINER = 'em92';
-    const NAME = 'ВКонтакте';
+    const NAME = 'VK';
     const URI = 'https://vk.com';
-    const DESCRIPTION = 'Выводит записи на стене';
-    const CACHE_TIMEOUT = 300; // 5 minutes
+    const DESCRIPTION = 'Returns posts from the public feed. Needs personal API key';
+    const MAINTAINER = 'LordArrin';
+    const CACHE_TIMEOUT = 900;
+
     const PARAMETERS = [
         [
             'u' => [
-                'name' => 'Короткое имя группы или профиля (из ссылки)',
-                'exampleValue' => 'goblin_oper_ru',
-                'required' => true
+                'name' => 'Name of group or profile',
+                'type' => 'text',
+                'required' => true,
+                'title' => 'Name from URL. Example: rebel_jack from https://vk.com/rebel_jack'
             ],
             'hide_reposts' => [
-                'name' => 'Скрыть репосты',
+                'name' => 'Hide reposts',
                 'type' => 'checkbox',
+                'title' => 'Check this box to hide reposts from feed items'
+            ],
+            'limit' => [
+                'name' => 'Number of posts',
+                'type' => 'number',
+                'defaultValue' => 20,
             ]
         ]
     ];
@@ -28,302 +38,571 @@ class Vk2Bridge extends BridgeAbstract
     ];
 
     const TEST_DETECT_PARAMETERS = [
-        'https://vk.com/id1' => ['u' => 'id1'],
         'https://vk.com/groupname' => ['u' => 'groupname'],
-        'https://m.vk.com/groupname' => ['u' => 'groupname'],
-        'https://vk.com/groupname/anythingelse' => ['u' => 'groupname'],
-        'https://vk.com/groupname?w=somethingelse' => ['u' => 'groupname'],
-        'https://vk.com/with_underscore' => ['u' => 'with_underscore'],
-        'https://vk.com/vk.cats' => ['u' => 'vk.cats'],
     ];
 
-    protected $ownerNames = [];
-    protected $pageName;
-    private $urlRegex = '/vk\.com\/([\w.]+)/';
-    private $rateLimitCacheKey = 'vk2_rate_limit';
+    const ATTACHMENT_RENDERERS = [
+        'photo' => 'renderPhoto',
+        'video' => 'renderVideo',
+        'audio' => 'renderAudio',
+        'doc' => 'renderDoc',
+        'link' => 'renderLink',
+        'note' => 'renderNote',
+        'poll' => 'renderPoll',
+        'album' => 'renderAlbum',
+    ];
 
-    public function getURI()
+    const TITLE_FALLBACK_MAP = [
+        'video' => 'getVideoTitle',
+        'audio' => 'getAudioTitle',
+        'link' => 'getLinkTitle',
+        'doc' => 'getDocTitle',
+        'album' => 'getAlbumTitle',
+        'poll' => 'getPollTitle',
+        'photo' => 'getPhotoTitle',
+    ];
+
+    const RATE_LIMIT_ERRORS = [
+        6 => 15,
+        29 => 1800,
+    ];
+
+    protected array $ownerNames = [];
+    protected ?string $pageName = null;
+    private string $urlRegex = '/vk\.com\/([\w.]+)/';
+
+    public function getURI(): string
     {
-        if (!is_null($this->getInput('u'))) {
-            return urljoin(static::URI, urlencode($this->getInput('u')));
+        $u = $this->getInput('u');
+        if (!is_null($u)) {
+            return urljoin(static::URI, urlencode($u));
         }
-
         return parent::getURI();
     }
 
-    public function getName()
+    public function getName(): string
     {
         if ($this->pageName) {
             return $this->pageName;
         }
-
         return parent::getName();
     }
 
-    public function detectParameters($url)
+    public function detectParameters($url): ?array
     {
         if (preg_match($this->urlRegex, $url, $matches)) {
             return ['u' => $matches[1]];
         }
-
         return null;
     }
 
-    protected function getPostURI($post)
+    protected function getPostURI(array $post): string
     {
-        $r = 'https://vk.com/wall' . $post['owner_id'] . '_';
+        $ownerId = $post['owner_id'] ?? 0;
+        $id = $post['id'] ?? 0;
+        $r = 'https://vk.com/wall' . $ownerId . '_' . $id;
+
         if (isset($post['reply_post_id'])) {
-            $r .= $post['reply_post_id'] . '?reply=' . $post['id'] . '&thread=' . $post['parents_stack'][0];
-        } else {
-            $r .= $post['id'];
+            $replyId = $post['reply_post_id'];
+            $threadId = $post['parents_stack'][0] ?? $replyId;
+            $r .= '?reply=' . $id . '&thread=' . $threadId;
         }
+
         return $r;
     }
 
-    // This function is based on SlackCoyote's vkfeed2rss
-    // https://github.com/em92/vkfeed2rss
-    protected function generateContentFromPost($post)
+    private function e($value): string
     {
-        // it's what we will return
-        $ret = $post['text'];
+        return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+    }
 
-        // html special characters convertion
-        $ret = htmlentities($ret, ENT_QUOTES | ENT_HTML401);
-        // change all linebreak to HTML compatible <br />
-        $ret = nl2br($ret);
+    private function link(string $url, string $text): string
+    {
+        return $this->linkHtml($url, $this->e($text));
+    }
 
-        $ret = "<p>$ret</p>";
+    private function linkHtml(string $url, string $html): string
+    {
+        $url = $this->e($url);
+        return "<a href='{$url}' target='_blank' rel='noopener noreferrer'>{$html}</a>";
+    }
 
-        // find URLs
-        $ret = preg_replace(
-            '/((https?|ftp|gopher)\:\/\/[a-zA-Z0-9\-\.]+(:[a-zA-Z0-9]*)?\/?([@\w\-\+\.\?\,\'\/&amp;%\$#\=~\x5C])*)/',
-            "<a href='$1'>$1</a>",
-            $ret
-        );
+    private function image(string $url, string $alt): string
+    {
+        $url = $this->e($url);
+        $alt = $this->e($alt);
+        return "<img src='{$url}' alt='{$alt}'>";
+    }
 
-        // find [id1|Pawel Durow] form links
-        $ret = preg_replace('/\[(\w+)\|([^\]]+)\]/', "<a href='https://vk.com/$1'>$2</a>", $ret);
+    protected function generateContentFromPost(array $post, bool $extractTitle = true): string
+    {
+        $text = $post['text'] ?? '';
 
+        if ($extractTitle) {
+            [, $text] = $this->splitFirstLine($text);
+        }
 
-        // attachments
-        if (isset($post['attachments'])) {
-            // level 1
-            foreach ($post['attachments'] as $attachment) {
-                if ($attachment['type'] == 'video') {
-                    // VK videos
-                    $title = e($attachment['video']['title']);
-                    $photo = e($this->getImageURLWithLargestWidth($attachment['video']['image']));
-                    $href = "https://vk.com/video{$attachment['video']['owner_id']}_{$attachment['video']['id']}";
-                    $ret .= "<p><a href='{$href}'><img src='{$photo}' alt='Video: {$title}'><br/>Video: {$title}</a></p>";
-                } elseif ($attachment['type'] == 'audio') {
-                    // VK audio
-                    $artist = e($attachment['audio']['artist']);
-                    $title = e($attachment['audio']['title']);
-                    $ret .= "<p>Audio: {$artist} - {$title}</p>";
-                } elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] != 'gif') {
-                    // any doc apart of gif
-                    $doc_url = e($attachment['doc']['url']);
-                    $title = e($attachment['doc']['title']);
-                    $ret .= "<p><a href='{$doc_url}'>Документ: {$title}</a></p>";
-                }
-            }
-            // level 2
-            foreach ($post['attachments'] as $attachment) {
-                if ($attachment['type'] == 'photo') {
-                    // JPEG, PNG photos
-                    // GIF in vk is a document, so, not handled as photo
-                    $photo = e($this->getImageURLWithLargestWidth($attachment['photo']['sizes']));
-                    $text = e($attachment['photo']['text']);
-                    $ret .= "<p><img src='{$photo}' alt='{$text}'></p>";
-                } elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] == 'gif') {
-                    // GIF docs
-                    $url = e($attachment['doc']['url']);
-                    $ret .= "<p><img src='{$url}'></p>";
-                } elseif ($attachment['type'] == 'link') {
-                    // links
-                    $url = e($attachment['link']['url']);
-                    $url = str_replace('https://m.vk.com', 'https://vk.com', $url);
-                    $title = e($attachment['link']['title']);
-                    if (isset($attachment['link']['photo'])) {
-                        $photo = $this->getImageURLWithLargestWidth($attachment['link']['photo']['sizes']);
-                        $ret .= "<p><a href='{$url}'><img src='{$photo}' alt='{$title}'><br>{$title}</a></p>";
-                    } else {
-                        $ret .= "<p><a href='{$url}'>{$title}</a></p>";
+        $text = trim($text);
+
+        $ret = '';
+        if (!empty($text)) {
+            $ret = $this->e($text);
+            $ret = nl2br($ret);
+
+            $ret = preg_replace_callback(
+                '~(https?://[^\s<|]+)|((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?:/[^\s<|]*)?)~i',
+                function ($matches) {
+                    if (!empty($matches[1])) {
+                        return '<a href="' . $matches[1] . '" target="_blank" rel="noopener noreferrer">' . $matches[1] . '</a>';
                     }
-                } elseif ($attachment['type'] == 'note') {
-                    // notes
-                    $title = e($attachment['note']['title']);
-                    $url = e($attachment['note']['view_url']);
-                    $ret .= "<p><a href='{$url}'>{$title}</a></p>";
-                } elseif ($attachment['type'] == 'poll') {
-                    // polls
-                    $question = e($attachment['poll']['question']);
-                    $vote_count = $attachment['poll']['votes'];
-                    $answers = $attachment['poll']['answers'];
-                    $ret .= "<p>Poll: {$question} ({$vote_count} votes)<br />";
-                    foreach ($answers as $answer) {
-                        $text = e($answer['text']);
-                        $votes = $answer['votes'];
-                        $rate = $answer['rate'];
-                        $ret .= "* {$text}: {$votes} ({$rate}%)<br />";
+                    if (!empty($matches[2])) {
+                        return '<a href="https://' . $matches[2] . '" target="_blank" rel="noopener noreferrer">' . $matches[2] . '</a>';
                     }
-                    $ret .= '</p>';
-                } elseif ($attachment['type'] == 'album') {
-                    $album = $attachment['album'];
-                    $url = "https://vk.com/album{$album['owner_id']}_{$album['id']}";
-                    $title = 'Альбом: ' . $album['title'];
-                    $photo = $this->getImageURLWithLargestWidth($album['thumb']['sizes']);
-                    $ret .= "<p><a href='{$url}'><img src='{$photo}' alt='{$title}'><br>{$title}</a></p>";
-                } elseif (!in_array($attachment['type'], ['video', 'audio', 'doc'])) {
-                    $ret .= "<p>Unknown attachment type: {$attachment['type']}</p>";
-                }
-            }
+                    return $matches[0];
+                },
+                $ret
+            );
+
+            $ret = preg_replace(
+                '/\[(id|club|public)?([a-zA-Z0-9_.]+)\|([^\]]+)\]/i',
+                '<a href="https://vk.com/$1$2" target="_blank" rel="noopener noreferrer">$3</a>',
+                $ret
+            );
+
+            $ret = "<p>$ret</p>";
+        }
+
+        foreach ($post['attachments'] ?? [] as $attachment) {
+            $ret .= $this->renderAttachment($attachment);
         }
 
         return $ret;
     }
 
-    protected function getImageURLWithLargestWidth($items)
+    protected function renderAttachment(array $attachment): string
     {
-        usort($items, function ($a, $b) {
-            return $b['width'] - $a['width'];
-        });
-        return $items[0]['url'];
+        $type = $attachment['type'] ?? '';
+        
+        if (isset(self::ATTACHMENT_RENDERERS[$type])) {
+            return call_user_func([$this, self::ATTACHMENT_RENDERERS[$type]], $attachment);
+        }
+
+        return "<p>Unknown attachment type: {$type}</p>";
     }
 
-    public function collectData()
+    private function renderPhoto(array $attachment): string
     {
-        if ($this->cache->get($this->rateLimitCacheKey)) {
+        $photoUrl = $this->proxyImage($this->getImageURLWithLargestWidth($attachment['photo']['sizes'] ?? []));
+        $text = $attachment['photo']['text'] ?? '';
+        return "<p>{$this->image($photoUrl, $text)}</p>";
+    }
+
+    private function renderVideo(array $attachment): string
+    {
+        $title = $attachment['video']['title'] ?? 'Video';
+        $ownerId = $attachment['video']['owner_id'] ?? 0;
+        $id = $attachment['video']['id'] ?? 0;
+        $videoType = $attachment['video']['type'] ?? 'video';
+        $duration = $attachment['video']['duration'] ?? 0;
+
+        $imageData = $attachment['video']['image'] ?? [];
+        $photoUrl = $this->proxyImage($this->getImageURLWithLargestWidth($imageData));
+
+        if ($videoType === 'story') {
+            $href = "https://vk.com/clip{$ownerId}_{$id}";
+            $title = "Clip: {$title} ({$duration} sec)";
+        } else {
+            $href = "https://vk.com/video{$ownerId}_{$id}";
+            $title = "Video: {$title}";
+        }
+
+        $eTitle = $this->e($title);
+        return "<p>{$this->linkHtml($href, $this->image($photoUrl, $title) . "<br/>{$eTitle}")}</p>";
+    }
+
+    private function renderAudio(array $attachment): string
+    {
+        $artist = $attachment['audio']['artist'] ?? '';
+        $title = $attachment['audio']['title'] ?? '';
+        return "<p>Audio: {$this->e($artist)} - {$this->e($title)}</p>";
+    }
+
+    private function renderDoc(array $attachment): string
+    {
+        $docUrl = $attachment['doc']['url'] ?? '#';
+        $title = $attachment['doc']['title'] ?? 'Document';
+        $ext = $attachment['doc']['ext'] ?? '';
+        
+        if ($ext === 'gif') {
+            $gifUrl = $this->proxyImage($docUrl);
+            return "<p>{$this->image($gifUrl, $title)}</p>";
+        }
+        
+        return "<p>{$this->link($docUrl, "Document: {$title}")}</p>";
+    }
+
+    private function renderLink(array $attachment): string
+    {
+        $url = str_replace('https://m.vk.com', 'https://vk.com', $attachment['link']['url'] ?? '#');
+        $title = $attachment['link']['title'] ?? $url;
+        
+        if (isset($attachment['link']['photo']['sizes'])) {
+            $photoUrl = $this->proxyImage($this->getImageURLWithLargestWidth($attachment['link']['photo']['sizes']));
+            $eTitle = $this->e($title);
+            return "<p>{$this->linkHtml($url, $this->image($photoUrl, $title) . "<br>{$eTitle}")}</p>";
+        }
+        
+        return "<p>{$this->link($url, $title)}</p>";
+    }
+
+    private function renderNote(array $attachment): string
+    {
+        $title = $attachment['note']['title'] ?? 'Note';
+        $url = $attachment['note']['view_url'] ?? '#';
+        return "<p>{$this->link($url, $title)}</p>";
+    }
+
+    private function renderPoll(array $attachment): string
+    {
+        $question = $attachment['poll']['question'] ?? 'Poll';
+        $voteCount = $attachment['poll']['votes'] ?? 0;
+        $answers = $attachment['poll']['answers'] ?? [];
+        
+        $html = "<p>Poll: {$this->e($question)} ({$voteCount} votes)<br />";
+        foreach ($answers as $answer) {
+            $text = $answer['text'] ?? '';
+            $votes = $answer['votes'] ?? 0;
+            $rate = $answer['rate'] ?? 0;
+            $html .= "* {$this->e($text)}: {$votes} ({$rate}%)<br />";
+        }
+        return $html . '</p>';
+    }
+
+    private function renderAlbum(array $attachment): string
+    {
+        $album = $attachment['album'] ?? [];
+        $ownerId = $album['owner_id'] ?? 0;
+        $id = $album['id'] ?? 0;
+        $url = "https://vk.com/album{$ownerId}_{$id}";
+        $title = 'Album: ' . ($album['title'] ?? '');
+        $photoUrl = $this->proxyImage($this->getImageURLWithLargestWidth($album['thumb']['sizes'] ?? []));
+        $eTitle = $this->e($title);
+        
+        return "<p>{$this->linkHtml($url, $this->image($photoUrl, $title) . "<br>{$eTitle}")}</p>";
+    }
+
+    protected function getImageURLWithLargestWidth(array $items): string
+    {
+        if (empty($items)) {
+            return '';
+        }
+        usort($items, fn($a, $b) => ($b['width'] ?? 0) - ($a['width'] ?? 0));
+        return $items[0]['url'] ?? '';
+    }
+
+    public function collectData(): void
+    {
+        if ($this->cache->get($this->getRateLimitCacheKey())) {
             throwRateLimitException();
         }
 
         $u = $this->getInput('u');
-        $ownerId = null;
+        $ownerId = $this->detectOwnerId($u);
 
-        // getting ownerId from url
-        $r = preg_match('/^(club|public)(\d+)$/', $u, $matches);
-        if ($r) {
-            $ownerId = -intval($matches[2]);
-        } else {
-            $r = preg_match('/^(id)(\d+)$/', $u, $matches);
-            if ($r) {
-                $ownerId = intval($matches[2]);
-            }
-        }
+        usleep(350000);
 
-        // getting owner id from API
-        if (is_null($ownerId)) {
-            $r = $this->api('groups.getById', [
-                'group_ids' => $u,
-            ], [100]);
-            if (isset($r['response'][0])) {
-                $ownerId = -$r['response'][0]['id'];
-            } else {
-                $r = $this->api('users.get', [
-                    'user_ids' => $u,
-                ]);
-                if (count($r['response']) > 0) {
-                    $ownerId = $r['response'][0]['id'];
-                }
-            }
-        }
-
-        if (is_null($ownerId)) {
-            throwServerException('Could not detect owner id');
-        }
+        $limit = (int)($this->getInput('limit') ?? 20);
+        $limit = max(1, min(100, $limit));
 
         $r = $this->api('wall.get', [
             'owner_id' => $ownerId,
             'extended' => '1',
+            'count' => $limit,
         ]);
 
-        // preparing ownerNames dictionary
-        foreach ($r['response']['profiles'] as $profile) {
-            $this->ownerNames[$profile['id']] = $profile['first_name'] . ' ' . $profile['last_name'];
+        if (!isset($r['response'])) {
+            $this->handleError('invalid_api_response', 'wall.get');
         }
-        foreach ($r['response']['groups'] as $group) {
-            $this->ownerNames[-$group['id']] = $group['name'];
+
+        $response = $r['response'];
+
+        foreach ($response['profiles'] ?? [] as $profile) {
+            $this->ownerNames[$profile['id']] = trim(($profile['first_name'] ?? '') . ' ' . ($profile['last_name'] ?? ''));
         }
+
+        foreach ($response['groups'] ?? [] as $group) {
+            $this->ownerNames[-$group['id']] = $group['name'] ?? 'Unknown';
+        }
+
         $this->generateFeed($r);
     }
 
-    protected function generateFeed($r)
+    private function detectOwnerId(string $u): int
+    {
+        if (preg_match('/^(club|public)(\d+)$/', $u, $matches)) {
+            return -intval($matches[2]);
+        }
+
+        if (preg_match('/^id(\d+)$/', $u, $matches)) {
+            return intval($matches[1]);
+        }
+
+        $r = $this->api('groups.getById', ['group_ids' => $u], [100]);
+
+        if (isset($r['response']['groups'][0]['id'])) {
+            return -$r['response']['groups'][0]['id'];
+        }
+
+        if (isset($r['response'][0]['id'])) {
+            return -$r['response'][0]['id'];
+        }
+
+        usleep(350000);
+        $r = $this->api('users.get', ['user_ids' => $u]);
+
+        if (isset($r['response'][0]['id'])) {
+            return $r['response'][0]['id'];
+        }
+
+        $this->handleError('owner_not_found', "Short name '{$u}'");
+    }
+
+    protected function generateFeed(array $r): void
     {
         $ownerId = 0;
+        $items = $r['response']['items'] ?? [];
 
-        foreach ($r['response']['items'] as $post) {
+        foreach ($items as $post) {
+            if (($post['marked_as_ads'] ?? 0) === 1 || ($post['is_pinned'] ?? 0) === 1) {
+                continue;
+            }
+
             if (!$ownerId) {
-                $ownerId = $post['owner_id'];
+                $ownerId = $post['owner_id'] ?? 0;
             }
-            $item = [];
-            $content = $this->generateContentFromPost($post);
-            if (isset($post['copy_history'])) {
-                if ($this->getInput('hide_reposts')) {
-                    continue;
-                }
-                $originalPost = $post['copy_history'][0];
-                if ($originalPost['from_id'] < 0) {
-                    $originalPostAuthorScreenName = 'club' . (-$originalPost['owner_id']);
-                } else {
-                    $originalPostAuthorScreenName = 'id' . $originalPost['owner_id'];
-                }
-                $originalPostAuthorURI = 'https://vk.com/' . $originalPostAuthorScreenName;
-                $originalPostAuthorName = $this->ownerNames[$originalPost['from_id']];
-                $originalPostAuthor = "<a href='$originalPostAuthorURI'>$originalPostAuthorName</a>";
-                $content .= '<p>Репост (<a href="';
-                $content .= $this->getPostURI($originalPost);
-                $content .= '">Пост</a> от ';
-                $content .= $originalPostAuthor;
-                $content .= '):</p>';
-                $content .= $this->generateContentFromPost($originalPost);
-            }
-            $item['content'] = $content;
-            $item['timestamp'] = $post['date'];
-            $item['author'] = $this->ownerNames[$post['from_id']];
-            $item['title'] = $this->getTitle(strip_tags($content));
-            $item['uri'] = $this->getPostURI($post);
 
-            $this->items[] = $item;
+            $isRepost = isset($post['copy_history'][0]);
+            $displayPost = $isRepost ? $post['copy_history'][0] : $post;
+
+            if ($isRepost && $this->getInput('hide_reposts')) {
+                continue;
+            }
+
+            $content = $this->generateContentFromPost($displayPost, true);
+
+            $fromId = $displayPost['from_id'] ?? $displayPost['owner_id'] ?? 0;
+
+            $author = '';
+            if ($fromId !== $ownerId) {
+                $author = $this->ownerNames[$fromId] ?? 'Unknown';
+            }
+
+            $this->items[] = [
+                'content'   => $content,
+                'timestamp' => $displayPost['date'] ?? time(),
+                'author'    => $author,
+                'title'     => $this->getTitle($displayPost),
+                'uri'       => $this->getPostURI($displayPost),
+            ];
         }
 
-        $this->pageName = $this->ownerNames[$ownerId];
+        if ($ownerId && isset($this->ownerNames[$ownerId])) {
+            $this->pageName = $this->ownerNames[$ownerId];
+        }
     }
 
-    protected function getTitle($content)
+    protected function getTitle(array $post): string
     {
-        $content = explode('<br>', $content)[0];
-        $content = strip_tags($content);
-        preg_match('/^[:\,"\w\ \p{L}\(\)\?#«»\-\–\—||&\.%\\₽\/+\;\!]+/mu', htmlspecialchars_decode($content), $result);
-        if (count($result) == 0) {
-            return 'untitled';
+        [$title, ] = $this->splitFirstLine($post['text'] ?? '');
+
+        if (!empty($title)) {
+            return $title;
         }
-        return $result[0];
+
+        return $this->getFallbackTitle($post);
     }
 
-    protected function api($method, array $params, $expected_error_codes = [])
+    private function splitFirstLine(string $text): array
+    {
+        $lines = explode("\n", $text);
+
+        $meaningfulIndex = null;
+        foreach ($lines as $i => $line) {
+            $trimmed = trim($line);
+            if ($trimmed !== '' && !$this->isLinkOnly($trimmed)) {
+                $meaningfulIndex = $i;
+                break;
+            }
+        }
+
+        if ($meaningfulIndex === null) {
+            return ['', $text];
+        }
+
+        $originalLine = $lines[$meaningfulIndex];
+        $cleanLine = preg_replace(
+            '/\[(?:id|club|public)?[a-zA-Z0-9_.]+\|([^\]]+)\]/i',
+            '$1',
+            trim($originalLine)
+        );
+
+        if (empty(trim($cleanLine))) {
+            return ['', $text];
+        }
+
+        if (mb_strlen($cleanLine) <= 50) {
+            $bodyLines = $lines;
+            unset($bodyLines[$meaningfulIndex]);
+            $bodyLines = array_values($bodyLines);
+            return [$cleanLine, implode("\n", $bodyLines)];
+        }
+
+        $cut = mb_substr($cleanLine, 0, 50);
+        $lastSpace = mb_strrpos($cut, ' ');
+
+        if ($lastSpace !== false && $lastSpace > 25) {
+            $cutPos = $lastSpace;
+        } else {
+            $cutPos = 50;
+        }
+
+        $title = mb_substr($cleanLine, 0, $cutPos) . '...';
+        $remainder = mb_substr($originalLine, $cutPos);
+
+        $bodyLines = $lines;
+        $bodyLines[$meaningfulIndex] = '...' . $remainder;
+
+        return [$title, implode("\n", $bodyLines)];
+    }
+
+    private function isLinkOnly(string $line): bool
+    {
+        $line = trim($line);
+        if (empty($line)) {
+            return false;
+        }
+        return (bool)preg_match('~^(https?://[^\s]+|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?)$~i', $line);
+    }
+
+    private function getFallbackTitle(array $post): string
+    {
+        foreach ($post['attachments'] ?? [] as $attachment) {
+            $type = $attachment['type'] ?? '';
+            if (isset(self::TITLE_FALLBACK_MAP[$type])) {
+                return call_user_func([$this, self::TITLE_FALLBACK_MAP[$type]], $attachment);
+            }
+        }
+
+        return 'untitled';
+    }
+
+    private function getVideoTitle(array $attachment): string
+    {
+        $videoType = $attachment['video']['type'] ?? 'video';
+        $title = $attachment['video']['title'] ?? '';
+        return $videoType === 'story' ? 'Clip: ' . $title : 'Video: ' . $title;
+    }
+
+    private function getAudioTitle(array $attachment): string
+    {
+        $artist = $attachment['audio']['artist'] ?? '';
+        $title = $attachment['audio']['title'] ?? '';
+        return "Audio: {$artist} - {$title}";
+    }
+
+    private function getLinkTitle(array $attachment): string
+    {
+        return 'Link: ' . ($attachment['link']['title'] ?? '');
+    }
+
+    private function getDocTitle(array $attachment): string
+    {
+        return 'Document: ' . ($attachment['doc']['title'] ?? '');
+    }
+
+    private function getAlbumTitle(array $attachment): string
+    {
+        return 'Album: ' . ($attachment['album']['title'] ?? '');
+    }
+
+    private function getPollTitle(array $attachment): string
+    {
+        return 'Poll: ' . ($attachment['poll']['question'] ?? '');
+    }
+
+    private function getPhotoTitle(array $attachment): string
+    {
+        return 'Photo';
+    }
+
+    private function proxyImage(string $url): string
+    {
+        if (empty($url)) {
+            return '';
+        }
+
+        if (function_exists('proxyImageUrl')) {
+            return proxyImageUrl($url);
+        }
+
+        return $url;
+    }
+
+    private function getRateLimitCacheKey(): string
+    {
+        $token = $this->getOption('access_token') ?? '';
+        return 'vk2_rate_limit_' . md5($token);
+    }
+
+    protected function api(string $method, array $params, array $expected_error_codes = []): array
     {
         $access_token = $this->getOption('access_token');
         if (!$access_token) {
-            throwServerException('You cannot run VK API methods without access_token');
+            $this->handleError('missing_access_token');
         }
-        $params['v'] = '5.131';
-        $r = json_decode(
-            getContents(
-                'https://api.vk.com/method/' . $method . '?' . http_build_query($params),
-                ['Authorization: Bearer ' . $access_token]
-            ),
-            true
-        );
-        if (isset($r['error']) && !in_array($r['error']['error_code'], $expected_error_codes)) {
-            if ($r['error']['error_code'] == 6) {
-                $this->cache->set($this->rateLimitCacheKey, true, 5);
-            } else if ($r['error']['error_code'] == 29) {
-                // wall.get has limit of 5000 requests per day
-                // if that limit is hit, VK returns error 29
-                $this->cache->set($this->rateLimitCacheKey, true, 60 * 30);
-            }
-            throwServerException('API returned error: ' . $r['error']['error_msg'] . ' (' . $r['error']['error_code'] . ')');
+
+        $params['v'] = '5.199';
+        $url = 'https://api.vk.com/method/' . $method . '?' . http_build_query($params);
+
+        $response = getContents($url, ['Authorization: Bearer ' . $access_token]);
+        $r = json_decode($response, true);
+
+        if (!is_array($r)) {
+            $this->handleError('invalid_json');
         }
-        return $r;
+
+        if (!isset($r['error'])) {
+            return $r;
+        }
+
+        $errorCode = $r['error']['error_code'] ?? 0;
+        if (in_array($errorCode, $expected_error_codes, true)) {
+            return $r;
+        }
+
+        if (isset(self::RATE_LIMIT_ERRORS[$errorCode])) {
+            $this->cache->set($this->getRateLimitCacheKey(), true, self::RATE_LIMIT_ERRORS[$errorCode]);
+        }
+
+        $errorMsg = $r['error']['error_msg'] ?? 'Unknown error';
+        $this->handleError('api_error', "{$errorMsg} ({$errorCode})");
+    }
+
+    private function handleError(string $code, string $details = ''): void
+    {
+        $messages = [
+            'owner_not_found' => 'Could not detect owner id. Please check if the short name is correct and the page is not blocked or deleted',
+            'invalid_api_response' => 'Invalid API response from',
+            'missing_access_token' => 'You cannot run VK API methods without access_token',
+            'invalid_json' => 'Invalid JSON response from VK API',
+            'api_error' => 'API returned error:',
+        ];
+
+        $message = $messages[$code] ?? 'Unknown error';
+        if ($details) {
+            $message .= ' ' . $details;
+        }
+
+        throwServerException($message);
     }
 }
