@@ -17,8 +17,7 @@ class MSISupportBridge extends BridgeAbstract
                 'name' => 'Support page URL',
                 'type' => 'text',
                 'required' => true,
-                'title' => 'Full URL of the product support page on msi.com (hash fragments like #bios or #utility are supported)',
-                'exampleValue' => 'https://www.msi.com/Motherboard/MPG-Z790I-EDGE-WIFI/support'
+                'title' => 'Full URL of the product support page on msi.com (hash fragments like #bios or #utility are supported)'
             ],
             'hide_download_button' => [
                 'name' => 'Hide download button',
