@@ -182,7 +182,7 @@ class Vk2Bridge extends BridgeAbstract
     protected function renderAttachment(array $attachment): string
     {
         $type = $attachment['type'] ?? '';
-        
+
         if (isset(self::ATTACHMENT_RENDERERS[$type])) {
             return call_user_func([$this, self::ATTACHMENT_RENDERERS[$type]], $attachment);
         }
@@ -232,12 +232,12 @@ class Vk2Bridge extends BridgeAbstract
         $docUrl = $attachment['doc']['url'] ?? '#';
         $title = $attachment['doc']['title'] ?? 'Document';
         $ext = $attachment['doc']['ext'] ?? '';
-        
+
         if ($ext === 'gif') {
             $gifUrl = $this->proxyImage($docUrl);
             return "<p>{$this->image($gifUrl, $title)}</p>";
         }
-        
+
         return "<p>{$this->link($docUrl, "Document: {$title}")}</p>";
     }
 
@@ -245,13 +245,13 @@ class Vk2Bridge extends BridgeAbstract
     {
         $url = str_replace('https://m.vk.com', 'https://vk.com', $attachment['link']['url'] ?? '#');
         $title = $attachment['link']['title'] ?? $url;
-        
+
         if (isset($attachment['link']['photo']['sizes'])) {
             $photoUrl = $this->proxyImage($this->getImageURLWithLargestWidth($attachment['link']['photo']['sizes']));
             $eTitle = $this->e($title);
             return "<p>{$this->linkHtml($url, $this->image($photoUrl, $title) . "<br>{$eTitle}")}</p>";
         }
-        
+
         return "<p>{$this->link($url, $title)}</p>";
     }
 
@@ -267,7 +267,7 @@ class Vk2Bridge extends BridgeAbstract
         $question = $attachment['poll']['question'] ?? 'Poll';
         $voteCount = $attachment['poll']['votes'] ?? 0;
         $answers = $attachment['poll']['answers'] ?? [];
-        
+
         $html = "<p>Poll: {$this->e($question)} ({$voteCount} votes)<br />";
         foreach ($answers as $answer) {
             $text = $answer['text'] ?? '';
@@ -287,7 +287,6 @@ class Vk2Bridge extends BridgeAbstract
         $title = 'Album: ' . ($album['title'] ?? '');
         $photoUrl = $this->proxyImage($this->getImageURLWithLargestWidth($album['thumb']['sizes'] ?? []));
         $eTitle = $this->e($title);
-        
         return "<p>{$this->linkHtml($url, $this->image($photoUrl, $title) . "<br>{$eTitle}")}</p>";
     }
 
