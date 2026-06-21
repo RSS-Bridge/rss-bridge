@@ -227,7 +227,9 @@ class GigabyteSupportBridge extends BridgeAbstract
         if (empty($value)) {
             return '';
         }
-        $displayValue = $allowHtml ? $value : htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+        $displayValue = $allowHtml 
+            ? preg_replace('/^(<br\s*\/?>\s*)+/', '', trim($value)) 
+            : htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
         return sprintf('<p style="%s"><span style="%s">%s:</span>%s%s</p>', self::CSS['p'], self::CSS['label'], $label, $lineBreak ? '<br>' : ' ', $displayValue);
     }
 
