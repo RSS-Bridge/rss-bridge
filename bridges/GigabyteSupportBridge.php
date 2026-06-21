@@ -15,8 +15,7 @@ class GigabyteSupportBridge extends BridgeAbstract
             'name' => 'Support page URL',
             'type' => 'text',
             'required' => true,
-            'title' => 'Full URL of the product support page on gigabyte.com (hash fragments like #Support-Bios or #Support-Driver are supported)',
-            'exampleValue' => 'https://www.gigabyte.com/Motherboard/B760M-H-DDR4-rev-10/support'
+            'title' => 'Full URL of the product support page on gigabyte.com (hash fragments like #Support-Bios or #Support-Driver are supported)'
         ],
         'hide_download_button' => [
             'name' => 'Hide download button',
