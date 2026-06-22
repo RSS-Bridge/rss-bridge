@@ -96,7 +96,7 @@ class PawchiveBridge extends BridgeAbstract
 
     private const HTTP_HEADERS = [
         'Accept: application/json, text/css, */*',
-        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36'
     ];
 
     private ?string $author = null;
