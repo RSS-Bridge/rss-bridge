@@ -18,7 +18,7 @@ class PawchiveBridge extends BridgeAbstract
         'service' => [
             'name' => 'Content service',
             'type' => 'list',
-            'required' => true,
+            'defaultValue' => 'patreon',
             'values' => self::ACTIVE_SERVICES,
             'title' => 'Pawchive now support only Patreon and Pixiv Fanbox'
         ],
@@ -48,6 +48,7 @@ class PawchiveBridge extends BridgeAbstract
         'Boosty' => 'boosty',
         'Gumroad' => 'gumroad',
         'SubscribeStar' => 'subscribestar',
+        'OnlyFans' => 'onlyfans',
         'Discord' => 'discord',
         'Fansly' => 'fansly',
     ];
