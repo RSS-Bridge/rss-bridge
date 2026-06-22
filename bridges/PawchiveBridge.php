@@ -9,7 +9,7 @@ class PawchiveBridge extends BridgeAbstract
     const DESCRIPTION = 'Returns posts from Pawchive. Kemono is dead, long live the Pawchive!';
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 3600;
-    
+
     const API_PREFIX = 'api/v1/';
     const FILE_DOMAIN = 'https://file.pawchive.st';
     const THUMBNAIL_DOMAIN = 'https://img.pawchive.st';
@@ -122,7 +122,7 @@ class PawchiveBridge extends BridgeAbstract
     private function getMimeType(string $filename): string
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        
+
         return $this->mimeCache[$ext] ??= self::MIME_TYPES[$ext] ?? 'application/octet-stream';
     }
 
@@ -150,11 +150,11 @@ class PawchiveBridge extends BridgeAbstract
     private function formatUrlsInText(string $text): string
     {
         $parts = preg_split('/(<[^>]+>)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
-        
+
         $inAnchor = false;
         $result = '';
         $style = self::CSS['url-link'];
-        
+
         foreach ($parts as $part) {
             if (preg_match('/^<a\b/i', $part)) {
                 $inAnchor = true;
@@ -172,10 +172,10 @@ class PawchiveBridge extends BridgeAbstract
                     $part
                 );
             }
-            
+
             $result .= $part;
         }
-        
+
         return $result;
     }
 
@@ -186,7 +186,7 @@ class PawchiveBridge extends BridgeAbstract
         }
 
         $html = $this->cleanUnicodeCharacters($html);
-        
+
         $replacements = [
             '/<p>\s*<\/p>/i' => '',
             '/<div>\s*<\/div>/i' => '',
@@ -208,7 +208,7 @@ class PawchiveBridge extends BridgeAbstract
         }
 
         $text = $this->cleanUnicodeCharacters($text);
-        
+
         $replacements = [
             '/\h+/' => ' ',
             '/^\s*\n/m' => '',
@@ -272,7 +272,7 @@ class PawchiveBridge extends BridgeAbstract
     {
         $service = $this->getInput('service');
         $url = $this->baseURI() . self::API_PREFIX . $service . $endpoint;
-        
+
         $headers = array_merge(self::HTTP_HEADERS, [
             'Cookie: session=' . $this->getOption('session')
         ]);
@@ -280,7 +280,7 @@ class PawchiveBridge extends BridgeAbstract
         try {
             $api_response = getContents($url, $headers);
             $data = Json::decode($api_response);
-            
+
             return is_array($data) ? $data : [];
         } catch (\Exception $e) {
             return [];
@@ -290,11 +290,11 @@ class PawchiveBridge extends BridgeAbstract
     private function collectFiles(array $post): array
     {
         $files = [];
-        
+
         if (!empty($post['file']['path'])) {
             $files[] = $post['file'];
         }
-        
+
         if (!empty($post['attachments']) && is_array($post['attachments'])) {
             foreach ($post['attachments'] as $file) {
                 if (!empty($file['path'])) {
@@ -302,7 +302,7 @@ class PawchiveBridge extends BridgeAbstract
                 }
             }
         }
-        
+
         return $files;
     }
 
@@ -312,14 +312,14 @@ class PawchiveBridge extends BridgeAbstract
 
         foreach ($files as $file) {
             $fileName = $file['name'] ?? basename($file['path']);
-            
+
             if ($this->isVideo($fileName) && $hideVideos) {
                 $hiddenVideoCount++;
                 continue;
             }
-            
+
             $fileUrl = $hasFull ? $this->getFileUrl($file['path'], $fileName) : $this->getThumbnailUrl($file['path'], $fileName);
-            
+
             if ($this->isImage($fileName)) {
                 $contentHtml .= $this->renderImage($fileUrl, $fileName);
             } elseif ($this->isVideo($fileName)) {
@@ -338,13 +338,13 @@ class PawchiveBridge extends BridgeAbstract
     public function collectData(): void
     {
         $user = '/user/' . $this->getInput('user');
-        
+
         $profile = $this->getJson("{$user}/profile");
         $this->author = $profile['name'] ?? 'Unknown';
 
         $q = urlencode($this->getInput('q') ?? '');
         $json = $this->getJson("{$user}?q={$q}");
-        
+
         if (empty($json)) {
             return;
         }
@@ -362,7 +362,7 @@ class PawchiveBridge extends BridgeAbstract
     {
         $content = $this->sanitizeHtml($post['content'] ?? '');
         $content = $this->formatUrlsInText($content);
-        
+
         $item = [
             'author' => $this->author,
             'content' => $content,
@@ -374,23 +374,23 @@ class PawchiveBridge extends BridgeAbstract
         ];
 
         $contentHtml = $item['content'];
-        
+
         if (!empty($post['embed']['url'])) {
             $contentHtml .= $this->renderExternalLink($post['embed']['url']);
             $item['enclosures'][] = $post['embed']['url'];
         }
-        
+
         $files = $this->collectFiles($post);
         $hasFull = $post['has_full'] ?? true;
-        
+
         $hiddenVideoCount = $this->processFiles($files, $hasFull, $hideVideos, $contentHtml, $item['enclosures']);
-        
+
         if ($hiddenVideoCount > 0) {
             $contentHtml .= $this->renderHiddenVideoIndicator($hiddenVideoCount);
         }
-        
+
         $item['content'] = $contentHtml;
-        
+
         return $item;
     }
 
