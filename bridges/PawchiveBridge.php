@@ -49,7 +49,6 @@ class PawchiveBridge extends BridgeAbstract
         'Gumroad' => 'gumroad',
         'SubscribeStar' => 'subscribestar',
         'Discord' => 'discord',
-        'OnlyFans' => 'onlyfans',
         'Fansly' => 'fansly',
     ];
 
