@@ -70,7 +70,7 @@ class Vk2Bridge extends BridgeAbstract
     protected array $ownerNames = [];
     protected ?string $pageName = null;
     protected ?string $iconUrl = null;
-    
+
     private string $urlRegex = '/^https?:\/\/(?:www\.|m\.)?vk\.com\/([a-zA-Z0-9_.]+)\/?$/i';
 
     public function getURI(): string
@@ -102,7 +102,7 @@ class Vk2Bridge extends BridgeAbstract
     {
         if (preg_match($this->urlRegex, $url, $matches)) {
             $name = $matches[1];
-            
+
             $systemPages = [
                 'video', 'audio', 'photos', 'messages', 'feed', 'friends', 
                 'groups', 'settings', 'login', 'reg', 'restore', 'im', 'mail', 
