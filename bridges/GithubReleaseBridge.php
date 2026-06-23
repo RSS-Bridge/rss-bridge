@@ -28,7 +28,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         'pre_release' => [
               'name' => 'Include pre-releases',
               'type' => 'checkbox',
-              'title' => 'Check this box to hide the pre-releases from feed'
+              'title' => 'Check this box to include pre-releases in the feed'
         ],
         'hide_assets' => [
               'name' => 'Hide attachments',
@@ -71,12 +71,22 @@ class GitHubReleaseBridge extends BridgeAbstract
         }
 
         try {
-            $releases = json_decode(getContents($url, $headers), true) ?: [];
+            $response = json_decode(getContents($url, $headers), true);
         } catch (\Exception $e) {
             $code = (int) $e->getCode();
             $msg = [401 => 'Auth failed', 403 => 'Rate limit exceeded', 404 => 'Repo not found'];
-            throwServerException($msg[$code] ?? ('GitHub API error (' . $code . ')'));
+            throwServerException($msg[$code] ?? ('GitHub API error: ' . $e->getMessage()));
         }
+
+        if (!is_array($response)) {
+            throwServerException('Invalid response from GitHub API');
+        }
+        if (!empty($response) && !isset($response[0])) {
+            $errorMsg = $response['message'] ?? 'Unknown API error';
+            throwServerException('GitHub API error: ' . $errorMsg);
+        }
+
+        $releases = $response;
 
         $includePrereleases = (bool) $this->getInput('pre_release');
         $hideAssets = (bool) $this->getInput('hide_assets');
@@ -118,7 +128,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         if (!in_array($parsed['host'] ?? '', ['github.com', 'www.github.com'], true)) {
             return null;
         }
-        if (preg_match('#^/([^/]+)/([^/]+)(?:/(?:releases|tags))?$#', $parsed['path'] ?? '', $m)) {
+        if (preg_match('#^/([^/]+)/([^/]+?)(?:/(?:releases|tags))?/?$#', $parsed['path'] ?? '', $m)) {
             return ['owner' => $m[1], 'repo' => $m[2]];
         }
         return null;
@@ -136,7 +146,8 @@ class GitHubReleaseBridge extends BridgeAbstract
             }
         }
 
-        $ts = strtotime($release['published_at'] ?? $release['created_at'] ?? 'now') ?: time();
+        $dateStr = $release['published_at'] ?? $release['created_at'] ?? '';
+        $ts = strtotime($dateStr) ?: time();
 
         return [
             'title'      => $title,
@@ -157,7 +168,7 @@ class GitHubReleaseBridge extends BridgeAbstract
             if (!empty($asset['browser_download_url']) && !empty($asset['name'])) {
                 $url = htmlspecialchars($asset['browser_download_url'], ENT_QUOTES, 'UTF-8');
                 $name = htmlspecialchars($asset['name'], ENT_QUOTES, 'UTF-8');
-                $size = $this->formatFileSize($asset['size'] ?? 0);
+                $size = $this->formatFileSize((int) ($asset['size'] ?? 0));
                 $label = $name . ($size !== '' ? ' (' . $size . ')' : '');
                 $links[] = '<li><a href="' . $url . '">' . $label . '</a></li>';
             }
@@ -188,7 +199,10 @@ class GitHubReleaseBridge extends BridgeAbstract
     private function processMarkdown(string $markdown, string $owner, string $repo): string
     {
         $markdown = $this->enrichMarkdownMentions($markdown, $owner, $repo);
-        $html = markdownToHtml($markdown);
+        $parsedown = new \Parsedown();
+        $parsedown->setSafeMode(true);
+        $html = $parsedown->text($markdown);
+        
         return $this->processHtml($html, $owner, $repo);
     }
 
