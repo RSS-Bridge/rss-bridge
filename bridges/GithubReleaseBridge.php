@@ -93,12 +93,18 @@ class GitHubReleaseBridge extends BridgeAbstract
 
     public function getName()
     {
-        return ($this->getInput('owner') && $this->getInput('repo')) ? sprintf('%s/%s - Releases', $this->getInput('owner'), $this->getInput('repo')) : parent::getName();
+        if ($this->getInput('owner') && $this->getInput('repo')) {
+            return sprintf('%s/%s - Releases', $this->getInput('owner'), $this->getInput('repo'));
+        }
+        return parent::getName();
     }
 
     public function getURI()
     {
-        return ($this->getInput('owner') && $this->getInput('repo')) ? sprintf('%s/%s/%s/releases', self::URI, $this->getInput('owner'), $this->getInput('repo')) : parent::getURI();
+        if ($this->getInput('owner') && $this->getInput('repo')) {
+            return sprintf('%s/%s/%s/releases', self::URI, $this->getInput('owner'), $this->getInput('repo'));
+        }
+        return parent::getURI();
     }
 
     public function detectParameters($url)
