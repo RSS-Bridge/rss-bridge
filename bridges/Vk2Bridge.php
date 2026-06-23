@@ -38,7 +38,7 @@ class Vk2Bridge extends BridgeAbstract
     ];
 
     const TEST_DETECT_PARAMETERS = [
-        'https://vk.com/groupname' => ['u' => 'groupname'],
+        'https://vk.com/rebel_jack' => ['u' => 'rebel_jack'],
     ];
 
     const ATTACHMENT_RENDERERS = [
@@ -70,12 +70,13 @@ class Vk2Bridge extends BridgeAbstract
     protected array $ownerNames = [];
     protected ?string $pageName = null;
     protected ?string $iconUrl = null;
-    private string $urlRegex = '/vk\.com\/([\w.]+)/';
+    
+    private string $urlRegex = '/^https?:\/\/(?:www\.|m\.)?vk\.com\/([a-zA-Z0-9_.]+)\/?$/i';
 
     public function getURI(): string
     {
         $u = $this->getInput('u');
-        if (!is_null($u)) {
+        if (!is_null($u) && $u !== '') {
             return urljoin(static::URI, urlencode($u));
         }
         return parent::getURI();
@@ -97,10 +98,24 @@ class Vk2Bridge extends BridgeAbstract
         return parent::getIcon();
     }
 
-    public function detect_parameters($url): ?array
+    public function detectParameters($url): ?array
     {
         if (preg_match($this->urlRegex, $url, $matches)) {
-            return ['u' => $matches[1]];
+            $name = $matches[1];
+            
+            $systemPages = [
+                'video', 'audio', 'photos', 'messages', 'feed', 'friends', 
+                'groups', 'settings', 'login', 'reg', 'restore', 'im', 'mail', 
+                'news', 'search', 'apps', 'games', 'gifts', 'support', 'write', 
+                'wall', 'board', 'albums', 'docs', 'topics', 'public', 'event',
+                'market', 'contacts', 'about', 'reviews', 'edit'
+            ];
+            
+            if (in_array(strtolower($name), $systemPages, true)) {
+                return null;
+            }
+            
+            return ['u' => $name];
         }
         return null;
     }
