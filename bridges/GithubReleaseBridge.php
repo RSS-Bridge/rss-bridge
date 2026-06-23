@@ -13,11 +13,33 @@ class GitHubReleaseBridge extends BridgeAbstract
     const CONFIGURATION = ['token' => ['required' => false]];
 
     const PARAMETERS = [[
-        'owner' => ['name' => 'Owner', 'type' => 'text', 'required' => true, 'exampleValue' => 'RSS-Bridge'],
-        'repo' => ['name' => 'Repository', 'type' => 'text', 'required' => true, 'exampleValue' => 'rss-bridge'],
-        'pre_release' => ['name' => 'Include pre-releases', 'type' => 'checkbox'],
-        'hide_assets' => ['name' => 'Hide assets', 'type' => 'checkbox'],
-        'limit' => ['name' => 'Limit', 'type' => 'number', 'defaultValue' => 10],
+        'owner' => [
+              'name' => 'Owner',
+              'type' => 'text',
+              'required' => true,
+              'title' => 'The name of the repo owner (e.g. RSS-Bridge from https://github.com/RSS-Bridge/rss-bridge)'
+        ],
+        'repo' => [
+              'name' => 'Repository',
+              'type' => 'text',
+              'required' => true,
+              'title' => 'Repo name (e.g. rss-bridge from https://github.com/RSS-Bridge/rss-bridge)'
+        ],
+        'pre_release' => [
+              'name' => 'Include pre-releases',
+              'type' => 'checkbox',
+              'title' => 'Check this box to hide the pre-releases from feed'
+        ],
+        'hide_assets' => [
+              'name' => 'Hide attachments',
+              'type' => 'checkbox',
+              'title' => 'Check this box to hide attachments from feed items.'
+        ],
+        'limit' => [
+              'name' => 'Posts limit',
+              'type' => 'number',
+              'defaultValue' => 10
+        ],
     ]];
 
     private const ALLOWED_TAGS = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote><h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td><del>';
@@ -71,16 +93,12 @@ class GitHubReleaseBridge extends BridgeAbstract
 
     public function getName()
     {
-        return ($this->getInput('owner') && $this->getInput('repo')) ?
-            sprintf('%s/%s - Releases', $this->getInput('owner'), $this->getInput('repo')) :
-            parent::getName();
+        return ($this->getInput('owner') && $this->getInput('repo')) ? sprintf('%s/%s - Releases', $this->getInput('owner'), $this->getInput('repo')) : parent::getName();
     }
 
     public function getURI()
     {
-        return ($this->getInput('owner') && $this->getInput('repo')) ?
-            sprintf('%s/%s/%s/releases', self::URI, $this->getInput('owner'), $this->getInput('repo')) :
-            parent::getURI();
+        return ($this->getInput('owner') && $this->getInput('repo')) ? sprintf('%s/%s/%s/releases', self::URI, $this->getInput('owner'), $this->getInput('repo')) : parent::getURI();
     }
 
     public function detectParameters($url)
