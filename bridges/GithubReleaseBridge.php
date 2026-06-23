@@ -42,7 +42,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         ],
     ]];
 
-    private const ALLOWED_TAGS = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote><h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td><del>';
+    private const ALLOWED_TAGS = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote><h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td><del><details><summary>';
 
     private const CSS = [
         'wrapper'      => 'font-size:14px; line-height:1.6; word-wrap:break-word;',
@@ -125,7 +125,7 @@ class GitHubReleaseBridge extends BridgeAbstract
     private function buildFeedItem(array $release, string $owner, string $repo, bool $hideAssets): array
     {
         $title = $release['name'] ?: ($release['tag_name'] ?? 'Untitled');
-        $content = !empty($release['body']) ? $this->processHtml((string) $release['body'], $owner, $repo) : '';
+        $content = !empty($release['body']) ? $this->processMarkdown((string) $release['body'], $owner, $repo) : '';
 
         $enclosures = [];
         if (!$hideAssets) {
@@ -150,17 +150,41 @@ class GitHubReleaseBridge extends BridgeAbstract
         ];
     }
 
+    private function processMarkdown(string $markdown, string $owner, string $repo): string
+    {
+        $markdown = $this->enrichMarkdownMentions($markdown, $owner, $repo);
+        $html = markdownToHtml($markdown);
+        return $this->processHtml($html, $owner, $repo);
+    }
+
+    private function enrichMarkdownMentions(string $markdown, string $owner, string $repo): string
+    {
+        $markdown = preg_replace(
+            '/(?<!\w)@([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})(?!\w)/',
+            '[@$1](https://github.com/$1)',
+            $markdown
+        );
+
+        $markdown = preg_replace(
+            '/(?<!\w)#(\d+)(?!\w)/',
+            '[#$1](https://github.com/' . rawurlencode($owner) . '/' . rawurlencode($repo) . '/issues/$1)',
+            $markdown
+        );
+
+        return preg_replace('/:[a-zA-Z0-9_+\-]+:/', '', $markdown);
+    }
+
     private function processHtml(string $html, string $owner, string $repo): string
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
-        $dom->loadHTML('<?xml encoding="UTF-8"><div id="w">' . markdownToHtml($html) . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $dom->loadHTML('<?xml encoding="UTF-8"><div id="w">' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
 
         $xpath = new \DOMXPath($dom);
 
         $this->transformAlerts($xpath);
-        $this->enrichMentions($dom, $xpath, $owner, $repo);
+        $this->shortenAutoLinks($xpath, $owner, $repo);
         $this->applyListStyles($xpath);
 
         $wrapper = $dom->getElementById('w');
@@ -215,35 +239,8 @@ class GitHubReleaseBridge extends BridgeAbstract
         }
     }
 
-    private function enrichMentions(\DOMDocument $dom, \DOMXPath $xpath, string $owner, string $repo): void
+    private function shortenAutoLinks(\DOMXPath $xpath, string $owner, string $repo): void
     {
-        $replacements = [];
-        foreach ($xpath->query('//text()[not(ancestor::a) and not(ancestor::code) and not(ancestor::pre)]') as $node) {
-            $text = htmlspecialchars($node->nodeValue, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $newText = preg_replace('/(?<!\w)@([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})(?!\w)/', '<a href="https://github.com/$1">@$1</a>', $text);
-            $newText = preg_replace('/(?<!\w)#(\d+)(?!\w)/', '<a href="https://github.com/' . rawurlencode($owner) . '/' . rawurlencode($repo) . '/issues/$1">#$1</a>', $newText);
-            $newText = preg_replace('/:[a-zA-Z0-9_+\-]+:/', '', $newText);
-            if ($newText !== $text) {
-                $replacements[] = [$node, $newText];
-            }
-        }
-
-        foreach ($replacements as [$node, $html]) {
-            $tmp = new \DOMDocument('1.0', 'UTF-8');
-            libxml_use_internal_errors(true);
-            $tmp->loadHTML('<?xml encoding="UTF-8"><div id="t">' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            libxml_clear_errors();
-            $w = $tmp->getElementById('t');
-            if ($w && $node->parentNode) {
-                $frag = $dom->createDocumentFragment();
-                while ($w->childNodes->length > 0) {
-                    $frag->appendChild($dom->importNode($w->childNodes->item(0), true));
-                    $w->removeChild($w->childNodes->item(0));
-                }
-                $node->parentNode->replaceChild($frag, $node);
-            }
-        }
-
         $oq = preg_quote($owner, '~');
         $rq = preg_quote($repo, '~');
         foreach ($xpath->query('//a[@href]') as $link) {
