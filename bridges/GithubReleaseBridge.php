@@ -159,6 +159,8 @@ class GitHubReleaseBridge extends BridgeAbstract
 
     private function enrichMarkdownMentions(string $markdown, string $owner, string $repo): string
     {
+        $repoUrl = 'https://github.com/' . rawurlencode($owner) . '/' . rawurlencode($repo) . '/issues';
+
         $markdown = preg_replace(
             '/(?<!\w)@([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})(?!\w)/',
             '[@$1](https://github.com/$1)',
@@ -167,7 +169,7 @@ class GitHubReleaseBridge extends BridgeAbstract
 
         $markdown = preg_replace(
             '/(?<!\w)#(\d+)(?!\w)/',
-            '[#$1](https://github.com/' . rawurlencode($owner) . '/' . rawurlencode($repo) . '/issues/$1)',
+            '[#$1](' . $repoUrl . '/$1)',
             $markdown
         );
 
