@@ -42,7 +42,9 @@ class GitHubReleaseBridge extends BridgeAbstract
         ],
     ]];
 
-    private const ALLOWED_TAGS = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote><h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td><del><details><summary>';
+    private const ALLOWED_TAGS = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote>'
+        . '<h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td>'
+        . '<del><details><summary>';
 
     private const CSS = [
         'wrapper'      => 'font-size:14px; line-height:1.6; word-wrap:break-word;',
