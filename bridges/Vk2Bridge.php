@@ -69,6 +69,7 @@ class Vk2Bridge extends BridgeAbstract
 
     protected array $ownerNames = [];
     protected ?string $pageName = null;
+    protected ?string $iconUrl = null;
     private string $urlRegex = '/vk\.com\/([\w.]+)/';
 
     public function getURI(): string
@@ -88,7 +89,15 @@ class Vk2Bridge extends BridgeAbstract
         return parent::getName();
     }
 
-    public function detectParameters($url): ?array
+    public function getIcon(): string
+    {
+        if ($this->iconUrl) {
+            return $this->proxyImage($this->iconUrl);
+        }
+        return parent::getIcon();
+    }
+
+    public function detect_parameters($url): ?array
     {
         if (preg_match($this->urlRegex, $url, $matches)) {
             return ['u' => $matches[1]];
@@ -327,10 +336,16 @@ class Vk2Bridge extends BridgeAbstract
 
         foreach ($response['profiles'] ?? [] as $profile) {
             $this->ownerNames[$profile['id']] = trim(($profile['first_name'] ?? '') . ' ' . ($profile['last_name'] ?? ''));
+            if ($profile['id'] === $ownerId && !$this->iconUrl) {
+                $this->iconUrl = $profile['photo_100'] ?? $profile['photo_50'] ?? null;
+            }
         }
 
         foreach ($response['groups'] ?? [] as $group) {
             $this->ownerNames[-$group['id']] = $group['name'] ?? 'Unknown';
+            if (-$group['id'] === $ownerId && !$this->iconUrl) {
+                $this->iconUrl = $group['photo_200'] ?? $group['photo_100'] ?? $group['photo_50'] ?? null;
+            }
         }
 
         $this->generateFeed($r);
@@ -349,10 +364,12 @@ class Vk2Bridge extends BridgeAbstract
         $r = $this->api('groups.getById', ['group_ids' => $u], [100]);
 
         if (isset($r['response']['groups'][0]['id'])) {
+            $this->iconUrl = $r['response']['groups'][0]['photo_200'] ?? $r['response']['groups'][0]['photo_100'] ?? $r['response']['groups'][0]['photo_50'] ?? null;
             return -$r['response']['groups'][0]['id'];
         }
 
         if (isset($r['response'][0]['id'])) {
+            $this->iconUrl = $r['response'][0]['photo_200'] ?? $r['response'][0]['photo_100'] ?? $r['response'][0]['photo_50'] ?? null;
             return -$r['response'][0]['id'];
         }
 
@@ -360,6 +377,7 @@ class Vk2Bridge extends BridgeAbstract
         $r = $this->api('users.get', ['user_ids' => $u]);
 
         if (isset($r['response'][0]['id'])) {
+            $this->iconUrl = $r['response'][0]['photo_100'] ?? $r['response'][0]['photo_50'] ?? null;
             return $r['response'][0]['id'];
         }
 
