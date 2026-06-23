@@ -202,7 +202,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         $parsedown = new \Parsedown();
         $parsedown->setSafeMode(true);
         $html = $parsedown->text($markdown);
-        
+
         return $this->processHtml($html, $owner, $repo);
     }
 
