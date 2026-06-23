@@ -104,9 +104,9 @@ class Vk2Bridge extends BridgeAbstract
             $name = $matches[1];
 
             $systemPages = [
-                'video', 'audio', 'photos', 'messages', 'feed', 'friends', 
-                'groups', 'settings', 'login', 'reg', 'restore', 'im', 'mail', 
-                'news', 'search', 'apps', 'games', 'gifts', 'support', 'write', 
+                'video', 'audio', 'photos', 'messages', 'feed', 'friends',
+                'groups', 'settings', 'login', 'reg', 'restore', 'im', 'mail',
+                'news', 'search', 'apps', 'games', 'gifts', 'support', 'write',
                 'wall', 'board', 'albums', 'docs', 'topics', 'public', 'event',
                 'market', 'contacts', 'about', 'reviews', 'edit'
             ];
