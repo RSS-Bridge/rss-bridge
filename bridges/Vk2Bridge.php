@@ -110,11 +110,11 @@ class Vk2Bridge extends BridgeAbstract
                 'wall', 'board', 'albums', 'docs', 'topics', 'public', 'event',
                 'market', 'contacts', 'about', 'reviews', 'edit'
             ];
-            
+
             if (in_array(strtolower($name), $systemPages, true)) {
                 return null;
             }
-            
+
             return ['u' => $name];
         }
         return null;
