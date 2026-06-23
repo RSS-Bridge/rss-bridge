@@ -42,9 +42,9 @@ class GitHubReleaseBridge extends BridgeAbstract
         ],
     ]];
 
-    private const ALLOWED_TAGS = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote>'
-        . '<h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td>'
-        . '<del><details><summary>';
+    private const ALLOWED_TAGS_1 = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote>';
+    private const ALLOWED_TAGS_2 = '<h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td>';
+    private const ALLOWED_TAGS_3 = '<del><details><summary>';
 
     private const CSS = [
         'wrapper'      => 'font-size:14px; line-height:1.6; word-wrap:break-word;',
@@ -198,7 +198,8 @@ class GitHubReleaseBridge extends BridgeAbstract
         $content = $dom->saveHTML($wrapper);
         $content = preg_replace('#^\s*<div[^>]*>#', '', $content);
         $content = preg_replace('#</div>\s*$#', '', $content);
-        $content = strip_tags(trim($content), self::ALLOWED_TAGS);
+        $tags = self::ALLOWED_TAGS_1 . self::ALLOWED_TAGS_2 . self::ALLOWED_TAGS_3;
+        $content = strip_tags(trim($content), $tags);
 
         return sprintf('<div style="%s">%s</div>', self::CSS['wrapper'], $content);
     }
