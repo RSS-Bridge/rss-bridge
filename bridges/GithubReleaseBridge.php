@@ -129,12 +129,10 @@ class GitHubReleaseBridge extends BridgeAbstract
         $title = $release['name'] ?: ($release['tag_name'] ?? 'Untitled');
         $content = !empty($release['body']) ? $this->processMarkdown((string) $release['body'], $owner, $repo) : '';
 
-        $enclosures = [];
-        if (!$hideAssets) {
-            foreach ($release['assets'] ?? [] as $asset) {
-                if (!empty($asset['browser_download_url'])) {
-                    $enclosures[] = $asset['browser_download_url'];
-                }
+        if (!$hideAssets && !empty($release['assets']) && is_array($release['assets'])) {
+            $assetsHtml = $this->buildAssetsBlock($release['assets']);
+            if ($assetsHtml !== '') {
+                $content .= $assetsHtml;
             }
         }
 
@@ -147,9 +145,44 @@ class GitHubReleaseBridge extends BridgeAbstract
             'timestamp'  => $ts,
             'author'     => $release['author']['login'] ?? '',
             'uid'        => $release['tag_name'] ?? (string) ($release['id'] ?? uniqid()),
-            'enclosures' => $enclosures,
+            'enclosures' => [],
             'categories' => [$release['tag_name'] ?? ''],
         ];
+    }
+
+    private function buildAssetsBlock(array $assets): string
+    {
+        $links = [];
+        foreach ($assets as $asset) {
+            if (!empty($asset['browser_download_url']) && !empty($asset['name'])) {
+                $url = htmlspecialchars($asset['browser_download_url'], ENT_QUOTES, 'UTF-8');
+                $name = htmlspecialchars($asset['name'], ENT_QUOTES, 'UTF-8');
+                $size = $this->formatFileSize($asset['size'] ?? 0);
+                $label = $name . ($size !== '' ? ' (' . $size . ')' : '');
+                $links[] = '<li><a href="' . $url . '">' . $label . '</a></li>';
+            }
+        }
+
+        if (empty($links)) {
+            return '';
+        }
+
+        return '<h3>Downloads</h3><ul style="' . self::CSS['ul'] . '">' . implode('', $links) . '</ul>';
+    }
+
+    private function formatFileSize(int $bytes): string
+    {
+        if ($bytes <= 0) {
+            return '';
+        }
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $index = 0;
+        $size = (float) $bytes;
+        while ($size >= 1024 && $index < count($units) - 1) {
+            $size /= 1024;
+            $index++;
+        }
+        return round($size, 2) . ' ' . $units[$index];
     }
 
     private function processMarkdown(string $markdown, string $owner, string $repo): string
