@@ -51,8 +51,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         } catch (\Exception $e) {
             $code = (int) $e->getCode();
             $msg = [401 => 'Auth failed', 403 => 'Rate limit exceeded', 404 => 'Repo not found'];
-            throwServerException($msg[$code] ?? 'GitHub API error (' . $code . ')');
-            return;
+            throwServerException($msg[$code] ?? ('GitHub API error (' . $code . ')'));
         }
 
         $includePrereleases = (bool) $this->getInput('pre_release');
@@ -72,16 +71,16 @@ class GitHubReleaseBridge extends BridgeAbstract
 
     public function getName()
     {
-        return ($this->getInput('owner') && $this->getInput('repo'))
-            ? sprintf('%s/%s - Releases', $this->getInput('owner'), $this->getInput('repo'))
-            : parent::getName();
+        return ($this->getInput('owner') && $this->getInput('repo')) ?
+            sprintf('%s/%s - Releases', $this->getInput('owner'), $this->getInput('repo')) :
+            parent::getName();
     }
 
     public function getURI()
     {
-        return ($this->getInput('owner') && $this->getInput('repo'))
-            ? sprintf('%s/%s/%s/releases', self::URI, $this->getInput('owner'), $this->getInput('repo'))
-            : parent::getURI();
+        return ($this->getInput('owner') && $this->getInput('repo')) ?
+            sprintf('%s/%s/%s/releases', self::URI, $this->getInput('owner'), $this->getInput('repo')) :
+            parent::getURI();
     }
 
     public function detectParameters($url)
@@ -186,8 +185,8 @@ class GitHubReleaseBridge extends BridgeAbstract
             }
 
             $color = self::CSS['alerts'][strtoupper($found)];
-            $style = trim(($bq->getAttribute('style') ? $bq->getAttribute('style') . ' ' : '')
-                . sprintf(self::CSS['alert_border'], $color) . ' ' . self::CSS['alert_base']);
+            $existing = $bq->getAttribute('style');
+            $style = trim(($existing ? $existing . ' ' : '') . sprintf(self::CSS['alert_border'], $color) . ' ' . self::CSS['alert_base']);
             $bq->setAttribute('style', $style);
         }
     }
