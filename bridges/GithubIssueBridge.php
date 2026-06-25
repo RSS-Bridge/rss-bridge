@@ -27,6 +27,10 @@ class GithubIssueBridge extends BridgeAbstract
                 'name' => 'Show Issues Comments',
                 'type' => 'checkbox'
             ],
+            'e' => [
+                'name' => 'Show Events',
+                'type' => 'checkbox'
+            ],
             'q' => [
                 'name' => 'Search Query',
                 'defaultValue' => 'is:issue is:open sort:updated-desc',
@@ -34,12 +38,16 @@ class GithubIssueBridge extends BridgeAbstract
             ]
         ],
         'Issue comments' => [
+			'e' => [
+                'name' => 'Show Events',
+                'type' => 'checkbox'
+            ],
             'i' => [
                 'name' => 'Issue number',
                 'type' => 'number',
                 'exampleValue' => '2099',
                 'required' => true
-            ]
+            ],
         ]
     ];
 
@@ -229,10 +237,156 @@ class GithubIssueBridge extends BridgeAbstract
         return $item;
     }
 
+    private function buildGitHubEventUri($issue_number, $event)
+    {
+        if (!empty($event['id'])) {
+            return $this->buildGitHubIssueUri($issue_number) . '#event-' . $event['id'];
+        }
+        return $this->buildGitHubIssueUri($issue_number);
+    }
+
+    /**
+     * Turns a single GitHub issue-timeline event into a human-readable title.
+     * Returns null for event types we don't render (e.g. 'commented', which is
+     * already covered by the comments endpoint, or anything unrecognized).
+     */
+    private function describeEvent($event)
+    {
+        $type = $event['event'] ?? '';
+        switch ($type) {
+            case 'closed':
+                return 'Closed';
+            case 'reopened':
+                return 'Reopened';
+            case 'labeled':
+                return 'Label added: ' . ($event['label']['name'] ?? '?');
+            case 'unlabeled':
+                return 'Label removed: ' . ($event['label']['name'] ?? '?');
+            case 'renamed':
+                $from = $event['rename']['from'] ?? '?';
+                $to = $event['rename']['to'] ?? '?';
+                return 'Renamed: "' . $from . '" → "' . $to . '"';
+            case 'assigned':
+                return 'Assigned to ' . ($event['assignee']['login'] ?? '?');
+            case 'unassigned':
+                return 'Unassigned from ' . ($event['assignee']['login'] ?? '?');
+            case 'milestoned':
+                return 'Milestone added: ' . ($event['milestone']['title'] ?? '?');
+            case 'demilestoned':
+                return 'Milestone removed: ' . ($event['milestone']['title'] ?? '?');
+            case 'locked':
+                return 'Locked';
+            case 'unlocked':
+                return 'Unlocked';
+            case 'pinned':
+                return 'Pinned';
+            case 'unpinned':
+                return 'Unpinned';
+            case 'transferred':
+                return 'Transferred';
+            case 'merged':
+                return 'Merged';
+            case 'review_requested':
+                $reviewer = $event['requested_reviewer']['login'] ?? ($event['requested_team']['name'] ?? '?');
+                return 'Review requested from ' . $reviewer;
+            case 'review_request_removed':
+                $reviewer = $event['requested_reviewer']['login'] ?? ($event['requested_team']['name'] ?? '?');
+                return 'Review request removed for ' . $reviewer;
+            case 'reviewed':
+                return 'Reviewed (' . ($event['state'] ?? '?') . ')';
+            case 'cross-referenced':
+                $source = $event['source']['issue']['html_url'] ?? null;
+                $number = $event['source']['issue']['number'] ?? '?';
+                return 'Mentioned in #' . $number;
+            case 'referenced':
+                return 'Referenced in a commit';
+            case 'connected':
+                return 'Linked to this issue';
+            case 'disconnected':
+                return 'Unlinked from this issue';
+            case 'convert_to_draft':
+                return 'Converted to draft';
+            case 'ready_for_review':
+                return 'Marked ready for review';
+            case 'head_ref_force_pushed':
+                return 'Branch force-pushed';
+            case 'head_ref_deleted':
+                return 'Branch deleted';
+            case 'head_ref_restored':
+                return 'Branch restored';
+            default:
+                return null;
+        }
+    }
+
+    private function buildEventItem($issueNbr, $event)
+    {
+        $description = $this->describeEvent($event);
+        if ($description === null) {
+            return null;
+        }
+
+        // cross-referenced events still belong on this issue's own page; the
+        // actor who made the mention lives on the *source* issue/PR though.
+        $uri = $this->buildGitHubEventUri($issueNbr, $event);
+        if (($event['event'] ?? '') === 'cross-referenced') {
+            $author = $event['source']['issue']['user']['login'] ?? '';
+        } else {
+            $author = $event['actor']['login'] ?? '';
+        }
+
+        $timestamp = $event['created_at'] ?? null;
+        if ($timestamp === null) {
+            return null;
+        }
+
+        $item = [];
+        $item['uri'] = $uri;
+        $item['title'] = $description;
+        $item['author'] = $author;
+        $item['timestamp'] = strtotime($timestamp);
+        $item['content'] = $description;
+        $item['uid'] = (string)($event['id'] ?? ($event['node_id'] ?? uniqid()));
+        return $item;
+    }
+
+    private function collectIssueEvents($issueNbr)
+    {
+        $items = [];
+        $timelineUrl = static::API_URI . 'repos/' . $this->getInput('u') . '/' . $this->getInput('p')
+            . '/issues/' . $issueNbr . '/timeline?per_page=100';
+        $headers = array_merge($this->apiHeaders(), [
+            // The Timeline API historically required this media type; harmless to
+            // include even where it's no longer strictly necessary.
+            'Accept: application/vnd.github.mockingbird-preview+json',
+        ]);
+
+        $page = 1;
+        do {
+            $json = getContents($timelineUrl . '&page=' . $page, $headers);
+            $events = json_decode($json, true);
+            if (!is_array($events) || count($events) === 0) {
+                break;
+            }
+            foreach ($events as $event) {
+                // 'commented' events are already covered by collectIssueComments();
+                // skip to avoid duplicate items.
+                if (($event['event'] ?? '') === 'commented') {
+                    continue;
+                }
+                $item = $this->buildEventItem($issueNbr, $event);
+                if ($item !== null) {
+                    $items[] = $item;
+                }
+            }
+            $page++;
+        } while (count($events) === 100);
+
+        return $items;
+    }
     private function collectIssueComments($issueNbr)
     {
         $items = [];
-
         $issueUrl = static::API_URI . 'repos/' . $this->getInput('u') . '/' . $this->getInput('p')
             . '/issues/' . $issueNbr;
         $issue = $this->apiRequest($issueUrl);
@@ -259,6 +413,10 @@ class GithubIssueBridge extends BridgeAbstract
             }
             $page++;
         } while (count($comments) === 100);
+
+        if ($this->getInput('e')) {
+            $items = array_merge($items, $this->collectIssueEvents($issueNbr));
+        }
 
         return $items;
     }
