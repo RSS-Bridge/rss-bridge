@@ -5,6 +5,7 @@ class GithubIssueBridge extends BridgeAbstract
     const MAINTAINER = 'Pierre Mazière';
     const NAME = 'Github Issue';
     const URI = 'https://github.com/';
+    const API_URI = 'https://api.github.com/';
     const CACHE_TIMEOUT = 600; // 10m
     const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
@@ -45,7 +46,8 @@ class GithubIssueBridge extends BridgeAbstract
     // Allows generalization with GithubPullRequestBridge
     const BRIDGE_OPTIONS = [0 => 'Project Issues', 1 => 'Issue comments'];
     const URL_PATH = 'issues';
-    const SEARCH_QUERY_PATH = 'issues';
+    // Used to restrict the GitHub search api to issues vs pulls (overridden by GithubPullRequestBridge)
+    const SEARCH_TYPE_QUALIFIER = 'is:issue';
 
     public function getName()
     {
@@ -75,7 +77,7 @@ class GithubIssueBridge extends BridgeAbstract
             if ($this->queriedContext === static::BRIDGE_OPTIONS[1]) {
                 $uri .= static::URL_PATH . '/' . $this->getInput('i');
             } else {
-                $uri .= static::SEARCH_QUERY_PATH . '?q=' . urlencode($this->getInput('q'));
+                $uri .= static::URL_PATH;
             }
             return $uri;
         }
@@ -83,207 +85,221 @@ class GithubIssueBridge extends BridgeAbstract
         return parent::getURI();
     }
 
+    private function apiHeaders()
+    {
+        return [
+            'Accept: application/vnd.github+json',
+            'User-Agent: RSS-Bridge',
+            'X-GitHub-Api-Version: 2022-11-28',
+        ];
+    }
+
+    private function apiRequest($url)
+    {
+        $json = getContents($url, $this->apiHeaders());
+        $data = json_decode($json, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            returnServerError('Unable to parse GitHub API response for ' . $url);
+        }
+        if (isset($data['message']) && !isset($data['html_url']) && array_key_exists('documentation_url', $data)) {
+            // Looks like an API error payload, e.g. rate limiting or not found
+            returnServerError('GitHub API error for ' . $url . ': ' . $data['message']);
+        }
+        return $data;
+    }
+
+    private function buildGitHubIssueUri($issue_number)
+    {
+        return static::URI
+            . $this->getInput('u') . '/' . $this->getInput('p')
+            . '/' . static::URL_PATH . '/' . $issue_number;
+    }
+
     private function buildGitHubIssueCommentUri($issue_number, $comment_id)
     {
-        // https://github.com/<user>/<project>/issues/<issue-number>#<id>
-        return static::URI
-        . $this->getInput('u')
-        . '/'
-        . $this->getInput('p')
-        . '/' . static::URL_PATH . '/'
-        . $issue_number
-        . '#'
-        . $comment_id;
+        return $this->buildGitHubIssueUri($issue_number) . '#issuecomment-' . $comment_id;
     }
 
-    private function extractIssueEvent($issueNbr, $title, $comment)
+    private function markdownToHtml($text)
     {
-        $uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
+        if ($text === null || $text === '') {
+            return '';
+        }
+        // GitHub's API returns raw markdown in the body. We don't have a markdown
+        // renderer available, so at minimum make it safe and readable as plain text.
+        return nl2br(htmlspecialchars($text, ENT_QUOTES, 'UTF-8'));
+    }
 
-        $author = $comment->find('.author, .avatar', 0);
-        if ($author) {
-            $author = trim($author->href, '/');
-        } else {
-            $author = '';
+    /**
+     * Parses a GitHub search-style query string (e.g. "is:issue is:open sort:updated-desc")
+     * into a q= value usable by the GitHub Search API plus separate sort/order params.
+     */
+    private function parseSearchQuery($query)
+    {
+        $sort = null;
+        $order = null;
+
+        $query = preg_replace_callback(
+            '/\bsort:([a-zA-Z\-]+)\b/',
+            function ($m) use (&$sort, &$order) {
+                $value = $m[1];
+                if (str_ends_with($value, '-desc')) {
+                    $sort = substr($value, 0, -5);
+                    $order = 'desc';
+                } elseif (str_ends_with($value, '-asc')) {
+                    $sort = substr($value, 0, -4);
+                    $order = 'asc';
+                } else {
+                    $sort = $value;
+                }
+                return '';
+            },
+            $query
+        );
+
+        return [
+            'q' => trim(preg_replace('/\s+/', ' ', $query)),
+            'sort' => $sort,
+            'order' => $order,
+        ];
+    }
+
+    /**
+     * Builds a short, single-line snippet of a markdown body, suitable for use in a title.
+     * Strips markdown blockquote lines (lines starting with '>') first, since these are
+     * usually quoting someone else's earlier comment rather than the commenter's own words.
+     */
+    private function makeSnippet($text, $maxLength = 80)
+    {
+        if ($text === null || $text === '') {
+            return '';
         }
 
-        $title .= ' / '
-            . trim(str_replace(
-                ['octicon','-'],
-                [''],
-                $comment->find('.octicon', 0)->getAttribute('class')
-            ));
+        $lines = preg_split('/\r\n|\r|\n/', $text);
+        $lines = array_filter($lines, function ($line) {
+            return !preg_match('/^\s*>/', $line);
+        });
+        $text = implode(' ', $lines);
 
-        $time = $comment->find('relative-time', 0);
-        if ($time === null) {
-            return;
+        $snippet = preg_replace('/\s+/', ' ', trim($text));
+        if ($snippet === '') {
+            return '';
         }
-
-        foreach ($comment->find('.Details-content--hidden, .btn') as $el) {
-            $el->innertext = '';
+        if (mb_strlen($snippet) > $maxLength) {
+            $snippet = mb_substr($snippet, 0, $maxLength) . '…';
         }
-        $content = $comment->plaintext;
+        return $snippet;
+    }
 
+    private function buildIssueItem($issue)
+    {
         $item = [];
-        $item['author'] = $author;
-        $item['uri'] = $uri;
-        $item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-        $item['timestamp'] = strtotime($time->getAttribute('datetime'));
+        $item['uri'] = $issue['html_url'];
+        $item['title'] = $issue['title'];
+        $item['author'] = $issue['user']['login'] ?? '';
+        // Use creation time here: this represents the issue/PR as first filed.
+        // (updated_at reflects the *last* change to the issue, e.g. a recent
+        // comment or label edit, and would otherwise sort newly-opened issues
+        // as if they were old, or vice versa.)
+        $item['timestamp'] = strtotime($issue['created_at']);
+        $labels = array_map(function ($label) {
+            return is_array($label) ? ($label['name'] ?? '') : $label;
+        }, $issue['labels'] ?? []);
+        $content = $this->markdownToHtml($issue['body'] ?? '');
+        if ($labels) {
+            $content = '<p><strong>Labels:</strong> ' . implode(', ', $labels) . '</p>' . $content;
+        }
         $item['content'] = $content;
+        $item['uid'] = (string)$issue['id'];
         return $item;
     }
 
-    private function extractIssueComment($issueNbr, $title, $comment)
+    private function buildCommentItem($issueNbr, $title, $comment)
     {
-        $uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
-
-        $authorDom = $comment->find('.author', 0);
-        $author = $authorDom->plaintext ?? null;
-
-        $header = $comment->find('.timeline-comment-header > h3', 0);
-        $title .= ' / ' . ($header ? $header->plaintext : 'Activity');
-
-        $time = $comment->find('relative-time', 0);
-        if ($time === null) {
-            return;
-        }
-
-        $content = $comment->find('.comment-body', 0)->innertext;
-
         $item = [];
-        $item['author'] = $author;
-        $item['uri'] = $uri;
-        $item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-        $item['timestamp'] = strtotime($time->getAttribute('datetime'));
-        $item['content'] = $content;
+        $item['uri'] = $this->buildGitHubIssueCommentUri($issueNbr, $comment['id']);
+        $snippet = $this->makeSnippet($comment['body'] ?? '');
+        $item['title'] = $snippet !== '' ? $snippet : ($title . ' / Comment');
+        $item['author'] = $comment['user']['login'] ?? '';
+        // Comments are immutable for our purposes here: created_at is the right
+        // anchor (an edited comment shouldn't jump the feed to "now").
+        $item['timestamp'] = strtotime($comment['created_at']);
+        $item['content'] = $this->markdownToHtml($comment['body'] ?? '');
+        $item['uid'] = (string)$comment['id'];
         return $item;
     }
 
-    private function extractIssueComments($issue)
+    private function collectIssueComments($issueNbr)
     {
         $items = [];
 
-        $titleElem = $issue->find('.gh-header-title', 0);
-        $title = $titleElem !== null ? $titleElem->plaintext : '';
+        $issueUrl = static::API_URI . 'repos/' . $this->getInput('u') . '/' . $this->getInput('p')
+            . '/issues/' . $issueNbr;
+        $issue = $this->apiRequest($issueUrl);
 
-        $numberElem = $issue->find('.gh-header-number', 0);
-        if ($numberElem !== null) {
-            $issueNbr = trim(
-                substr($numberElem->plaintext, 1)
-            );
-        } else {
-            $issueNbr = '';
-        }
+        $title = $issue['title'] ?? ('#' . $issueNbr);
 
-        $comments = $issue->find(
-            '.comment, .TimelineItem-badge'
-        );
+        // The issue body itself is treated as the first item (mirrors old behaviour
+        // of including the opening post in the timeline)
+        $opening = $this->buildIssueItem($issue);
+        $openingSnippet = $this->makeSnippet($issue['body'] ?? '');
+        $opening['title'] = $title . ' / Opened' . ($openingSnippet !== '' ? ': ' . $openingSnippet : '');
+        $items[] = $opening;
 
-        foreach ($comments as $comment) {
-            if ($comment->hasClass('comment')) {
-                $comment = $comment->parent;
-                $item = $this->extractIssueComment($issueNbr, $title, $comment);
-                if ($item !== null) {
-                    $items[] = $item;
-                }
-                continue;
-            } else {
-                $comment = $comment->parent;
-                $item = $this->extractIssueEvent($issueNbr, $title, $comment);
-                if ($item !== null) {
-                    $items[] = $item;
-                }
+        $commentsUrl = $issueUrl . '/comments?per_page=100';
+        $page = 1;
+        do {
+            $pagedUrl = $commentsUrl . '&page=' . $page;
+            $comments = $this->apiRequest($pagedUrl);
+            if (!is_array($comments) || count($comments) === 0) {
+                break;
             }
-        }
+            foreach ($comments as $comment) {
+                $items[] = $this->buildCommentItem($issueNbr, $title, $comment);
+            }
+            $page++;
+        } while (count($comments) === 100);
+
         return $items;
     }
 
     public function collectData()
     {
-        $url = $this->getURI();
-        $html = getSimpleHTMLDOM($url);
-
         switch ($this->queriedContext) {
             case static::BRIDGE_OPTIONS[1]: // Issue comments
-                $this->items = $this->extractIssueComments($html);
+                $this->items = $this->collectIssueComments($this->getInput('i'));
                 break;
+
             case static::BRIDGE_OPTIONS[0]: // Project Issues
-                // PRs
-                $issues = $html->find('.js-active-navigation-container .js-navigation-item');
-                if (!$issues) {
-                    // Issues
-                    $issues = $html->find('.IssueRow-module__row--XmR1f');
+                $parsed = $this->parseSearchQuery($this->getInput('q'));
+                $repoQualifier = 'repo:' . $this->getInput('u') . '/' . $this->getInput('p');
+                $q = trim($parsed['q'] . ' ' . static::SEARCH_TYPE_QUALIFIER . ' ' . $repoQualifier);
+
+                $params = ['q' => $q, 'per_page' => '50'];
+                if ($parsed['sort']) {
+                    $params['sort'] = $parsed['sort'];
+                }
+                if ($parsed['order']) {
+                    $params['order'] = $parsed['order'];
                 }
 
+                $searchUrl = static::API_URI . 'search/issues?' . http_build_query($params);
+                $result = $this->apiRequest($searchUrl);
+                $issues = $result['items'] ?? [];
+
                 foreach ($issues as $issue) {
-                    preg_match('/\/([0-9]+)$/', $issue->find('a', 0)->href, $match);
-                    $issueNbr = $match[1];
-
-                    $item = [];
-                    $item['content'] = '';
-
                     if ($this->getInput('c')) {
-                        $uri = static::URI . $this->getInput('u')
-                         . '/' . $this->getInput('p') . '/' . static::URL_PATH . '/' . $issueNbr;
-
-                        $issue = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT);
-                        if ($issue) {
-                            $this->items = array_merge(
-                                $this->items,
-                                $this->extractIssueComments($issue)
-                            );
-                            continue;
-                        }
-                        $item['content'] = 'Can not extract comments from ' . $uri;
+                        $issueNbr = $issue['number'];
+                        $this->items = array_merge(
+                            $this->items,
+                            $this->collectIssueComments($issueNbr)
+                        );
+                        continue;
                     }
-
-                    $item['author'] = $issue->find('a', 1)->plaintext;
-
-                    $time = $issue->find('relative-time', 0);
-                    $datetime = $time->getAttribute('datetime');
-                    if ($datetime) {
-                        $item['timestamp'] = strtotime($datetime);
-                    }
-
-                    $item['title'] = '';
-
-                    # Works for PRs
-                    $title = $issue->find('a.Link--primary', 0);
-                    if ($title) {
-                        $item['title'] = html_entity_decode($title->plaintext, ENT_QUOTES, 'UTF-8');
-                    }
-
-                    $title2 = $issue->find('h3 a', 0);
-                    if ($title2) {
-                        $item['title'] = html_entity_decode($title2->plaintext, ENT_QUOTES, 'UTF-8');
-                    }
-                    //$comment_count = 0;
-                    //if ($span = $issue->find('a[aria-label*="comment"] span', 0)) {
-                    //    $comment_count = $span->plaintext;
-                    //}
-
-                    //$item['content'] .= "\n" . 'Comments: ' . $comment_count;
-                    $item['uri'] = self::URI
-                             . trim($issue->find('a', 0)->getAttribute('href'), '/');
-                    $this->items[] = $item;
+                    $this->items[] = $this->buildIssueItem($issue);
                 }
                 break;
         }
-
-        array_walk($this->items, function (&$item) {
-            $item['content'] = preg_replace('/\s+/', ' ', $item['content']);
-            $item['content'] = str_replace(
-                'href="/',
-                'href="' . static::URI,
-                $item['content']
-            );
-            $item['content'] = str_replace(
-                'href="#',
-                'href="' . substr($item['uri'], 0, strpos($item['uri'], '#') + 1),
-                $item['content']
-            );
-            $item['title'] = preg_replace('/\s+/', ' ', $item['title']);
-        });
     }
 
     public function detectParameters($url)
