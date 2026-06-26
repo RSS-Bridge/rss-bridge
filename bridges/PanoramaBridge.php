@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-class PanoramaBridge extends BridgeAbstract {
+class PanoramaBridge extends BridgeAbstract
+{
     const MAINTAINER = 'LordArrin';
     const NAME = 'IA Panorama';
     const URI = 'https://panorama.pub';
