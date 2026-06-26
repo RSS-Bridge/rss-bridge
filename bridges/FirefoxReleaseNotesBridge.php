@@ -8,20 +8,19 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
     const URI = 'https://www.firefox.com/en-US/releases/';
     const DESCRIPTION = 'Returns recent Firefox releases with changelogs for each version';
     const MAINTAINER = 'LordArrin';
-    const CACHE_TIMEOUT = 1800; // 30 minutes
     const PARAMETERS = [];
 
     private const CSS = [
-        '.ff-release-content'         => 'line-height:1.6;color:#20123a;max-width:720px',
-        '.ff-release-content h3'      => 'font-size:1.2em;font-weight:600;margin:1.5em 0 0.5em 0;padding:0.3em 0 0.3em 0.5em;border-left:4px solid;background:linear-gradient(to right,#f9f9fa 0%,#ffffff 100%);border-radius:0 4px 4px 0',
-        '.ff-release-content ul'      => 'margin:0.5em 0;padding-left:1.5em;list-style-type:disc;list-style-position:outside',
-        '.ff-release-content li'      => 'margin:0.6em 0;padding:0.2em 0;list-style-type:disc',
-        '.ff-release-content p'       => 'margin:0.5em 0',
-        '.ff-release-content code'    => 'background:#f0f0f4;padding:0.1em 0.4em;border-radius:3px;font-size:0.92em;color:#b5007f',
-        '.ff-release-content a'       => 'color:#0060df;text-decoration:none;border-bottom:1px dotted #0060df',
+        '.ff-release-content' => 'line-height:1.6;color:#20123a;max-width:720px',
+        '.ff-release-content h3' => 'font-size:1.2em;font-weight:600;margin:1.5em 0 .5em;padding:.3em .5em;border-left:4px solid;background:linear-gradient(90deg,#f9f9fa,#fff)',
+        '.ff-release-content ul' => 'margin:0.5em 0;padding-left:1.5em;list-style-type:disc;list-style-position:outside',
+        '.ff-release-content li' => 'margin:0.6em 0;padding:0.2em 0;list-style-type:disc',
+        '.ff-release-content p' => 'margin:0.5em 0',
+        '.ff-release-content code' => 'background:#f0f0f4;padding:0.1em 0.4em;border-radius:3px;font-size:0.92em;color:#b5007f',
+        '.ff-release-content a' => 'color:#0060df;text-decoration:none;border-bottom:1px dotted #0060df',
         '.ff-release-content a:hover' => 'color:#b5007f',
-        '.ff-release-content img'     => 'max-width:100%;height:auto;border-radius:4px;margin:0.5em 0;box-shadow:0 1px 3px rgba(0,0,0,0.1)',
-        '.ff-release-intro'           => 'background:#fff4e6;border-left:4px solid #ff9500;padding:0.8em 1em;margin-bottom:1em;border-radius:0 4px 4px 0;font-style:italic',
+        '.ff-release-content img' => 'max-width:100%;height:auto;border-radius:4px;margin:0.5em 0;box-shadow:0 1px 3px rgba(0,0,0,0.1)',
+        '.ff-release-intro' => 'background:#fff4e6;border-left:4px solid #ff9500;padding:0.8em 1em;margin-bottom:1em;border-radius:0 4px 4px 0;font-style:italic',
     ];
 
     private const SECTION_COLORS = [
@@ -54,7 +53,7 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM(self::URI);
         if (!$html) {
-            returnClientError('Failed to load Firefox releases page.');
+            throwClientException('Failed to load Firefox releases page.');
         }
 
         $html = defaultLinkTo($html, self::URI);
@@ -144,7 +143,7 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
         foreach (self::CSS as $selector => $rules) {
             $css .= $selector . ' { ' . $rules . " }\n";
         }
-        $css .= "</style>";
+        $css .= '</style>';
 
         $parts = [$css, '<div class="ff-release-content">'];
 
@@ -238,7 +237,7 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
 
     private function sortItemsByDate(): void
     {
-        usort($this->items, function($a, $b): int {
+        usort($this->items, function ($a, $b): int {
             $timeA = $a['timestamp'] ?? 0;
             $timeB = $b['timestamp'] ?? 0;
             return $timeB <=> $timeA;
