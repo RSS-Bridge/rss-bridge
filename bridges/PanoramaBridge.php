@@ -9,6 +9,8 @@ class PanoramaBridge extends BridgeAbstract {
     const DESCRIPTION = 'News feed of the Russian satirical information agency "Panorama"';
     const CACHE_TIMEOUT = 3600;
 
+    const PARAMETERS = [];
+
     public function collectData(): void {
         $dates = $this->getDatesToFetch();
         $processedUris = [];
@@ -95,12 +97,16 @@ class PanoramaBridge extends BridgeAbstract {
         $previewTitle = $this->extractPreviewTitle($card);
         $previewImage = $this->extractPreviewImage($card);
         
-        $articleContent = $this->fetchPageContent($uri);
-        if ($articleContent === null) {
+        try {
+            $articleHTML = getSimpleHTMLDOMCached($uri, 86400);
+        } catch (Exception $e) {
             return null;
         }
         
-        $articleHTML = str_get_html($articleContent);
+        if (!$articleHTML) {
+            return null;
+        }
+        
         $articleHTML = defaultLinkTo($articleHTML, self::URI);
         
         $item = [
