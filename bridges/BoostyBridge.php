@@ -85,7 +85,7 @@ class BoostyBridge extends BridgeAbstract
     {
         $s = fn(string $k): string => $this->style($k);
         $h = '<div' . $s('paywall') . '><p' . $s('pt') . '>This post requires payment</p>';
-        
+
         $teaser = $this->renderTeaser($p);
         if ($teaser !== '') {
             $h = $teaser . $h;
@@ -107,7 +107,7 @@ class BoostyBridge extends BridgeAbstract
 
         $postUrl = 'https://boosty.to/' . urlencode($this->blogName) . '/posts/' . urlencode($p['id'] ?? '');
         $h .= '<p' . $s('pp') . '><a href="' . $this->esc($postUrl) . '">View original post</a></p>';
-        
+
         return $h . '</div>';
     }
 
