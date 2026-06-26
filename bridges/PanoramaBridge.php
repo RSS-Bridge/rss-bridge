@@ -18,12 +18,12 @@ class PanoramaBridge extends BridgeAbstract {
         foreach ($dates as $date) {
             $url = self::URI . '/news/' . $date;
             
-            $htmlContent = $this->fetchPageContent($url);
-            if ($htmlContent === null) {
+            try {
+                $html = getSimpleHTMLDOM($url);
+            } catch (Exception $e) {
                 continue;
             }
             
-            $html = str_get_html($htmlContent);
             $html = defaultLinkTo($html, self::URI);
             $cards = $html->find('a.flex-col');
 
@@ -36,26 +36,24 @@ class PanoramaBridge extends BridgeAbstract {
                 }
                 
                 $processedUris[] = $uri;
+                
+                $cachedItem = $this->loadCacheValue($uri);
+                if ($cachedItem !== null) {
+                    $this->items[] = $cachedItem;
+                    continue;
+                }
+                
                 $item = $this->processNewsCard($card, $uri);
                 
                 if ($item !== null) {
                     $this->items[] = $item;
+                    $this->saveCacheValue($uri, $item, 604800); // 7 days
                 }
                 
                 usleep(800000); // 800ms delay between requests
             }
-        }
-    }
-
-    private function fetchPageContent(string $url): ?string {
-        try {
-            $headers = [
-                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36'
-            ];
-            return getContents($url, $headers);
-        } catch (Exception $e) {
-            return null;
+            
+            usleep(800000); // delay between date pages
         }
     }
 
@@ -109,7 +107,7 @@ class PanoramaBridge extends BridgeAbstract {
         
         $articleHTML = defaultLinkTo($articleHTML, self::URI);
         
-        $item = [
+        return [
             'uri' => $uri,
             'uid' => $uri,
             'title' => $this->extractTitle($articleHTML, $previewTitle),
@@ -121,8 +119,6 @@ class PanoramaBridge extends BridgeAbstract {
                 $this->extractTitle($articleHTML, $previewTitle)
             )
         ];
-        
-        return $item;
     }
 
     private function extractPreviewTitle($card): string {
@@ -182,27 +178,23 @@ class PanoramaBridge extends BridgeAbstract {
         }
 
         if ($contentElem) {
-            $this->cleanContent($contentElem);
+            $junkSelectors = [
+                'script', 
+                'style', 
+                'div[id*=yandex_rtb]',
+                '.sharethis-inline-share-buttons',
+                '.alert'
+            ];
+            
+            foreach($contentElem->find(implode(',', $junkSelectors)) as $junk) {
+                $junk->outertext = '';
+            }
             return $contentElem->innertext;
         }
         
         $ogDesc = $articleHTML->find('meta[property="og:description"]', 0);
         $description = $ogDesc ? trim($ogDesc->content) : $fallbackDescription;
         return '<p><em>' . htmlspecialchars($description) . '</em></p>';
-    }
-
-    private function cleanContent($contentElem): void {
-        $junkSelectors = [
-            'script', 
-            'style', 
-            'div[id*=yandex_rtb]',
-            '.sharethis-inline-share-buttons',
-            '.alert'
-        ];
-        
-        foreach($contentElem->find(implode(',', $junkSelectors)) as $junk) {
-            $junk->outertext = '';
-        }
     }
 
     private function buildFinalContent(string $imageUrl, string $content, string $title): string {
