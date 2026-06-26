@@ -6,7 +6,7 @@ class BoostyBridge extends BridgeAbstract
 {
     const NAME = 'Boosty';
     const URI = 'https://boosty.to';
-    const DESCRIPTION = 'Parser for Boosty (free posts and paid announcements)';
+    const DESCRIPTION = 'Parser for Boosty (free posts and paid announcements). No auth required';
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 3600;
 
@@ -85,6 +85,12 @@ class BoostyBridge extends BridgeAbstract
     {
         $s = fn(string $k): string => $this->style($k);
         $h = '<div' . $s('paywall') . '><p' . $s('pt') . '>This post requires payment</p>';
+        
+        $teaser = $this->renderTeaser($p);
+        if ($teaser !== '') {
+            $h = $teaser . $h;
+        }
+
         if (isset($p['subscriptionLevel'])) {
             $lv = $p['subscriptionLevel'];
             $h .= '<p' . $s('pp') . '><strong>Subscription:</strong> ' . $this->esc($lv['name'] ?? 'Unknown') . '</p>';
@@ -98,7 +104,39 @@ class BoostyBridge extends BridgeAbstract
                 $h .= '<p' . $s('pp') . '><strong>Price:</strong> ' . $this->esc($pr) . '</p>';
             }
         }
+
+        $postUrl = 'https://boosty.to/' . urlencode($this->blogName) . '/posts/' . urlencode($p['id'] ?? '');
+        $h .= '<p' . $s('pp') . '><a href="' . $this->esc($postUrl) . '">View original post</a></p>';
+        
         return $h . '</div>';
+    }
+
+    private function renderTeaser(array $p): string
+    {
+        $out = '';
+        foreach ($p['teaser'] ?? [] as $b) {
+            $type = $b['type'] ?? '';
+            $rendition = $b['rendition'] ?? '';
+
+            if ($type === 'image' && $rendition === 'teaser_auto_background') {
+                continue;
+            }
+
+            if (isset(self::MEDIA[$type])) {
+                $out .= $this->renderMedia($b);
+            } elseif ($type === 'text') {
+                $r = $this->draft($b['content'] ?? '');
+                if ($r !== '') {
+                    $out .= '<p>' . $r . '</p>';
+                }
+            } elseif ($type === 'link') {
+                $r = $this->renderLink($b);
+                if ($r !== '') {
+                    $out .= '<p>' . $r . '</p>';
+                }
+            }
+        }
+        return $out;
     }
 
     private function meta(array $p, string $title, string $content): array
