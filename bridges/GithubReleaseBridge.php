@@ -14,47 +14,50 @@ class GitHubReleaseBridge extends BridgeAbstract
 
     const PARAMETERS = [[
         'owner' => [
-              'name' => 'Owner',
-              'type' => 'text',
-              'required' => true,
-              'title' => 'The name of the repo owner (e.g. RSS-Bridge from https://github.com/RSS-Bridge/rss-bridge)'
+            'name' => 'Owner',
+            'type' => 'text',
+            'required' => true,
+            'title' => 'The name of the repo owner (e.g. RSS-Bridge from https://github.com/RSS-Bridge/rss-bridge)'
         ],
         'repo' => [
-              'name' => 'Repository',
-              'type' => 'text',
-              'required' => true,
-              'title' => 'Repo name (e.g. rss-bridge from https://github.com/RSS-Bridge/rss-bridge)'
+            'name' => 'Repository',
+            'type' => 'text',
+            'required' => true,
+            'title' => 'Repo name (e.g. rss-bridge from https://github.com/RSS-Bridge/rss-bridge)'
         ],
         'pre_release' => [
-              'name' => 'Include pre-releases',
-              'type' => 'checkbox',
-              'title' => 'Check this box to include pre-releases in the feed'
+            'name' => 'Include pre-releases',
+            'type' => 'checkbox',
+            'title' => 'Check this box to include pre-releases in the feed'
         ],
         'hide_assets' => [
-              'name' => 'Hide attachments',
-              'type' => 'checkbox',
-              'title' => 'Check this box to hide attachments from feed items.'
+            'name' => 'Hide attachments',
+            'type' => 'checkbox',
+            'title' => 'Check this box to hide attachments from feed items.'
         ],
         'limit' => [
-              'name' => 'Posts limit',
-              'type' => 'number',
-              'defaultValue' => 10
+            'name' => 'Posts limit',
+            'type' => 'number',
+            'defaultValue' => 10
         ],
     ]];
 
-    private const ALLOWED_TAGS_1 = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote>';
-    private const ALLOWED_TAGS_2 = '<h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td>';
+    private const ALLOWED_TAGS_1 = '<div><a><p><ul><ol><li><strong><em><code><pre><blockquote><span>';
+    private const ALLOWED_TAGS_2 = '<h1><h2><h3><h4><h5><h6><br><hr><img><table><thead><tbody><tr><th><td><picture><source><figure><figcaption>';
     private const ALLOWED_TAGS_3 = '<del><details><summary>';
 
     private const CSS = [
-        'wrapper'      => 'font-size:14px; line-height:1.6; word-wrap:break-word;',
-        'alert_base'   => 'padding-left:12px; margin:8px 0;',
+        'wrapper' => 'font-size:14px; line-height:1.6; word-wrap:break-word;',
+        'alert_base' => 'padding-left:12px; margin:8px 0;',
         'alert_border' => 'border-left:4px solid %s;',
-        'ul'           => 'list-style-type:disc; padding-left:24px;',
-        'ol'           => 'list-style-type:decimal; padding-left:24px;',
-        'alerts'       => [
-            'NOTE' => '#0969da', 'TIP' => '#1a7f37', 'IMPORTANT' => '#8250df',
-            'WARNING' => '#9a6700', 'CAUTION' => '#cf222e',
+        'ul' => 'list-style-type:disc; padding-left:24px;',
+        'ol' => 'list-style-type:decimal; padding-left:24px;',
+        'alerts' => [
+            'NOTE' => '#0969da',
+            'TIP' => '#1a7f37',
+            'IMPORTANT' => '#8250df',
+            'WARNING' => '#9a6700',
+            'CAUTION' => '#cf222e',
         ],
     ];
 
@@ -73,7 +76,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         try {
             $response = json_decode(getContents($url, $headers), true);
         } catch (\Exception $e) {
-            $code = (int) $e->getCode();
+            $code = (int)$e->getCode();
             $msg = [401 => 'Auth failed', 403 => 'Rate limit exceeded', 404 => 'Repo not found'];
             throwServerException($msg[$code] ?? ('GitHub API error: ' . $e->getMessage()));
         }
@@ -87,10 +90,9 @@ class GitHubReleaseBridge extends BridgeAbstract
         }
 
         $releases = $response;
-
-        $includePrereleases = (bool) $this->getInput('pre_release');
-        $hideAssets = (bool) $this->getInput('hide_assets');
-        $limit = max(1, min(100, (int) ($this->getInput('limit') ?: 10)));
+        $includePrereleases = (bool)$this->getInput('pre_release');
+        $hideAssets = (bool)$this->getInput('hide_assets');
+        $limit = max(1, min(100, (int)($this->getInput('limit') ?: 10)));
 
         foreach ($releases as $release) {
             if (count($this->items) >= $limit) {
@@ -137,7 +139,7 @@ class GitHubReleaseBridge extends BridgeAbstract
     private function buildFeedItem(array $release, string $owner, string $repo, bool $hideAssets): array
     {
         $title = $release['name'] ?: ($release['tag_name'] ?? 'Untitled');
-        $content = !empty($release['body']) ? $this->processMarkdown((string) $release['body'], $owner, $repo) : '';
+        $content = !empty($release['body']) ? $this->processMarkdown((string)$release['body'], $owner, $repo) : '';
 
         if (!$hideAssets && !empty($release['assets']) && is_array($release['assets'])) {
             $assetsHtml = $this->buildAssetsBlock($release['assets']);
@@ -150,12 +152,12 @@ class GitHubReleaseBridge extends BridgeAbstract
         $ts = strtotime($dateStr) ?: time();
 
         return [
-            'title'      => $title,
-            'uri'        => $release['html_url'] ?? '',
-            'content'    => $content,
-            'timestamp'  => $ts,
-            'author'     => $release['author']['login'] ?? '',
-            'uid'        => $release['tag_name'] ?? (string) ($release['id'] ?? uniqid()),
+            'title' => $title,
+            'uri' => $release['html_url'] ?? '',
+            'content' => $content,
+            'timestamp' => $ts,
+            'author' => $release['author']['login'] ?? '',
+            'uid' => $release['tag_name'] ?? (string)($release['id'] ?? uniqid()),
             'enclosures' => [],
             'categories' => [$release['tag_name'] ?? ''],
         ];
@@ -168,7 +170,7 @@ class GitHubReleaseBridge extends BridgeAbstract
             if (!empty($asset['browser_download_url']) && !empty($asset['name'])) {
                 $url = htmlspecialchars($asset['browser_download_url'], ENT_QUOTES, 'UTF-8');
                 $name = htmlspecialchars($asset['name'], ENT_QUOTES, 'UTF-8');
-                $size = $this->formatFileSize((int) ($asset['size'] ?? 0));
+                $size = $this->formatFileSize((int)($asset['size'] ?? 0));
                 $label = $name . ($size !== '' ? ' (' . $size . ')' : '');
                 $links[] = '<li><a href="' . $url . '">' . $label . '</a></li>';
             }
@@ -188,7 +190,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         }
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $index = 0;
-        $size = (float) $bytes;
+        $size = (float)$bytes;
         while ($size >= 1024 && $index < count($units) - 1) {
             $size /= 1024;
             $index++;
@@ -200,9 +202,9 @@ class GitHubReleaseBridge extends BridgeAbstract
     {
         $markdown = $this->enrichMarkdownMentions($markdown, $owner, $repo);
         $parsedown = new \Parsedown();
-        $parsedown->setSafeMode(true);
+        $parsedown->setSafeMode(false);
+        $parsedown->setMarkupEscaped(false);
         $html = $parsedown->text($markdown);
-
         return $this->processHtml($html, $owner, $repo);
     }
 
@@ -237,6 +239,7 @@ class GitHubReleaseBridge extends BridgeAbstract
         $this->transformAlerts($xpath);
         $this->shortenAutoLinks($xpath, $owner, $repo);
         $this->applyListStyles($xpath);
+        $this->sanitizeHtml($xpath);
 
         $wrapper = $dom->getElementById('w');
         if (!$wrapper) {
@@ -245,10 +248,52 @@ class GitHubReleaseBridge extends BridgeAbstract
         $content = $dom->saveHTML($wrapper);
         $content = preg_replace('#^\s*<div[^>]*>#', '', $content);
         $content = preg_replace('#</div>\s*$#', '', $content);
+
         $tags = self::ALLOWED_TAGS_1 . self::ALLOWED_TAGS_2 . self::ALLOWED_TAGS_3;
         $content = strip_tags(trim($content), $tags);
 
         return sprintf('<div style="%s">%s</div>', self::CSS['wrapper'], $content);
+    }
+
+    private function sanitizeHtml(\DOMXPath $xpath): void
+    {
+        foreach ($xpath->query('//*') as $node) {
+            $attrsToRemove = [];
+            foreach ($node->attributes as $attr) {
+                $name = strtolower($attr->nodeName);
+                $value = strtolower(trim($attr->nodeValue));
+
+                if (strpos($name, 'on') === 0) {
+                    $attrsToRemove[] = $attr->nodeName;
+                    continue;
+                }
+
+                if (in_array($name, ['href', 'src', 'action', 'formaction', 'xlink:href'])) {
+                    if (preg_match('/^\s*(javascript|vbscript|data(?!:image\/))/i', $value)) {
+                        $attrsToRemove[] = $attr->nodeName;
+                    }
+                }
+            }
+
+            foreach ($attrsToRemove as $attrName) {
+                $node->removeAttribute($attrName);
+            }
+
+            foreach (['src', 'href'] as $attr) {
+                if ($node->hasAttribute($attr)) {
+                    $value = $node->getAttribute($attr);
+                    if (strpos($value, '/') === 0) {
+                        $node->setAttribute($attr, 'https://github.com' . $value);
+                    }
+                }
+            }
+
+            if ($node->hasAttribute('srcset')) {
+                $srcset = $node->getAttribute('srcset');
+                $srcset = preg_replace('#(^|[\s,])(/[^,\s]+)#', '$1https://github.com$2', $srcset);
+                $node->setAttribute('srcset', $srcset);
+            }
+        }
     }
 
     private function transformAlerts(\DOMXPath $xpath): void
