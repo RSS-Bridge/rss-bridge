@@ -35,6 +35,12 @@ class GitHubReleaseBridge extends BridgeAbstract
               'type' => 'checkbox',
               'title' => 'Check this box to hide attachments from feed items.'
         ],
+        'proxy_images' => [
+              'name' => 'Proxy images',
+              'type' => 'checkbox',
+              'defaultValue' => 'checked',
+              'title' => 'Download and embed images as base64 (fixes GitHub hotlink / S3 blocking)'
+        ],
         'limit' => [
               'name' => 'Posts limit',
               'type' => 'number',
@@ -57,6 +63,8 @@ class GitHubReleaseBridge extends BridgeAbstract
             'WARNING' => '#9a6700', 'CAUTION' => '#cf222e',
         ],
     ];
+
+    private bool $proxyImages = false;
 
     public function collectData()
     {
@@ -90,6 +98,7 @@ class GitHubReleaseBridge extends BridgeAbstract
 
         $includePrereleases = (bool) $this->getInput('pre_release');
         $hideAssets = (bool) $this->getInput('hide_assets');
+        $this->proxyImages = (bool) $this->getInput('proxy_images');
         $limit = max(1, min(100, (int) ($this->getInput('limit') ?: 10)));
 
         foreach ($releases as $release) {
@@ -227,6 +236,10 @@ class GitHubReleaseBridge extends BridgeAbstract
 
     private function processHtml(string $html, string $owner, string $repo): string
     {
+        if ($this->proxyImages) {
+            $html = $this->proxyImages($html);
+        }
+
         $dom = new \DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
         $dom->loadHTML('<?xml encoding="UTF-8"><div id="w">' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -249,6 +262,76 @@ class GitHubReleaseBridge extends BridgeAbstract
         $content = strip_tags(trim($content), $tags);
 
         return sprintf('<div style="%s">%s</div>', self::CSS['wrapper'], $content);
+    }
+
+    private function proxyImages(string $html): string
+    {
+        return preg_replace_callback(
+            '/<img([^>]*)src=["\']([^"\']+)["\']([^>]*)>/i',
+            function ($matches) {
+                $before = $matches[1];
+                $src = $matches[2];
+                $after = $matches[3];
+
+                $dataUri = null;
+
+                if (preg_match('#^https://[^/]*\.s3\.amazonaws\.com/([^?]+)#', $src, $m)) {
+                    $dataUri = $this->fetchImage('https://private-user-assets.githubusercontent.com/' . $m[1]);
+                }
+
+                if ($dataUri === null && preg_match('#^https://(?:github\.com|githubusercontent\.com)/#', $src)) {
+                    $dataUri = $this->fetchImage($src);
+                }
+
+                if ($dataUri !== null) {
+                    return '<img' . $before . 'src="' . $dataUri . '"' . $after . '>';
+                }
+
+                return $matches[0];
+            },
+            $html
+        );
+    }
+
+    private function fetchImage(string $url): ?string
+    {
+        try {
+            $headers = [
+                'User-Agent: rss-bridge',
+                'Referer: https://github.com/'
+            ];
+
+            $token = $this->getOption('token');
+            if ($token) {
+                $headers[] = 'Authorization: Bearer ' . $token;
+            }
+
+            $imageData = getContents($url, $headers);
+
+            if (empty($imageData)) {
+                return null;
+            }
+
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->buffer($imageData);
+
+            if ($mimeType === false || strpos($mimeType, 'image/') !== 0) {
+                $extension = strtolower(pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION));
+                $mimeMap = [
+                    'png' => 'image/png',
+                    'jpg' => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'gif' => 'image/gif',
+                    'webp' => 'image/webp',
+                    'svg' => 'image/svg+xml',
+                ];
+                $mimeType = $mimeMap[$extension] ?? 'image/png';
+            }
+
+            return 'data:' . $mimeType . ';base64,' . base64_encode($imageData);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     private function transformAlerts(\DOMXPath $xpath): void
