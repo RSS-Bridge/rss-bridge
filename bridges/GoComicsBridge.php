@@ -41,7 +41,7 @@ class GoComicsBridge extends BridgeAbstract
         if ($element) {
             $link = $element->getAttribute('data-post-url');
         } else { // fallback for comics without data-post-url (assumes daily comic)
-            $nextcomiclink = $landingpage->find('a[class*="ComicNavigation_controls__button_previous__"]', 0)->href;
+            $nextcomiclink = $landingpage->find('a[class*="ComicNavigation-module-scss-module__"]', 0)->href;
             preg_match('/(\d{4}\/\d{2}\/\d{2})/', $nextcomiclink, $nclmatches);
             if (!empty($nclmatches[1])) {
                 $nextdate = new DateTime($nclmatches[1]);
