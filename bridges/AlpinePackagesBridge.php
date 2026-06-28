@@ -76,12 +76,13 @@ class AlpinePackagesBridge extends BridgeAbstract
         ];
         $data = [];
         // Multiple classes exist for the strong version element.
-        // The class can be 1 of 2 (later maybe more):
-        //  'hint--right hint--rounded text-success'
-        //  'hint--right hint--rounded text-grey'
+        // Text classes found in: https://pkgs.alpinelinux.org/static/css/style.css
         $strongClasses = [
              'hint--right hint--rounded text-success',
-             'hint--right hint--rounded text-grey'
+             'hint--right hint--rounded text-danger',
+             'hint--right hint--rounded text-warning',
+             'hint--right hint--rounded text-secondary',
+             'hint--right hint--rounded text-grey',
         ];
         $strongClass = 0;
         // Get data from element which contains <a href=...>.
