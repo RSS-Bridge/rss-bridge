@@ -75,6 +75,15 @@ class AlpinePackagesBridge extends BridgeAbstract
             'bdate'
         ];
         $data = [];
+        // Multiple classes exist for the strong version element.
+        // The class can be 1 of 2 (later maybe more):
+        //  'hint--right hint--rounded text-success'
+        //  'hint--right hint--rounded text-grey'
+        $strongClasses = [
+             'hint--right hint--rounded text-success',
+             'hint--right hint--rounded text-grey'
+        ];
+        $strongClass = 0;
         // Get data from element which contains <a href=...>.
         foreach ($classes as $class) {
             $td = $this->getTdClassDom($element, $class);
@@ -89,7 +98,11 @@ class AlpinePackagesBridge extends BridgeAbstract
         }
         // Get version data in a <strong> element.
         $td = $this->getTdClassDom($element, 'version');
-        $strong = $td->find('strong[class=hint--right hint--rounded text-success]')[0];
+        // Loop to get non empty strong element
+        do {
+            $strong = $td->find('strong[class=' . $strongClasses[$strongClass] . ']')[0];
+            $strongClass++;
+        } while (!$strong && $strongClass < count($strongClasses));
         $data['version'] = trim($strong->plaintext);
         return $data;
     }
