@@ -409,7 +409,19 @@ class FimfictionBridge extends BridgeAbstract
     private function extractStoryTitle(\simple_html_dom $dom): string
     {
         $titleElem = $dom->find('a.story_name', 0);
-        return $titleElem ? trim($titleElem->plaintext) : trim(str_replace(' - Fimfiction', '', $dom->find('title', 0)->plaintext ?? 'Unknown Story'));
+        if ($titleElem) {
+            return trim($titleElem->plaintext);
+        }
+        return trim(str_replace(' - Fimfiction', '', $dom->find('title', 0)->plaintext ?? 'Unknown Story'));
+    }
+
+    private function extractAuthor(\simple_html_dom $dom): string
+    {
+        $authorElem = $dom->find('div.info-container a[href*=/user/]', 0) ?? $dom->find('a[href*=/user/]', 0);
+        if ($authorElem) {
+            return trim($authorElem->plaintext);
+        }
+        return 'Unknown';
     }
 
     private function extractStoryImage(\simple_html_dom $dom): ?string
@@ -421,12 +433,6 @@ class FimfictionBridge extends BridgeAbstract
 
         $img = $container->find('img', 0);
         return ($img && $img->src) ? $img->src : null;
-    }
-
-    private function extractAuthor(\simple_html_dom $dom): string
-    {
-        $authorElem = $dom->find('div.info-container a[href*=/user/]', 0) ?? $dom->find('a[href*=/user/]', 0);
-        return $authorElem ? trim($authorElem->plaintext) : 'Unknown';
     }
 
     private function extractChaptersList(\simple_html_dom $dom, int $limit): array
