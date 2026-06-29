@@ -139,10 +139,8 @@ class FimfictionBridge extends BridgeAbstract
 
         $chaptersData = $this->extractChaptersList($dom, self::FETCH_LIMIT);
 
-        foreach ($chaptersData as $data)
-        {
-            $content = $fetchFromPages ? $this->buildFullContent($data['uri'], $fullContent)
-                : $this->buildLinkContent($data['uri']);
+        foreach ($chaptersData as $data) {
+            $content = $fetchFromPages ? $this->buildFullContent($data['uri'], $fullContent) : $this->buildLinkContent($data['uri']);
 
             $this->items[] = [
                 'title' => $data['title'],
