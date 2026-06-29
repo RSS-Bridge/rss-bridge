@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-class FimfictionBridge extends BridgeAbstract {
+class FimfictionBridge extends BridgeAbstract 
+{
     const MAINTAINER = 'LordArrin';
     const NAME = 'Fimfiction Updates';
     const URI = 'https://www.fimfiction.net/';
@@ -138,9 +139,9 @@ class FimfictionBridge extends BridgeAbstract {
 
         $chaptersData = $this->extractChaptersList($dom, self::FETCH_LIMIT);
 
-        foreach ($chaptersData as $data) {
-            $content = $fetchFromPages
-                ? $this->buildFullContent($data['uri'], $fullContent)
+        foreach ($chaptersData as $data) 
+        {
+            $content = $fetchFromPages ? $this->buildFullContent($data['uri'], $fullContent)
                 : $this->buildLinkContent($data['uri']);
 
             $this->items[] = [
@@ -527,7 +528,9 @@ class FimfictionBridge extends BridgeAbstract {
     private function buildLinkContent(string $uri): string
     {
         $safeUri = htmlspecialchars($uri, ENT_QUOTES, 'UTF-8');
-        return '<div style="' . $this->getStyle('wrapper') . '"><p style="' . $this->getStyle('chapter-link') . '">New chapter published - <a href="' . $safeUri . '">read full</a></p></div>';
+        return '<div style="' . $this->getStyle('wrapper') . '"><p style="' 
+        . $this->getStyle('chapter-link') . '">New chapter published - <a href="' 
+        . $safeUri . '">read full</a></p></div>';
     }
 
     private function sanitizeContent(\simple_html_dom_node $element): void
