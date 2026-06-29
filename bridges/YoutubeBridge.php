@@ -61,6 +61,11 @@ class YoutubeBridge extends BridgeAbstract
                 'type' => 'number',
                 'title' => 'Maximum duration for the video in minutes',
                 'exampleValue' => 10
+            ],
+            'skip_members_only' => [
+                'name' => 'Skip members-only videos',
+                'type' => 'checkbox',
+                'title' => 'Hide videos that require a channel membership to watch'
             ]
         ]
     ];
@@ -515,6 +520,17 @@ class YoutubeBridge extends BridgeAbstract
         $title = $lockup->metadata->lockupMetadataViewModel->title->content ?? null;
         if (!$videoId || !$title) {
             return null;
+        }
+
+        if ($this->getInput('skip_members_only')) {
+            $rows = $lockup->metadata->lockupMetadataViewModel->metadata->contentMetadataViewModel->metadataRows ?? [];
+            foreach ($rows as $row) {
+                foreach ($row->badges ?? [] as $badge) {
+                    if (($badge->badgeViewModel->badgeStyle ?? null) === 'BADGE_MEMBERS_ONLY') {
+                        return null;
+                    }
+                }
+            }
         }
 
         $wrapper = new \stdClass();
