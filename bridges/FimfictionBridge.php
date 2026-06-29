@@ -408,9 +408,7 @@ class FimfictionBridge extends BridgeAbstract {
     private function extractStoryTitle(\simple_html_dom $dom): string
     {
         $titleElem = $dom->find('a.story_name', 0);
-        return $titleElem
-            ? trim($titleElem->plaintext)
-            : trim(str_replace(' - Fimfiction', '', $dom->find('title', 0)->plaintext ?? 'Unknown Story'));
+        return $titleElem ? trim($titleElem->plaintext) : trim(str_replace(' - Fimfiction', '', $dom->find('title', 0)->plaintext ?? 'Unknown Story'));
     }
 
     private function extractStoryImage(\simple_html_dom $dom): ?string
