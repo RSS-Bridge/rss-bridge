@@ -33,14 +33,15 @@ class FimfictionBridge extends BridgeAbstract {
 
     const SESSION_NAME = 'fimfiction';
     const FETCH_LIMIT = 3;
-    const FLARESOLVERR_TIMEOUT = 60000;
+    const FLARESOLVERR_TIMEOUT = 180000;
     const STORY_CACHE_TTL = 900;
     const CHAPTER_CACHE_TTL = 86400;
     const MAX_RETRY_ATTEMPTS = 3;
     const RETRY_BASE_DELAY = 2;
-    const FLARESOLVERR_PAGE_WAIT = 2000;
+    const FLARESOLVERR_PAGE_WAIT = 5000;
     const STORY_PAGE_MAX_ATTEMPTS = 3;
     const STORY_PAGE_RETRY_DELAY = 2;
+    const CURL_TIMEOUT = 240;
 
     private const CSS = [
         'wrapper'       => 'font-size:14px; line-height:1.6; word-wrap:break-word;',
@@ -53,23 +54,27 @@ class FimfictionBridge extends BridgeAbstract {
     private ?string $storyImage = null;
     private ?string $flaresolverrUrl = null;
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->storyTitle ?? parent::getName();
     }
 
-    public function getURI(): string {
+    public function getURI(): string
+    {
         $id = $this->getInput('story_id');
         return $id ? self::URI . 'story/' . $id . '/' : self::URI;
     }
 
-    public function getIcon(): string {
+    public function getIcon(): string
+    {
         return $this->storyImage ?? parent::getIcon();
     }
 
-    public function collectData(): void {
+    public function collectData(): void
+    {
         $storyId = $this->getInput('story_id');
         if (!$storyId) {
-            returnClientError('Story ID is required');
+            throwClientException('Story ID is required');
         }
 
         $fullContent = (bool)$this->getInput('full_content');
@@ -77,11 +82,11 @@ class FimfictionBridge extends BridgeAbstract {
 
         $this->flaresolverrUrl = $this->getConfigValue('flaresolverr_url');
         if (!$this->flaresolverrUrl) {
-            returnClientError('FlareSolverr URL is required in config.ini.php [FimfictionBridge] section');
+            throwClientException('FlareSolverr URL is required in config.ini.php [FimfictionBridge] section');
         }
 
         if (!$this->ensureSession()) {
-            returnClientError('Failed to establish FlareSolverr session. Check FlareSolverr service and configuration.');
+            throwClientException('Failed to establish FlareSolverr session. Check FlareSolverr service and configuration.');
         }
 
         $cacheKey = 'story_page_' . $storyId;
@@ -107,7 +112,10 @@ class FimfictionBridge extends BridgeAbstract {
             }
 
             if (!$htmlString) {
-                returnClientError('Received invalid story page after ' . self::STORY_PAGE_MAX_ATTEMPTS . ' attempts (possibly Cloudflare challenge or mature content). Try again later.');
+                throwClientException(
+                    'Received invalid story page after ' . self::STORY_PAGE_MAX_ATTEMPTS .
+                    ' attempts (possibly Cloudflare challenge or mature content). Try again later.'
+                );
             }
 
             $this->saveCacheValue($cacheKey, $htmlString, self::STORY_CACHE_TTL);
@@ -116,12 +124,12 @@ class FimfictionBridge extends BridgeAbstract {
         $dom = str_get_html($htmlString);
 
         if (!$dom) {
-            returnClientError('Failed to parse story page HTML');
+            throwClientException('Failed to parse story page HTML');
         }
 
         $storyError = $this->detectStoryError($dom);
         if ($storyError) {
-            returnClientError($storyError);
+            throwClientException($storyError);
         }
 
         $this->storyTitle = $this->extractStoryTitle($dom);
@@ -146,21 +154,25 @@ class FimfictionBridge extends BridgeAbstract {
         }
     }
 
-    private function getStyle(string $key, string ...$args): string {
+    private function getStyle(string $key, string ...$args): string
+    {
         $style = self::CSS[$key] ?? '';
         return $args ? sprintf($style, ...$args) : $style;
     }
 
-    private function getStoryUrl(string $storyId): string {
+    private function getStoryUrl(string $storyId): string
+    {
         return self::URI . 'story/' . $storyId . '/';
     }
 
-    private function getConfigValue(string $key): ?string {
+    private function getConfigValue(string $key): ?string
+    {
         $value = $this->getOption($key);
         return ($value !== null && $value !== '') ? trim((string)$value, " \t\n\r\0\x0B\"'") : null;
     }
 
-    private function ensureSession(): bool {
+    private function ensureSession(): bool
+    {
         $existingSessions = $this->flaresolverrRequest([
             'cmd' => 'sessions.list',
         ], true);
@@ -203,7 +215,8 @@ class FimfictionBridge extends BridgeAbstract {
         return true;
     }
 
-    private function flaresolverrRequest(array $postData, bool $ignoreErrors = false): array {
+    private function flaresolverrRequest(array $postData, bool $ignoreErrors = false): array
+    {
         $attempt = 0;
         $lastError = '';
 
@@ -214,7 +227,7 @@ class FimfictionBridge extends BridgeAbstract {
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => json_encode($postData),
                 CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-                CURLOPT_TIMEOUT => 120,
+                CURLOPT_TIMEOUT => self::CURL_TIMEOUT,
             ]);
 
             $response = curl_exec($ch);
@@ -231,7 +244,7 @@ class FimfictionBridge extends BridgeAbstract {
                         sleep($delay);
                         continue;
                     }
-                    returnClientError($lastError);
+                    throwClientException($lastError);
                 }
                 return [];
             }
@@ -245,7 +258,7 @@ class FimfictionBridge extends BridgeAbstract {
                         sleep($delay);
                         continue;
                     }
-                    returnClientError($lastError);
+                    throwClientException($lastError);
                 }
                 return [];
             }
@@ -261,7 +274,7 @@ class FimfictionBridge extends BridgeAbstract {
                         sleep($delay);
                         continue;
                     }
-                    returnClientError($lastError);
+                    throwClientException($lastError);
                 }
                 return $result ?? [];
             }
@@ -270,13 +283,14 @@ class FimfictionBridge extends BridgeAbstract {
         }
 
         if (!$ignoreErrors && $lastError) {
-            returnClientError('FlareSolverr failed after ' . self::MAX_RETRY_ATTEMPTS . ' attempts: ' . $lastError);
+            throwClientException('FlareSolverr failed after ' . self::MAX_RETRY_ATTEMPTS . ' attempts: ' . $lastError);
         }
 
         return [];
     }
 
-    private function fetchHtml(string $url): string {
+    private function fetchHtml(string $url): string
+    {
         $cookies = [];
         $sessionToken = $this->getConfigValue('session_token');
         $signingKey = $this->getConfigValue('signing_key');
@@ -290,18 +304,48 @@ class FimfictionBridge extends BridgeAbstract {
 
         $cookies[] = ['name' => 'view_mature', 'value' => 'true', 'domain' => 'www.fimfiction.net'];
 
-        $result = $this->flaresolverrRequest([
-            'cmd' => 'request.get',
-            'url' => $url,
-            'session' => self::SESSION_NAME,
-            'maxTimeout' => self::FLARESOLVERR_TIMEOUT,
-            'wait' => self::FLARESOLVERR_PAGE_WAIT,
-            'cookies' => $cookies,
-        ]);
-        return (string)$result['solution']['response'];
+        $maxAttempts = 2;
+        $lastError = '';
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                $result = $this->flaresolverrRequest([
+                    'cmd' => 'request.get',
+                    'url' => $url,
+                    'session' => self::SESSION_NAME,
+                    'maxTimeout' => self::FLARESOLVERR_TIMEOUT,
+                    'wait' => self::FLARESOLVERR_PAGE_WAIT,
+                    'cookies' => $cookies,
+                ]);
+
+                if (isset($result['solution']['response'])) {
+                    return (string)$result['solution']['response'];
+                }
+
+                $lastError = 'Empty response from FlareSolverr';
+            } catch (\Exception $e) {
+                $lastError = $e->getMessage();
+
+                if (stripos($lastError, '504') !== false || stripos($lastError, 'timeout') !== false) {
+                    if ($attempt < $maxAttempts) {
+                        sleep(3);
+                        continue;
+                    }
+                }
+
+                throw $e;
+            }
+
+            if ($attempt < $maxAttempts) {
+                sleep(2);
+            }
+        }
+
+        throwClientException('Failed to fetch page after ' . $maxAttempts . ' attempts: ' . $lastError);
     }
 
-    private function validateStoryPage(string $html): bool {
+    private function validateStoryPage(string $html): bool
+    {
         $challengeMarkers = [
             'Checking your browser',
             'cf-browser-verification',
@@ -331,11 +375,13 @@ class FimfictionBridge extends BridgeAbstract {
         return true;
     }
 
-    private function deleteCacheValue(string $key): void {
+    private function deleteCacheValue(string $key): void
+    {
         $this->saveCacheValue($key, '', 0);
     }
 
-    private function detectStoryError(\simple_html_dom $dom): ?string {
+    private function detectStoryError(\simple_html_dom $dom): ?string
+    {
         $errorMessages = [
             'Story not found' => 'This story has been deleted or does not exist.',
             'This story is not available' => 'This story is not available in your region.',
@@ -359,14 +405,16 @@ class FimfictionBridge extends BridgeAbstract {
         return null;
     }
 
-    private function extractStoryTitle(\simple_html_dom $dom): string {
+    private function extractStoryTitle(\simple_html_dom $dom): string
+    {
         $titleElem = $dom->find('a.story_name', 0);
         return $titleElem
             ? trim($titleElem->plaintext)
             : trim(str_replace(' - Fimfiction', '', $dom->find('title', 0)->plaintext ?? 'Unknown Story'));
     }
 
-    private function extractStoryImage(\simple_html_dom $dom): ?string {
+    private function extractStoryImage(\simple_html_dom $dom): ?string
+    {
         $container = $dom->find('[class*=story_container__story_image]', 0);
         if (!$container) {
             return null;
@@ -376,15 +424,17 @@ class FimfictionBridge extends BridgeAbstract {
         return ($img && $img->src) ? $img->src : null;
     }
 
-    private function extractAuthor(\simple_html_dom $dom): string {
+    private function extractAuthor(\simple_html_dom $dom): string
+    {
         $authorElem = $dom->find('div.info-container a[href*=/user/]', 0) ?? $dom->find('a[href*=/user/]', 0);
         return $authorElem ? trim($authorElem->plaintext) : 'Unknown';
     }
 
-    private function extractChaptersList(\simple_html_dom $dom, int $limit): array {
+    private function extractChaptersList(\simple_html_dom $dom, int $limit): array
+    {
         $chapterList = $dom->find('ul.chapters', 0);
         if (!$chapterList) {
-            returnClientError('Could not find chapter list (ul.chapters)');
+            throwClientException('Could not find chapter list (ul.chapters)');
         }
 
         $chapters = [];
@@ -417,7 +467,8 @@ class FimfictionBridge extends BridgeAbstract {
         return array_slice($chapters, 0, $limit);
     }
 
-    private function extractTimestamp($chapterElem): int {
+    private function extractTimestamp($chapterElem): int
+    {
         $dateElem = $chapterElem ? $chapterElem->find('.title-box .date', 0) : null;
 
         if (!$dateElem) {
@@ -436,7 +487,8 @@ class FimfictionBridge extends BridgeAbstract {
         return time();
     }
 
-    private function buildFullContent(string $uri, bool $fullContent): string {
+    private function buildFullContent(string $uri, bool $fullContent): string
+    {
         $cacheKey = 'chapter_' . md5($uri . ($fullContent ? '_full' : '_link'));
 
         $cached = $this->loadCacheValue($cacheKey);
@@ -474,14 +526,14 @@ class FimfictionBridge extends BridgeAbstract {
         return $content;
     }
 
-    private function buildLinkContent(string $uri): string {
+    private function buildLinkContent(string $uri): string
+    {
         $safeUri = htmlspecialchars($uri, ENT_QUOTES, 'UTF-8');
-        return '<div style="' . $this->getStyle('wrapper') . '">'
-             . '<p style="' . $this->getStyle('chapter-link') . '">New chapter published - <a href="' . $safeUri . '">read full</a></p>'
-             . '</div>';
+        return '<div style="' . $this->getStyle('wrapper') . '"><p style="' . $this->getStyle('chapter-link') . '">New chapter published - <a href="' . $safeUri . '">read full</a></p></div>';
     }
 
-    private function sanitizeContent(\simple_html_dom_node $element): void {
+    private function sanitizeContent(\simple_html_dom_node $element): void
+    {
         $dangerousTags = ['script', 'iframe', 'object', 'embed', 'form', 'input', 'button', 'textarea', 'select'];
         foreach ($dangerousTags as $tag) {
             foreach ($element->find($tag) as $dangerous) {
@@ -507,7 +559,8 @@ class FimfictionBridge extends BridgeAbstract {
         }
     }
 
-    private function styleSceneBreaks(\simple_html_dom_node $element): void {
+    private function styleSceneBreaks(\simple_html_dom_node $element): void
+    {
         foreach ($element->find('hr') as $hr) {
             $hr->outertext = '<p style="' . $this->getStyle('scene-break') . '">• • •</p>';
         }
