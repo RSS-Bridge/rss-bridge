@@ -34,9 +34,9 @@ class PawchiveBridge extends BridgeAbstract
         ],
         'limit' => self::LIMIT,
         'hide_videos' => [
-            'name' => 'Hide videos',
+            'name' => 'Hide videos & attachments',
             'type' => 'checkbox',
-            'title' => 'Completely hide video files from posts to save bandwidth. Videos will not be shown or linked at all.',
+            'title' => 'Show only image previews. Videos, full-size images and file attachments will be completely hidden.',
             'defaultValue' => false
         ],
     ]];
@@ -64,28 +64,45 @@ class PawchiveBridge extends BridgeAbstract
         'png' => 'image/png',
         'gif' => 'image/gif',
         'webp' => 'image/webp',
+        'jfif' => 'image/jpeg',
+        'bmp' => 'image/bmp',
+        'svg' => 'image/svg+xml',
+        'tiff' => 'image/tiff',
+        'tif' => 'image/tiff',
+        'ico' => 'image/x-icon',
         'mp4' => 'video/mp4',
         'webm' => 'video/webm',
         'mov' => 'video/quicktime',
         'avi' => 'video/x-msvideo',
         'mkv' => 'video/x-matroska',
+        'm4v' => 'video/x-m4v',
         'mp3' => 'audio/mpeg',
         'wav' => 'audio/wav',
         'ogg' => 'audio/ogg',
         'flac' => 'audio/flac',
+        'm4a' => 'audio/mp4',
         'pdf' => 'application/pdf',
         'zip' => 'application/zip',
         'rar' => 'application/x-rar-compressed',
         '7z' => 'application/x-7z-compressed',
         'txt' => 'text/plain',
+        'psd' => 'application/x-photoshop',
     ];
 
+    private const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'jfif', 'bmp', 'svg', 'tiff', 'tif', 'ico'];
+    private const VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'm4v'];
+
     private const CSS = [
-        'image' => 'max-width:100%;height:auto;display:block;margin:10px 0',
-        'video' => 'max-width:100%;height:auto;display:block;margin:10px 0',
-        'file-link' => 'display:inline-block;margin:10px 0;color:#0066cc;text-decoration:none',
+        'image' => 'max-width:100%;height:auto;display:block;margin:0',
+        'video' => 'max-width:100%;height:auto;display:block;margin:0',
+        'file-link' => 'display:inline-block;margin:0;color:#0066cc;text-decoration:none',
         'url-link' => 'color:#0066cc;text-decoration:none;word-break:break-all',
-        'video-indicator' => 'display:inline-block;margin:10px 0;padding:8px 12px;background:#f0f0f0;border:1px solid #ddd;border-radius:4px;color:#666;font-style:italic',
+        'file-container' => 'margin:10px 0',
+        'external-link-container' => 'margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:5px',
+        'attachments-container' => 'margin-top:20px;padding:10px;background:#f9f9f9;border:1px solid #ddd;border-radius:5px',
+        'attachments-heading' => 'margin:0 0 8px 0;font-weight:bold;color:#333',
+        'attachments-list' => 'margin:0;padding:0;list-style:none',
+        'attachments-item' => 'margin:4px 0',
     ];
 
     const CONFIGURATION = [
@@ -100,6 +117,7 @@ class PawchiveBridge extends BridgeAbstract
     ];
 
     private ?string $author = null;
+    private ?string $authorAvatarUrl = null;
     private array $mimeCache = [];
 
     private function baseURI(): string
@@ -119,21 +137,35 @@ class PawchiveBridge extends BridgeAbstract
         return $filename !== null ? $url . '?f=' . urlencode($filename) : $url;
     }
 
+    private function getAvatarUrl(string $service, string $userId): string
+    {
+        return $this->baseURI() . 'icons/' . $service . '/' . $userId;
+    }
+
     private function getMimeType(string $filename): string
     {
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $cleanFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
+        $cleanFilename = trim($cleanFilename);
+        $ext = strtolower(trim(pathinfo($cleanFilename, PATHINFO_EXTENSION)));
 
         return $this->mimeCache[$ext] ??= self::MIME_TYPES[$ext] ?? 'application/octet-stream';
     }
 
-    private function isImage(string $filename): bool
+    private function getExtension(string $filename): string
     {
-        return strpos($this->getMimeType($filename), 'image/') === 0;
+        $cleanFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
+        $cleanFilename = trim($cleanFilename);
+        return strtolower(trim(pathinfo($cleanFilename, PATHINFO_EXTENSION)));
     }
 
-    private function isVideo(string $filename): bool
+    private function isImageByExtension(string $filename): bool
     {
-        return strpos($this->getMimeType($filename), 'video/') === 0;
+        return in_array($this->getExtension($filename), self::IMAGE_EXTENSIONS, true);
+    }
+
+    private function isVideoByExtension(string $filename): bool
+    {
+        return in_array($this->getExtension($filename), self::VIDEO_EXTENSIONS, true);
     }
 
     private function cleanUnicodeCharacters(string $text): string
@@ -238,36 +270,18 @@ class PawchiveBridge extends BridgeAbstract
         );
     }
 
-    private function renderFileLink(string $url, string $filename): string
-    {
-        return sprintf(
-            '<a href="%s" style="%s">%s</a>',
-            htmlspecialchars($url, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
-            self::CSS['file-link'],
-            htmlspecialchars($filename, ENT_QUOTES | ENT_HTML5, 'UTF-8')
-        );
-    }
-
-    private function renderHiddenVideoIndicator(int $count): string
-    {
-        $text = $count === 1 ? '+1 video in post' : sprintf('+%d videos in post', $count);
-        return sprintf('<div style="%s">%s</div>', self::CSS['video-indicator'], htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-    }
-
     private function renderExternalLink(string $url): string
     {
         $escapedUrl = htmlspecialchars($url, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         return sprintf(
-            '<div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:5px;"><strong>External Link:</strong><br><a href="%s" style="%s">%s</a></div>',
+            '<div style="%s"><strong>External Link:</strong><br><a href="%s" style="%s">%s</a></div>',
+            self::CSS['external-link-container'],
             $escapedUrl,
             self::CSS['url-link'],
             $escapedUrl
         );
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     private function getJson(string $endpoint): array
     {
         $service = $this->getInput('service');
@@ -292,12 +306,17 @@ class PawchiveBridge extends BridgeAbstract
         $files = [];
 
         if (!empty($post['file']['path'])) {
-            $files[] = $post['file'];
+            $file = $post['file'];
+            $file['name'] = isset($file['name']) ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name'])) : null;
+            $file['path'] = trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['path']));
+            $files[] = $file;
         }
 
         if (!empty($post['attachments']) && is_array($post['attachments'])) {
             foreach ($post['attachments'] as $file) {
                 if (!empty($file['path'])) {
+                    $file['name'] = isset($file['name']) ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name'])) : null;
+                    $file['path'] = trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['path']));
                     $files[] = $file;
                 }
             }
@@ -306,41 +325,81 @@ class PawchiveBridge extends BridgeAbstract
         return $files;
     }
 
-    private function processFiles(array $files, bool $hasFull, bool $hideVideos, string &$contentHtml, array &$enclosures): int
+    private function processFiles(array $files, bool $hideAttachments, string &$contentHtml, array &$downloadLinks): void
     {
-        $hiddenVideoCount = 0;
+        $containerStyle = self::CSS['file-container'];
 
         foreach ($files as $file) {
             $fileName = $file['name'] ?? basename($file['path']);
+            $fileName = trim($fileName);
 
-            if ($this->isVideo($fileName) && $hideVideos) {
-                $hiddenVideoCount++;
+            if ($fileName === '') {
                 continue;
             }
 
-            $fileUrl = $hasFull ? $this->getFileUrl($file['path'], $fileName) : $this->getThumbnailUrl($file['path'], $fileName);
+            $thumbnailUrl = $this->getThumbnailUrl($file['path'], $fileName);
+            $fullUrl = $this->getFileUrl($file['path'], $fileName);
 
-            if ($this->isImage($fileName)) {
-                $contentHtml .= $this->renderImage($fileUrl, $fileName);
-            } elseif ($this->isVideo($fileName)) {
-                $contentHtml .= $this->renderVideo($fileUrl, $this->getMimeType($fileName));
-            } else {
-                if ($hasFull) {
-                    $enclosures[] = $fileUrl;
+            if ($this->isImageByExtension($fileName)) {
+                $contentHtml .= sprintf('<div style="%s">%s</div>', $containerStyle, $this->renderImage($thumbnailUrl, $fileName));
+                if (!$hideAttachments) {
+                    $downloadLinks[] = ['url' => $fullUrl, 'name' => $fileName];
                 }
-                $contentHtml .= $this->renderFileLink($fileUrl, $fileName);
+            } elseif ($this->isVideoByExtension($fileName)) {
+                if (!$hideAttachments) {
+                    $contentHtml .= sprintf('<div style="%s">%s</div>', $containerStyle, $this->renderVideo($fullUrl, $this->getMimeType($fileName)));
+                    $downloadLinks[] = ['url' => $fullUrl, 'name' => $fileName];
+                }
+            } else {
+                if (!$hideAttachments) {
+                    $downloadLinks[] = ['url' => $fullUrl, 'name' => $fileName];
+                }
             }
         }
+    }
 
-        return $hiddenVideoCount;
+    private function renderAttachmentsBlock(array $downloadLinks): string
+    {
+        if (empty($downloadLinks)) {
+            return '';
+        }
+
+        $itemsHtml = '';
+        $linkStyle = self::CSS['file-link'];
+        $itemStyle = self::CSS['attachments-item'];
+
+        foreach ($downloadLinks as $link) {
+            $itemsHtml .= sprintf(
+                '<li style="%s"><a href="%s" style="%s" download>%s</a></li>',
+                $itemStyle,
+                htmlspecialchars($link['url'], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                $linkStyle,
+                htmlspecialchars($link['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8')
+            );
+        }
+
+        return sprintf(
+            '<div style="%s"><h4 style="%s">Attachments</h4><ul style="%s">%s</ul></div>',
+            self::CSS['attachments-container'],
+            self::CSS['attachments-heading'],
+            self::CSS['attachments-list'],
+            $itemsHtml
+        );
+    }
+
+    public function getIcon(): string
+    {
+        return $this->authorAvatarUrl ?? parent::getIcon();
     }
 
     public function collectData(): void
     {
+        $service = $this->getInput('service');
         $user = '/user/' . $this->getInput('user');
 
         $profile = $this->getJson("{$user}/profile");
         $this->author = $profile['name'] ?? 'Unknown';
+        $this->authorAvatarUrl = $this->getAvatarUrl($service, (string)$this->getInput('user'));
 
         $q = urlencode($this->getInput('q') ?? '');
         $json = $this->getJson("{$user}?q={$q}");
@@ -349,18 +408,29 @@ class PawchiveBridge extends BridgeAbstract
             return;
         }
 
-        $hideVideos = (bool) $this->getInput('hide_videos');
+        $hideAttachments = (bool) $this->getInput('hide_videos');
         $elements = array_slice($json, 0, $this->getInput('limit'));
 
         foreach ($elements as $post) {
-            $item = $this->createItem($post, $hideVideos);
+            $item = $this->createItem($post, $hideAttachments);
             $this->items[] = $item;
         }
     }
 
-    private function createItem(array $post, bool $hideVideos): array
+    private function createItem(array $post, bool $hideAttachments): array
     {
         $content = $this->sanitizeHtml($post['content'] ?? '');
+        
+        $files = $this->collectFiles($post);
+        
+        foreach ($files as $file) {
+            $fileName = $file['name'] ?? basename($file['path']);
+            $fileName = trim($fileName);
+            if ($fileName !== '') {
+                $content = preg_replace('/(?<![a-zA-Z0-9])' . preg_quote($fileName, '/') . '(?![a-zA-Z0-9])/i', '', $content);
+            }
+        }
+        
         $content = $this->formatUrlsInText($content);
 
         $item = [
@@ -370,24 +440,18 @@ class PawchiveBridge extends BridgeAbstract
             'title' => $this->sanitizeText($post['title'] ?? 'Post ' . $post['id']),
             'uid' => $post['id'],
             'uri' => $this->getURI() . '/post/' . $post['id'],
-            'enclosures' => [],
         ];
 
         $contentHtml = $item['content'];
 
         if (!empty($post['embed']['url'])) {
             $contentHtml .= $this->renderExternalLink($post['embed']['url']);
-            $item['enclosures'][] = $post['embed']['url'];
         }
 
-        $files = $this->collectFiles($post);
-        $hasFull = $post['has_full'] ?? true;
+        $downloadLinks = [];
+        $this->processFiles($files, $hideAttachments, $contentHtml, $downloadLinks);
 
-        $hiddenVideoCount = $this->processFiles($files, $hasFull, $hideVideos, $contentHtml, $item['enclosures']);
-
-        if ($hiddenVideoCount > 0) {
-            $contentHtml .= $this->renderHiddenVideoIndicator($hiddenVideoCount);
-        }
+        $contentHtml .= $this->renderAttachmentsBlock($downloadLinks);
 
         $item['content'] = $contentHtml;
 
