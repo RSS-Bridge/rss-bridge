@@ -68,8 +68,12 @@ class CacheFactory
                 } elseif (!is_dir(dirname($file))) {
                     throw new \Exception(sprintf('Invalid configuration for %s', 'SQLiteCache'));
                 }
-                if (!is_writable(dirname($file))) {
-                    throw new \Exception('The directory of the SQLiteCache file is not writable');
+                $dir = dirname($file);
+                if (!is_writable($dir)) {
+                    throw new \Exception(sprintf('The directory for the SQLiteCache file is not writable: %s', $dir));
+                }
+                if (file_exists($file) && !is_writable($file)) {
+                    throw new \Exception(sprintf('The SQLiteCache file is not writable: %s', $file));
                 }
                 return new SQLiteCache($this->logger, [
                     'file'          => $file,
