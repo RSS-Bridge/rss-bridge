@@ -34,7 +34,7 @@ class PawchiveBridge extends BridgeAbstract
         ],
         'limit' => self::LIMIT,
         'hide_videos' => [
-            'name' => 'Hide videos completely',
+            'name' => 'Hide videos',
             'type' => 'checkbox',
             'title' => 'Completely hide video files from posts to save bandwidth. Videos will not be shown or linked at all.',
             'defaultValue' => false
