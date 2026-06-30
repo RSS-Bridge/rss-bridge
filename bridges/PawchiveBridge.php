@@ -420,9 +420,9 @@ class PawchiveBridge extends BridgeAbstract
     private function createItem(array $post, bool $hideAttachments): array
     {
         $content = $this->sanitizeHtml($post['content'] ?? '');
-        
+
         $files = $this->collectFiles($post);
-        
+
         foreach ($files as $file) {
             $fileName = $file['name'] ?? basename($file['path']);
             $fileName = trim($fileName);
@@ -430,7 +430,7 @@ class PawchiveBridge extends BridgeAbstract
                 $content = preg_replace('/(?<![a-zA-Z0-9])' . preg_quote($fileName, '/') . '(?![a-zA-Z0-9])/i', '', $content);
             }
         }
-        
+
         $content = $this->formatUrlsInText($content);
 
         $item = [
