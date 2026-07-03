@@ -108,8 +108,8 @@ class BandcampBridge extends BridgeAbstract
     {
         switch ($this->queriedContext) {
             case 'By tag':
-                $url = self::URI . 'api/hub/1/dig_deeper';
-                $data = $this->buildRequestJson();
+                $url = self::URI . 'api/discover/1/discover_web';
+                $data = $this->buildTagRequestJson();
                 $header = [
                     'Content-Type: application/json',
                     'Content-Length: ' . strlen($data),
@@ -122,34 +122,13 @@ class BandcampBridge extends BridgeAbstract
 
                 $json = json_decode($content);
 
-                if ($json->ok !== true) {
+                if (!isset($json->results) || !is_array($json->results)) {
+                    $this->logger->info('Invalid bandcamp response', ['response' => mb_substr($content, 0, 500)]);
                     throwServerException('Invalid response');
                 }
 
-                foreach ($json->items as $entry) {
-                    $url = $entry->tralbum_url;
-                    $artist = $entry->artist;
-                    $title = $entry->title;
-                    // e.g. record label is the releaser, but not the artist
-                    $releaser = $entry->band_name !== $entry->artist ? $entry->band_name : null;
-
-                    $full_title = $artist . ' - ' . $title;
-                    $full_artist = $artist;
-                    if (isset($releaser)) {
-                        $full_title .= ' (' . $releaser . ')';
-                        $full_artist .= ' (' . $releaser . ')';
-                    }
-                    $small_img = $this->getImageUrl($entry->art_id, self::IMGSIZE_300PX);
-                    $img = $this->getImageUrl($entry->art_id, self::IMGSIZE_700PX);
-
-                    $item = [
-                    'uri' => $url,
-                    'author' => $full_artist,
-                    'title' => $full_title
-                    ];
-                    $item['content'] = "<img src='$small_img' /><br/>$full_title";
-                    $item['enclosures'] = [$img];
-                    $this->items[] = $item;
+                foreach ($json->results as $entry) {
+                    $this->items[] = $this->buildTagItem($entry);
                 }
                 break;
             case 'By band':
@@ -230,6 +209,44 @@ class BandcampBridge extends BridgeAbstract
         }
     }
 
+    /*
+     * Builds a feed item from one entry of the discover_web API's "results" array.
+     * Each $entry is a release object with the fields:
+     *   item_url       string   public URL of the album/track
+     *   title          string   release title
+     *   band_name      string   name the release is published under (band or label)
+     *   album_artist   ?string  artist name; null when it equals the band itself
+     *   primary_image  ?object  cover art; ->image_id (int) builds the art URL
+     *   result_type    string   'a' = album, 't' = track
+     */
+    private function buildTagItem($entry)
+    {
+        $url = $entry->item_url;
+        // album_artist is null when the release artist is the band itself
+        $artist = $entry->album_artist ?? $entry->band_name;
+        $title = $entry->title;
+        // e.g. record label is the releaser, but not the artist
+        $releaser = $entry->band_name !== $artist ? $entry->band_name : null;
+
+        $full_title = $artist . ' - ' . $title;
+        $full_artist = $artist;
+        if (isset($releaser)) {
+            $full_title .= ' (' . $releaser . ')';
+            $full_artist .= ' (' . $releaser . ')';
+        }
+        $art_id = $entry->primary_image->image_id ?? null;
+        $small_img = $this->getImageUrl($art_id, self::IMGSIZE_300PX);
+        $img = $this->getImageUrl($art_id, self::IMGSIZE_700PX);
+
+        return [
+            'uri' => $url,
+            'author' => $full_artist,
+            'title' => $full_title,
+            'content' => "<img src='$small_img' /><br/>$full_title",
+            'enclosures' => [$img],
+        ];
+    }
+
     private function buildTralbumItem($tralbum_data)
     {
         $band_data = $tralbum_data->band;
@@ -295,12 +312,17 @@ class BandcampBridge extends BridgeAbstract
         return $item;
     }
 
-    private function buildRequestJson()
+    private function buildTagRequestJson()
     {
         $requestJson = [
-            'tag' => $this->getInput('tag'),
-            'page' => 1,
-            'sort' => 'date'
+            'tag_norm_names' => [$this->getInput('tag')],
+            'category_id' => 0,
+            'geoname_id' => 0,
+            'slice' => 'new',
+            'time_facet_id' => null,
+            'cursor' => '*',
+            'size' => 60,
+            'include_result_types' => ['a', 's'],
         ];
         return json_encode($requestJson);
     }
