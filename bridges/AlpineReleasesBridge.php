@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-class AlpineReleasesBridge extends BridgeAbstract {
+class AlpineReleasesBridge extends BridgeAbstract
+{
     const NAME = 'Alpine Releases';
     const URI = 'https://alpinelinux.org/releases/';
     const DESCRIPTION = 'Alpine Linux releases with branch info';
@@ -19,29 +20,38 @@ class AlpineReleasesBridge extends BridgeAbstract {
         'td_version' => 'padding:6px 10px;border:1px solid #ddd;font-weight:bold',
     ];
 
-    public function collectData(): void {
+    public function collectData(): void
+    {
         $branches = $this->getBranchesInfo();
         $feed = simplexml_load_string(getContents('https://alpinelinux.org/atom.xml'));
-        
-        if (!$feed) return;
+
+        if (!$feed) {
+            return;
+        }
 
         foreach ($feed->entry as $entry) {
             $title = (string)$entry->title;
-            
-            if (!preg_match('/alpine.*\d+\.\d+(\.\d+)?.*(released|releases)/i', $title)) continue;
-            
+
+            if (!preg_match('/alpine.*\d+\.\d+(\.\d+)?.*(released|releases)/i', $title)) {
+                continue;
+            }
+
             preg_match_all('/(\d+\.\d+(?:\.\d+)?)/', $title, $matches);
             $versions = $matches[1] ?? [];
-            
+
             $timestamp = isset($entry->updated) ? strtotime((string)$entry->updated) ?: 0 : 0;
-            
+
             $content = (string)($entry->content ?? $entry->summary ?? '');
             $plainContent = trim(strip_tags($content));
-            if ($plainContent === $title || $plainContent === '') $content = '';
-            
+            if ($plainContent === $title || $plainContent === '') {
+                $content = '';
+            }
+
             $branchesMeta = $this->buildBranchesMeta($versions, $branches);
-            if ($branchesMeta) $content = $branchesMeta . ($content ? "<br>$content" : '');
-            
+            if ($branchesMeta) {
+                $content = $branchesMeta . ($content ? "<br>$content" : '');
+            }
+
             $this->items[] = [
                 'title'     => $title,
                 'uri'       => (string)($entry->link['href'] ?? ''),
@@ -51,72 +61,118 @@ class AlpineReleasesBridge extends BridgeAbstract {
                 'content'   => $content ?: $title,
             ];
         }
-        
-        usort($this->items, fn($a, $b) => $b['timestamp'] - $a['timestamp']);
+
+        usort($this->items, function ($a, $b) {
+            return $b['timestamp'] - $a['timestamp'];
+        });
     }
-    
-    private function cleanText(string $text): string {
-        if (!$text) return '';
-        
+
+    private function cleanText(string $text): string
+    {
+        if (!$text) {
+            return '';
+        }
+
         $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = str_replace(["\xE2\x80\xA2", "\xC2\xB7", "\xE2\x97\x8F", "\xE2\x97\x8B", "\xE2\x97\xA6", "\xE2\xA6\xBF"], ' ', $text);
+        $bullets = [
+            "\xE2\x80\xA2",
+            "\xC2\xB7",
+            "\xE2\x97\x8F",
+            "\xE2\x97\x8B",
+            "\xE2\x97\xA6",
+            "\xE2\xA6\xBF",
+        ];
+        $text = str_replace($bullets, ' ', $text);
         $text = preg_replace('/\s+/u', ' ', $text);
-        
+
         return is_string($text) ? trim($text) : '';
     }
-    
-    private function getBranchesInfo(): array {
+
+    private function getBranchesInfo(): array
+    {
         $html = getSimpleHTMLDOMCached(self::URI, 86400);
-        if (!$html) return [];
-        
+        if (!$html) {
+            return [];
+        }
+
         $branches = [];
-        
+
         foreach ($html->find('table tr') as $row) {
             $cells = $row->find('td');
-            if (count($cells) < 5) continue;
-            
+            if (count($cells) < 5) {
+                continue;
+            }
+
             $branchName = $this->cleanText((string)($cells[0]->plaintext ?? ''));
-            if (strpos($branchName, 'v') === 0) $branchName = substr($branchName, 1);
-            
+            if (strpos($branchName, 'v') === 0) {
+                $branchName = substr($branchName, 1);
+            }
+
             $branchDate = $this->cleanText((string)($cells[1]->plaintext ?? ''));
             $endOfSupport = $this->cleanText((string)($cells[4]->plaintext ?? ''));
-            
+
             preg_match_all('/(\d+\.\d+(?:\.\d+)?)/', (string)$cells[3]->plaintext, $matches);
-            
+
             foreach ($matches[1] ?? [] as $version) {
                 $branches[$version] = compact('branchName', 'branchDate', 'endOfSupport');
             }
         }
-        
+
         return $branches;
     }
-    
-    private function buildBranchesMeta(array $versions, array $branches): string {
-        usort($versions, fn($a, $b) => version_compare($b, $a));
-        
+
+    private function buildBranchesMeta(array $versions, array $branches): string
+    {
+        usort($versions, function ($a, $b) {
+            return version_compare($b, $a);
+        });
+
         $rows = '';
         foreach ($versions as $i => $version) {
-            if (!isset($branches[$version])) continue;
-            
+            if (!isset($branches[$version])) {
+                continue;
+            }
+
             $info = $branches[$version];
             $rowStyle = $i % 2 ? self::CSS['tr_even'] : self::CSS['tr_odd'];
-            $esc = fn($s) => htmlspecialchars($s ?: '', ENT_QUOTES, 'UTF-8');
-            
+            $esc = function ($s) {
+                return htmlspecialchars($s ?: '', ENT_QUOTES, 'UTF-8');
+            };
+
             $rows .= sprintf(
                 '<tr style="%s"><td style="%s">%s</td><td style="%s">%s</td><td style="%s">%s</td><td style="%s">%s</td></tr>',
-                $rowStyle, self::CSS['td_version'], $esc($version),
-                self::CSS['td'], $esc($info['branchName']),
-                self::CSS['td'], $esc($info['branchDate']),
-                self::CSS['td'], $esc($info['endOfSupport'])
+                $rowStyle,
+                self::CSS['td_version'],
+                $esc($version),
+                self::CSS['td'],
+                $esc($info['branchName']),
+                self::CSS['td'],
+                $esc($info['branchDate']),
+                self::CSS['td'],
+                $esc($info['endOfSupport'])
             );
         }
-        
-        if (!$rows) return '';
-        
+
+        if (!$rows) {
+            return '';
+        }
+
         $th = self::CSS['th'];
         return sprintf(
-            '<table style="%s"><thead style="%s"><tr><th style="%s">Version</th><th style="%s">Branch</th><th style="%s">Branch date</th><th style="%s">End of support</th></tr></thead><tbody>%s</tbody></table>',
-            self::CSS['table'], self::CSS['thead'], $th, $th, $th, $th, $rows
+            '<table style="%s">'
+            . '<thead style="%s"><tr>'
+            . '<th style="%s">Version</th>'
+            . '<th style="%s">Branch</th>'
+            . '<th style="%s">Branch date</th>'
+            . '<th style="%s">End of support</th>'
+            . '</tr></thead><tbody>%s</tbody></table>',
+            self::CSS['table'],
+            self::CSS['thead'],
+            $th,
+            $th,
+            $th,
+            $th,
+            $rows
         );
     }
 }
