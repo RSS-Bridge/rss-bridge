@@ -158,9 +158,17 @@ class AlpineReleasesBridge extends BridgeAbstract
         }
 
         $th = self::CSS['th'];
-        $template = <<<'HTML'
-<table style="%s"><thead style="%s"><tr><th style="%s">Version</th><th style="%s">Branch</th><th style="%s">Branch date</th><th style="%s">End of support</th></tr></thead><tbody>%s</tbody></table>
-HTML;
+        $template = implode('', [
+            '<table style="%s">',
+            '<thead style="%s"><tr>',
+            '<th style="%s">Version</th>',
+            '<th style="%s">Branch</th>',
+            '<th style="%s">Branch date</th>',
+            '<th style="%s">End of support</th>',
+            '</tr></thead>',
+            '<tbody>%s</tbody>',
+            '</table>',
+        ]);
 
         return sprintf(
             $template,
