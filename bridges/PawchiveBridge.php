@@ -34,7 +34,13 @@ class PawchiveBridge extends BridgeAbstract
         'hide_videos' => [
             'name' => 'Hide videos & attachments',
             'type' => 'checkbox',
-            'title' => 'Show only image previews. Videos, full-size images and file attachments will be completely hidden.',
+            'title' => 'Show only image previews. Videos, full-size images and file attachments will be completely hidden',
+            'defaultValue' => false
+        ],
+        'hide_empty' => [
+            'name' => 'Hide posts without media',
+            'type' => 'checkbox',
+            'title' => 'Skip posts without media (text-only posts will be hidden)',
             'defaultValue' => false
         ],
     ]];
@@ -209,6 +215,32 @@ class PawchiveBridge extends BridgeAbstract
     private function isVideoByExtension(string $filename): bool
     {
         return in_array($this->getExtension($filename), self::VIDEO_EXTENSIONS, true);
+    }
+
+    private function isMediaByExtension(string $filename): bool
+    {
+        return $this->isImageByExtension($filename) || $this->isVideoByExtension($filename);
+    }
+
+    private function hasMedia(array $post): bool
+    {
+        if (!empty($post['file']['path'])) {
+            $name = $post['file']['name'] ?? basename($post['file']['path']);
+            if ($this->isMediaByExtension((string)$name)) {
+                return true;
+            }
+        }
+        if (!empty($post['attachments']) && is_array($post['attachments'])) {
+            foreach ($post['attachments'] as $file) {
+                if (!empty($file['path'])) {
+                    $name = $file['name'] ?? basename($file['path']);
+                    if ($this->isMediaByExtension((string)$name)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private function cleanUnicodeCharacters(string $text): string
@@ -448,15 +480,33 @@ class PawchiveBridge extends BridgeAbstract
         $profile = $this->getJson("{$user}/profile");
         $this->author = $profile['name'] ?? 'Unknown';
         $this->authorAvatarUrl = $this->getAvatarUrl($service, (string)$this->getInput('user'));
-        $q = urlencode($this->getInput('q') ?? '');
-        $json = $this->getJson("{$user}?q={$q}");
+
+        $queryParams = [];
+        $q = $this->getInput('q');
+        if ($q !== null && $q !== '') {
+            $queryParams['q'] = $q;
+        }
+        $queryString = $queryParams ? '?' . http_build_query($queryParams) : '';
+
+        $json = $this->getJson("{$user}{$queryString}");
         if (empty($json)) {
             return;
         }
+
         $hideAttachments = (bool)$this->getInput('hide_videos');
-        $elements = array_slice($json, 0, $this->getInput('limit'));
-        foreach ($elements as $post) {
+        $hideEmpty = (bool)$this->getInput('hide_empty');
+        $limit = $this->getInput('limit');
+
+        $count = 0;
+        foreach ($json as $post) {
+            if ($hideEmpty && !$this->hasMedia($post)) {
+                continue;
+            }
             $this->items[] = $this->createItem($post, $hideAttachments);
+            $count++;
+            if ($limit !== null && $count >= $limit) {
+                break;
+            }
         }
     }
 
