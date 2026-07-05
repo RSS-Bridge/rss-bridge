@@ -11,8 +11,6 @@ class PawchiveBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 3600;
 
     const API_PREFIX = 'api/v1/';
-    const FILE_DOMAIN = 'https://file.pawchive.st';
-    const THUMBNAIL_DOMAIN = 'https://img.pawchive.st';
 
     const PARAMETERS = [[
         'service' => [
@@ -116,24 +114,57 @@ class PawchiveBridge extends BridgeAbstract
         'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36'
     ];
 
+    private const DOMAINS = ['pawchive.st', 'pawchive.pw'];
+    private const CACHE_KEY_ACTIVE_DOMAIN = 'active_domain';
+
     private ?string $author = null;
     private ?string $authorAvatarUrl = null;
     private array $mimeCache = [];
+    private ?string $activeDomainHost = null;
+
+    private function getActiveDomainHost(): string
+    {
+        if ($this->activeDomainHost === null) {
+            $cached = $this->loadCacheValue(self::CACHE_KEY_ACTIVE_DOMAIN);
+            if (is_string($cached) && in_array($cached, self::DOMAINS, true)) {
+                $this->activeDomainHost = $cached;
+            } else {
+                $this->activeDomainHost = self::DOMAINS[0];
+            }
+        }
+        return $this->activeDomainHost;
+    }
+
+    private function setActiveDomainHost(string $host): void
+    {
+        $this->activeDomainHost = $host;
+        $this->saveCacheValue(self::CACHE_KEY_ACTIVE_DOMAIN, $host, self::CACHE_TIMEOUT);
+    }
 
     private function baseURI(): string
     {
-        return 'https://pawchive.st/';
+        return 'https://' . $this->getActiveDomainHost() . '/';
+    }
+
+    private function getFileDomain(): string
+    {
+        return 'https://file.' . $this->getActiveDomainHost();
+    }
+
+    private function getThumbnailDomain(): string
+    {
+        return 'https://img.' . $this->getActiveDomainHost();
     }
 
     private function getFileUrl(string $path, ?string $filename = null): string
     {
-        $url = self::FILE_DOMAIN . '/data' . $path;
+        $url = $this->getFileDomain() . '/data' . $path;
         return $filename !== null ? $url . '?f=' . urlencode($filename) : $url;
     }
 
     private function getThumbnailUrl(string $path, ?string $filename = null): string
     {
-        $url = self::THUMBNAIL_DOMAIN . '/thumbnail/data' . $path;
+        $url = $this->getThumbnailDomain() . '/thumbnail/data' . $path;
         return $filename !== null ? $url . '?f=' . urlencode($filename) : $url;
     }
 
@@ -142,12 +173,24 @@ class PawchiveBridge extends BridgeAbstract
         return $this->baseURI() . 'icons/' . $service . '/' . $userId;
     }
 
+    private function normalizeUrls(string $content): string
+    {
+        $activeHost = $this->getActiveDomainHost();
+        foreach (self::DOMAINS as $host) {
+            if ($host !== $activeHost) {
+                $content = str_replace('https://' . $host, 'https://' . $activeHost, $content);
+                $content = str_replace('https://file.' . $host, 'https://file.' . $activeHost, $content);
+                $content = str_replace('https://img.' . $host, 'https://img.' . $activeHost, $content);
+            }
+        }
+        return $content;
+    }
+
     private function getMimeType(string $filename): string
     {
         $cleanFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
         $cleanFilename = trim($cleanFilename);
         $ext = strtolower(trim(pathinfo($cleanFilename, PATHINFO_EXTENSION)));
-
         return $this->mimeCache[$ext] ??= self::MIME_TYPES[$ext] ?? 'application/octet-stream';
     }
 
@@ -175,18 +218,15 @@ class PawchiveBridge extends BridgeAbstract
             fn(): string => '',
             $text
         );
-
         return preg_replace(['/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '/[\x{FFFE}\x{FEFF}]/u'], '', $text);
     }
 
     private function formatUrlsInText(string $text): string
     {
         $parts = preg_split('/(<[^>]+>)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
-
         $inAnchor = false;
         $result = '';
         $style = self::CSS['url-link'];
-
         foreach ($parts as $part) {
             if (preg_match('/^<a\b/i', $part)) {
                 $inAnchor = true;
@@ -204,10 +244,8 @@ class PawchiveBridge extends BridgeAbstract
                     $part
                 );
             }
-
             $result .= $part;
         }
-
         return $result;
     }
 
@@ -216,9 +254,7 @@ class PawchiveBridge extends BridgeAbstract
         if ($html === '') {
             return '';
         }
-
         $html = $this->cleanUnicodeCharacters($html);
-
         $replacements = [
             '/<p>\s*<\/p>/i' => '',
             '/<div>\s*<\/div>/i' => '',
@@ -229,7 +265,6 @@ class PawchiveBridge extends BridgeAbstract
             '/&nbsp;/i' => ' ',
             '/\s{2,}/' => ' ',
         ];
-
         return trim(preg_replace(array_keys($replacements), array_values($replacements), $html));
     }
 
@@ -238,15 +273,12 @@ class PawchiveBridge extends BridgeAbstract
         if ($text === '') {
             return '';
         }
-
         $text = $this->cleanUnicodeCharacters($text);
-
         $replacements = [
             '/\h+/' => ' ',
             '/^\s*\n/m' => '',
             '/\n{3,}/' => "\n\n",
         ];
-
         return trim(preg_replace(array_keys($replacements), array_values($replacements), $text));
     }
 
@@ -285,33 +317,44 @@ class PawchiveBridge extends BridgeAbstract
     private function getJson(string $endpoint): array
     {
         $service = $this->getInput('service');
-        $url = $this->baseURI() . self::API_PREFIX . $service . $endpoint;
-
         $headers = array_merge(self::HTTP_HEADERS, [
             'Cookie: session=' . $this->getOption('session')
         ]);
-
-        try {
-            $api_response = getContents($url, $headers);
-            $data = Json::decode($api_response);
-
-            return is_array($data) ? $data : [];
-        } catch (\Exception $e) {
-            return [];
+        $curlOptions = [
+            CURLOPT_FOLLOWLOCATION => false,
+        ];
+        $activeHost = $this->getActiveDomainHost();
+        $hostsToTry = [$activeHost];
+        foreach (self::DOMAINS as $host) {
+            if ($host !== $activeHost) {
+                $hostsToTry[] = $host;
+            }
         }
+        foreach ($hostsToTry as $host) {
+            $url = 'https://' . $host . '/' . self::API_PREFIX . $service . $endpoint;
+            try {
+                $api_response = getContents($url, $headers, $curlOptions);
+                $data = Json::decode($api_response);
+                if (is_array($data)) {
+                    $this->setActiveDomainHost($host);
+                    return $data;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+        return [];
     }
 
     private function collectFiles(array $post): array
     {
         $files = [];
-
         if (!empty($post['file']['path'])) {
             $file = $post['file'];
             $file['name'] = isset($file['name']) ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name'])) : null;
             $file['path'] = trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['path']));
             $files[] = $file;
         }
-
         if (!empty($post['attachments']) && is_array($post['attachments'])) {
             foreach ($post['attachments'] as $file) {
                 if (!empty($file['path'])) {
@@ -321,25 +364,20 @@ class PawchiveBridge extends BridgeAbstract
                 }
             }
         }
-
         return $files;
     }
 
     private function processFiles(array $files, bool $hideAttachments, string &$contentHtml, array &$downloadLinks): void
     {
         $containerStyle = self::CSS['file-container'];
-
         foreach ($files as $file) {
             $fileName = $file['name'] ?? basename($file['path']);
             $fileName = trim($fileName);
-
             if ($fileName === '') {
                 continue;
             }
-
             $thumbnailUrl = $this->getThumbnailUrl($file['path'], $fileName);
             $fullUrl = $this->getFileUrl($file['path'], $fileName);
-
             if ($this->isImageByExtension($fileName)) {
                 $contentHtml .= sprintf('<div style="%s">%s</div>', $containerStyle, $this->renderImage($thumbnailUrl, $fileName));
                 if (!$hideAttachments) {
@@ -363,11 +401,9 @@ class PawchiveBridge extends BridgeAbstract
         if (empty($downloadLinks)) {
             return '';
         }
-
         $itemsHtml = '';
         $linkStyle = self::CSS['file-link'];
         $itemStyle = self::CSS['attachments-item'];
-
         foreach ($downloadLinks as $link) {
             $itemsHtml .= sprintf(
                 '<li style="%s"><a href="%s" style="%s" download>%s</a></li>',
@@ -377,7 +413,6 @@ class PawchiveBridge extends BridgeAbstract
                 htmlspecialchars($link['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8')
             );
         }
-
         return sprintf(
             '<div style="%s"><h4 style="%s">Attachments</h4><ul style="%s">%s</ul></div>',
             self::CSS['attachments-container'],
@@ -389,40 +424,48 @@ class PawchiveBridge extends BridgeAbstract
 
     public function getIcon(): string
     {
-        return $this->authorAvatarUrl ?? parent::getIcon();
+        $icon = $this->authorAvatarUrl ?? parent::getIcon();
+        return $this->normalizeUrls($icon);
+    }
+
+    public function getURI(): string
+    {
+        $service = $this->getInput('service');
+        $user = $this->getInput('user');
+        $uri = $this->baseURI() . $service . '/user/' . $user;
+        return $this->normalizeUrls($uri);
+    }
+
+    public function getName(): string
+    {
+        return $this->author ?? parent::getName();
     }
 
     public function collectData(): void
     {
         $service = $this->getInput('service');
         $user = '/user/' . $this->getInput('user');
-
         $profile = $this->getJson("{$user}/profile");
         $this->author = $profile['name'] ?? 'Unknown';
         $this->authorAvatarUrl = $this->getAvatarUrl($service, (string)$this->getInput('user'));
-
         $q = urlencode($this->getInput('q') ?? '');
         $json = $this->getJson("{$user}?q={$q}");
-
         if (empty($json)) {
             return;
         }
-
-        $hideAttachments = (bool) $this->getInput('hide_videos');
+        $hideAttachments = (bool)$this->getInput('hide_videos');
         $elements = array_slice($json, 0, $this->getInput('limit'));
-
         foreach ($elements as $post) {
-            $item = $this->createItem($post, $hideAttachments);
-            $this->items[] = $item;
+            $this->items[] = $this->createItem($post, $hideAttachments);
         }
     }
 
     private function createItem(array $post, bool $hideAttachments): array
     {
-        $content = $this->sanitizeHtml($post['content'] ?? '');
-
+        $content = $post['content'] ?? '';
+        $content = $this->normalizeUrls($content);
+        $content = $this->sanitizeHtml($content);
         $files = $this->collectFiles($post);
-
         foreach ($files as $file) {
             $fileName = $file['name'] ?? basename($file['path']);
             $fileName = trim($fileName);
@@ -430,9 +473,7 @@ class PawchiveBridge extends BridgeAbstract
                 $content = preg_replace('/(?<![a-zA-Z0-9])' . preg_quote($fileName, '/') . '(?![a-zA-Z0-9])/i', '', $content);
             }
         }
-
         $content = $this->formatUrlsInText($content);
-
         $item = [
             'author' => $this->author,
             'content' => $content,
@@ -441,33 +482,28 @@ class PawchiveBridge extends BridgeAbstract
             'uid' => $post['id'],
             'uri' => $this->getURI() . '/post/' . $post['id'],
         ];
-
         $contentHtml = $item['content'];
-
         if (!empty($post['embed']['url'])) {
-            $contentHtml .= $this->renderExternalLink($post['embed']['url']);
+            $contentHtml .= $this->renderExternalLink($this->normalizeUrls($post['embed']['url']));
         }
-
         $downloadLinks = [];
         $this->processFiles($files, $hideAttachments, $contentHtml, $downloadLinks);
-
         $contentHtml .= $this->renderAttachmentsBlock($downloadLinks);
-
         $item['content'] = $contentHtml;
-
         return $item;
     }
 
-    public function getName(): string
+    public function getItems(): array
     {
-        return $this->author ?? parent::getName();
-    }
-
-    public function getURI(): string
-    {
-        $service = $this->getInput('service');
-        $user = $this->getInput('user');
-
-        return $this->baseURI() . $service . '/user/' . $user;
+        $items = parent::getItems();
+        foreach ($items as &$item) {
+            if (isset($item['content'])) {
+                $item['content'] = $this->normalizeUrls($item['content']);
+            }
+            if (isset($item['uri'])) {
+                $item['uri'] = $this->normalizeUrls($item['uri']);
+            }
+        }
+        return $items;
     }
 }
