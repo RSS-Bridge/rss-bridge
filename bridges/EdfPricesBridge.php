@@ -109,7 +109,7 @@ class EdfPricesBridge extends BridgeAbstract
         $contract = $contractKey ? self::CONTRACTS[$contractKey] : null;
 
         if (!$contract) {
-            returnServerError('Contrat EDF inconnu: "' . $rawContract . '".');
+            throwServerException('Contrat EDF inconnu: "' . $rawContract . '".');
         }
 
         $contractUri = $contract['path'] . '#' . $contract['heading'];
@@ -117,17 +117,21 @@ class EdfPricesBridge extends BridgeAbstract
 
         $headingDom = $html->find('#' . $contract['heading'], 0);
         if (!$headingDom) {
-            returnServerError(
-                'Impossible de trouver la section "' . $contract['label'] . '" sur la page EDF. '
-                . 'Le site a probablement encore changé de structure.'
+            throwServerException(
+                sprintf(
+                    'Impossible de trouver la section "%s" sur la page EDF. Le site a probablement encore changé de structure.',
+                    $contract['label']
+                )
             );
         }
 
         $tableDom = $this->findPriceTableAfter($html, $headingDom);
         if (!$tableDom) {
-            returnServerError(
-                'Impossible de trouver le tableau de tarifs pour "' . $contract['label'] . '" sur la page EDF. '
-                . 'Le site a probablement encore changé de structure.'
+            throwServerException(
+                sprintf(
+                    'Impossible de trouver le tableau de tarifs pour "%s" sur la page EDF. Le site a probablement encore changé de structure.',
+                    $contract['label']
+                )
             );
         }
 
