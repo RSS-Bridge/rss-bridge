@@ -31,11 +31,13 @@ class WawacityBridge extends BridgeAbstract
             'sous_categorie' => [
                 'name' => 'Sous-catégorie',
                 'type' => 'text',
-                'title' => 'Optionnel. Pour une catégorie du catalogue, reprend le paramètre "s" du site (ex: "bd" ou "mangas" pour Ebooks, '
-                            . '"vf" ou "vostfr" pour Séries, "ps4" ou "pc" pour Jeux ; voir le menu de navigation du site pour la liste complète). '
-                            . 'Pour "Derniers ajouts (accueil)", choisit le widget de la page d\'accueil : exclusivites, films, films-bluray, '
-                            . 'films-4k, series-vostfr, series-vf, series-4k, jeux, musiques, ebooks, animes, logiciels, mobiles, '
-                            . 'autres-videos, divers (laisser vide = tous les widgets, avec la mention "Ajout de l\'épisode X" pour les séries/animés).',
+                'title' => <<<EOT
+                    Optionnel. Pour une catégorie du catalogue, reprend le paramètre "s" du site (ex: "bd" ou "mangas" pour Ebooks,
+                    "vf" ou "vostfr" pour Séries, "ps4" ou "pc" pour Jeux ; voir le menu de navigation du site pour la liste complète)
+                    Pour "Derniers ajouts (accueil)", choisit le widget de la page d\'accueil : exclusivites, films, films-bluray, '
+                    films-4k, series-vostfr, series-vf, series-4k, jeux, musiques, ebooks, animes, logiciels, mobiles, '
+                    autres-videos, divers (laisser vide = tous les widgets, avec la mention "Ajout de l\'épisode X" pour les séries/animés).
+                    EOT,
                 'exampleValue' => 'series-vostfr',
                 'required' => false,
             ]
