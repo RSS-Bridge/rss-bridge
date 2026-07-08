@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class EdfPricesBridge extends BridgeAbstract
 {
     const NAME = 'EDF tarifs';
