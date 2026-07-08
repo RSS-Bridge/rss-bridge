@@ -31,11 +31,11 @@ class WawacityBridge extends BridgeAbstract
             'sous_categorie' => [
                 'name' => 'Sous-catégorie',
                 'type' => 'text',
-                'title' => 'Optionnel. Pour une catégorie du catalogue, reprend le paramètre "s" du site (ex: "bd" ou "mangas" pour Ebooks, ' .
-                           '"vf" ou "vostfr" pour Séries, "ps4" ou "pc" pour Jeux ; voir le menu de navigation du site pour la liste complète). Pour ' .
-                           '"Derniers ajouts (accueil)", choisit le widget de la page d\'accueil : exclusivites, films, films-bluray, films-4k, series-vostfr, ' .
-                           'series-vf, series-4k, jeux, musiques, ebooks, animes, logiciels, mobiles, autres-videos, divers (laisser vide = tous les widgets, avec ' .
-                           'la mention "Ajout de l\'épisode X" pour les séries/animés).',
+                'title' => 'Optionnel. Pour une catégorie du catalogue, reprend le paramètre "s" du site (ex: "bd" ou "mangas" pour Ebooks, '
+                            . '"vf" ou "vostfr" pour Séries, "ps4" ou "pc" pour Jeux ; voir le menu de navigation du site pour la liste complète). '
+                            . 'Pour "Derniers ajouts (accueil)", choisit le widget de la page d\'accueil : exclusivites, films, films-bluray, '
+                            . 'films-4k, series-vostfr, series-vf, series-4k, jeux, musiques, ebooks, animes, logiciels, mobiles, '
+                            . 'autres-videos, divers (laisser vide = tous les widgets, avec la mention "Ajout de l\'épisode X" pour les séries/animés).',
                 'exampleValue' => 'series-vostfr',
                 'required' => false,
             ]
@@ -72,7 +72,7 @@ class WawacityBridge extends BridgeAbstract
     ];
 
     public function collectData()
-	{
+    {
         $categorie = $this->getInput('categorie');
         $sousCategorie = trim((string) $this->getInput('sous_categorie'));
 
@@ -84,7 +84,7 @@ class WawacityBridge extends BridgeAbstract
     }
 
     private function collectCatalogueData($categorie, $sousCategorie)
-	{
+    {
         $query = 'p=' . rawurlencode($categorie);
         if ($sousCategorie !== '') {
             $query .= '&s=' . rawurlencode($sousCategorie);
@@ -126,7 +126,7 @@ class WawacityBridge extends BridgeAbstract
     }
 
     private function collectHomepageData($widget)
-	{
+    {
         if ($widget !== '' && !array_key_exists($widget, self::HOMEPAGE_WIDGETS)) {
             throwServerException(
                 'Sous-catégorie inconnue pour "Derniers ajouts (accueil)": ' . $widget
@@ -189,7 +189,7 @@ class WawacityBridge extends BridgeAbstract
     }
 
     private function toAbsoluteUri($link)
-	{
+    {
         return self::URI . (substr($link, 0, 1) === '/' ? $link : '/' . $link);
     }
 }
