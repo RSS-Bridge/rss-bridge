@@ -102,9 +102,9 @@ class AtmoOccitanieBridge extends BridgeAbstract
         if (count($cityIqa) >= 2) {
             $tomorrow = $cityIqa[count($cityIqa) - 1];
             $label = $airLegend[(string) $tomorrow['iqa']] ?? null;
-            $parts[] = $label
-                ? "Demain, l'indice de qualité de l'air sera de {$tomorrow['iqa']}/6 ($label)."
-                : "Demain, l'indice de qualité de l'air est inconnu pour le moment.";
+            $parts[] = $label ?
+                "Demain, l'indice de qualité de l'air sera de {$tomorrow['iqa']}/6 ($label)." :
+                "Demain, l'indice de qualité de l'air est inconnu pour le moment.";
         }
 
         $todayPollenDom = $html->find('#resume-pollen .pollen-avertissement', 0);
@@ -113,17 +113,17 @@ class AtmoOccitanieBridge extends BridgeAbstract
         } elseif ($cityPollen) {
             $todayIndex = count($cityPollen) >= 2 ? count($cityPollen) - 2 : count($cityPollen) - 1;
             $label = $pollenLegend[(string) $cityPollen[$todayIndex]['pollen']] ?? null;
-            $parts[] = $label
-                ? "Aujourd'hui, le niveau de pollens est : $label."
-                : "Aujourd'hui, le niveau de pollens est inconnu pour le moment.";
+            $parts[] = $label ?
+                "Aujourd'hui, le niveau de pollens est : $label." :
+                "Aujourd'hui, le niveau de pollens est inconnu pour le moment.";
         }
 
         if (count($cityPollen) >= 2) {
             $tomorrow = $cityPollen[count($cityPollen) - 1];
             $label = $pollenLegend[(string) $tomorrow['pollen']] ?? null;
-            $parts[] = $label
-                ? "Demain, le niveau de pollens sera : $label."
-                : "Demain, le niveau de pollens est inconnu pour le moment.";
+            $parts[] = $label ?
+                "Demain, le niveau de pollens sera : $label." :
+                'Demain, le niveau de pollens est inconnu pour le moment.';
         }
 
         return implode(' ', $parts);
