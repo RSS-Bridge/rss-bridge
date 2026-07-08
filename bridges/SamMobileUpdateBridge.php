@@ -5,7 +5,6 @@ declare(strict_types=1);
 class SamMobileUpdateBridge extends BridgeAbstract
 {
     const NAME = 'SamMobile updates';
-    // pull info from this site
     const URI = 'https://www.sammobile.com/samsung/security/';
     const DESCRIPTION = 'Fetches the latest security patches for Samsung devices';
     const MAINTAINER = 'floviolleau';
@@ -37,7 +36,7 @@ class SamMobileUpdateBridge extends BridgeAbstract
         foreach ($elementsDom as $elementDom) {
             $item = [];
 
-            $td = $elementDom->find('td');
+            $td = array_map(fn($cell) => trim($cell->plaintext), $elementDom->find('td'));
 
             $title = 'Security patch: ' . $td[2] . ' - Android version: ' . $td[3] . ' - PDA: ' . $td[4];
             $text = 'Model: ' . $td[0] . '<br>Country/Carrier: ' . $td[1] . '<br>Security patch: ' . $td[2] . '<br>OS version: Android ' . $td[3] . '<br>PDA: ' . $td[4];
@@ -45,7 +44,6 @@ class SamMobileUpdateBridge extends BridgeAbstract
             $item['uri'] = $uri;
             $item['title'] = $title;
             $item['author'] = self::MAINTAINER;
-            $item['timestamp'] = (new DateTime($td[2]->innertext))->getTimestamp();
             $item['content'] = $text;
             $item['uid'] = hash('sha256', $item['title']);
 
