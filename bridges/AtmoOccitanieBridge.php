@@ -15,7 +15,7 @@ class AtmoOccitanieBridge extends BridgeAbstract
             'exampleValue'  => 'cahors'
         ]
     ]];
-    const CACHE_TIMEOUT = 7200;
+    const CACHE_TIMEOUT = 7200; // 2h
 
     public function collectData()
     {
@@ -64,7 +64,7 @@ class AtmoOccitanieBridge extends BridgeAbstract
         $today = date('d/m/Y');
         $item['title'] = "Bulletin de l'air du $today pour la ville : $city.";
         $item['title'] .= ' Retrouvez plus d\'informations en allant sur atmo-occitanie.org #QualiteAir. ' . $message;
-        $item['author'] = 'floviolleau';
+        $item['author'] = self::MAINTAINER;
         $item['content'] = $message;
         $item['uid'] = hash('sha256', $item['title']);
 
