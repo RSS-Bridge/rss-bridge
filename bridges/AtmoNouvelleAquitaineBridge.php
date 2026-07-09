@@ -6,7 +6,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract
 {
     const NAME = 'Atmo Nouvelle Aquitaine';
     const URI = 'https://www.atmo-nouvelleaquitaine.org';
-    const DESCRIPTION = 'Fetches the latest air polution of cities in Nouvelle Aquitaine from Atmo  ';
+    const DESCRIPTION = 'Fetches the latest air polution of cities in Nouvelle Aquitaine from Atmo';
     const MAINTAINER = 'floviolleau';
     const PARAMETERS = [[
         'city' => [
