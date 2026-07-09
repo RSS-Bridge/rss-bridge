@@ -15,7 +15,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract
             'exampleValue' => 'bordeaux'
         ]
     ]];
-    const CACHE_TIMEOUT = 0; //7200; // 2h
+    const CACHE_TIMEOUT = 7200; // 2h
 
     // Lists every commune of the region as { properties: { nom, code } , ... }.
     // Cached 14 days by the site itself, so resolving a city name only means an
