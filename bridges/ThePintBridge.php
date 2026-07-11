@@ -15,7 +15,6 @@ class ThePintBridge extends BridgeAbstract
             'name' => 'Fetch full article content',
             'type' => 'checkbox',
             'required' => false,
-            'defaultValue' => true,
         ],
         'limit' => [
             'name' => 'Max items',
