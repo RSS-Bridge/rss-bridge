@@ -34,7 +34,7 @@ class ThePintBridge extends BridgeAbstract
         }
 
         $archiveUrl = self::URI . 'archive';
-$dom = getSimpleHTMLDOM($archiveUrl);
+        $dom = getSimpleHTMLDOM($archiveUrl);
 
         $urls = [];
         foreach ($dom->find('a[href*="/p/"], a[href^="p/"]') as $a) {
