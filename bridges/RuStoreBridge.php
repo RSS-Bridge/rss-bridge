@@ -28,7 +28,7 @@ class RuStoreBridge extends BridgeAbstract
     ];
 
     const HTTP_HEADERS = [
-        'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',
         'Accept: text/html,application/xhtml+xml,application/xml',
         'Referer: https://www.rustore.ru/',
     ];
@@ -63,15 +63,28 @@ class RuStoreBridge extends BridgeAbstract
         }
     }
 
-    public function getName()  { return $this->appName ?: parent::getName(); }
-    public function getURI()   { return $this->getInput('package') ? self::BASE_URL . urlencode($this->getInput('package')) : parent::getURI(); }
-    public function getIcon()  { return $this->appIcon ?: parent::getIcon(); }
+    public function getName()
+    {
+        return $this->appName ?: parent::getName();
+    }
+
+    public function getURI()
+    {
+        return $this->getInput('package') ? self::BASE_URL . urlencode($this->getInput('package')) : parent::getURI();
+    }
+
+    public function getIcon()
+    {
+        return $this->appIcon ?: parent::getIcon();
+    }
 
     private function extractMeta($html)
     {
         foreach ($html->find('script[type="application/ld+json"]') as $script) {
             $data = json_decode(trim($script->innertext), true);
-            if (!is_array($data)) continue;
+            if (!is_array($data)) {
+                continue;
+            }
 
             if (($data['@type'] ?? '') === 'BreadcrumbList' && !empty($data['itemListElement'])) {
                 $last = end($data['itemListElement']);
@@ -92,10 +105,14 @@ class RuStoreBridge extends BridgeAbstract
 
         foreach ($html->find('script[type="application/ld+json"]') as $script) {
             $data = json_decode(trim($script->innertext), true);
-            if (!is_array($data) || ($data['@type'] ?? '') !== 'ItemList') continue;
+            if (!is_array($data) || ($data['@type'] ?? '') !== 'ItemList') {
+                continue;
+            }
 
             foreach ($data['itemListElement'] ?? [] as $element) {
-                if (($element['@type'] ?? '') !== 'UpdateAction' || empty($element['name'])) continue;
+                if (($element['@type'] ?? '') !== 'UpdateAction' || empty($element['name'])) {
+                    continue;
+                }
 
                 $versions[] = [
                     'versionName' => $element['name'],
@@ -104,7 +121,9 @@ class RuStoreBridge extends BridgeAbstract
                 ];
             }
 
-            if (!empty($versions)) break;
+            if (!empty($versions)) {
+                break;
+            }
         }
 
         return $versions;
@@ -119,17 +138,23 @@ class RuStoreBridge extends BridgeAbstract
             }
         }
 
-        if (empty($allContent)) return [];
+        if (empty($allContent)) {
+            return [];
+        }
 
         if (preg_match('/"versions"\s*:\s*\[(.+?)\]\s*,\s*"continuation"/s', $allContent, $match)) {
             $json = stripcslashes('[' . $match[1] . ']');
             $data = json_decode($json, true);
 
-            if (!is_array($data)) return [];
+            if (!is_array($data)) {
+                return [];
+            }
 
             $versions = [];
             foreach ($data as $v) {
-                if (empty($v['versionName'])) continue;
+                if (empty($v['versionName'])) {
+                    continue;
+                }
                 $versions[] = [
                     'versionName' => $v['versionName'],
                     'whatsNew'    => $v['whatsNew'] ?? '',
@@ -264,7 +289,9 @@ class RuStoreBridge extends BridgeAbstract
         $timestamp = time();
         if (!empty($version['date'])) {
             $ts = strtotime($version['date']);
-            if ($ts !== false) $timestamp = $ts;
+            if ($ts !== false) {
+                $timestamp = $ts;
+            }
         }
 
         return [
