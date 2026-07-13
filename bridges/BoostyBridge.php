@@ -270,13 +270,13 @@ class BoostyBridge extends BridgeAbstract
         }
         $h .= '<p' . $s('poll_f') . '>Total votes: ' . $total;
         if (!empty($poll['isMultiple'])) {
-            $h .= ' · Multiple choice';
+            $h .= '   Multiple choice';
         }
         if (!empty($poll['isFinished'])) {
-            $h .= ' · Finished';
+            $h .= '   Finished';
         }
         if (!$vis) {
-            $h .= ' · Results hidden';
+            $h .= '   Results hidden';
         }
         return $h . '</p></div>';
     }
@@ -415,6 +415,9 @@ class BoostyBridge extends BridgeAbstract
 
     public function getIcon(): string
     {
-        return !empty($this->blogAvatar) ? $this->blogAvatar : parent::getIcon();
+        if (empty($this->blogAvatar)) {
+            return parent::getIcon();
+        }
+        return $this->blogAvatar . '#.png';
     }
 }
