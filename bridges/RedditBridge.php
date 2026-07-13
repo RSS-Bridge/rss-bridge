@@ -15,8 +15,9 @@ class RedditBridge extends BridgeAbstract
     const URI = 'https://old.reddit.com';
     const CACHE_TIMEOUT = 60 * 60 * 2; // 2h
     const DESCRIPTION = 'Return hot submissions from Reddit';
-    const VERSION = "v0.0.3";
-    const USER_AGENT = "rss-bridge " . self::VERSION . " (https://github.com/RSS-Bridge/rss-bridge)";
+    const VERSION = 'v0.0.3';
+    const USER_AGENT = 'rss-bridge ' . self::VERSION . ' (https://github.com/RSS-Bridge/rss-bridge)';
+    const REDDIT_OAUTH_TOKEN_KEY = 'reddit_oauth_token';
 
     const CONFIGURATION = [
         'app_id' => [
@@ -192,9 +193,22 @@ class RedditBridge extends BridgeAbstract
         foreach ($subreddits as $subreddit) {
             $url = self::createUrl($search, $flareInput, $subreddit, $user, $section, $time, $this->queriedContext);
 
-            $json = getContents($url, $headers, []);
+            try {
+                $response = getContents($url, $headers, [], true);
+            } catch (HttpException $e) {
+                if ($e->getCode() === 401 || $e->getCode() === 403) {
+                    // Token might've been rejected, or expired earlier than expected.
+                    // Clear cached token and try one more time with a fresh one.
+                    $this->cache->set(self::REDDIT_OAUTH_TOKEN_KEY, null, 0);
+                    $accessToken = $this->getAccessToken();
+                    $headers[1] = 'Authorization: Bearer ' . $accessToken;
+                    $response = getContents($url, $headers, [], true);
+                } else {
+                    throw $e;
+                }
+            }
 
-            $parsedJson = Json::decode($json, false);
+            $parsedJson = Json::decode($response->getBody(), false);
 
             foreach ($parsedJson->data->children as $post) {
                 if ($post->kind == 't1' && !$comments) {
@@ -316,8 +330,7 @@ class RedditBridge extends BridgeAbstract
 
     private function getAccessToken(): string
     {
-        $tokenCacheKey = 'reddit_oauth_token';
-        $cachedToken = $this->cache->get($tokenCacheKey);
+        $cachedToken = $this->cache->get(self::REDDIT_OAUTH_TOKEN_KEY);
         if ($cachedToken) {
             return $cachedToken;
         }
@@ -342,7 +355,7 @@ class RedditBridge extends BridgeAbstract
             throw new \Exception('Failed to obtain Reddit OAuth access token: ' . $response);
         }
         $expiresIn = $data->expires_in ?? 3600;
-        $this->cache->set($tokenCacheKey, $token, $expiresIn - 60);
+        $this->cache->set(self::REDDIT_OAUTH_TOKEN_KEY, $token, $expiresIn - 60);
         return $token;
     }
 
