@@ -346,7 +346,12 @@ class GithubIssueBridge extends BridgeAbstract
         $item['author'] = $author;
         $item['timestamp'] = strtotime($timestamp);
         $item['content'] = $description;
-        $item['uid'] = (string)($event['id'] ?? ($event['node_id'] ?? uniqid()));
+        $item['uid'] = (string)($event['id'] ?? $event['node_id'] ?? md5(implode('|', [
+			$issueNbr,
+			$event['event'] ?? '',
+			$timestamp,
+			$event['source']['issue']['id'] ?? $event['actor']['login'] ?? '',
+		])));
         return $item;
     }
 
@@ -417,6 +422,13 @@ class GithubIssueBridge extends BridgeAbstract
         if ($this->getInput('e')) {
             $items = array_merge($items, $this->collectIssueEvents($issueNbr));
         }
+
+        // Feeds are conventionally newest-first; readers that don't re-sort
+        // client-side (e.g. a raw ?format=Html view) would otherwise show
+        // the oldest post/comment/event at the top.
+        usort($items, function ($a, $b) {
+            return $b['timestamp'] <=> $a['timestamp'];
+        });
 
         return $items;
     }
