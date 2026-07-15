@@ -45,7 +45,7 @@ class WawacityBridge extends BridgeAbstract
             ]
         ]
     ];
-    const CACHE_TIMEOUT = 0;//18000; // every 5h
+    const CACHE_TIMEOUT = 18000; // every 5h
 
     // wawacity is behind Cloudflare, which returns a 520 error to
     // requests that don't look like they come from a real browser.
