@@ -149,7 +149,7 @@ abstract class BridgeAbstract
 
         if (!$parameters) {
             if ($input) {
-                throw new \Exception('Invalid parameters value(s)');
+                throwClientException('Unexpected parameters');
             }
             return;
         }
@@ -160,7 +160,7 @@ abstract class BridgeAbstract
         $errors = $validator->validateInput($input, $parameters);
         if ($errors !== []) {
             $invalidParameterKeys = array_column($errors, 'name');
-            throw new \Exception(sprintf('Invalid parameters value(s): %s', implode(', ', $invalidParameterKeys)));
+            throwClientException(sprintf('Invalid parameters value(s): %s', implode(', ', $invalidParameterKeys)));
         }
 
         // Guess the context from input data
@@ -170,7 +170,7 @@ abstract class BridgeAbstract
         }
 
         if (is_null($this->queriedContext)) {
-            throw new \Exception('Required parameter(s) missing');
+            throwClientException('Required parameter(s) missing');
         } elseif ($this->queriedContext === false) {
             throw new \Exception('Mixed context parameters');
         }

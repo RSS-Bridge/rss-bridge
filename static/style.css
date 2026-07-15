@@ -162,12 +162,32 @@ section {
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
     border-radius: 4px;
 }
-section > time,
-section > p.author {
-    color: #888;
-    font-size: 80%;
-    padding: 10px;
+
+section .item-meta {
+    margin-bottom: 2em;
 }
+
+section .item-meta p {
+    color: #888;
+    font-size: 1em;
+}
+
+section .item-content {
+    margin-bottom: 2em;
+}
+
+section .item-attachments {
+    margin-bottom: 2em;
+    color: #888;
+    font-size: 1em;
+}
+
+section .item-categories {
+    margin-bottom: 1em;
+    color: #888;
+    font-size: 1em;
+}
+
 section.footer {
     opacity: 0.5;
     text-align: center;

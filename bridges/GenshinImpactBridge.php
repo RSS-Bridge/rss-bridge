@@ -8,8 +8,7 @@ class GenshinImpactBridge extends BridgeAbstract
     const DESCRIPTION = 'Latest news from the Genshin Impact website';
     const MAINTAINER = 'Miicat_47';
 
-    const API_URL = 'https://api-os-takumi-static.hoyoverse.com/content_v2_user/app/a1b1f9d3315447cc/getContentList?iAppId=%u&iChanId=%u&iPageSize=%u&iPage=1&sLangKey=%s';
-    // const API_URL = 'https://sg-public-api-static.hoyoverse.com/content_v2_user/app/a1b1f9d3315447cc/getContentList?iAppId=%u&iChanId=%u&iPageSize=%u&iPage=1&sLangKey=%s';
+    const API_URL = 'https://sg-public-api-static.hoyoverse.com/content_v2_user/app/a1b1f9d3315447cc/getContentList?iAppId=%u&iChanId=%u&iPageSize=%u&iPage=1&sLangKey=%s';
     const API_APP_ID = 32;
 
     const ARTICLE_URL = 'https://genshin.hoyoverse.com/%s/news/detail/%u';

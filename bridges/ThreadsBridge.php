@@ -73,15 +73,26 @@ class ThreadsBridge extends BridgeAbstract
 
         $jsonBlobs = $html->find('script[type="application/json"]');
 
-        $gatheredCodes = [];
+        $gatheredPosts = [];
         $limit = $this->getInput('limit');
         foreach ($jsonBlobs as $jsonBlob) {
-            // The structure of the JSON document is likely to change, but we're looking for a "code" inside a "post"
-            foreach ($this->recursiveFind($this->recursiveFind(json_decode($jsonBlob->innertext), 'post'), 'code') as $candidateCode) {
+            // The structure of the JSON document is likely to change, but we're looking for "post" objects
+            foreach ($this->recursiveFind(json_decode($jsonBlob->innertext), 'post') as $post) {
+                if (!is_object($post) && !is_array($post)) {
+                    continue;
+                }
+                $post = (array)$post;
+                if (!isset($post['code'])) {
+                    continue;
+                }
+                $candidateCode = $post['code'];
                 // code should be like CzZk4-USq1O or Cy3m1VnRiwP or Cywjyrdv9T6 or CzZk4-USq1O
-                if (grapheme_strlen($candidateCode) == 11 and !in_array($candidateCode, $gatheredCodes)) {
-                    $gatheredCodes[] = $candidateCode;
-                    if (count($gatheredCodes) >= $limit) {
+                if (grapheme_strlen($candidateCode) == 11 and !isset($gatheredPosts[$candidateCode])) {
+                    $gatheredPosts[$candidateCode] = [
+                        'code' => $candidateCode,
+                        'taken_at' => $post['taken_at'] ?? null,
+                    ];
+                    if (count($gatheredPosts) >= $limit) {
                         break 2;
                     }
                 }
@@ -91,10 +102,10 @@ class ThreadsBridge extends BridgeAbstract
         $this->feedName = html_entity_decode($html->find('meta[property=og:title]', 0)->content);
         // todo: meta[property=og:description] could populate the feed description
 
-        foreach ($gatheredCodes as $postCode) {
+        foreach ($gatheredPosts as $postData) {
             $item = [];
             // post URL is like: https://www.threads.net/@zuck/post/Czrr520PZfh
-            $item['uri'] = $this->getURI() . '/post/' . $postCode;
+            $item['uri'] = $this->getURI() . '/post/' . $postData['code'];
             $articleHtml = getSimpleHTMLDOMCached($item['uri'], 15778800); // cache time: six months
 
             // Relying on meta tags ought to be more reliable.
@@ -111,7 +122,11 @@ class ThreadsBridge extends BridgeAbstract
             }
 
             // todo: parse hashtags out of content for $item['categories']
-            // todo: try to scrape out a timestamp for $item['timestamp'], it's not in the meta tags
+
+            // Extract timestamp from profile JSON data (taken_at is a Unix timestamp)
+            if (isset($postData['taken_at']) && $postData['taken_at']) {
+                $item['timestamp'] = $postData['taken_at'];
+            }
 
             $this->items[] = $item;
         }

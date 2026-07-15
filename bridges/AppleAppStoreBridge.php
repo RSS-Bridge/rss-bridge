@@ -14,18 +14,26 @@ class AppleAppStoreBridge extends BridgeAbstract
             'required'  => true,
             'exampleValue'  => '310633997'
         ],
+        // 'p' => [
+        //     'name'  => 'Platform',
+        //     'type'  => 'list',
+        //     'values'    => [
+        //         'iPad'  => 'ipad',
+        //         'iPhone'    => 'iphone',
+        //         'Mac'   => 'mac',
+        //         'Web'   => 'web',
+        //         'Apple TV'  => 'appletv',
+        //     ],
+        //     'defaultValue'  => 'mac',
+        // ],
+        # The platform parameter is currently not used in the URL construction,
+        # but it may be useful for future enhancements or for filtering version
+        # history based on platform-specific releases.
         'p' => [
             'name'  => 'Platform',
             'type'  => 'list',
             'values'    => [
-                'iPad'  => 'ipad',
-                'iPhone'    => 'iphone',
                 'Mac'   => 'mac',
-
-                // The following 2 are present in responses
-                // but not yet tested
-                'Web'   => 'web',
-                'Apple TV'  => 'appletv',
             ],
             'defaultValue'  => 'mac',
         ],
@@ -59,35 +67,24 @@ class AppleAppStoreBridge extends BridgeAbstract
         ]
     ]];
 
-    const PLATFORM_MAPPING = [
-        'iphone' => 'ios',
-        'ipad' => 'ios',
-        'mac' => 'osx'
-    ];
-
     private $name;
 
     private function makeHtmlUrl()
     {
         $id = $this->getInput('id');
-        $country = $this->getInput('country');
+        $country = strtolower($this->getInput('country'));
         return sprintf('https://apps.apple.com/%s/app/id%s', $country, $id);
     }
 
-    private function makeJsonUrl()
+    private function getHtmlRequestHeaders()
     {
-        $id = $this->getInput('id');
-        $country = $this->getInput('country');
-        $platform = $this->getInput('p');
-
-        $platform_param = ($platform === 'mac') ? 'mac' : $platform;
-
-        return sprintf(
-            'https://amp-api-edge.apps.apple.com/v1/catalog/%s/apps/%s?platform=%s&extend=versionHistory',
-            $country,
-            $id,
-            $platform_param
-        );
+        return [
+            'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'cache-control: no-cache',
+            'pragma: no-cache',
+            'upgrade-insecure-requests: 1',
+            'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+        ];
     }
 
     public function getName()
@@ -108,67 +105,47 @@ class AppleAppStoreBridge extends BridgeAbstract
 
     private function getAppData()
     {
-        // Fetch the HTML page to find the JS bundle URL
         $url = $this->makeHtmlUrl();
-        $this->debugLog(sprintf('Fetching HTML page for token extraction: %s', $url));
-        $content = getContents($url);
+        $this->debugLog(sprintf('Fetching HTML page for serialized data extraction: %s', $url));
+        $content = getContents($url, $this->getHtmlRequestHeaders());
 
-        // Extract the JS bundle path, e.g. /assets/index~BMeKnrDH8T.js
         $matches = [];
-        if (!preg_match('#<script type="module" crossorigin src="(/assets/index~[^"]+\.js)"></script>#', $content, $matches)) {
-            throw new \Exception('Failed to locate JS bundle tag for token extraction');
+        if (!preg_match('#<script[^>]*id="serialized-server-data"[^>]*>(.*?)</script>#s', $content, $matches)) {
+            throw new \Exception('Failed to locate serialized server data in HTML page');
         }
 
-        $jsPath = $matches[1];
-        $jsUrl = 'https://apps.apple.com' . $jsPath;
-        $this->debugLog(sprintf('Fetching JS bundle for token extraction: %s', $jsUrl));
-
-        // Fetch the JS bundle where the JWT is embedded
-        $jsContent = getContents($jsUrl);
-
-        // Find the JWT inside a const assignment, e.g.
-        // const SOME_NAME = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6.XXXX.YYYY";
-        // Match a const assignment that looks like a JWT
-        // eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6 decodes to '{"alg":"ES256","typ":"JWT","kid"'
-        $tokenMatches = [];
-        // phpcs:disable Generic.Files.LineLength
-        if (!preg_match('~const\s+\w+\s*=\s*[\'\"](eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)[\'\"]~', $jsContent, $tokenMatches)) {
-            throw new \Exception('Failed to extract JWT token from JS bundle');
-        }
-        // phpcs:enable Generic.Files.LineLength
-        $token = $tokenMatches[1];
-        $this->debugLog('Successfully extracted JWT token from JS bundle: ' . $token);
-
-        $url = $this->makeJsonUrl();
-        $this->debugLog(sprintf('Fetching data from API: %s', $url));
-
-        $headers = [
-            'accept: */*',
-            'Authorization: Bearer ' . $token,
-            'cache-control: no-cache',
-            'Origin: https://apps.apple.com',
-            'Referer: https://apps.apple.com/',
-            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36w',
-        ];
-
-        $content = getContents($url, $headers);
+        $serializedServerData = html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5);
 
         try {
-            $json = Json::decode($content);
+            $json = Json::decode($serializedServerData);
         } catch (\Exception $e) {
-            throw new \Exception(sprintf('Failed to parse API response: %s', $e->getMessage()));
+            throw new \Exception(sprintf('Failed to parse serialized server data: %s', $e->getMessage()));
         }
 
         if (!isset($json['data']) || empty($json['data'])) {
-            throw new \Exception('No app data found in API response');
+            throw new \Exception('No app data found in serialized server data');
         }
 
-        $this->debugLog('Successfully retrieved app data from API');
-        return $json['data'][0];
+        $this->debugLog('Successfully retrieved app data from HTML page');
+        return $json['data'][0]['data'] ?? $json['data'][0];
     }
 
     private function extractAppDetails($data)
     {
+        if (isset($data['lockup'])) {
+            $this->name = $data['lockup']['title'] ?? null;
+            $author = $data['developerAction']['title'] ?? ($data['lockup']['developerTagline'] ?? null);
+            $this->debugLog(sprintf('Found app details in lockup: %s by %s', $this->name, $author));
+            return [$this->name, $author];
+        }
+
+        if (isset($data['title'])) {
+            $this->name = $data['title'];
+            $author = $data['developerAction']['title'] ?? ($data['lockup']['developerTagline'] ?? null);
+            $this->debugLog(sprintf('Found app details in title: %s by %s', $this->name, $author));
+            return [$this->name, $author];
+        }
+
         if (isset($data['attributes'])) {
             $this->name = $data['attributes']['name'] ?? null;
             $author = $data['attributes']['artistName'] ?? null;
@@ -184,16 +161,29 @@ class AppleAppStoreBridge extends BridgeAbstract
 
     private function getVersionHistory($data)
     {
-        $platform = $this->getInput('p');
-        $this->debugLog(sprintf('Extracting version history for platform: %s', $platform));
+        $this->debugLog('Extracting version history from serialized server data');
 
-        // Get the mapped platform key (ios for iPhone/iPad, osx for Mac)
-        $platform_key = self::PLATFORM_MAPPING[$platform] ?? $platform;
+        $version_history = [];
 
-        $version_history = $data['attributes']['platformAttributes'][$platform_key]['versionHistory'] ?? [];
+        $pageData = $data['shelfMapping']['mostRecentVersion']['seeAllAction']['pageData'] ?? [];
+        $shelves = $pageData['shelves'] ?? [];
+
+        foreach ($shelves as $shelf) {
+            foreach (($shelf['items'] ?? []) as $entry) {
+                if (($entry['$kind'] ?? null) !== 'TitledParagraph') {
+                    continue;
+                }
+
+                $version_history[] = [
+                    'versionDisplay' => $entry['primarySubtitle'] ?? 'Unknown Version',
+                    'releaseNotes' => $entry['text'] ?? 'No release notes available',
+                    'releaseDate' => $entry['secondarySubtitle'] ?? null,
+                ];
+            }
+        }
 
         if (empty($version_history)) {
-            $this->debugLog(sprintf('No version history found for %s', $platform));
+            $this->debugLog('No version history found');
         }
 
         return $version_history;
@@ -201,7 +191,7 @@ class AppleAppStoreBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $this->debugLog(sprintf('Getting data for %s app', $this->getInput('p')));
+        $this->debugLog('Getting app data');
         $data = $this->getAppData();
 
         // Get app name and author using array destructuring
@@ -219,9 +209,9 @@ class AppleAppStoreBridge extends BridgeAbstract
             $item = [];
             $item['title'] = sprintf('%s - %s', $name, $version);
             $item['content'] = nl2br($release_notes) ?: 'No release notes available';
-            $item['timestamp'] = $release_date;
+            $item['timestamp'] = strtotime($release_date) ?: $release_date;
             $item['author'] = $author;
-            $item['uri'] = $this->makeHtmlUrl();
+            $item['uri'] = $data['canonicalURL'] ?? $this->makeHtmlUrl();
 
             $this->items[] = $item;
         }

@@ -221,8 +221,33 @@ class HeiseBridge extends FeedExpander
                 }
             }
         }
+
+        // strip p tags inside of figcaption to avoid doubling it
+        foreach ($article->find('figcaption p') as $key => $elem) {
+            $elem->outertext = $elem->plaintext;
+            $reloadneeded = 1;
+        }
+
         if (isset($reloadneeded)) {
             $article = str_get_html($article->outertext);
+        }
+
+        // fix mastodon embeds
+        foreach ($article->find('embetty-mastodon') as &$post) {
+            $url = $post->status;
+            $parsedUrl = parse_url($url);
+            $baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+            if (isset($parsedUrl['port'])) {
+                $baseUrl .= ':' . $pasedurl['port'];
+            }
+            $post->innertext = <<<EOD
+<blockquote class='mastodon-embed' data-embed-url='$url/embed'
+    style='background: #FCF8FF; border-radius: 8px; border: 1px solid #C9C4DA;
+    margin: 0; max-width: 540px; min-width: 270px; overflow: hidden; padding: 0;'>
+<a href='$url' target='_blank'>Embedded Mastodon post: $url</a>
+</blockquote>
+<script data-allowed-prefixes='$baseUrl' async src='$baseUrl/embed.js'></script>
+EOD;
         }
 
         $categories = $article->find('.article-footer__topics ul.topics li.topics__item a-topic a');
@@ -234,7 +259,7 @@ class HeiseBridge extends FeedExpander
         if ($content) {
             $contentElements = $content->find(
                 // phpcs:ignore
-                'p, h3, ul, ol, table, pre, noscript img, noscript iframe, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption, figure figcaption.a-caption div.text'
+                'p, h3, ul, ol, table, pre, noscript img, noscript iframe, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption, figure figcaption.a-caption div.text, div.update-box__datetime'
             );
             $item['content'] .= implode('', $contentElements);
         }

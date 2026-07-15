@@ -59,27 +59,48 @@ class RumbleBridge extends BridgeAbstract
         }
 
         $dom = getSimpleHTMLDOM($url);
-        foreach ($dom->find('ol.thumbnail__grid div.thumbnail__grid--item') as $video) {
-            $href = $video->find('a', 0)->href;
+        $grid = $dom->find('rum-videos-grid script', 0);
+        if (! $grid) {
+            throwClientException('Failed to find data items in javascript');
+        }
+        $js = $grid->innertext();
+        $data = Json::decode($js);
+        foreach ($data['items'] as $item) {
+            $title          = $item['title'];
+            $url            = $item['url'];
+            $image          = $item['thumb'];
+            $duration       = $item['duration'];
+            $live           = $item['live'];
+            $isShort        = $item['is_short'];
+            $views          = $item['views'];
+            $uploadDate     = $item['upload_date'];
 
-            $item = [
-                'title'     => $video->find('h3', 0)->plaintext,
-                'author'    => $account . '@rumble.com',
-                'content'   => defaultLinkTo($video, self::URI)->innertext,
+            $publishedAt    = new \DateTimeImmutable($uploadDate);
+            $durationMinutes = round($duration / 60);
+            $shortText = $isShort ? 'Yes' : 'No';
+            $liveText = $live ? 'Yes' : 'No';
+
+            $this->items[] = [
+                'title'         => $title,
+                'uri'           => $url,
+                'timestamp'     => $publishedAt->getTimestamp(),
+                'author'        => $account . '@rumble.com',
+                'content'       => <<<HTML
+                    <a href="$url">
+                        <img src="$image">
+                    </a> <br><br>
+
+                <b>Duration:</b> $durationMinutes minutes <br>
+                <b>Views:</b> $views <br>
+                <b>Short:</b> $shortText <br>
+                <b>Live:</b> $liveText <br>
+                HTML,
+
+                'duration'      => $duration,
+                'live'          => $live,
+                'is_short'      => $isShort,
+                'views'         => $views,
             ];
-
-            $time = $video->find('time', 0);
-            if ($time) {
-                $publishedAt = new \DateTimeImmutable($time->getAttribute('datetime'));
-                $item['timestamp'] = $publishedAt->getTimestamp();
-            }
-
-            $href = ltrim($href, '/');
-            $itemUrl = Url::fromString(self::URI . $href);
-            // Remove tracking parameter in query string
-            $item['uri'] = $itemUrl->withQueryString(null)->__toString();
-
-            $this->items[] = $item;
         }
     }
 

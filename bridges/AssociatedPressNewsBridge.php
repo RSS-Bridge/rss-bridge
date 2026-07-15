@@ -4,271 +4,278 @@ class AssociatedPressNewsBridge extends BridgeAbstract
 {
     const NAME = 'Associated Press News';
     const URI = 'https://apnews.com/';
-    const DESCRIPTION = 'Returns newest articles by topic';
-    const MAINTAINER = 'VerifiedJoseph';
+    const DESCRIPTION = 'Returns latest articles from categories';
+    const MAINTAINER = 'anlar';
     const PARAMETERS = [
-        'Standard Topics' => [
-            'topic' => [
-                'name' => 'Topic',
+        'Standard Category' => [
+            'category' => [
+                'name' => 'Category',
                 'type' => 'list',
                 'values' => [
-                    'AP Top News' => 'apf-topnews',
-                    'Sports' => 'apf-sports',
-                    'Entertainment' => 'apf-entertainment',
-                    'Oddities' => 'apf-oddities',
-                    'Travel' => 'apf-Travel',
-                    'Technology' => 'apf-technology',
-                    'Lifestyle' => 'apf-lifestyle',
-                    'Business' => 'apf-business',
-                    'U.S. News' => 'apf-usnews',
-                    'Health' => 'apf-Health',
-                    'Science' => 'apf-science',
-                    'World News' => 'apf-WorldNews',
-                    'Politics' => 'apf-politics',
-                    'Religion' => 'apf-religion',
-                    'Photo Galleries' => 'PhotoGalleries',
-                    'Fact Checks' => 'APFactCheck',
-                    'Videos' => 'apf-videos',
+                    'All'              => '/',
+                    'AP Fact Check'    => '/ap-fact-check',
+                    'Business'         => '/business',
+                    'Climate'          => '/climate-and-environment',
+                    'Entertainment'    => '/entertainment',
+                    'Health'           => '/health',
+                    'Lifestyle'        => '/lifestyle',
+                    'Oddities'         => '/oddities',
+                    'Photography'      => '/photography',
+                    'Politics'         => '/politics',
+                    'Religion'         => '/religion',
+                    'Science'          => '/science',
+                    'Sports'           => '/sports',
+                    'Technology'       => '/technology',
+                    'U.S. News'        => '/us-news',
+                    'World News'       => '/world-news',
                 ],
-                'defaultValue' => 'apf-topnews',
+                'defaultValue' => '/',
+            ],
+            'limit' => self::LIMIT + [
+                'defaultValue' => 10,
             ],
         ],
-        'Custom Topic' => [
-            'topic' => [
-                'name' => 'Topic',
+        'Custom Category' => [
+            'category' => [
+                'name' => 'Path',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'europe'
+                'exampleValue' => '/hub/animals',
             ],
-        ]
+            'limit' => self::LIMIT + [
+                'defaultValue' => 10,
+            ],
+        ],
     ];
 
-    const CACHE_TIMEOUT = 900; // 15 mins
+    const TEST_DETECT_PARAMETERS = [
+        'https://apnews.com/' => ['context' => 'Standard Category', 'category' => '/'],
+        'https://apnews.com/health' => ['context' => 'Standard Category', 'category' => '/health'],
+        'https://apnews.com/hub/animals' => ['context' => 'Custom Category', 'category' => '/hub/animals'],
+    ];
 
-    private $detectParamRegex = '/^https?:\/\/(?:www\.)?apnews\.com\/(?:[tag|hub]+\/)?([\w-]+)$/';
-    private $tagEndpoint = 'https://afs-prod.appspot.com/api/v2/feed/tag?tags=';
-    private $feedName = '';
+    const GRAPHQL_ENDPOINT = 'https://apnews.com/graphql/delivery/ap/v1';
+    const PERSISTED_QUERY_HASH = '3bc305abbf62e9e632403a74cc86dc1cba51156d2313f09b3779efec51fc3acb';
 
     public function detectParameters($url)
     {
-        $params = [];
+        $path = parse_url($url, PHP_URL_PATH) ?: '/';
 
-        if (preg_match($this->detectParamRegex, $url, $matches) > 0) {
-            $params['topic'] = $matches[1];
-            $params['context'] = 'Custom Topic';
-            return $params;
+        $standardPaths = array_values(self::PARAMETERS['Standard Category']['category']['values']);
+        if (in_array($path, $standardPaths, true)) {
+            return ['context' => 'Standard Category', 'category' => $path];
+        }
+
+        if (str_starts_with($url, self::URI)) {
+            return ['context' => 'Custom Category', 'category' => $path];
         }
 
         return null;
     }
 
-    public function collectData()
-    {
-        switch ($this->getInput('topic')) {
-            case 'Podcasts':
-                throwClientException('Podcasts topic feed is not supported');
-                break;
-            case 'PressReleases':
-                throwClientException('PressReleases topic feed is not supported');
-                break;
-            default:
-                $this->collectCardData();
-        }
-    }
-
     public function getURI()
     {
-        if (!is_null($this->getInput('topic'))) {
-            return self::URI . $this->getInput('topic');
+        $path = $this->getInput('category');
+        if ($path && $path !== '/') {
+            return self::URI . ltrim($path, '/');
         }
-
         return parent::getURI();
     }
 
-    public function getName()
+    public function collectData()
     {
-        if (!empty($this->feedName)) {
-            return $this->feedName . ' - Associated Press';
+        $path = $this->getInput('category') ?: '/';
+
+        $url = self::GRAPHQL_ENDPOINT . '?' . http_build_query([
+            'operationName' => 'ContentPageQuery',
+            'variables' => json_encode(['path' => $path], JSON_UNESCAPED_SLASHES),
+            'extensions' => json_encode([
+                'persistedQuery' => [
+                    'version' => 1,
+                    'sha256Hash' => self::PERSISTED_QUERY_HASH,
+                ]
+            ]),
+        ]);
+
+        $json = getContents($url);
+        $data = json_decode($json, true);
+
+        if (array_key_exists('Screen', $data['data'] ?? []) && $data['data']['Screen'] === null) {
+            throw new \Exception('Category not found: ' . $path);
         }
 
-        return parent::getName();
-    }
-
-    private function getTagURI()
-    {
-        if (!is_null($this->getInput('topic'))) {
-            return $this->tagEndpoint . $this->getInput('topic');
+        if (empty($data['data']['Screen'])) {
+            throw new \Exception('Unexpected API response: Screen data missing');
         }
 
-        return parent::getURI();
-    }
+        $screen = $data['data']['Screen'];
+        $isCustom = $this->queriedContext === 'Custom Category';
+        $screenCategory = $screen['category'] ?? null;
+        // All, photography and custom categories will contain multiple
+        // categories in articles, so don't filter them
+        $filterCategory = ($isCustom || $path === '/' || $path === '/photography') ? null : $screenCategory;
+        $main = $screen['main'] ?? [];
+        $seen = [];
 
-    private function collectCardData()
-    {
-        $json = getContents($this->getTagURI());
-
-        $tagContents = json_decode($json, true);
-
-        if (empty($tagContents['tagObjs'])) {
-            throwClientException('Topic not found: ' . $this->getInput('topic'));
-        }
-
-        $this->feedName = $tagContents['tagObjs'][0]['name'];
-
-        foreach ($tagContents['cards'] as $card) {
-            $item = [];
-
-            // skip hub peeks & Notifications
-            if ($card['cardType'] == 'Hub Peek' || $card['cardType'] == 'Notification') {
+        foreach ($main as $container) {
+            if (($container['__typename'] ?? null) !== 'ColumnContainer') {
                 continue;
             }
-
-            $storyContent = $card['contents'][0];
-
-            switch ($storyContent['contentType']) {
-                case 'web': // Skip link only content
-                    continue 2;
-
-                case 'video':
-                    $html = $this->processVideo($storyContent);
-
-                    $item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
-                        . $storyContent['media'][0]['id'] . '/800.jpeg';
-                    break;
-                default:
-                    if (empty($storyContent['storyHTML'])) { // Skip if no storyHTML
-                        continue 2;
-                    }
-
-                    $html = defaultLinkTo($storyContent['storyHTML'], self::URI);
-                    $html = str_get_html($html);
-
-                    $this->processMediaPlaceholders($html, $storyContent['id']);
-                    $this->processHubLinks($html, $storyContent);
-                    $this->processIframes($html);
-
-                    if (!is_null($storyContent['leadPhotoId'])) {
-                        $leadPhotoUrl = sprintf('https://storage.googleapis.com/afs-prod/media/%s/800.jpeg', $storyContent['leadPhotoId']);
-                        $leadPhotoImageTag = sprintf('<img src="%s">', $leadPhotoUrl);
-                        // Move the image to the beginning of the content
-                        $html = $leadPhotoImageTag . $html;
-                        // Explicitly not adding it to the item's enclosures!
-                    }
-            }
-
-            $item['title'] = $card['contents'][0]['headline'];
-            $item['uri'] = self::URI . $card['shortId'];
-
-            if ($card['contents'][0]['localLinkUrl']) {
-                $item['uri'] = $card['contents'][0]['localLinkUrl'];
-            }
-
-            $item['timestamp'] = $storyContent['published'];
-
-            if (is_null($storyContent['bylines']) === false) {
-                // Remove 'By' from the bylines
-                if (substr($storyContent['bylines'], 0, 2) == 'By') {
-                    $item['author'] = ltrim($storyContent['bylines'], 'By ');
-                } else {
-                    $item['author'] = $storyContent['bylines'];
-                }
-            }
-
-            $item['content'] = $html;
-
-            foreach ($storyContent['tagObjs'] as $tag) {
-                $item['categories'][] = $tag['name'];
-            }
-
-            $this->items[] = $item;
-
-            if (count($this->items) >= 15) {
-                break;
-            }
-        }
-    }
-
-    private function processMediaPlaceholders($html, $id)
-    {
-        if ($html->find('div.media-placeholder', 0)) {
-            // Fetch page content
-            $json = getContents('https://afs-prod.appspot.com/api/v2/content/' . $id);
-            $storyContent = json_decode($json, true);
-
-            foreach ($html->find('div.media-placeholder') as $div) {
-                $key = array_search($div->id, $storyContent['mediumIds']);
-
-                if (!isset($storyContent['media'][$key])) {
+            foreach ($container['columns'] ?? [] as $column) {
+                if (($column['__typename'] ?? null) !== 'PageListModule') {
                     continue;
                 }
+                foreach ($column['items'] ?? [] as $promo) {
+                    if (($promo['__typename'] ?? null) !== 'PagePromo') {
+                        continue;
+                    }
+                    if ($filterCategory && ($promo['category'] ?? null) !== $filterCategory) {
+                        continue;
+                    }
 
-                $media = $storyContent['media'][$key];
+                    $id = $promo['id'] ?? null;
+                    $url = $promo['url'] ?? null;
 
-                if ($media['type'] === 'Photo') {
-                    $mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
-                    $mediaCaption = $media['caption'];
+                    if (!$url || !$id || isset($seen[$id])) {
+                        continue;
+                    }
+                    $seen[$id] = true;
 
-                    $div->outertext = <<<EOD
-	<figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
-EOD;
-                }
+                    $item = [];
+                    $item['uid'] = $id;
+                    $item['title'] = $promo['title'] ?? '';
+                    $item['content'] = $promo['description'] ?? '';
+                    $item['uri'] = $url;
+                    $item['_imageUrl'] = $this->extractImageUrl($promo['media'] ?? []);
 
-                if ($media['type'] === 'YouTube') {
-                    $div->outertext = handleYoutube($media['externalId']);
+                    $stamp = $promo['publishDateStamp'] ?? null;
+                    if ($stamp !== null) {
+                        $item['timestamp'] = (int) ($stamp / 1000);
+                    }
+
+                    $categories = array_values(array_unique(array_filter([
+                        $promo['category'] ?? null,
+                        $isCustom ? $screenCategory : null,
+                    ])));
+                    if ($categories) {
+                        $item['categories'] = $categories;
+                    }
+
+                    $this->items[] = $item;
                 }
             }
         }
+
+        usort($this->items, fn($a, $b) => ($b['timestamp'] ?? 0) <=> ($a['timestamp'] ?? 0));
+
+        $limit = (int) $this->getInput('limit');
+        if ($limit > 0) {
+            $this->items = array_slice($this->items, 0, $limit);
+        }
+
+        foreach ($this->items as &$item) {
+            $this->collectPageData($item);
+        }
     }
 
-    /*
-        Create full coverage links (HubLinks)
-    */
-    private function processHubLinks($html, $storyContent)
+    private function collectPageData(array &$item): void
     {
-        if (!empty($storyContent['richEmbeds'])) {
-            foreach ($storyContent['richEmbeds'] as $embed) {
-                if ($embed['type'] === 'Hub Link') {
-                    $url = self::URI . $embed['tag']['id'];
-                    $div = $html->find('div[id=' . $embed['id'] . ']', 0);
+        $imageUrl = $item['_imageUrl'];
+        unset($item['_imageUrl']);
 
-                    if ($div) {
-                        $div->outertext = <<<EOD
-<p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
-EOD;
+        $html = getSimpleHTMLDOM($item['uri']);
+
+        $isVideo = str_contains(parse_url($item['uri'], PHP_URL_PATH), '/video/');
+        if ($isVideo) {
+            $ldScript = $html->find('script[type="application/ld+json"]', 0);
+            $videoUrl = null;
+            if ($ldScript) {
+                $ld = json_decode($ldScript->innertext, true);
+                $videoUrl = $ld['mainEntity']['contentUrl'] ?? null;
+            }
+            if ($videoUrl) {
+                $descMeta = $html->find('meta[property="og:description"]', 0);
+                $desc = $descMeta ? '<p>' . htmlspecialchars($descMeta->content, ENT_QUOTES) . '</p>' : '';
+                $item['content'] = '<video controls src="' . $videoUrl . '"></video>' . $desc;
+            }
+        } else {
+            $carouselHtml = $this->buildCarouselHtml($html);
+            if ($carouselHtml) {
+                $item['content'] = $carouselHtml;
+            } elseif ($imageUrl) {
+                $altMeta = $html->find('meta[property="og:image:alt"]', 0);
+                $alt = $altMeta ? htmlspecialchars($altMeta->content, ENT_QUOTES) : '';
+                $item['content'] = '<img src="' . $imageUrl . '" alt="' . $alt . '">';
+            }
+
+            $body = $html->find('div.RichTextStoryBody.RichTextBody', 0);
+            if ($body) {
+                foreach ($body->children() as $child) {
+                    if ($child->tag === 'div' && ($child->class ?? '') !== 'Enhancement') {
+                        $child->outertext = '';
                     }
                 }
+                $item['content'] = $item['content'] . $body->innertext;
+            }
+        }
+
+        $authorsDiv = $html->find('div.Page-authors', 0);
+        if ($authorsDiv) {
+            $nodes = $authorsDiv->find('a, span.Link');
+            $names = array_map(fn($n) => $n->plaintext, $nodes);
+            if ($names) {
+                $item['author'] = implode(', ', $names);
             }
         }
     }
 
-    private function processVideo($storyContent)
+    private function buildCarouselHtml($html): string
     {
-        $video = $storyContent['media'][0];
+        $carouselSlides = $html->find('div.Carousel-slides', 0);
+        $slides = $carouselSlides ? $carouselSlides->find('div[class="CarouselSlide-media imageSlide"]') : [];
 
-        if ($video['type'] === 'YouTube') {
-            $html = handleYoutube($video['externalId']);
-        } else {
-            $html = <<<EOD
-<video controls poster="https://storage.googleapis.com/afs-prod/media/{$video['id']}/800.jpeg" preload="none">
-	<source src="{$video['gcsBaseUrl']} {$video['videoRenderedSizes'][0]} {$video['videoFileExtension']}" type="video/mp4">
-</video>
-EOD;
+        $out = '';
+        foreach ($slides as $i => $slide) {
+            $img = $slide->find('picture img', 0); // used to get picture title
+            $source = $slide->find('picture source', 0); // use to get picture URL
+
+            $srcset = null;
+            foreach ($source->attr as $attrName => $attrValue) {
+                if (str_contains($attrName, 'srcset')) {
+                    $srcset = $attrValue;
+                    break;
+                }
+            }
+
+            $srcsetEntries = explode(',', $srcset);
+            $lastEntry = trim(end($srcsetEntries));
+            $src = trim(explode(' ', $lastEntry)[0]);
+            $caption = $img->alt ?? '';
+
+            if ($src) {
+                $out .= '<figure>';
+                $out .= '<img src="' . htmlspecialchars($src, ENT_QUOTES) . '">';
+                if ($caption) {
+                    $out .= '<figcaption>' . htmlspecialchars($caption, ENT_QUOTES) . '</figcaption>';
+                }
+                $out .= '</figure>';
+            }
         }
-
-        return $html;
+        return $out;
     }
 
-    // Remove datawrapper.dwcdn.net iframes and related javaScript
-    private function processIframes($html)
+    private function extractImageUrl(array $media): ?string
     {
-        foreach ($html->find('iframe') as $index => $iframe) {
-            if (preg_match('/datawrapper\.dwcdn\.net/', $iframe->src)) {
-                $iframe->outertext = '';
-
-                if ($html->find('script', $index)) {
-                    $html->find('script', $index)->outertext = '';
+        foreach ($media as $m) {
+            if (($m['__typename'] ?? null) !== 'Image') {
+                continue;
+            }
+            foreach ($m['image']['entries'] ?? [] as $entry) {
+                if ($entry['key'] === 'src') {
+                    return $entry['value'];
                 }
             }
         }
+        return null;
     }
 }

@@ -555,7 +555,7 @@ function handleYoutube(string $string)
     $useNocookie = Configuration::getConfig('youtube', 'nocookie');
 
     // sourced from https://gist.github.com/afeld/1254889?permalink_comment_id=3580082#gistcomment-3580082
-    $regex = '#(?:https?://|//)?(?:www\.|m\.|.+\.)?(?:youtu\.be/|youtube(?:-nocookie)\.com/(?:embed/|v/|shorts/|feeds/api/videos/|watch\?v=|watch\?.+&v=))([\w-]{11})#i';
+    $regex = '#(?:https?://|//)?(?:www\.|m\.|.+\.)?(?:youtu\.be/|youtube(?:-nocookie|)\.com/(?:embed/|v/|shorts/|feeds/api/videos/|watch\?v=|watch\?.+&v=))([\w-]{11})#i';
     if (preg_match($regex, $string, $matches) === 1) {
         $videoID = $matches[1];
     } elseif (preg_match('#[\w-]{11}#i', $string, $matches2) === 1) {
