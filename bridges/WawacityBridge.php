@@ -7,7 +7,7 @@ class WawacityBridge extends BridgeAbstract
     const NAME = 'Wawacity';
     // Last known-good mirror, used only as a fallback if the domain can't be
     // resolved dynamically (see resolveBaseUri())
-    const URI = 'https://www.wawacity.toto';
+    const URI = 'https://www.wawacity.poker';
     const DESCRIPTION = 'Fetches the latest on wawacity';
     const MAINTAINER = 'floviolleau';
     const PARAMETERS = [
