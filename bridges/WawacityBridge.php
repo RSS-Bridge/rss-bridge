@@ -5,7 +5,9 @@ declare(strict_types=1);
 class WawacityBridge extends BridgeAbstract
 {
     const NAME = 'Wawacity';
-    const URI = 'https://www.wawacity.codes';
+    // Last known-good mirror, used only as a fallback if the domain can't be
+    // resolved dynamically (see resolveBaseUri())
+    const URI = 'https://www.wawacity.toto';
     const DESCRIPTION = 'Fetches the latest on wawacity';
     const MAINTAINER = 'floviolleau';
     const PARAMETERS = [
@@ -43,7 +45,7 @@ class WawacityBridge extends BridgeAbstract
             ]
         ]
     ];
-    const CACHE_TIMEOUT = 18000; // every 5h
+    const CACHE_TIMEOUT = 0;//18000; // every 5h
 
     // wawacity is behind Cloudflare, which returns a 520 error to
     // requests that don't look like they come from a real browser.
@@ -73,8 +75,20 @@ class WawacityBridge extends BridgeAbstract
         'divers' => 'Télécharger divers',
     ];
 
+    // wawacity's domain changes often (blocking, DNS seizures...). This
+    // "we moved" landing page stays stable and always links to the current
+    // mirror through its #manual-redirect button, so we resolve the real
+    // domain from there instead of hard-coding it.
+    const INFO_URI = 'https://wawacity-info.com/';
+    const BASE_URI_CACHE_KEY = 'base_uri';
+    const BASE_URI_CACHE_TTL = 18000; // re-check every 5h
+
+    private string $baseUri;
+
     public function collectData()
     {
+        $this->baseUri = $this->resolveBaseUri();
+
         $categorie = $this->getInput('categorie');
         $sousCategorie = trim((string) $this->getInput('sous_categorie'));
 
@@ -85,13 +99,46 @@ class WawacityBridge extends BridgeAbstract
         }
     }
 
+    public function getURI(): string
+    {
+        return $this->baseUri ?? parent::getURI();
+    }
+
+    /**
+     * Resolves the current wawacity mirror domain from wawacity-info.com's
+     * #manual-redirect link, caching the result so we don't hit that page on
+     * every single request. Falls back to the last known-good domain (the
+     * cached value if we have one, otherwise the hard-coded const URI) if the
+     * landing page itself is unreachable or has changed shape.
+     */
+    private function resolveBaseUri(): string
+    {
+        $cached = $this->loadCacheValue(self::BASE_URI_CACHE_KEY);
+
+        try {
+            $html = getSimpleHTMLDOM(self::INFO_URI, self::REQUEST_HEADERS);
+            $redirectDom = $html->find('#manual-redirect', 0);
+            $href = $redirectDom ? trim($redirectDom->href) : '';
+
+            if ($href !== '' && preg_match('#^https://[^/]+#', $href, $matches)) {
+                $resolved = $matches[0];
+                $this->saveCacheValue(self::BASE_URI_CACHE_KEY, $resolved, self::BASE_URI_CACHE_TTL);
+                return $resolved;
+            }
+        } catch (\Throwable $e) {
+            // Fall through to the cached/hard-coded fallback below.
+        }
+
+        return $cached ?? self::URI;
+    }
+
     private function collectCatalogueData($categorie, $sousCategorie)
     {
         $query = 'p=' . rawurlencode($categorie);
         if ($sousCategorie !== '') {
             $query .= '&s=' . rawurlencode($sousCategorie);
         }
-        $url = self::URI . '/?' . $query;
+        $url = $this->baseUri . '/?' . $query;
 
         $html = getSimpleHTMLDOM($url, self::REQUEST_HEADERS) or throwServerException('Could not request ' . $url);
 
@@ -102,7 +149,7 @@ class WawacityBridge extends BridgeAbstract
             $title = html_entity_decode(trim($titleDom->plaintext), ENT_QUOTES);
 
             $imgDom = $elementDom->find('.cover img', 0);
-            $imgSrc = $imgDom ? self::URI . $imgDom->src : null;
+            $imgSrc = $imgDom ? $this->baseUri . $imgDom->src : null;
 
             $descriptionDom = $elementDom->find('.col-md-10 p', 0);
             $description = $descriptionDom ? html_entity_decode(trim($descriptionDom->plaintext), ENT_QUOTES) : '';
@@ -136,7 +183,7 @@ class WawacityBridge extends BridgeAbstract
             );
         }
 
-        $url = self::URI;
+        $url = $this->baseUri;
         $html = getSimpleHTMLDOM($url, self::REQUEST_HEADERS) or throwServerException('Could not request ' . $url);
 
         $blocksDom = $html->find('#wa-mid-blocks .wa-block');
@@ -156,7 +203,7 @@ class WawacityBridge extends BridgeAbstract
                 $title = html_entity_decode(trim($thumbnailDom->title ?: ''), ENT_QUOTES);
 
                 $imgDom = $thumbnailDom->find('img', 0);
-                $imgSrc = $imgDom ? self::URI . $imgDom->src : null;
+                $imgSrc = $imgDom ? $this->baseUri . $imgDom->src : null;
                 if ($title === '' && $imgDom) {
                     $title = html_entity_decode(trim($imgDom->attr['alt'] ?? ''), ENT_QUOTES);
                 }
@@ -192,6 +239,6 @@ class WawacityBridge extends BridgeAbstract
 
     private function toAbsoluteUri($link)
     {
-        return self::URI . (substr($link, 0, 1) === '/' ? $link : '/' . $link);
+        return $this->baseUri . (substr($link, 0, 1) === '/' ? $link : '/' . $link);
     }
 }
