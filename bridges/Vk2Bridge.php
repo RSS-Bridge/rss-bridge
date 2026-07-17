@@ -10,8 +10,7 @@ class Vk2Bridge extends BridgeAbstract
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 900;
 
-    // No magic in the Muggle world 
-    private const VK_API_VER = 5.199;
+    private const VK_API_VER = 5.199; // No magic in the Muggle world
     private const VK_API_MAX_COUNT = 100;
     private const DEFAULT_POST_LIMIT = 20;
     private const API_DELAY_US = 400000;
@@ -227,17 +226,17 @@ class Vk2Bridge extends BridgeAbstract
                 function ($m) {
                     $target = $m[1];
                     $text = $m[2];
-                    
+
                     if (preg_match('/^https?:\/\//i', $target)) {
                         return $this->safeLink($target, $text);
                     }
-                    
+
                     if (preg_match('/^(id|club|public|wall|post|event|market)([\-0-9_]+)$/i', $target, $tm)) {
                         $prefix = strtolower($tm[1]);
                         $id = $tm[2];
                         return $this->safeLink("https://vk.ru/{$prefix}{$id}", $text);
                     }
-                    
+
                     return $this->safeLink('https://vk.ru/' . $target, $text);
                 },
                 $ret
