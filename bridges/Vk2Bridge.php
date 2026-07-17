@@ -166,10 +166,7 @@ class Vk2Bridge extends BridgeAbstract
         }
 
         if (empty($filteredPosts)) {
-            $reason = $hideReposts
-                ? 'No original posts found after filtering reposts.'
-                : 'No posts found in the feed.';
-
+            $reason = $hideReposts ? 'No original posts found after filtering reposts.' : 'No posts found in the feed.';
             $this->handleError('no_posts_found', $reason);
         }
 
@@ -770,7 +767,7 @@ class Vk2Bridge extends BridgeAbstract
         }
 
         $originalLine = $lines[$meaningfulIndex];
-        
+
         $cleanLine = preg_replace(
             '/\[([^\]|]+)\|([^\]]+)\]/u',
             '$2',
