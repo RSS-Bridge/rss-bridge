@@ -14,9 +14,9 @@ class Vk2Bridge extends BridgeAbstract
     private const VK_API_MAX_COUNT = 100;
     private const DEFAULT_POST_LIMIT = 20;
     private const API_DELAY_US = 400000;
-    private const MAX_TITLE_LENGTH = 50;
+    private const MAX_TITLE_LENGTH = 60;
     private const MAX_PREVIEW_LENGTH = 200;
-    private const MIN_TITLE_SPACE_POS = 25;
+    private const MIN_TITLE_SPACE_POS = 30;
 
     private const URL_REGEX = '/^https?:\/\/(?:www\.|m\.)?vk\.ru\/([a-zA-Z0-9_.]+)\/?$/i';
 
@@ -26,8 +26,6 @@ class Vk2Bridge extends BridgeAbstract
         'gifts', 'support', 'write', 'wall', 'board', 'albums', 'docs', 'topics',
         'public', 'event', 'market', 'contacts', 'about', 'reviews', 'edit',
     ];
-
-    private const VALID_FILTERS = ['all', 'owner', 'others'];
 
     private const ERROR_MESSAGES = [
         'owner_not_found' => 'Could not detect owner id. Please check if the short name is correct and the page is not blocked or deleted',
@@ -50,15 +48,10 @@ class Vk2Bridge extends BridgeAbstract
                 'required' => true,
                 'title' => 'Name from URL. Example: rebel_jack from https://vk.ru/rebel_jack',
             ],
-            'filter' => [
-                'name' => 'Filter posts',
-                'type' => 'list',
-                'defaultValue' => 'all',
-                'values' => [
-                    'All posts' => 'all',
-                    'Owner posts' => 'owner',
-                    'Reposts' => 'others',
-                ],
+            'hide_reposts' => [
+                'name' => 'Hide reposts',
+                'type' => 'checkbox',
+                'title' => 'Check this box to hide reposts from feed items',
             ],
             'limit' => [
                 'name' => 'Number of posts',
@@ -126,10 +119,7 @@ class Vk2Bridge extends BridgeAbstract
         usleep(self::API_DELAY_US);
 
         $targetCount = max(1, min(self::VK_API_MAX_COUNT, (int)($this->getInput('limit') ?: self::DEFAULT_POST_LIMIT)));
-        $filter = $this->getInput('filter') ?? 'all';
-        if (!in_array($filter, self::VALID_FILTERS, true)) {
-            $filter = 'all';
-        }
+        $hideReposts = (bool)$this->getInput('hide_reposts');
 
         $fetchCounts = [$targetCount * 2, $targetCount * 4];
         $filteredPosts = [];
@@ -146,7 +136,6 @@ class Vk2Bridge extends BridgeAbstract
                 'owner_id' => $ownerId,
                 'extended' => '1',
                 'count' => $apiCount,
-                'filter' => $filter,
             ]);
 
             if (!isset($r['response']['items'])) {
@@ -159,6 +148,11 @@ class Vk2Bridge extends BridgeAbstract
                 if (($post['marked_as_ads'] ?? 0) === 1 || ($post['is_pinned'] ?? 0) === 1) {
                     continue;
                 }
+
+                if ($hideReposts && $this->isRepost($post)) {
+                    continue;
+                }
+
                 $filteredPosts[] = $post;
             }
 
@@ -172,7 +166,11 @@ class Vk2Bridge extends BridgeAbstract
         }
 
         if (empty($filteredPosts)) {
-            $this->handleError('no_posts_found', 'No posts found in the feed with the selected filter.');
+            $reason = $hideReposts
+                ? 'No original posts found after filtering reposts.'
+                : 'No posts found in the feed.';
+
+            $this->handleError('no_posts_found', $reason);
         }
 
         $filteredPosts = array_slice($filteredPosts, 0, $targetCount);
@@ -201,56 +199,79 @@ class Vk2Bridge extends BridgeAbstract
             [, $text] = $this->splitFirstLine($text);
         }
 
-        $text = trim($text);
-        $ret = '';
+        $text = trim($text ?? '');
 
-        if ($text !== '') {
-            $ret = nl2br($this->e($text));
+        if ($text === '') {
+            $ret = '';
+        } else {
+            $placeholders = [];
+            $counter = 0;
 
-            $ret = preg_replace_callback(
-                '~(https?://[^\s<|]+)|((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?:/[^\s<|]*)?)~i',
-                function ($m) {
-                    if (!empty($m[1])) {
-                        return $this->safeLink($m[1], $m[1]);
-                    }
-                    if (!empty($m[2])) {
-                        return $this->safeLink('https://' . $m[2], $m[2]);
-                    }
-                    return $m[0];
-                },
-                $ret
-            );
-
-            $ret = preg_replace_callback(
-                '/\[([a-zA-Z0-9_\-\.\/:]+)\|([^\]]+)\]/i',
-                function ($m) {
-                    $target = $m[1];
-                    $text = $m[2];
+            $replaced = preg_replace_callback(
+                '/\[([^\]|]+)\|([^\]]+)\]/u',
+                function ($m) use (&$placeholders, &$counter) {
+                    $target = trim($m[1]);
+                    $linkText = $m[2];
 
                     if (preg_match('/^https?:\/\//i', $target)) {
-                        return $this->safeLink($target, $text);
-                    }
-
-                    if (preg_match('/^(id|club|public|wall|post|event|market)([\-0-9_]+)$/i', $target, $tm)) {
+                        $html = $this->safeLink($target, $linkText);
+                    } elseif (preg_match('/^(id|club|public|wall|post|event|market)([\-0-9_]+)$/i', $target, $tm)) {
                         $prefix = strtolower($tm[1]);
                         $id = $tm[2];
-                        return $this->safeLink("https://vk.ru/{$prefix}{$id}", $text);
+                        $html = $this->safeLink("https://vk.ru/{$prefix}{$id}", $linkText);
+                    } else {
+                        $html = $this->safeLink('https://vk.ru/' . $target, $linkText);
                     }
 
-                    return $this->safeLink('https://vk.ru/' . $target, $text);
+                    $marker = "___VK_PH_{$counter}___";
+                    $placeholders[$marker] = $html;
+                    $counter++;
+                    return $marker;
                 },
-                $ret
+                $text
             );
+            $text = $replaced ?? $text;
 
-            $ret = preg_replace_callback(
-                '/#([a-zA-Zà-ÿÀ-ß¸¨0-9_]+(?:@[a-zA-Z0-9_.]+)?)/u',
-                function ($m) {
+            $replaced = preg_replace_callback(
+                '/#([\p{L}0-9_]+(?:@[\p{L}0-9_.]+)?)/u',
+                function ($m) use (&$placeholders, &$counter) {
                     $tag = $m[1];
-                    return $this->safeLink('https://vk.ru/feed?q=%23' . urlencode($tag), '#' . $tag);
+                    $html = $this->safeLink('https://vk.ru/feed?q=%23' . urlencode($tag), '#' . $tag);
+                    $marker = "___VK_PH_{$counter}___";
+                    $placeholders[$marker] = $html;
+                    $counter++;
+                    return $marker;
                 },
-                $ret
+                $text
             );
+            $text = $replaced ?? $text;
 
+            $replaced = preg_replace_callback(
+                '~(https?://[^\s<|]+)|((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?:/[^\s<|]*)?)~i',
+                function ($m) use (&$placeholders, &$counter) {
+                    if (!empty($m[1])) {
+                        $html = $this->safeLink($m[1], $m[1]);
+                    } elseif (!empty($m[2])) {
+                        $html = $this->safeLink('https://' . $m[2], $m[2]);
+                    } else {
+                        return $m[0];
+                    }
+                    $marker = "___VK_PH_{$counter}___";
+                    $placeholders[$marker] = $html;
+                    $counter++;
+                    return $marker;
+                },
+                $text
+            );
+            $text = $replaced ?? $text;
+
+            $ret = $this->e($text);
+
+            if (!empty($placeholders)) {
+                $ret = str_replace(array_keys($placeholders), array_values($placeholders), $ret);
+            }
+
+            $ret = nl2br($ret);
             $ret = "<p>{$ret}</p>";
         }
 
@@ -500,19 +521,10 @@ class Vk2Bridge extends BridgeAbstract
 
         $r = $this->api('groups.getById', ['group_ids' => $u, 'fields' => 'photo_200,photo_100,photo_50'], [100]);
 
-        if (isset($r['response']['groups'][0]['id'])) {
-            $group = $r['response']['groups'][0];
-            $ownerId = -$group['id'];
-            $iconUrl = $group['photo_200'] ?? $group['photo_100'] ?? $group['photo_50'] ?? null;
+        $group = $r['response']['groups'][0] ?? $r['response'][0] ?? null;
 
-            $this->iconUrl = $iconUrl;
-            $this->cache->set($cacheKey, ['ownerId' => $ownerId, 'iconUrl' => $iconUrl], 86400);
-            return $ownerId;
-        }
-
-        if (isset($r['response'][0]['id'])) {
-            $group = $r['response'][0];
-            $ownerId = -$group['id'];
+        if ($group !== null && isset($group['id'])) {
+            $ownerId = -(int)$group['id'];
             $iconUrl = $group['photo_200'] ?? $group['photo_100'] ?? $group['photo_50'] ?? null;
 
             $this->iconUrl = $iconUrl;
@@ -758,9 +770,10 @@ class Vk2Bridge extends BridgeAbstract
         }
 
         $originalLine = $lines[$meaningfulIndex];
+        
         $cleanLine = preg_replace(
-            '/\[(?:id|club|public)?[a-zA-Z0-9_.]+\|([^\]]+)\]/i',
-            '$1',
+            '/\[([^\]|]+)\|([^\]]+)\]/u',
+            '$2',
             trim($originalLine)
         );
 
