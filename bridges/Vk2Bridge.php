@@ -542,7 +542,7 @@ class Vk2Bridge extends BridgeAbstract
         $title = $data['title'] ?? 'Video';
         $isStory = ($data['type'] ?? '') === 'story';
         $prefix = $isStory ? 'clip' : 'video';
-        
+
         $width = $data['width'] ?? 0;
         $height = $data['height'] ?? 0;
         $resolution = ($width > 0 && $height > 0) ? " ({$width}x{$height})" : '';
@@ -570,7 +570,7 @@ class Vk2Bridge extends BridgeAbstract
         $title = $this->e($data['title'] ?? '');
         $duration = $data['duration'] ?? 0;
         $durationStr = $duration > 0 ? ' (' . gmdate('i:s', $duration) . ')' : '';
-        
+
         return "<p>Audio: {$artist} - {$title}{$durationStr}</p>";
     }
 
@@ -634,7 +634,7 @@ class Vk2Bridge extends BridgeAbstract
         $title = $data['title'] ?? 'Article';
         $img = $this->getLargestImageUrl($data['photo']['sizes'] ?? []);
         $eTitle = $this->e($title);
-        
+
         return "<p>{$this->linkHtml($url, $this->image($img, $title) . "<br>{$eTitle}")}</p>";
     }
 
@@ -643,13 +643,13 @@ class Vk2Bridge extends BridgeAbstract
         $url = $this->getPostURI($data);
         $text = $data['text'] ?? '';
         $preview = mb_substr($text, 0, self::MAX_PREVIEW_LENGTH);
-        
+
         if (mb_strlen($text) > self::MAX_PREVIEW_LENGTH) {
             $preview .= '...';
         }
-        
+
         $ePreview = $this->e($preview);
-        
+
         return "<p><strong>Attached post:</strong><br>{$this->linkHtml($url, $ePreview)}</p>";
     }
 
@@ -659,18 +659,18 @@ class Vk2Bridge extends BridgeAbstract
         $title = $data['title'] ?? 'Product';
         $price = $data['price']['text'] ?? '';
         $img = $data['thumb_photo'] ?? '';
-        
+
         $displayText = $title;
         if ($price !== '') {
             $displayText .= " — {$price}";
         }
-        
+
         $eDisplayText = $this->e($displayText);
-        
+
         if ($img !== '') {
             return "<p>{$this->linkHtml($url, $this->image($this->proxyImage($img), $title) . "<br>{$eDisplayText}")}</p>";
         }
-        
+
         return "<p>{$this->link($url, $displayText)}</p>";
     }
 
@@ -681,27 +681,27 @@ class Vk2Bridge extends BridgeAbstract
         $url = "https://vk.ru/music/playlist/{$ownerId}_{$id}";
         $title = $data['title'] ?? 'Playlist';
         $count = $data['count'] ?? 0;
-        
+
         $displayText = "Playlist: {$title} ({$count} tracks)";
-        
+
         return "<p>{$this->link($url, $displayText)}</p>";
     }
 
     private function renderSticker(array $data): string
     {
         $images = $data['images'] ?? [];
-        
+
         if (empty($images)) {
             return '';
         }
-        
+
         usort($images, fn($a, $b) => ($b['width'] ?? 0) <=> ($a['width'] ?? 0));
         $imgUrl = $images[0]['url'] ?? '';
-        
+
         if (empty($imgUrl)) {
             return '';
         }
-        
+
         return "<p>{$this->image($this->proxyImage($imgUrl), 'Sticker')}</p>";
     }
 
@@ -822,14 +822,14 @@ class Vk2Bridge extends BridgeAbstract
         if ($url === '') {
             return $this->e($text);
         }
-        
+
         if (preg_match('/^(javascript|data|vbscript):/i', $url)) {
             return $this->e($text !== '' ? $text : $url);
         }
 
         $safeUrl = $this->e($url);
         $safeText = $this->e($text !== '' ? $text : $url);
-        
+
         return "<a href='{$safeUrl}' target='_blank' rel='noopener noreferrer'>{$safeText}</a>";
     }
 
@@ -870,6 +870,6 @@ class Vk2Bridge extends BridgeAbstract
             $message .= ' ' . $details;
         }
 
-        returnServerError($message);
+        throwServerException($message);
     }
 }
