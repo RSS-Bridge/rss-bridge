@@ -5,7 +5,7 @@ declare(strict_types=1);
 class PhilomenaBridge extends BridgeAbstract
 {
     const NAME = 'Philomena';
-    const URI = '';
+    const URI = 'https://github.com/derpibooru/philomena';
     const DESCRIPTION = 'Base bridge for Philomena-based imageboards (use a site-specific bridge instead)';
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 1800;
@@ -184,10 +184,7 @@ class PhilomenaBridge extends BridgeAbstract
     public function collectData(): void
     {
         if (get_class($this) === self::class) {
-            throwClientException(
-                'This is a base bridge class for Philomena-based imageboards. '
-                . 'Please use a site-specific bridge instead (e.g., DerpibooruBridge or TrixiebooruBridge).'
-            );
+            throwClientException('This is a base bridge class for Philomena-based imageboards. Please use a site-specific bridge instead (e.g., DerpibooruBridge or TrixiebooruBridge).');
         }
 
         $q = $this->getNormalizedQuery();
@@ -225,9 +222,7 @@ class PhilomenaBridge extends BridgeAbstract
             $postUri = static::URI . 'images/' . $post->id;
             $artist = $this->extractArtist($post->tags ?? []);
 
-            $title = !empty($artist)
-                ? sprintf('Image %s by %s', $post->id, $artist)
-                : sprintf('Image %s', $post->id);
+            $title = !empty($artist) ? sprintf('Image %s by %s', $post->id, $artist) : sprintf('Image %s', $post->id);
 
             $this->items[] = [
                 'uri' => $postUri,
