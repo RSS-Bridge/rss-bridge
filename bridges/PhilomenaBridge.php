@@ -184,7 +184,7 @@ class PhilomenaBridge extends BridgeAbstract
     public function collectData(): void
     {
         if (get_class($this) === self::class) {
-            throwClientException('This is a base bridge class for Philomena-based imageboards. Please use a site-specific bridge instead (e.g., DerpibooruBridge or TrixiebooruBridge).');
+            throwClientException('Base bridge class. Use a site-specific bridge instead (e.g., DerpibooruBridge or TrixiebooruBridge).');
         }
 
         $q = $this->getNormalizedQuery();
