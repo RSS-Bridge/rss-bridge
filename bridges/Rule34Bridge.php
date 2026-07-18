@@ -72,12 +72,12 @@ class Rule34Bridge extends GelbooruBridge
             $query = trim($query . ' -ai_generated');
         }
 
-        return $this->getURI()
-            . 'index.php?page=dapi&s=post&q=index&json=1&pid=0'
-            . '&limit=' . (int)($this->getInput('l') ?? 10)
-            . '&tags=' . str_replace(' ', '+', $query)
-            . '&api_key=' . urlencode($this->getInput('api_key') ?? '')
-            . '&user_id=' . urlencode($this->getInput('user_id') ?? '');
+        $limit = (int)($this->getInput('l') ?? 10);
+        $tags = str_replace(' ', '+', $query);
+        $apiKey = urlencode($this->getInput('api_key') ?? '');
+        $userId = urlencode($this->getInput('user_id') ?? '');
+
+        return "{$this->getURI()}index.php?page=dapi&s=post&q=index&json=1&pid=0&limit={$limit}&tags={$tags}&api_key={$apiKey}&user_id={$userId}";
     }
 
     public function collectData()
@@ -92,11 +92,7 @@ class Rule34Bridge extends GelbooruBridge
         $this->inputs[$this->queriedContext]['api_key']['value'] = $apiKey;
         $this->inputs[$this->queriedContext]['user_id']['value'] = $userId;
 
-        try {
-            $content = getContents($this->getFullURI());
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to fetch data from Rule34 API: ' . $e->getMessage());
-        }
+        $content = getContents($this->getFullURI());
 
         if ($content === '') {
             return;
@@ -146,9 +142,7 @@ class Rule34Bridge extends GelbooruBridge
 
         $timestamp = time();
         if (isset($element->created_at)) {
-            $timestamp = is_numeric($element->created_at)
-                ? (int)$element->created_at
-                : (strtotime($element->created_at) ?: time());
+            $timestamp = is_numeric($element->created_at) ? (int)$element->created_at : (strtotime($element->created_at) ?: time());
         } elseif (isset($element->change)) {
             $timestamp = (int)$element->change;
         }
