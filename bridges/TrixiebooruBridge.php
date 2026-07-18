@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-class DerpibooruBridge extends PhilomenaBridge
+class TrixiebooruBridge extends PhilomenaBridge
 {
-    const NAME = 'Derpibooru';
-    const URI = 'https://derpibooru.org/';
-    const DESCRIPTION = 'Returns images and videos from Derpibooru search';
+    const NAME = 'Trixiebooru';
+    const URI = 'https://trixiebooru.org/';
+    const DESCRIPTION = 'Returns images and videos from Trixiebooru search';
 
     protected static function getAvailableFilters(): array
     {
