@@ -7,6 +7,8 @@ class DerpibooruBridge extends PhilomenaBridge
     const NAME = 'Derpibooru';
     const URI = 'https://derpibooru.org/';
     const DESCRIPTION = 'Returns images and videos from Derpibooru search';
+    const MAINTAINER = 'LordArrin';
+    const CACHE_TIMEOUT = 1800;
 
     protected static function getAvailableFilters(): array
     {

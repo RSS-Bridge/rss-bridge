@@ -7,6 +7,8 @@ class TrixiebooruBridge extends PhilomenaBridge
     const NAME = 'Trixiebooru';
     const URI = 'https://trixiebooru.org/';
     const DESCRIPTION = 'Returns images and videos from Trixiebooru search';
+    const MAINTAINER = 'LordArrin';
+    const CACHE_TIMEOUT = 1800;
 
     protected static function getAvailableFilters(): array
     {
