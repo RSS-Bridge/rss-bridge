@@ -64,7 +64,7 @@ final class CurlHttpClient implements HttpClient
 {
     public function request(string $url, array $config = []): Response
     {
-        // Remove non-null values
+        // Remove null values
         $config = array_filter($config, fn ($value) => $value !== null);
 
         $ch = curl_init($url);
