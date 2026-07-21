@@ -27,8 +27,7 @@ class AuthorTodayBridge extends BridgeAbstract
     ];
 
     public const HTTP_HEADERS = [
-        'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
-            . 'Chrome/149.0.0.0 Safari/537.36',
+        'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',
     ];
 
     public const CSS = [
@@ -73,21 +72,21 @@ class AuthorTodayBridge extends BridgeAbstract
         $workId = $this->workId();
 
         if ($workId === null) {
-            returnClientError('Story ID must be a number or a URL containing /work/{id}');
+            throwClientException('Story ID must be a number or a URL containing /work/{id}');
         }
 
         $url = self::URI . '/work/' . $workId;
         $html = getSimpleHTMLDOM($url, self::HTTP_HEADERS);
 
         if (!$html) {
-            returnServerError('Unable to load page: ' . $url);
+            throwServerException('Unable to load page: ' . $url);
         }
 
         $titleNode = $html->find('h1.book-title', 0);
-        $this->feedTitle = $titleNode ? trim($titleNode->plaintext) : '';
+        $this->feedTitle = $titleNode ? trim((string)$titleNode->plaintext) : '';
 
         $authorNode = $html->find('.book-authors a', 0);
-        $author = $authorNode ? trim($authorNode->plaintext) : '';
+        $author = $authorNode ? trim((string)$authorNode->plaintext) : '';
 
         $coverNode = $html->find('img.cover-image', 0);
         $coverUrl = $coverNode ? $this->absoluteUrl((string)$coverNode->getAttribute('src')) : '';
@@ -97,7 +96,7 @@ class AuthorTodayBridge extends BridgeAbstract
         $chapters = $html->find('#tab-chapters ul.table-of-content li');
 
         if (!$chapters) {
-            returnServerError('Chapter list not found. The work may be unavailable or markup has changed.');
+            throwServerException('Chapter list not found. The work may be unavailable or markup has changed.');
         }
 
         $items = [];
@@ -109,7 +108,7 @@ class AuthorTodayBridge extends BridgeAbstract
                 continue;
             }
 
-            $title = trim($link->plaintext);
+            $title = trim((string)$link->plaintext);
             $uri = $this->absoluteUrl((string)$link->getAttribute('href'));
             $timeNode = $chapter->find('[data-time]', 0);
             $timestamp = $timeNode ? $this->timestamp((string)$timeNode->getAttribute('data-time')) : null;
@@ -117,8 +116,8 @@ class AuthorTodayBridge extends BridgeAbstract
             $content = $statusHtml;
 
             if ($coverUrl !== '') {
-                $content .= '<p><a href="' . htmlspecialchars($uri, ENT_QUOTES, 'UTF-8') . '">'
-                    . '<img src="' . htmlspecialchars($coverUrl, ENT_QUOTES, 'UTF-8')
+                $content .= '<p><a href="' . htmlspecialchars($uri, ENT_QUOTES, 'UTF-8') . '"><img src="'
+                    . htmlspecialchars($coverUrl, ENT_QUOTES, 'UTF-8')
                     . '" alt="Cover" style="' . self::CSS['cover'] . '"></a></p>';
             }
 
@@ -146,7 +145,7 @@ class AuthorTodayBridge extends BridgeAbstract
         }
 
         if (!$items) {
-            returnServerError('Unable to parse chapters.');
+            throwServerException('Unable to parse chapters.');
         }
 
         usort($items, static function (array $a, array $b): int {
@@ -232,7 +231,7 @@ class AuthorTodayBridge extends BridgeAbstract
             return '';
         }
 
-        $text = html_entity_decode(strip_tags($node->innertext), ENT_QUOTES, 'UTF-8');
+        $text = html_entity_decode(strip_tags((string)$node->innertext), ENT_QUOTES, 'UTF-8');
 
         return trim((string)preg_replace('/\s+/u', ' ', $text));
     }
