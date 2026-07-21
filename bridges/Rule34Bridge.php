@@ -63,6 +63,20 @@ class Rule34Bridge extends GelbooruBridge
         0 => []
     ];
 
+    public function getName()
+    {
+        $query = $this->getInput('q');
+
+        if ($query !== null && $query !== '') {
+            $query = str_replace(',', ' ', $query);
+            $query = trim(preg_replace('/\s+/', ' ', $query));
+
+            return $query;
+        }
+
+        return parent::getName();
+    }
+
     protected function getFullURI()
     {
         $query = str_replace(',', ' ', $this->getInput('q') ?? '');
