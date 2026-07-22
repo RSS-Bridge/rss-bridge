@@ -17,20 +17,23 @@ class BoostyBridge extends BridgeAbstract
     ]];
 
     private $blogName = '';
+    private $blogDisplayName = '';
     private $blogAvatar = '';
 
     private const CSS = [
-        'paywall'  => 'background:#f5f5f5;padding:15px;border-radius:5px;margin:10px 0',
+        'paywall'  => 'background:#f5f5f5;padding:15px;margin:10px 0',
         'pt'       => 'margin:0 0 10px 0;font-weight:bold',
         'pp'       => 'margin:5px 0',
-        'poll'     => 'background:#f9f9f9;padding:15px;border-radius:5px;margin:10px 0;border-left:4px solid #4a90d9',
+        'poll'     => 'background:#f9f9f9;padding:15px;margin:10px 0;border-left:4px solid #4a90d9',
         'poll_t'   => 'margin:0 0 10px 0;font-weight:bold',
         'poll_o'   => 'margin:8px 0',
-        'poll_r'   => 'display:flex;justify-content:space-between;margin-bottom:3px',
         'poll_m'   => 'color:#666;font-size:0.9em',
         'poll_f'   => 'margin:10px 0 0 0;color:#888;font-size:0.85em',
         'img'      => 'max-width:100%',
-        'pg_table' => 'width:100%;height:8px;background:#e0e0e0;border-radius:3px;overflow:hidden',
+        'ul'       => 'margin:10px 0;padding-left:24px;list-style-type:disc',
+        'ol'       => 'margin:10px 0;padding-left:24px;list-style-type:decimal',
+        'li'       => 'margin:4px 0',
+        'pg_table' => 'width:100%;height:8px;background:#e0e0e0',
         'pg_fill'  => 'background:#4a90d9;margin:0;padding:0;line-height:0;font-size:0',
         'pg_empty' => 'margin:0;padding:0;line-height:0;font-size:0',
     ];
@@ -58,6 +61,9 @@ class BoostyBridge extends BridgeAbstract
         ]));
         if (!isset($data['data']) || !is_array($data['data'])) {
             throw new \Exception('Failed to fetch data from Boosty API');
+        }
+        if (!empty($data['data'][0]['user']['name'])) {
+            $this->blogDisplayName = (string)$data['data'][0]['user']['name'];
         }
         if (!empty($data['data'][0]['user']['avatarUrl'])) {
             $this->blogAvatar = (string)$data['data'][0]['user']['avatarUrl'];
@@ -134,6 +140,8 @@ class BoostyBridge extends BridgeAbstract
                 if ($r !== '') {
                     $out .= '<p>' . $r . '</p>';
                 }
+            } elseif ($type === 'list') {
+                $out .= $this->renderList($b);
             }
         }
         return $out;
@@ -179,6 +187,12 @@ class BoostyBridge extends BridgeAbstract
                 if ($r !== '') {
                     $buf[] = $r;
                 }
+            } elseif ($type === 'list') {
+                if ($buf) {
+                    $out .= '<p>' . implode('', $buf) . '</p>';
+                    $buf = [];
+                }
+                $out .= $this->renderList($b);
             } else {
                 if ($buf) {
                     $out .= '<p>' . implode('', $buf) . '</p>';
@@ -196,6 +210,64 @@ class BoostyBridge extends BridgeAbstract
             $out .= $this->renderPoll($p['poll']);
         }
         return $out;
+    }
+
+    private function renderList(array $b): string
+    {
+        $style = $b['style'] ?? 'unordered';
+        $tag = ($style === 'ordered') ? 'ol' : 'ul';
+        $cssKey = ($style === 'ordered') ? 'ol' : 'ul';
+        $items = $b['items'] ?? [];
+
+        if (empty($items)) {
+            return '';
+        }
+
+        $inner = $this->renderListItems($items, $tag, $cssKey);
+        if ($inner === '') {
+            return '';
+        }
+
+        return '<' . $tag . $this->style($cssKey) . '>' . $inner . '</' . $tag . '>';
+    }
+
+    private function renderListItems(array $items, string $tag, string $cssKey): string
+    {
+        $h = '';
+        foreach ($items as $item) {
+            $content = $this->listItemContent($item);
+            $nested = '';
+            if (!empty($item['items']) && is_array($item['items'])) {
+                $nested = $this->renderListItems($item['items'], $tag, $cssKey);
+            }
+            if ($content === '' && $nested === '') {
+                continue;
+            }
+            $h .= '<li' . $this->style('li') . '>' . $content . $nested . '</li>';
+        }
+        return $h;
+    }
+
+    private function listItemContent(array $item): string
+    {
+        $h = '';
+        foreach ($item['data'] ?? [] as $block) {
+            $bType = $block['type'] ?? '';
+            if ($bType === 'text') {
+                $r = $this->draft($block['content'] ?? '');
+                if ($r !== '') {
+                    $h .= $r;
+                }
+            } elseif ($bType === 'link') {
+                $r = $this->renderLink($block);
+                if ($r !== '') {
+                    $h .= $r;
+                }
+            } elseif (isset(self::MEDIA[$bType])) {
+                $h .= $this->renderMedia($block);
+            }
+        }
+        return $h;
     }
 
     private function renderLink(array $b): string
@@ -247,36 +319,35 @@ class BoostyBridge extends BridgeAbstract
         }
         $vis = $this->pollVisible($poll, $total);
         foreach ($poll['options'] ?? [] as $o) {
+            $text = $this->esc($o['text'] ?? '');
             if ($vis) {
                 $c = (int)($o['counter'] ?? 0);
                 $f = isset($o['fraction']) ? (float)$o['fraction'] : ($total > 0 ? ($c / $total) * 100.0 : 0.0);
                 $f = max(0.0, min(100.0, $f));
                 $fd = rtrim(rtrim(number_format($f, 1, '.', ''), '0'), '.');
                 $h .= '<div' . $s('poll_o') . '>';
-                $h .= '<div' . $s('poll_r') . '>';
-                $h .= '<span>' . $this->esc($o['text'] ?? '') . '</span>';
+                $h .= '<span>' . $text . '</span> ';
                 $h .= '<span' . $s('poll_m') . '>' . $fd . '% (' . $c . ')</span>';
-                $h .= '</div>';
                 $h .= '<table cellpadding="0" cellspacing="0" border="0"' . $s('pg_table') . '>';
                 $h .= '<tr>';
-                $h .= '<td style="width:' . $f . '%;' . self::CSS['pg_fill'] . '"></td>';
+                $h .= '<td' . $this->style('pg_fill', 'width:' . $f . '%') . '></td>';
                 $h .= '<td' . $s('pg_empty') . '></td>';
                 $h .= '</tr>';
                 $h .= '</table>';
                 $h .= '</div>';
             } else {
-                $h .= '<div' . $s('poll_o') . '><span>' . $this->esc($o['text'] ?? '') . '</span></div>';
+                $h .= '<div' . $s('poll_o') . '><span>' . $text . '</span></div>';
             }
         }
         $h .= '<p' . $s('poll_f') . '>Total votes: ' . $total;
         if (!empty($poll['isMultiple'])) {
-            $h .= '   Multiple choice';
+            $h .= ' &#183; Multiple choice';
         }
         if (!empty($poll['isFinished'])) {
-            $h .= '   Finished';
+            $h .= ' &#183; Finished';
         }
         if (!$vis) {
-            $h .= '   Results hidden';
+            $h .= ' &#183; Results hidden';
         }
         return $h . '</p></div>';
     }
@@ -396,13 +467,20 @@ class BoostyBridge extends BridgeAbstract
         return htmlspecialchars((string)$s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
-    private function style(string $key): string
+    private function style(string $key, string $extra = ''): string
     {
-        return isset(self::CSS[$key]) ? ' style="' . self::CSS[$key] . '"' : '';
+        $css = self::CSS[$key] ?? '';
+        if ($extra !== '') {
+            $css = ($css !== '' ? $css . ';' : '') . $extra;
+        }
+        return $css !== '' ? ' style="' . $css . '"' : '';
     }
 
     public function getName(): string
     {
+        if ($this->blogDisplayName !== '') {
+            return 'Boosty: ' . $this->blogDisplayName;
+        }
         $blog = $this->getInput('blog');
         return $blog ? 'Boosty: ' . $blog : self::NAME;
     }
