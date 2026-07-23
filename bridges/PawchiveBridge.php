@@ -5,7 +5,7 @@ declare(strict_types=1);
 class PawchiveBridge extends BridgeAbstract
 {
     const NAME = 'Pawchive';
-    const URI = 'https://pawchive.st/';
+    const URI = 'https://pawchive.pw/';
     const DESCRIPTION = 'Returns posts from Pawchive. Kemono is dead, long live the Pawchive!';
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 3600;
@@ -117,10 +117,10 @@ class PawchiveBridge extends BridgeAbstract
 
     private const HTTP_HEADERS = [
         'Accept: application/json, text/css, */*',
-        'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36'
+        'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36'
     ];
 
-    private const DOMAINS = ['pawchive.st', 'pawchive.pw'];
+    private const DOMAINS = ['pawchive.pw', 'pawchive.st'];
     private const CACHE_KEY_ACTIVE_DOMAIN = 'active_domain';
 
     private ?string $author = null;
@@ -184,9 +184,9 @@ class PawchiveBridge extends BridgeAbstract
         $activeHost = $this->getActiveDomainHost();
         foreach (self::DOMAINS as $host) {
             if ($host !== $activeHost) {
-                $content = str_replace('https://' . $host, 'https://' . $activeHost, $content);
                 $content = str_replace('https://file.' . $host, 'https://file.' . $activeHost, $content);
                 $content = str_replace('https://img.' . $host, 'https://img.' . $activeHost, $content);
+                $content = str_replace('https://' . $host, 'https://' . $activeHost, $content);
             }
         }
         return $content;
@@ -194,9 +194,7 @@ class PawchiveBridge extends BridgeAbstract
 
     private function getMimeType(string $filename): string
     {
-        $cleanFilename = preg_replace('/[^\x20-\x7E]/', '', $filename);
-        $cleanFilename = trim($cleanFilename);
-        $ext = strtolower(trim(pathinfo($cleanFilename, PATHINFO_EXTENSION)));
+        $ext = $this->getExtension($filename);
         return $this->mimeCache[$ext] ??= self::MIME_TYPES[$ext] ?? 'application/octet-stream';
     }
 
@@ -264,7 +262,7 @@ class PawchiveBridge extends BridgeAbstract
                 $inAnchor = true;
             } elseif (preg_match('/^<\/a>$/i', $part)) {
                 $inAnchor = false;
-            } elseif (!$inAnchor && trim($part) !== '') {
+            } elseif (!$inAnchor && trim($part) !== '' && !str_starts_with(ltrim($part), '<')) {
                 $part = preg_replace_callback(
                     '/(https?:\/\/[^\s<>\"]+)/i',
                     fn(array $matches): string => sprintf(
@@ -354,7 +352,9 @@ class PawchiveBridge extends BridgeAbstract
         ]);
         $curlOptions = [
             CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_MAXREDIRS => 0,
         ];
+
         $activeHost = $this->getActiveDomainHost();
         $hostsToTry = [$activeHost];
         foreach (self::DOMAINS as $host) {
@@ -362,20 +362,47 @@ class PawchiveBridge extends BridgeAbstract
                 $hostsToTry[] = $host;
             }
         }
+
+        $lastException = null;
+
         foreach ($hostsToTry as $host) {
             $url = 'https://' . $host . '/' . self::API_PREFIX . $service . $endpoint;
             try {
-                $api_response = getContents($url, $headers, $curlOptions);
-                $data = Json::decode($api_response);
-                if (is_array($data)) {
-                    $this->setActiveDomainHost($host);
-                    return $data;
+                $apiResponse = getContents($url, $headers, $curlOptions);
+                $data = Json::decode($apiResponse);
+
+                if (!is_array($data)) {
+                    $lastException = new \Exception(
+                        sprintf('Unexpected JSON type from %s: %s', $host, gettype($data))
+                    );
+                    continue;
                 }
+
+                if (isset($data['error'])) {
+                    $lastException = new \Exception(
+                        sprintf('API error from %s: %s', $host, (string)$data['error'])
+                    );
+                    continue;
+                }
+
+                $this->setActiveDomainHost($host);
+                return $data;
             } catch (\Exception $e) {
+                $lastException = $e;
+                $this->logger->warning(sprintf(
+                    'Pawchive mirror %s failed for %s: %s',
+                    $host,
+                    $endpoint,
+                    $e->getMessage()
+                ));
                 continue;
             }
         }
-        return [];
+
+        throwServerException(sprintf(
+            'All Pawchive mirrors failed. Last error: %s',
+            $lastException?->getMessage() ?? 'unknown'
+        ));
     }
 
     private function collectFiles(array $post): array
@@ -383,14 +410,18 @@ class PawchiveBridge extends BridgeAbstract
         $files = [];
         if (!empty($post['file']['path'])) {
             $file = $post['file'];
-            $file['name'] = isset($file['name']) ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name'])) : null;
+            $file['name'] = isset($file['name'])
+                ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name']))
+                : null;
             $file['path'] = trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['path']));
             $files[] = $file;
         }
         if (!empty($post['attachments']) && is_array($post['attachments'])) {
             foreach ($post['attachments'] as $file) {
                 if (!empty($file['path'])) {
-                    $file['name'] = isset($file['name']) ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name'])) : null;
+                    $file['name'] = isset($file['name'])
+                        ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name']))
+                        : null;
                     $file['path'] = trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['path']));
                     $files[] = $file;
                 }
@@ -410,14 +441,23 @@ class PawchiveBridge extends BridgeAbstract
             }
             $thumbnailUrl = $this->getThumbnailUrl($file['path'], $fileName);
             $fullUrl = $this->getFileUrl($file['path'], $fileName);
+
             if ($this->isImageByExtension($fileName)) {
-                $contentHtml .= sprintf('<div style="%s">%s</div>', $containerStyle, $this->renderImage($thumbnailUrl, $fileName));
+                $contentHtml .= sprintf(
+                    '<div style="%s">%s</div>',
+                    $containerStyle,
+                    $this->renderImage($thumbnailUrl, $fileName)
+                );
                 if (!$hideAttachments) {
                     $downloadLinks[] = ['url' => $fullUrl, 'name' => $fileName];
                 }
             } elseif ($this->isVideoByExtension($fileName)) {
                 if (!$hideAttachments) {
-                    $contentHtml .= sprintf('<div style="%s">%s</div>', $containerStyle, $this->renderVideo($fullUrl, $this->getMimeType($fileName)));
+                    $contentHtml .= sprintf(
+                        '<div style="%s">%s</div>',
+                        $containerStyle,
+                        $this->renderVideo($fullUrl, $this->getMimeType($fileName))
+                    );
                     $downloadLinks[] = ['url' => $fullUrl, 'name' => $fileName];
                 }
             } else {
@@ -476,22 +516,21 @@ class PawchiveBridge extends BridgeAbstract
     public function collectData(): void
     {
         $service = $this->getInput('service');
-        $user = '/user/' . $this->getInput('user');
-        $profile = $this->getJson("{$user}/profile");
+        $userId = (string)$this->getInput('user');
+        $userPath = '/user/' . $userId;
+
+        $profile = $this->getJson("{$userPath}/profile");
         $this->author = $profile['name'] ?? 'Unknown';
-        $this->authorAvatarUrl = $this->getAvatarUrl($service, (string)$this->getInput('user'));
+        $this->authorAvatarUrl = $this->getAvatarUrl($service, $userId);
 
         $queryParams = [];
         $q = $this->getInput('q');
         if ($q !== null && $q !== '') {
             $queryParams['q'] = $q;
         }
-        $queryString = $queryParams ? '?' . http_build_query($queryParams) : '';
+        $queryString = $queryParams !== [] ? '?' . http_build_query($queryParams) : '';
 
-        $json = $this->getJson("{$user}{$queryString}");
-        if (empty($json)) {
-            return;
-        }
+        $json = $this->getJson("{$userPath}{$queryString}");
 
         $hideAttachments = (bool)$this->getInput('hide_videos');
         $hideEmpty = (bool)$this->getInput('hide_empty');
@@ -515,30 +554,49 @@ class PawchiveBridge extends BridgeAbstract
         $content = $post['content'] ?? '';
         $content = $this->normalizeUrls($content);
         $content = $this->sanitizeHtml($content);
+
         $files = $this->collectFiles($post);
         foreach ($files as $file) {
             $fileName = $file['name'] ?? basename($file['path']);
             $fileName = trim($fileName);
             if ($fileName !== '') {
-                $content = preg_replace('/(?<![a-zA-Z0-9])' . preg_quote($fileName, '/') . '(?![a-zA-Z0-9])/i', '', $content);
+                $content = preg_replace(
+                    '/(?<![a-zA-Z0-9])' . preg_quote($fileName, '/') . '(?![a-zA-Z0-9])/i',
+                    '',
+                    $content
+                );
             }
         }
         $content = $this->formatUrlsInText($content);
+
+        $timestamp = null;
+        $dateStr = $post['published'] ?? $post['added'] ?? null;
+        if ($dateStr !== null) {
+            $parsed = strtotime((string)$dateStr);
+            if ($parsed !== false) {
+                $timestamp = $parsed;
+            }
+        }
+
         $item = [
             'author' => $this->author,
             'content' => $content,
-            'timestamp' => strtotime($post['published'] ?? $post['added']),
-            'title' => $this->sanitizeText($post['title'] ?? 'Post ' . $post['id']),
-            'uid' => $post['id'],
-            'uri' => $this->getURI() . '/post/' . $post['id'],
+            'timestamp' => $timestamp,
+            'title' => $this->sanitizeText($post['title'] ?? 'Post ' . ($post['id'] ?? '?')),
+            'uid' => (string)($post['id'] ?? uniqid('pawchive_', true)),
+            'uri' => $this->getURI() . '/post/' . ($post['id'] ?? ''),
         ];
+
         $contentHtml = $item['content'];
+
         if (!empty($post['embed']['url'])) {
-            $contentHtml .= $this->renderExternalLink($this->normalizeUrls($post['embed']['url']));
+            $contentHtml .= $this->renderExternalLink($this->normalizeUrls((string)$post['embed']['url']));
         }
+
         $downloadLinks = [];
         $this->processFiles($files, $hideAttachments, $contentHtml, $downloadLinks);
         $contentHtml .= $this->renderAttachmentsBlock($downloadLinks);
+
         $item['content'] = $contentHtml;
         return $item;
     }
@@ -554,6 +612,7 @@ class PawchiveBridge extends BridgeAbstract
                 $item['uri'] = $this->normalizeUrls($item['uri']);
             }
         }
+        unset($item);
         return $items;
     }
 }
