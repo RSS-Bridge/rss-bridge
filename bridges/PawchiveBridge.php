@@ -262,7 +262,7 @@ class PawchiveBridge extends BridgeAbstract
                 $inAnchor = true;
             } elseif (preg_match('/^<\/a>$/i', $part)) {
                 $inAnchor = false;
-            } elseif (!$inAnchor && trim($part) !== '' && !str_starts_with(ltrim($part), '<')) {
+            } elseif (!$inAnchor && trim($part) !== '' && strpos(ltrim($part), '<') !== 0) {
                 $part = preg_replace_callback(
                     '/(https?:\/\/[^\s<>\"]+)/i',
                     fn(array $matches): string => sprintf(
@@ -401,7 +401,7 @@ class PawchiveBridge extends BridgeAbstract
 
         throwServerException(sprintf(
             'All Pawchive mirrors failed. Last error: %s',
-            $lastException?->getMessage() ?? 'unknown'
+            $lastException !== null ? $lastException->getMessage() : 'unknown'
         ));
     }
 
