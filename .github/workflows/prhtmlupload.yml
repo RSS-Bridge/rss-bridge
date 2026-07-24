@@ -1,0 +1,78 @@
+name: 'PR Results'
+
+on:
+  workflow_run:
+    workflows: ['PR Testing']
+    types: [completed]
+
+permissions:
+  actions: read
+
+jobs:
+  comment-pr:
+    name: Create or update PR comment
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: write
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v5
+        with:
+          name: test-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Get comment length
+        id: check
+        run: |
+          echo "comment_length=$(wc -c < comment.md)" >> $GITHUB_OUTPUT
+      - name: Find Comment
+        uses: peter-evans/find-comment@v4
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Pull request artifacts
+      - name: Create or update comment
+        if: steps.check.outputs.comment_length > 130 || steps.find-comment.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          body-file: comment.md
+          edit-mode: replace
+
+  upload-test-results:
+    name: Upload to GitHub Pages repository
+    runs-on: ubuntu-slim
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: "${{ github.repository_owner }}/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}"
+          ref: 'main'
+          ssh-key:  ${{ secrets.RSSTESTER_SSH_KEY }}
+      - name: Setup git config
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "<>"
+      - name: Download test results
+        uses: actions/download-artifact@v5
+        with:
+          name: test-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Move test results
+        run: |
+          DIRECTORY="$GITHUB_WORKSPACE/prs/${{ github.event.workflow_run.pull_requests[0].number || '-1' }}"
+          rm -rf $DIRECTORY
+          mkdir -p $DIRECTORY
+          cd $DIRECTORY
+          mv -f $GITHUB_WORKSPACE/comment.md ./README.md
+          mv -f $GITHUB_WORKSPACE/*.html .
+      - name: Commit and push test results
+        run: |
+          export COMMIT_MESSAGE="Test results for PR ${{ github.event.workflow_run.pull_requests[0].number || '-1' }}"
+          git add .
+          git commit -m "$COMMIT_MESSAGE" || exit 0
+          git push
