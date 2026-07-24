@@ -1,86 +1,77 @@
 name: 'PR Testing'
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [ master ]
 
 permissions:
   contents: read
 
 jobs:
-  checks:
-    name: Check if bridges were changed
-    runs-on: ubuntu-24.04-arm
-    outputs:
-      BRIDGES: ${{ steps.check_bridges.outputs.BRIDGES }}
-      WITH_UPLOAD: ${{ steps.check_upload.outputs.WITH_UPLOAD }}
-    steps:
-      - name: Check number of bridges
-        id: check_bridges
-        run: |
-          PR=${{ github.event.number || 'none' }};
-          wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
-          bridgeamount=$(cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq | wc -l);
-          echo "BRIDGES=$bridgeamount" >> "$GITHUB_OUTPUT"
-      - name: "Check upload token secret RSSTESTER_SSH_KEY is set"
-        id: check_upload
-        run: |
-          echo "WITH_UPLOAD=$([ -n "${{ secrets.RSSTESTER_SSH_KEY }}" ] && echo "true" || echo "false")" >> "$GITHUB_OUTPUT"
-
   test-pr:
     name: Generate HTML files
     runs-on: ubuntu-24.04-arm
-    needs: checks
-    if: needs.checks.outputs.BRIDGES > 0
-    outputs:
-      COMMENT_LENGTH: ${{ steps.run-tests.outputs.bodylength }}
     steps:
+      - name: Create configuration files
+        id: configuration
+        run: |
+          touch DEBUG
+          PR=${{ github.event.number || 'none' }}
+          wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch
+          grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" $PR.patch | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort -u > whitelist.txt
+          echo "number_bridges=$(wc -l < whitelist.txt)" >> $GITHUB_OUTPUT
+          echo "whitelist.txt:"
+          cat whitelist.txt
+
       - name: Checkout - PR
+        if: steps.configuration.outputs.number_bridges > 0
         uses: actions/checkout@v5
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          path: pr
       - name: Build docker image - PR
-        run: docker build -t rss-bridge-pr .
-      - name: Clear workspace
-        run: rm -r * .*
-      - name: Checkout - Current
-        uses: actions/checkout@v5
-      - name: Build docker image - Current
-        run: docker build -t rss-bridge-current .
-      - name: Create configuration files
-        run: |
-          touch DEBUG;
-          PR=${{ github.event.number || 'none' }};
-          wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
-          cat $PR.patch | grep "\bbridges/[A-Za-z0-9]*Bridge\.php\b" | sed "s=.*\bbridges/\([A-Za-z0-9]*\)Bridge\.php\b.*=\1=g" | sort | uniq > whitelist.txt;
-          echo "whitelist.txt:";
-          cat whitelist.txt
-      - name: Run docker container - Current
-        run: docker run -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG --detach --pull never -p 3000:80 rss-bridge-current
+        if: steps.configuration.outputs.number_bridges > 0
+        run: docker build -t rss-bridge-pr pr/
       - name: Run docker container - PR
-        run: docker run -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG --detach --pull never -p 3001:80 rss-bridge-pr
+        if: steps.configuration.outputs.number_bridges > 0
+        run: docker run -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt:ro -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG:ro --detach --pull never -p 3001:80 rss-bridge-pr
+
+      - name: Checkout - Current
+        if: steps.configuration.outputs.number_bridges > 0
+        uses: actions/checkout@v5
+        with:
+          ref: ${{github.event.pull_request.base.ref}}
+          repository: ${{github.event.pull_request.base.repo.full_name}}
+          path: current
+      - name: Build docker image - Current
+        if: steps.configuration.outputs.number_bridges > 0
+        run: docker build -t rss-bridge-current current/
+      - name: Run docker container - Current
+        if: steps.configuration.outputs.number_bridges > 0
+        run: docker run -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt:ro -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG:ro --detach --pull never -p 3000:80 rss-bridge-current
+
       - name: Setup python
+        if: steps.configuration.outputs.number_bridges > 0
         uses: actions/setup-python@v6
         with:
           python-version: '3.13'
           cache: 'pip'
           cache-dependency-path: '**/*requirements*.txt'
-      - name: Install requirements
-        run: pip install -r ./.github/prtester-requirements.txt
+      - name: Install python requirements
+        if: steps.configuration.outputs.number_bridges > 0
+        run: pip install -r ./current/.github/prtester-requirements.txt
+
       - name: Run bridge tests
+        if: steps.configuration.outputs.number_bridges > 0
         id: run-tests
         env:
           PYTHONUNBUFFERED: 1
         run: |
-          python ./.github/prtester.py --artifacts-base-url "https://${{ github.repository_owner }}.github.io/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}/prs/${{ github.event.number || 'none' }}";
-          body="$(cat comment.md)";
-          body="${body//'%'/'%25'}";
-          body="${body//$'\n'/'%0A'}";
-          body="${body//$'\r'/'%0D'}";
-          echo "bodylength=${#body}" >> $GITHUB_OUTPUT
-      - name: Upload test results
-        if: steps.run-tests.outputs.bodylength > 130
+          python ./current/.github/prtester.py --artifacts-base-url "https://${{ github.repository_owner }}.github.io/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}/prs/${{ github.event.number || 'none' }}"
+          cat comment.md >> $GITHUB_STEP_SUMMARY
+          echo "bodylength=$(wc -c < comment.md)" >> $GITHUB_OUTPUT
+
+      - name: Upload test results as artifacts
+        if: steps.configuration.outputs.number_bridges > 0 && steps.run-tests.outputs.bodylength > 130
         uses: actions/upload-artifact@v5
         with:
           name: test-results
@@ -88,66 +79,3 @@ jobs:
             comment.md
             *.html
           if-no-files-found: error
-
-  comment-pr:
-    name: Create or update PR comment
-    runs-on: ubuntu-24.04-arm
-    needs: test-pr
-    if: needs.test-pr.outputs.COMMENT_LENGTH > 130
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Download test results
-        uses: actions/download-artifact@v5
-        with:
-          name: test-results
-      - name: Add comment to job summary
-        run: cat comment.md >> $GITHUB_STEP_SUMMARY
-      - name: Find Comment
-        uses: peter-evans/find-comment@v4
-        id: find-comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: Pull request artifacts
-      - name: Create or update comment
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body-file: comment.md
-          edit-mode: replace
-
-  upload-test-results:
-    name: Upload to GitHub Pages repository
-    runs-on: ubuntu-24.04-arm
-    needs: test-pr
-    if: needs.test-pr.outputs.COMMENT_LENGTH > 130 && needs.checks.outputs.WITH_UPLOAD == 'true'
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          repository: "${{ github.repository_owner }}/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}"
-          ref: 'main'
-          ssh-key:  ${{ secrets.RSSTESTER_SSH_KEY }}
-      - name: Setup git config
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "<>"
-      - name: Download test results
-        uses: actions/download-artifact@v5
-        with:
-          name: test-results
-      - name: Move test results
-        run: |
-          DIRECTORY="$GITHUB_WORKSPACE/prs/${{ github.event.number || 'none' }}"
-          rm -rf $DIRECTORY
-          mkdir -p $DIRECTORY
-          cd $DIRECTORY
-          mv -f $GITHUB_WORKSPACE/comment.md ./README.md
-          mv -f $GITHUB_WORKSPACE/*.html .
-      - name: Commit and push test results
-        run: |
-          export COMMIT_MESSAGE="Test results for PR ${{ github.event.number || 'none' }}"
-          git add .
-          git commit -m "$COMMIT_MESSAGE" || exit 0
-          git push
