@@ -32,6 +32,8 @@ class DobinDomBridge extends BridgeAbstract
             foreach ($room['videos'] as $video) {
                 $posterUrl = $video['poster_url'] ?? null;
                 $embedUrl = $video['embed_url'];
+                $description = $video['description'] ?? null;
+                $timestamps = $video['timestamps'] ?? null;
 
                 if ($posterUrl) {
                     $content = '<a href="' . htmlspecialchars($embedUrl) . '"><img src="' . htmlspecialchars($posterUrl) . '"></a>';
@@ -39,6 +41,31 @@ class DobinDomBridge extends BridgeAbstract
                     $content = '<a href="' . htmlspecialchars($embedUrl) . '">'
                         . htmlspecialchars($video['title'])
                         . '</a>';
+                }
+
+                if ($description) {
+                    $content .= '<p>' . htmlspecialchars($description) . '</p>';
+                }
+
+                if ($timestamps) {
+                    $content .= '<hr>';
+                    $content .= '<h4>Тайм-коды</h4>';
+                    $content .= '<ul>';
+                    foreach ($timestamps as $timestamp) {
+                        $content .= '<li>' . $this->formatTimestamp($timestamp['time_seconds'])
+                            . ' — ' . htmlspecialchars($timestamp['title'])
+                            . '</li>';
+                    }
+                    $content .= '</ul>';
+                }
+
+                if (!empty($video['has_broadcast_text']) && isset($video['schedule_id'])) {
+                    $text = $this->fetchBroadcastText($token, $video['schedule_id']);
+                    if ($text) {
+                        $content .= '<hr>';
+                        $content .= '<h4>Текст</h4>';
+                        $content .= $this->formatBroadcastText($text);
+                    }
                 }
 
                 $this->items[] = [
@@ -94,5 +121,45 @@ class DobinDomBridge extends BridgeAbstract
 
         $response = getContents(self::API_BASE . '/kinescope/archive/', $headers);
         return Json::decode($response);
+    }
+
+    private function fetchBroadcastText(string $token, int $scheduleId): ?string
+    {
+        $headers = [
+            'Authorization: Bearer ' . $token,
+            'Accept: application/json',
+        ];
+
+        $response = getContents(
+            self::API_BASE . '/kinescope/cabinet-text/' . $scheduleId . '/state/?format=json',
+            $headers
+        );
+        $data = Json::decode($response);
+
+        return $data['content'] ?? null;
+    }
+
+    private function formatBroadcastText(string $text): string
+    {
+        $paragraphs = preg_split('/\n{2,}/', trim($text));
+        $html = '';
+        foreach ($paragraphs as $paragraph) {
+            $html .= '<p>' . nl2br(htmlspecialchars($paragraph)) . '</p>';
+        }
+
+        return $html;
+    }
+
+    private function formatTimestamp(int $seconds): string
+    {
+        $hours = intdiv($seconds, 3600);
+        $minutes = intdiv($seconds % 3600, 60);
+        $secs = $seconds % 60;
+
+        if ($hours > 0) {
+            return sprintf('%d:%02d:%02d', $hours, $minutes, $secs);
+        }
+
+        return sprintf('%d:%02d', $minutes, $secs);
     }
 }
