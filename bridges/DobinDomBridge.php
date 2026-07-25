@@ -24,8 +24,17 @@ class DobinDomBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $token = $this->authenticate();
-        $rooms = $this->fetchArchive($token);
+        $token = $this->getToken();
+        try {
+            $rooms = $this->fetchArchive($token);
+        } catch (HttpException $e) {
+            if ($e->getCode() !== 401) {
+                throw $e;
+            }
+            // Cached token expired or was revoked, force a fresh login
+            $token = $this->getToken(true);
+            $rooms = $this->fetchArchive($token);
+        }
 
         foreach ($rooms as $room) {
             $roomName = $room['room_name'];
@@ -86,6 +95,23 @@ class DobinDomBridge extends BridgeAbstract
         return self::URI . '/favicon.svg';
     }
 
+    private function getToken(bool $forceRefresh = false): string
+    {
+        $cacheKey = 'token_' . hash('sha256', $this->getInput('login'));
+
+        if (!$forceRefresh) {
+            $token = $this->loadCacheValue($cacheKey);
+            if ($token) {
+                return $token;
+            }
+        }
+
+        $token = $this->authenticate();
+        $this->saveCacheValue($cacheKey, $token, 3600);
+
+        return $token;
+    }
+
     private function authenticate(): string
     {
         $opts = [
@@ -114,29 +140,25 @@ class DobinDomBridge extends BridgeAbstract
 
     private function fetchArchive(string $token): array
     {
-        $headers = [
-            'Authorization: Bearer ' . $token,
-            'Accept: application/json',
-        ];
-
-        $response = getContents(self::API_BASE . '/kinescope/archive/', $headers);
+        $response = getContents(self::API_BASE . '/kinescope/archive/', $this->authHeaders($token));
         return Json::decode($response);
     }
 
     private function fetchBroadcastText(string $token, int $scheduleId): ?string
     {
-        $headers = [
-            'Authorization: Bearer ' . $token,
-            'Accept: application/json',
-        ];
-
-        $response = getContents(
-            self::API_BASE . '/kinescope/cabinet-text/' . $scheduleId . '/state/?format=json',
-            $headers
-        );
+        $url = self::API_BASE . '/kinescope/cabinet-text/' . $scheduleId . '/state/?' . http_build_query(['format' => 'json']);
+        $response = getContents($url, $this->authHeaders($token));
         $data = Json::decode($response);
 
         return $data['content'] ?? null;
+    }
+
+    private function authHeaders(string $token): array
+    {
+        return [
+            'Authorization: Bearer ' . $token,
+            'Accept: application/json',
+        ];
     }
 
     private function formatBroadcastText(string $text): string
