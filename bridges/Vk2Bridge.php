@@ -152,7 +152,8 @@ class Vk2Bridge extends BridgeAbstract
                 if ($hideReposts && $this->isRepost($post)) {
                     continue;
                 }
-                if (($post['is_deleted'] ?? false) === true
+                if (
+                    ($post['is_deleted'] ?? false) === true
                     && trim($post['text'] ?? '') === ''
                     && empty($post['attachments'])
                 ) {
@@ -169,9 +170,7 @@ class Vk2Bridge extends BridgeAbstract
         }
 
         if (empty($filteredPosts)) {
-            $reason = $hideReposts
-                ? 'No original posts found after filtering reposts.'
-                : 'No posts found in the feed.';
+            $reason = $hideReposts ? 'No original posts found after filtering reposts.' : 'No posts found in the feed.';
             $this->handleError('no_posts_found', $reason);
         }
 
@@ -203,21 +202,30 @@ class Vk2Bridge extends BridgeAbstract
             $placeholders = [];
             $counter = 0;
 
-            $text = $this->applyPlaceholders($text, $placeholders, $counter,
+            $text = $this->applyPlaceholders(
+                $text,
+                $placeholders,
+                $counter,
                 '/\[([^\]|]+)\|([^\]]+)\]/u',
                 function (array $m): string {
                     return $this->resolveVkLink(trim($m[1]), $m[2]);
                 }
             );
 
-            $text = $this->applyPlaceholders($text, $placeholders, $counter,
+            $text = $this->applyPlaceholders(
+                $text,
+                $placeholders,
+                $counter,
                 '/#([\p{L}0-9_]+(?:@[\p{L}0-9_.]+)?)/u',
                 function (array $m): string {
                     return $this->safeLink('https://vk.ru/feed?q=%23' . urlencode($m[1]), '#' . $m[1]);
                 }
             );
 
-            $text = $this->applyPlaceholders($text, $placeholders, $counter,
+            $text = $this->applyPlaceholders(
+                $text,
+                $placeholders,
+                $counter,
                 '~(https?://[^\s<|]+)|((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?:/[^\s<|]*)?)~i',
                 function (array $m): ?string {
                     if (!empty($m[1])) {
@@ -635,9 +643,9 @@ class Vk2Bridge extends BridgeAbstract
 
     private function renderPoll(array $d): string
     {
-        $html = '<p>Poll: ' . $this->e($d['question'] ?? 'Poll') . ' (' . ($d['votes'] ?? 0) . " votes)<br>";
+        $html = '<p>Poll: ' . $this->e($d['question'] ?? 'Poll') . ' (' . ($d['votes'] ?? 0) . ' votes)<br>';
         foreach ($d['answers'] ?? [] as $a) {
-            $html .= '* ' . $this->e($a['text'] ?? '') . ': ' . ($a['votes'] ?? 0) . ' (' . ($a['rate'] ?? 0) . "%)<br>";
+            $html .= '* ' . $this->e($a['text'] ?? '') . ': ' . ($a['votes'] ?? 0) . ' (' . ($a['rate'] ?? 0) . '%)(br>';
         }
         return $html . '</p>';
     }
@@ -711,14 +719,10 @@ class Vk2Bridge extends BridgeAbstract
         $d = $attachment[$type] ?? [];
 
         $titles = [
-            'video' => (mb_stripos($d['title'] ?? '', 'Клип ') === 0)
-                ? 'Clip: ' . $this->cleanClipTitle($d['title'])
-                : 'Video: ' . ($d['title'] ?? ''),
+            'video' => (mb_stripos($d['title'] ?? '', 'Клип ') === 0) ? 'Clip: ' . $this->cleanClipTitle($d['title']) : 'Video: ' . ($d['title'] ?? ''),
             'clip' => 'Clip: ' . $this->cleanClipTitle($d['title'] ?? ''),
             'audio' => 'Music: ' . ($d['artist'] ?? '') . ' - ' . ($d['title'] ?? ''),
-            'link' => (strpos($d['url'] ?? '', 'audio_playlist') !== false)
-                ? 'Playlist: ' . ($d['title'] ?? '')
-                : 'Link: ' . ($d['title'] ?? ''),
+            'link' => (strpos($d['url'] ?? '', 'audio_playlist') !== false) ? 'Playlist: ' . ($d['title'] ?? '') : 'Link: ' . ($d['title'] ?? ''),
             'doc' => 'Document: ' . ($d['title'] ?? ''),
             'album' => 'Album: ' . ($d['title'] ?? ''),
             'poll' => 'Poll: ' . ($d['question'] ?? ''),
