@@ -428,7 +428,7 @@ class YoutubeBridge extends BridgeAbstract
         // The JSON payload now has the potential to exceed 1 million characters.
         // This hits the default PCRE backtracking limit. Bypassing this by temporarily upping the limit.
         $previousBacktrackLimit = ini_get('pcre.backtrack_limit');
-	    ini_set('pcre.backtrack_limit', '10000000');
+        ini_set('pcre.backtrack_limit', '10000000');
         $scriptRegex = '/var ytInitialData = (.*?);<\/script>/';
         $result = preg_match($scriptRegex, $html, $matches);
         ini_set('pcre.backtrack_limit', $previousBacktrackLimit);
