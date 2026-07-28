@@ -168,10 +168,9 @@ class PawchiveBridge extends BridgeAbstract
         return $filename !== null ? $url . '?f=' . urlencode($filename) : $url;
     }
 
-    private function getThumbnailUrl(string $path, ?string $filename = null): string
+    private function getThumbnailUrl(string $path): string
     {
-        $url = $this->getThumbnailDomain() . '/thumbnail/data' . $path;
-        return $filename !== null ? $url . '?f=' . urlencode($filename) : $url;
+        return $this->getThumbnailDomain() . '/thumbnail/data' . $path;
     }
 
     private function getAvatarUrl(string $service, string $userId): string
@@ -190,6 +189,18 @@ class PawchiveBridge extends BridgeAbstract
             }
         }
         return $content;
+    }
+
+    private function resolveRelativeUrls(string $html): string
+    {
+        if ($html === '') {
+            return '';
+        }
+        $base = rtrim($this->baseURI(), '/');
+        $fileBase = $this->getFileDomain();
+        $html = preg_replace('/\b(src|href)="(\/data\/[^"]+)"/i', '$1="' . $fileBase . '$2"', $html);
+        $html = preg_replace('/\b(src|href)="(\/(?!\/)[^"]+)"/i', '$1="' . $base . '$2"', $html);
+        return $html;
     }
 
     private function getMimeType(string $filename): string
@@ -290,10 +301,7 @@ class PawchiveBridge extends BridgeAbstract
             '/<div>\s*<\/div>/i' => '',
             '/<span>\s*<\/span>/i' => '',
             '/(<br\s*\/?>\s*){3,}/i' => '<br><br>',
-            '/^\s*\n/m' => '',
-            '/\n{3,}/' => "\n\n",
             '/&nbsp;/i' => ' ',
-            '/\s{2,}/' => ' ',
         ];
         return trim(preg_replace(array_keys($replacements), array_values($replacements), $html));
     }
@@ -408,10 +416,13 @@ class PawchiveBridge extends BridgeAbstract
     private function collectFiles(array $post): array
     {
         $files = [];
+        $seenPaths = [];
+
         if (!empty($post['file']['path'])) {
             $file = $post['file'];
             $file['name'] = isset($file['name']) ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name'])) : null;
             $file['path'] = trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['path']));
+            $seenPaths[$file['path']] = true;
             $files[] = $file;
         }
         if (!empty($post['attachments']) && is_array($post['attachments'])) {
@@ -419,6 +430,10 @@ class PawchiveBridge extends BridgeAbstract
                 if (!empty($file['path'])) {
                     $file['name'] = isset($file['name']) ? trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['name'])) : null;
                     $file['path'] = trim(preg_replace('/[^\x20-\x7E]/', '', (string)$file['path']));
+                    if (isset($seenPaths[$file['path']])) {
+                        continue;
+                    }
+                    $seenPaths[$file['path']] = true;
                     $files[] = $file;
                 }
             }
@@ -426,23 +441,47 @@ class PawchiveBridge extends BridgeAbstract
         return $files;
     }
 
+    private function thumbnailsAvailable(array $files): bool
+    {
+        foreach ($files as $file) {
+            $fileName = trim($file['name'] ?? basename($file['path']));
+            if ($fileName === '' || !$this->isImageByExtension($fileName)) {
+                continue;
+            }
+            $ch = curl_init($this->getThumbnailUrl($file['path']));
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 5,
+                CURLOPT_CONNECTTIMEOUT => 3,
+                CURLOPT_RANGE => 'bytes=0-0',
+            ]);
+            curl_exec($ch);
+            $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+            curl_close($ch);
+            return $code >= 200 && $code < 400;
+        }
+        return false;
+    }
+
     private function processFiles(array $files, bool $hideAttachments, string &$contentHtml, array &$downloadLinks): void
     {
         $containerStyle = self::CSS['file-container'];
+        $useThumbnails = $this->thumbnailsAvailable($files);
+
         foreach ($files as $file) {
             $fileName = $file['name'] ?? basename($file['path']);
             $fileName = trim($fileName);
             if ($fileName === '') {
                 continue;
             }
-            $thumbnailUrl = $this->getThumbnailUrl($file['path'], $fileName);
             $fullUrl = $this->getFileUrl($file['path'], $fileName);
 
             if ($this->isImageByExtension($fileName)) {
+                $imageUrl = $useThumbnails ? $this->getThumbnailUrl($file['path']) : $fullUrl;
                 $contentHtml .= sprintf(
                     '<div style="%s">%s</div>',
                     $containerStyle,
-                    $this->renderImage($thumbnailUrl, $fileName)
+                    $this->renderImage($imageUrl, $fileName)
                 );
                 if (!$hideAttachments) {
                     $downloadLinks[] = ['url' => $fullUrl, 'name' => $fileName];
@@ -549,6 +588,7 @@ class PawchiveBridge extends BridgeAbstract
     {
         $content = $post['content'] ?? '';
         $content = $this->normalizeUrls($content);
+        $content = $this->resolveRelativeUrls($content);
         $content = $this->sanitizeHtml($content);
 
         $files = $this->collectFiles($post);
