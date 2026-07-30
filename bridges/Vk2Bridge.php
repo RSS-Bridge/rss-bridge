@@ -47,6 +47,17 @@ class Vk2Bridge extends BridgeAbstract
         29 => 1800,
     ];
 
+    private const CSS = [
+        'poll'     => 'background:#f9f9f9;padding:15px;margin:10px 0;border-left:4px solid #4a76a8',
+        'poll_t'   => 'margin:0 0 10px 0;font-weight:bold',
+        'poll_o'   => 'margin:8px 0',
+        'poll_m'   => 'color:#666;font-size:0.9em',
+        'poll_f'   => 'margin:10px 0 0 0;color:#888;font-size:0.85em',
+        'pg_table' => 'width:100%;height:8px;background:#e0e0e0',
+        'pg_fill'  => 'background:#4a76a8;margin:0;padding:0;line-height:0;font-size:0',
+        'pg_empty' => 'margin:0;padding:0;line-height:0;font-size:0',
+    ];
+
     const PARAMETERS = [
         [
             'u' => [
@@ -641,13 +652,51 @@ class Vk2Bridge extends BridgeAbstract
         return $extra !== '' ? $html . $extra : $html;
     }
 
+    private function style(string $key, string $extra = ''): string
+    {
+        $css = self::CSS[$key] ?? '';
+        if ($extra !== '') {
+            $css .= ';' . $extra;
+        }
+        return ' style="' . $css . '"';
+    }
+
     private function renderPoll(array $d): string
     {
-        $html = '<p>Poll: ' . $this->e($d['question'] ?? 'Poll') . ' (' . ($d['votes'] ?? 0) . ' votes)<br>';
+        $s = fn(string $k, string $x = ''): string => $this->style($k, $x);
+        $h = '<div' . $s('poll') . '>';
+        $h .= '<p' . $s('poll_t') . '>Poll: ' . $this->e($d['question'] ?? '') . '</p>';
+
         foreach ($d['answers'] ?? [] as $a) {
-            $html .= '* ' . $this->e($a['text'] ?? '') . ': ' . ($a['votes'] ?? 0) . ' (' . ($a['rate'] ?? 0) . '%)(br>';
+            $c = (int)($a['votes'] ?? 0);
+            $f = max(0.0, min(100.0, (float)($a['rate'] ?? 0)));
+            $fd = rtrim(rtrim(number_format($f, 1, '.', ''), '0'), '.');
+            $h .= '<div' . $s('poll_o') . '>';
+            $h .= '<span>' . $this->e($a['text'] ?? '') . '</span> ';
+            $h .= '<span' . $s('poll_m') . '>' . $fd . '% (' . $c . ')</span>';
+            $h .= '<table cellpadding="0" cellspacing="0" border="0"' . $s('pg_table') . '>';
+            $h .= '<tr>';
+            $h .= '<td' . $s('pg_fill', 'width:' . $f . '%') . '></td>';
+            $h .= '<td' . $s('pg_empty') . '></td>';
+            $h .= '</tr>';
+            $h .= '</table>';
+            $h .= '</div>';
         }
-        return $html . '</p>';
+
+        $h .= '<p' . $s('poll_f') . '>Total votes: ' . (int)($d['votes'] ?? 0);
+        if (!empty($d['anonymous'])) {
+            $h .= ' &#183; Anonymous';
+        }
+        if (!empty($d['multiple'])) {
+            $h .= ' &#183; Multiple choice';
+        }
+        if (!empty($d['closed'])) {
+            $h .= ' &#183; Closed';
+        } elseif (($d['end_date'] ?? 0) > 0) {
+            $h .= ' &#183; Ends ' . date('Y-m-d', $d['end_date']);
+        }
+
+        return $h . '</p></div>';
     }
 
     private function renderWall(array $d): string
