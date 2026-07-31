@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class Telegram2Bridge extends BridgeAbstract
 {
     const NAME = 'Telegram2';
@@ -296,7 +298,7 @@ class Telegram2Bridge extends BridgeAbstract
         $item['content'] = $this->removeViewInTelegram($item['content']);
         $item['content'] = $this->normalizeText($item['content']);
 
-        if ($this->getInput('hide_hashtags') && !empty($this->hashtags)) {
+        if (!$this->getInput('hide_hashtags') && !empty($this->hashtags)) {
             $item['categories'] = $this->hashtags;
         }
 
@@ -390,9 +392,7 @@ class Telegram2Bridge extends BridgeAbstract
 
         $inner = $textDiv->innertext;
 
-        if ($this->getInput('hide_hashtags')) {
-            $this->hashtags = $this->extractHashtags($inner);
-        }
+        $this->hashtags = $this->extractHashtags($inner);
 
         $plain = html_entity_decode(
             preg_replace('/\s+/u', ' ', strip_tags(
