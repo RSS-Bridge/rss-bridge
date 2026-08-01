@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 class UberEngineeringBridge extends BridgeAbstract
 {
     const NAME = 'Uber Engineering';
     const URI = 'https://www.uber.com/us/en/blog/engineering/';
     const DESCRIPTION = 'Returns posts from the Uber Engineering blog';
-    const MAINTAINER = 'zj';
+    const MAINTAINER = 'salty-flower';
     const PARAMETERS = [];
     const CACHE_TIMEOUT = 3600;
     const ARTICLE_FEED_PATH = '/us/en/blog/engineering/';
@@ -24,7 +26,7 @@ class UberEngineeringBridge extends BridgeAbstract
             }
 
             $item = [];
-            $item['title'] = html_entity_decode($title, ENT_QUOTES | ENT_HTML5);
+            $item['title'] = self::decode($title);
             $item['uri'] = $uri;
 
             if (!empty($article['publishedAt'])) {
@@ -54,7 +56,7 @@ class UberEngineeringBridge extends BridgeAbstract
             throw new \Exception('Unable to find article feed data');
         }
 
-        $payload = rawurldecode(html_entity_decode(trim($matches[1]), ENT_QUOTES | ENT_HTML5));
+        $payload = rawurldecode(self::decode($matches[1]));
         $data = Json::decode($payload);
         $articles = $data['relatedPages']['relatedPages'] ?? null;
 
@@ -119,6 +121,12 @@ class UberEngineeringBridge extends BridgeAbstract
             return '';
         }
 
-        return trim(html_entity_decode($description->content, ENT_QUOTES | ENT_HTML5));
+        return self::decode($description->content);
+    }
+
+    private static function decode(string $s): string
+    {
+        $s = trim($s);
+        return html_entity_decode($s, ENT_QUOTES | ENT_HTML5);
     }
 }
