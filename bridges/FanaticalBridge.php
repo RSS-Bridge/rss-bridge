@@ -15,7 +15,7 @@ class FanaticalBridge extends BridgeAbstract
                 'All' => 'all',
                 'Books' => 'book-',
                 'ELearning' => 'elearning-',
-                'Games' => '',
+                'Games' => 'game',
                 'Software' => 'software-',
             ]
         ]
@@ -28,6 +28,9 @@ class FanaticalBridge extends BridgeAbstract
         $api = 'https://www.fanatical.com/api/all/en';
         $json = json_decode(getContents($api), true)['pickandmix'];
         $type = $this->getInput('type');
+        if ($type == 'game') {
+            $type = '';
+        }
 
         foreach ($json as $element) {
             if ($type != 'all') {
