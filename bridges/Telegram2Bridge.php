@@ -56,27 +56,13 @@ class Telegram2Bridge extends BridgeAbstract
             'name' => 'Include keywords',
             'type' => 'text',
             'required' => false,
-            'title' => 'Show ONLY posts matching keywords. '
-                . 'Syntax is the same as Exclude keywords: comma-separated rules, '
-                . '"+" joins words with AND, matching is substring-based and case-insensitive. '
-                . 'A post is kept only if it matches at least one rule. '
-                . 'When both Include and Exclude are set, '
-                . 'a post must first match Include, then survive Exclude.',
+            'title' => 'Show ONLY posts matching keywords. Syntax is the same as Exclude keywords: comma-separated rules, "+" joins words with AND, matching is substring-based and case-insensitive. A post is kept only if it matches at least one rule. When both Include and Exclude are set, a post must first match Include, then survive Exclude.',
         ],
         'exclude_keywords' => [
             'name' => 'Exclude keywords',
             'type' => 'text',
             'required' => false,
-            'title' => 'Hide posts matching keywords. '
-                . 'Rules are comma-separated, case-insensitive, and matched as substrings '
-                . 'against both title and body. '
-                . 'A rule without "+" hides any post containing it '
-                . '(e.g. "casino" also matches "casinos"). '
-                . 'Join words with "+" to require ALL of them '
-                . '(e.g. "casino+bonus" hides a post only if both words are present). '
-                . 'Multiple rules act as OR: a post is hidden if it matches ANY rule. '
-                . 'Example: "casino, bonus+promo, ads" hides posts with "casino", '
-                . 'or with both "bonus" and "promo", or with "ads".',
+            'title' => 'Hide posts matching keywords. Rules are comma-separated, case-insensitive, and matched as substrings against both title and body. A rule without "+" hides any post containing it (e.g. "casino" also matches "casinos"). Join words with "+" to require ALL of them (e.g. "casino+bonus" hides a post only if both words are present). Multiple rules act as OR: a post is hidden if it matches ANY rule. Example: "casino, bonus+promo, ads" hides posts with "casino", or with both "bonus" and "promo", or with "ads".',
         ],
     ]];
 
@@ -108,15 +94,12 @@ class Telegram2Bridge extends BridgeAbstract
     private const REASON_TOO_BIG = 'too_big';
     private const REASON_DEFAULT = 'default';
 
-    private const ALLOWED_TAGS = '<div><a><p><br><hr><b><i><u><s><strong><em><code>'
-        . '<pre><blockquote><span><img><video><source><ul><ol><li>';
+    private const ALLOWED_TAGS = '<div><a><p><br><hr><b><i><u><s><strong><em><code><pre><blockquote><span><img><video><source><ul><ol><li>';
 
     private const CSS = [
         'unsup_wrap'  => 'background:#17212b;border-radius:12px;padding:28px 16px;text-align:center',
         'unsup_label' => 'color:#708499;font-size:14px;margin-bottom:16px',
-        'unsup_btn'   => 'display:inline-block;background:#2b5278;color:#6ab2f2;text-decoration:none;'
-                       . 'text-transform:uppercase;font-weight:bold;font-size:13px;'
-                       . 'letter-spacing:0.03em;padding:10px 24px;border-radius:8px',
+        'unsup_btn'   => 'display:inline-block;background:#2b5278;color:#6ab2f2;text-decoration:none;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.03em;padding:10px 24px;border-radius:8px',
         'video'       => 'max-width:100%',
         'wrapper'     => 'font-size:14px;line-height:1.6;word-wrap:break-word',
         'quote'       => 'border-left:4px solid #4a76a8;padding-left:12px;margin:8px 0',
@@ -370,16 +353,16 @@ class Telegram2Bridge extends BridgeAbstract
         ];
 
         foreach ($mediaMarkers as $marker => $method) {
-            $el = $messageDiv->find('div.' . $marker, 0)
-                ?: $messageDiv->find('a.' . $marker, 0);
+            $el = $messageDiv->find('div.' . $marker, 0) ?:
+                $messageDiv->find('a.' . $marker, 0);
             if ($el) {
                 $pos = strpos($inner, $el->outertext);
                 $mediaPieces[] = [$pos !== false ? $pos : PHP_INT_MAX, $method, $messageDiv];
             }
         }
 
-        $videoNotSupported = $messageDiv->find('a.tgme_widget_message_video_player.not_supported', 0)
-            ?: $messageDiv->find('div.tgme_widget_message_video_player.not_supported', 0);
+        $videoNotSupported = $messageDiv->find('a.tgme_widget_message_video_player.not_supported', 0) ?:
+            $messageDiv->find('div.tgme_widget_message_video_player.not_supported', 0);
 
         if (!$videoNotSupported && $messageDiv->find('video', 0)) {
             $pos = strpos($inner, '<video');
@@ -505,8 +488,8 @@ class Telegram2Bridge extends BridgeAbstract
             }
         }
 
-        $player = $messageDiv->find('a.tgme_widget_message_video_player', 0)
-            ?: $messageDiv->find('div.tgme_widget_message_video_player', 0);
+        $player = $messageDiv->find('a.tgme_widget_message_video_player', 0) ?:
+            $messageDiv->find('div.tgme_widget_message_video_player', 0);
 
         $postHref = '';
         if ($player && $player->href) {
@@ -525,9 +508,9 @@ class Telegram2Bridge extends BridgeAbstract
 
         $href = $postHref ?: '#';
 
-        $channel = $this->feedName !== ''
-            ? htmlspecialchars($this->feedName, ENT_QUOTES)
-            : ('@' . $this->normalizeUsername());
+        $channel = $this->feedName !== '' ?
+            htmlspecialchars($this->feedName, ENT_QUOTES) :
+            ('@' . $this->normalizeUsername());
 
         $duration = $this->getPlaintext($messageDiv, 'time.tgme_widget_message_video_duration');
         if ($duration === '') {
@@ -540,8 +523,10 @@ class Telegram2Bridge extends BridgeAbstract
 
         $resolution = '';
         if ($player && $player->style) {
-            if (preg_match('/width:\s*(\d+)px/i', $player->style, $mw)
-                && preg_match('/height:\s*(\d+)px/i', $player->style, $mh)) {
+            if (
+                preg_match('/width:\s*(\d+)px/i', $player->style, $mw)
+                && preg_match('/height:\s*(\d+)px/i', $player->style, $mh)
+            ) {
                 $resolution = $mw[1] . '?' . $mh[1];
             }
         }
@@ -557,9 +542,8 @@ class Telegram2Bridge extends BridgeAbstract
         $html = '';
 
         if ($poster !== '') {
-            $html .= '<a href="' . $href . '">'
-                . '<img src="' . $poster . '" style="' . self::CSS['video'] . '" />'
-                . '</a><br />';
+            $html .= '<a href="' . $href . '"><img src="' . $poster . '" style="'
+                . self::CSS['video'] . '" /></a><br />';
         }
 
         $html .= '<a href="' . $href . '">' . $label . '</a>';
@@ -675,8 +659,8 @@ class Telegram2Bridge extends BridgeAbstract
         $site = htmlspecialchars($this->getPlaintext($preview, 'div.link_preview_site_name'), ENT_QUOTES);
         $desc = htmlspecialchars($this->getPlaintext($preview, 'div.link_preview_description'), ENT_QUOTES);
 
-        return '<blockquote><a href="' . $preview->href . '">' . $img . '</a><br />'
-            . '<a href="' . $preview->href . '">' . $title . ' - ' . $site . '</a><br />'
+        return '<blockquote><a href="' . $preview->href . '">' . $img . '</a><br /><a href="'
+            . $preview->href . '">' . $title . ' - ' . $site . '</a><br />'
             . $desc . '</blockquote>';
     }
 
@@ -858,12 +842,14 @@ class Telegram2Bridge extends BridgeAbstract
     {
         $tags = [];
 
-        if (preg_match_all(
-            '/<a\s[^>]*href="\?q=%23[^"]*"[^>]*>(.*?)<\/a>/is',
-            $html,
-            $matches,
-            PREG_SET_ORDER
-        )) {
+        if (
+            preg_match_all(
+                '/<a\s[^>]*href="\?q=%23[^"]*"[^>]*>(.*?)<\/a>/is',
+                $html,
+                $matches,
+                PREG_SET_ORDER
+            )
+        ) {
             foreach ($matches as $m) {
                 $text = trim(strip_tags($m[1]));
                 if ($text !== '' && $text[0] === '#') {
@@ -894,8 +880,8 @@ class Telegram2Bridge extends BridgeAbstract
 
     private function detectNotSupported($message): ?array
     {
-        $videoPlayer = $message->find('a.tgme_widget_message_video_player.not_supported', 0)
-            ?: $message->find('div.tgme_widget_message_video_player.not_supported', 0);
+        $videoPlayer = $message->find('a.tgme_widget_message_video_player.not_supported', 0) ?:
+            $message->find('div.tgme_widget_message_video_player.not_supported', 0);
 
         if ($videoPlayer) {
             return ['type' => 'video', 'element' => $videoPlayer];
@@ -933,9 +919,9 @@ class Telegram2Bridge extends BridgeAbstract
         switch ($info['type']) {
             case 'video':
                 $reason = $this->getUnsupportedReason($message);
-                $stubLabel = $reason === self::REASON_TOO_BIG
-                    ? 'Media is too big'
-                    : 'Unsupported media';
+                $stubLabel = $reason === self::REASON_TOO_BIG ?
+                    'Media is too big' :
+                    'Unsupported media';
                 $title = 'Unsupported media';
                 break;
 
@@ -977,10 +963,10 @@ class Telegram2Bridge extends BridgeAbstract
         string $uri,
         string $label = 'Please open Telegram to view this post'
     ): string {
-        return '<blockquote style="' . self::CSS['unsup_wrap'] . '">'
-            . '<div style="' . self::CSS['unsup_label'] . '">' . $label . '</div>'
-            . '<a href="' . $uri . '" style="' . self::CSS['unsup_btn'] . '">'
-            . '<b>View in Telegram</b></a></blockquote>';
+        return '<blockquote style="' . self::CSS['unsup_wrap'] . '"><div style="'
+            . self::CSS['unsup_label'] . '">' . $label . '</div><a href="'
+            . $uri . '" style="' . self::CSS['unsup_btn']
+            . '"><b>View in Telegram</b></a></blockquote>';
     }
 
     private function removeViewInTelegram(string $html): string
@@ -1113,9 +1099,9 @@ class Telegram2Bridge extends BridgeAbstract
             return $html;
         }
 
-        $re = '/(src|poster)\s*=\s*["\']'
-            . '(https?:\/\/' . self::TG_HOSTS . '\/[^"\'\s>]+)'
-            . '["\']/i';
+        $re = '/(src|poster)\s*=\s*["\'](https?:\/\/'
+            . self::TG_HOSTS
+            . '\/[^"\'\s>]+)["\']/i';
 
         $result = preg_replace_callback($re, function (array $m): string {
             return $m[1] . '="' . $this->urlToDataUri($m[2]) . '"';
