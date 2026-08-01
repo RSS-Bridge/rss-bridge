@@ -52,16 +52,31 @@ class Telegram2Bridge extends BridgeAbstract
             'defaultValue' => 'checked',
             'title' => 'Remove hashtags from post text and assign them as feed item categories',
         ],
+        'include_keywords' => [
+            'name' => 'Include keywords',
+            'type' => 'text',
+            'required' => false,
+            'title' => 'Show ONLY posts matching keywords. '
+                . 'Syntax is the same as Exclude keywords: comma-separated rules, '
+                . '"+" joins words with AND, matching is substring-based and case-insensitive. '
+                . 'A post is kept only if it matches at least one rule. '
+                . 'When both Include and Exclude are set, '
+                . 'a post must first match Include, then survive Exclude.',
+        ],
         'exclude_keywords' => [
             'name' => 'Exclude keywords',
             'type' => 'text',
             'required' => false,
-            'title' => 'Hide posts matching keywords. Rules are comma-separated, case-insensitive, '
-                . 'and matched against both title and body. '
-                . 'A single word hides any post containing it. '
-                . 'Join words with + to hide only posts containing ALL of them '
-                . '(e.g. casino+bonus hides a post only if both words are present). '
-                . 'Multiple rules act as OR: a post is hidden if it matches any rule.',
+            'title' => 'Hide posts matching keywords. '
+                . 'Rules are comma-separated, case-insensitive, and matched as substrings '
+                . 'against both title and body. '
+                . 'A rule without "+" hides any post containing it '
+                . '(e.g. "casino" also matches "casinos"). '
+                . 'Join words with "+" to require ALL of them '
+                . '(e.g. "casino+bonus" hides a post only if both words are present). '
+                . 'Multiple rules act as OR: a post is hidden if it matches ANY rule. '
+                . 'Example: "casino, bonus+promo, ads" hides posts with "casino", '
+                . 'or with both "bonus" and "promo", or with "ads".',
         ],
     ]];
 
@@ -94,7 +109,7 @@ class Telegram2Bridge extends BridgeAbstract
     private const REASON_DEFAULT = 'default';
 
     private const ALLOWED_TAGS = '<div><a><p><br><hr><b><i><u><s><strong><em><code>'
-        . '<pre><blockquote><span><img><video><source><ul><ol><li><tg-spoiler>';
+        . '<pre><blockquote><span><img><video><source><ul><ol><li>';
 
     private const CSS = [
         'unsup_wrap'  => 'background:#17212b;border-radius:12px;padding:28px 16px;text-align:center',
@@ -116,13 +131,15 @@ class Telegram2Bridge extends BridgeAbstract
     private $itemTitle = '';
     private $itemAuthor = '';
     private $hashtags = [];
+    private array $mediaCache = [];
 
     public function collectData()
     {
         $url = 'https://t.me/s/' . $this->normalizeUsername();
-        $limit = max(1, (int)($this->getInput('limit') ?: 50));
+        $limit = max(1, (int)($this->getInput('limit') ?: 10));
         $pages = 0;
         $done = false;
+        $seen = [];
 
         while ($pages < self::MAX_PAGES && !$done) {
             $pages++;
@@ -190,7 +207,12 @@ class Telegram2Bridge extends BridgeAbstract
 
             $more = $dom->find('> div.tgme_widget_message_centered.js-messages_more_wrap a', 0);
             if ($more && strpos($more->href, 'before') !== false) {
-                $url = 'https://t.me/' . $more->href;
+                $next = 'https://t.me' . $more->href;
+                if (isset($seen[$next])) {
+                    break;
+                }
+                $seen[$next] = true;
+                $url = $next;
             } else {
                 break;
             }
@@ -348,9 +370,11 @@ class Telegram2Bridge extends BridgeAbstract
         ];
 
         foreach ($mediaMarkers as $marker => $method) {
-            $pos = strpos($inner, $marker);
-            if ($pos !== false) {
-                $mediaPieces[] = [$pos, $method, $messageDiv];
+            $el = $messageDiv->find('div.' . $marker, 0)
+                ?: $messageDiv->find('a.' . $marker, 0);
+            if ($el) {
+                $pos = strpos($inner, $el->outertext);
+                $mediaPieces[] = [$pos !== false ? $pos : PHP_INT_MAX, $method, $messageDiv];
             }
         }
 
@@ -422,7 +446,10 @@ class Telegram2Bridge extends BridgeAbstract
 
     private function processReply($reply): string
     {
-        $author = $this->getPlaintext($reply, 'span.tgme_widget_message_author_name');
+        $author = htmlspecialchars(
+            $this->getPlaintext($reply, 'span.tgme_widget_message_author_name'),
+            ENT_QUOTES
+        );
         $text = '';
 
         $el = $reply->find('div.tgme_widget_message_metatext', 0);
@@ -435,8 +462,10 @@ class Telegram2Bridge extends BridgeAbstract
             $text = $el->innertext;
         }
 
+        $href = htmlspecialchars($reply->href, ENT_QUOTES);
+
         return '<blockquote>' . $author . '<br />' . $text
-            . '<a href="' . $reply->href . '">' . $reply->href . '</a></blockquote><hr />';
+            . '<a href="' . $href . '">' . $href . '</a></blockquote><hr />';
     }
 
     private function processPhoto($messageDiv): string
@@ -496,7 +525,9 @@ class Telegram2Bridge extends BridgeAbstract
 
         $href = $postHref ?: '#';
 
-        $channel = $this->feedName !== '' ? $this->feedName : ('@' . $this->normalizeUsername());
+        $channel = $this->feedName !== ''
+            ? htmlspecialchars($this->feedName, ENT_QUOTES)
+            : ('@' . $this->normalizeUsername());
 
         $duration = $this->getPlaintext($messageDiv, 'time.tgme_widget_message_video_duration');
         if ($duration === '') {
@@ -505,6 +536,7 @@ class Telegram2Bridge extends BridgeAbstract
         if ($duration === '') {
             $duration = $this->getPlaintext($messageDiv, 'time.message_video_duration');
         }
+        $duration = htmlspecialchars($duration, ENT_QUOTES);
 
         $resolution = '';
         if ($player && $player->style) {
@@ -598,7 +630,10 @@ class Telegram2Bridge extends BridgeAbstract
 
         $footer = [];
 
-        $voters = $this->getPlaintext($messageDiv, 'span.tgme_widget_message_voters');
+        $voters = htmlspecialchars(
+            $this->getPlaintext($messageDiv, 'span.tgme_widget_message_voters'),
+            ENT_QUOTES
+        );
         if ($voters !== '') {
             $footer[] = $voters . ' voters';
         }
@@ -636,9 +671,9 @@ class Telegram2Bridge extends BridgeAbstract
             $img = '<img src="' . $m[1] . '" />';
         }
 
-        $title = $this->getPlaintext($preview, 'div.link_preview_title');
-        $site = $this->getPlaintext($preview, 'div.link_preview_site_name');
-        $desc = $this->getPlaintext($preview, 'div.link_preview_description');
+        $title = htmlspecialchars($this->getPlaintext($preview, 'div.link_preview_title'), ENT_QUOTES);
+        $site = htmlspecialchars($this->getPlaintext($preview, 'div.link_preview_site_name'), ENT_QUOTES);
+        $desc = htmlspecialchars($this->getPlaintext($preview, 'div.link_preview_description'), ENT_QUOTES);
 
         return '<blockquote><a href="' . $preview->href . '">' . $img . '</a><br />'
             . '<a href="' . $preview->href . '">' . $title . ' - ' . $site . '</a><br />'
@@ -653,8 +688,8 @@ class Telegram2Bridge extends BridgeAbstract
 
         $out = 'File attachments:<br />';
         foreach ($messageDiv->find('div.tgme_widget_message_document') as $doc) {
-            $docTitle = $this->getPlaintext($doc, 'div.tgme_widget_message_document_title');
-            $docExtra = $this->getPlaintext($doc, 'div.tgme_widget_message_document_extra');
+            $docTitle = htmlspecialchars($this->getPlaintext($doc, 'div.tgme_widget_message_document_title'), ENT_QUOTES);
+            $docExtra = htmlspecialchars($this->getPlaintext($doc, 'div.tgme_widget_message_document_extra'), ENT_QUOTES);
             $out .= $docTitle . ' - ' . $docExtra . '<br />';
         }
 
@@ -1022,6 +1057,27 @@ class Telegram2Bridge extends BridgeAbstract
         $html = preg_replace('/\s+(class|id|data-[\w-]+)\s*=\s*["\'][^"\']*["\']/i', '', $html);
         $html = preg_replace('/\sexpandable(?=[\s>])/i', '', $html);
 
+        $html = preg_replace_callback(
+            '/\s+style\s*=\s*["\']([^"\']*)["\']/i',
+            function (array $m): string {
+                $val = $m[1];
+                $val = preg_replace('/expression\s*\(/i', '', $val);
+                $val = preg_replace('/javascript\s*:/i', '', $val);
+                $val = preg_replace('/vbscript\s*:/i', '', $val);
+                $val = preg_replace('/behavior\s*:/i', '', $val);
+                $val = preg_replace('/@import\b/i', '', $val);
+                $val = preg_replace('/url\s*\(\s*["\']?\s*javascript:/i', 'url(', $val);
+                $val = trim($val);
+                if ($val === '') {
+                    return '';
+                }
+                return ' style="' . htmlspecialchars($val, ENT_QUOTES) . '"';
+            },
+            $html
+        );
+
+        $html = preg_replace('/<\/?tg-spoiler>/i', '', $html);
+
         $html = strip_tags($html, self::ALLOWED_TAGS);
 
         $html = preg_replace(
@@ -1085,6 +1141,10 @@ class Telegram2Bridge extends BridgeAbstract
 
     private function fetchMediaCached(string $url): ?array
     {
+        if (array_key_exists($url, $this->mediaCache)) {
+            return $this->mediaCache[$url];
+        }
+
         $opts = $this->getProxyOpts();
 
         for ($i = 0; $i < self::PROXY_RETRIES; $i++) {
@@ -1096,10 +1156,12 @@ class Telegram2Bridge extends BridgeAbstract
                 $type = trim(explode(';', $ct)[0]);
 
                 if ($body === '' || $body === null) {
+                    $this->mediaCache[$url] = null;
                     return null;
                 }
 
-                return ['body' => $body, 'type' => $type];
+                $this->mediaCache[$url] = ['body' => $body, 'type' => $type];
+                return $this->mediaCache[$url];
             } catch (\Exception $e) {
                 $this->logger->warning(sprintf(
                     'Media fetch failed (attempt %d/%d): %s — %s',
@@ -1115,6 +1177,7 @@ class Telegram2Bridge extends BridgeAbstract
             }
         }
 
+        $this->mediaCache[$url] = null;
         return null;
     }
 
@@ -1141,31 +1204,32 @@ class Telegram2Bridge extends BridgeAbstract
             return true;
         }
 
-        return $this->matchesExcludeKeywords($item);
-    }
+        $haystack = $this->buildSearchHaystack($item);
 
-    private function isAd($message): bool
-    {
-        if ($message->find('[class*=sponsored]', 0)) {
+        $exclude = trim($this->getInput('exclude_keywords') ?? '');
+        if ($exclude !== '' && $this->matchesKeywordRules($haystack, $exclude)) {
             return true;
         }
 
-        return (bool)preg_match('/class="[^"]*sponsored[^"]*"/i', $message->innertext);
-    }
-
-    private function matchesExcludeKeywords(array $item): bool
-    {
-        $rules = trim($this->getInput('exclude_keywords') ?? '');
-        if ($rules === '') {
-            return false;
+        $include = trim($this->getInput('include_keywords') ?? '');
+        if ($include !== '' && !$this->matchesKeywordRules($haystack, $include)) {
+            return true;
         }
 
-        $haystack = mb_strtolower(
+        return false;
+    }
+
+    private function buildSearchHaystack(array $item): string
+    {
+        return mb_strtolower(
             trim(($item['title'] ?? '') . ' ' . strip_tags($item['content'] ?? '')),
             'UTF-8'
         );
+    }
 
-        if ($haystack === '') {
+    private function matchesKeywordRules(string $haystack, string $rules): bool
+    {
+        if ($haystack === '' || $rules === '') {
             return false;
         }
 
@@ -1176,18 +1240,41 @@ class Telegram2Bridge extends BridgeAbstract
             }
 
             if (strpos($rule, '+') !== false) {
+                $parts = array_filter(
+                    array_map(
+                        fn(string $p): string => mb_strtolower(trim($p), 'UTF-8'),
+                        explode('+', $rule)
+                    ),
+                    fn(string $p): bool => $p !== ''
+                );
+
+                if (empty($parts)) {
+                    continue;
+                }
+
                 $all = true;
-                foreach (explode('+', $rule) as $part) {
-                    $part = mb_strtolower(trim($part), 'UTF-8');
-                    if ($part === '' || strpos($haystack, $part) === false) {
+                foreach ($parts as $part) {
+                    if (strpos($haystack, $part) === false) {
                         $all = false;
                         break;
                     }
                 }
+
                 if ($all) {
                     return true;
                 }
             } elseif (strpos($haystack, mb_strtolower($rule, 'UTF-8')) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isAd($message): bool
+    {
+        foreach ($message->find('[class]') as $el) {
+            if (stripos($el->class ?? '', 'sponsored') !== false) {
                 return true;
             }
         }
