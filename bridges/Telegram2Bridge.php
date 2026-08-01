@@ -10,6 +10,8 @@ class Telegram2Bridge extends BridgeAbstract
     const MAINTAINER = 'LordArrin';
     const CACHE_TIMEOUT = 3600;
 
+    private const C = '';
+
     const PARAMETERS = [[
         'username' => [
             'name' => 'Channel name',
@@ -56,13 +58,41 @@ class Telegram2Bridge extends BridgeAbstract
             'name' => 'Include keywords',
             'type' => 'text',
             'required' => false,
-            'title' => 'Show ONLY posts matching keywords. Syntax is the same as Exclude keywords: comma-separated rules, "+" joins words with AND, matching is substring-based and case-insensitive. A post is kept only if it matches at least one rule. When both Include and Exclude are set, a post must first match Include, then survive Exclude.',
+            'title' => 'Show ONLY posts matching keywords. '
+                . self::C
+                . 'Syntax is the same as Exclude keywords: comma-separated rules, '
+                . self::C
+                . '"+" joins words with AND, matching is substring-based and case-insensitive. '
+                . self::C
+                . 'A post is kept only if it matches at least one rule. '
+                . self::C
+                . 'When both Include and Exclude are set, '
+                . self::C
+                . 'a post must first match Include, then survive Exclude.',
         ],
         'exclude_keywords' => [
             'name' => 'Exclude keywords',
             'type' => 'text',
             'required' => false,
-            'title' => 'Hide posts matching keywords. Rules are comma-separated, case-insensitive, and matched as substrings against both title and body. A rule without "+" hides any post containing it (e.g. "casino" also matches "casinos"). Join words with "+" to require ALL of them (e.g. "casino+bonus" hides a post only if both words are present). Multiple rules act as OR: a post is hidden if it matches ANY rule. Example: "casino, bonus+promo, ads" hides posts with "casino", or with both "bonus" and "promo", or with "ads".',
+            'title' => 'Hide posts matching keywords. '
+                . self::C
+                . 'Rules are comma-separated, case-insensitive, and matched as substrings '
+                . self::C
+                . 'against both title and body. '
+                . self::C
+                . 'A rule without "+" hides any post containing it '
+                . self::C
+                . '(e.g. "casino" also matches "casinos"). '
+                . self::C
+                . 'Join words with "+" to require ALL of them '
+                . self::C
+                . '(e.g. "casino+bonus" hides a post only if both words are present). '
+                . self::C
+                . 'Multiple rules act as OR: a post is hidden if it matches ANY rule. '
+                . self::C
+                . 'Example: "casino, bonus+promo, ads" hides posts with "casino", '
+                . self::C
+                . 'or with both "bonus" and "promo", or with "ads".',
         ],
     ]];
 
@@ -99,7 +129,11 @@ class Telegram2Bridge extends BridgeAbstract
     private const CSS = [
         'unsup_wrap'  => 'background:#17212b;border-radius:12px;padding:28px 16px;text-align:center',
         'unsup_label' => 'color:#708499;font-size:14px;margin-bottom:16px',
-        'unsup_btn'   => 'display:inline-block;background:#2b5278;color:#6ab2f2;text-decoration:none;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.03em;padding:10px 24px;border-radius:8px',
+        'unsup_btn'   => 'display:inline-block;background:#2b5278;color:#6ab2f2;text-decoration:none;'
+            . self::C
+            . 'text-transform:uppercase;font-weight:bold;font-size:13px;'
+            . self::C
+            . 'letter-spacing:0.03em;padding:10px 24px;border-radius:8px',
         'video'       => 'max-width:100%',
         'wrapper'     => 'font-size:14px;line-height:1.6;word-wrap:break-word',
         'quote'       => 'border-left:4px solid #4a76a8;padding-left:12px;margin:8px 0',
@@ -353,16 +387,14 @@ class Telegram2Bridge extends BridgeAbstract
         ];
 
         foreach ($mediaMarkers as $marker => $method) {
-            $el = $messageDiv->find('div.' . $marker, 0) ?:
-                $messageDiv->find('a.' . $marker, 0);
+            $el = $messageDiv->find('div.' . $marker, 0) ?: $messageDiv->find('a.' . $marker, 0);
             if ($el) {
                 $pos = strpos($inner, $el->outertext);
                 $mediaPieces[] = [$pos !== false ? $pos : PHP_INT_MAX, $method, $messageDiv];
             }
         }
 
-        $videoNotSupported = $messageDiv->find('a.tgme_widget_message_video_player.not_supported', 0) ?:
-            $messageDiv->find('div.tgme_widget_message_video_player.not_supported', 0);
+        $videoNotSupported = $messageDiv->find('a.tgme_widget_message_video_player.not_supported', 0) ?: $messageDiv->find('div.tgme_widget_message_video_player.not_supported', 0);
 
         if (!$videoNotSupported && $messageDiv->find('video', 0)) {
             $pos = strpos($inner, '<video');
@@ -488,8 +520,7 @@ class Telegram2Bridge extends BridgeAbstract
             }
         }
 
-        $player = $messageDiv->find('a.tgme_widget_message_video_player', 0) ?:
-            $messageDiv->find('div.tgme_widget_message_video_player', 0);
+        $player = $messageDiv->find('a.tgme_widget_message_video_player', 0) ?: $messageDiv->find('div.tgme_widget_message_video_player', 0);
 
         $postHref = '';
         if ($player && $player->href) {
@@ -508,9 +539,7 @@ class Telegram2Bridge extends BridgeAbstract
 
         $href = $postHref ?: '#';
 
-        $channel = $this->feedName !== '' ?
-            htmlspecialchars($this->feedName, ENT_QUOTES) :
-            ('@' . $this->normalizeUsername());
+        $channel = $this->feedName !== '' ? htmlspecialchars($this->feedName, ENT_QUOTES) : ('@' . $this->normalizeUsername());
 
         $duration = $this->getPlaintext($messageDiv, 'time.tgme_widget_message_video_duration');
         if ($duration === '') {
@@ -880,8 +909,7 @@ class Telegram2Bridge extends BridgeAbstract
 
     private function detectNotSupported($message): ?array
     {
-        $videoPlayer = $message->find('a.tgme_widget_message_video_player.not_supported', 0) ?:
-            $message->find('div.tgme_widget_message_video_player.not_supported', 0);
+        $videoPlayer = $message->find('a.tgme_widget_message_video_player.not_supported', 0) ?: $message->find('div.tgme_widget_message_video_player.not_supported', 0);
 
         if ($videoPlayer) {
             return ['type' => 'video', 'element' => $videoPlayer];
@@ -919,9 +947,7 @@ class Telegram2Bridge extends BridgeAbstract
         switch ($info['type']) {
             case 'video':
                 $reason = $this->getUnsupportedReason($message);
-                $stubLabel = $reason === self::REASON_TOO_BIG ?
-                    'Media is too big' :
-                    'Unsupported media';
+                $stubLabel = $reason === self::REASON_TOO_BIG ? 'Media is too big' : 'Unsupported media';
                 $title = 'Unsupported media';
                 break;
 
