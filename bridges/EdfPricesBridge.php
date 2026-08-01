@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class EdfPricesBridge extends BridgeAbstract
 {
     const NAME = 'EDF tarifs';
@@ -12,12 +14,30 @@ class EdfPricesBridge extends BridgeAbstract
             'contract' => [
                 'name' => 'Choisir un contrat',
                 'type' => 'list',
-                // we can add later more option prices
+                'defaultValue' => 'base',
+                // Stable, short values (first entry of each group): they are part of
+                // every subscriber's saved feed URL and must never change, even if the
+                // site we scrape (see CONTRACTS below) moves again. The other entries
+                // in each group are values this bridge used in the past (see
+                // LEGACY_CONTRACTS) kept here only so RSS-Bridge's own parameter
+                // validation still accepts them instead of silently discarding them.
                 'values' => [
-                    'Base' => '/energie/edf/tarifs/tarif-bleu#base',
-                    'HPHC' => '/energie/edf/tarifs/tarif-bleu#hphc',
-                    'EJP' => '/energie/edf/tarifs/tarif-bleu#ejp',
-                    'Tempo' => '/energie/edf/tarifs/tempo'
+                    'Base' => [
+                        'Base' => 'base',
+                        'Base (lien historique)' => '/energie/edf/tarifs/tarif-bleu#base',
+                    ],
+                    'HPHC' => [
+                        'HPHC' => 'hphc',
+                        'HPHC (lien historique)' => '/energie/edf/tarifs/tarif-bleu#hphc',
+                    ],
+                    'EJP' => [
+                        'EJP' => 'ejp',
+                        'EJP (lien historique)' => '/energie/edf/tarifs/tarif-bleu#ejp',
+                    ],
+                    'Tempo' => [
+                        'Tempo' => 'tempo',
+                        'Tempo (lien historique)' => '/energie/edf/tarifs/tempo',
+                    ],
                 ],
             ],
             'power' => [
@@ -39,246 +59,163 @@ class EdfPricesBridge extends BridgeAbstract
     ];
     const CACHE_TIMEOUT = 7200; // 2h
 
-    private function removeEmojisAndSpecialSpaces(string $text): string
-    {
-        // This regex covers most common emoji ranges in Unicode
-        $regex = '/[\x{1F600}-\x{1F64F}' . // Emoticons
-                 '\x{1F300}-\x{1F5FF}' . // Misc Symbols and Pictographs
-                 '\x{1F680}-\x{1F6FF}' . // Transport and Map
-                 '\x{1F700}-\x{1F77F}' . // Alchemical Symbols
-                 '\x{1F780}-\x{1F7FF}' . // Geometric Shapes Extended
-                 '\x{1F800}-\x{1F8FF}' . // Supplemental Arrows-C
-                 '\x{1F900}-\x{1F9FF}' . // Supplemental Symbols and Pictographs
-                 '\x{1FA00}-\x{1FA6F}' . // Chess Symbols, Symbols and Pictographs Extended-A
-                 '\x{1FA70}-\x{1FAFF}' . // Symbols and Pictographs Extended-B
-                 '\x{2600}-\x{26FF}' . // Misc symbols
-                 '\x{2700}-\x{27BF}' . // Dingbats
-                 ']+/u';
+    // Where to find each contract's pricing table right now. Only this map needs
+    // updating if jechange.fr reshuffles its pages/anchors again; the "contract"
+    // values above (and thus everyone's saved feed URLs) stay untouched.
+    const CONTRACTS = [
+        'base' => [
+            'label' => 'Base',
+            'path' => '/energie/edf/tarifs/tarifs-reglementes',
+            'heading' => 'option-base',
+        ],
+        'hphc' => [
+            'label' => 'HPHC',
+            'path' => '/energie/edf/tarifs/tarifs-reglementes',
+            'heading' => 'option-heures-pleines-heures-creuses',
+        ],
+        'ejp' => [
+            'label' => 'EJP',
+            'path' => '/energie/edf/tarifs/tarifs-reglementes',
+            'heading' => 'option-ejp',
+        ],
+        'tempo' => [
+            'label' => 'Tempo',
+            'path' => '/energie/edf/tarifs/tempo',
+            'heading' => 'option-tempo',
+        ],
+    ];
 
-        return preg_replace($regex, '', str_replace('&nbsp;', '', $text));
-    }
+    // Raw "contract" values used by this bridge in the past, kept working so that
+    // feed URLs generated before a site restructuring don't break.
+    const LEGACY_CONTRACTS = [
+        '/energie/edf/tarifs/tarif-bleu#base' => 'base',
+        '/energie/edf/tarifs/tarif-bleu#hphc' => 'hphc',
+        '/energie/edf/tarifs/tarif-bleu#ejp' => 'ejp',
+        '/energie/edf/tarifs/tempo' => 'tempo',
+    ];
 
-    /**
-     * @param simple_html_dom $html
-     * @param string $contractUri
-     * @return void
-     */
-    private function tempo(simple_html_dom $html, string $contractUri, int $power): void
-    {
-        // colors
-        $ulDom = $html->find('#les-tarifs-du-kwh-tempo-pour-les-differentes-couleurs-et-heures-de-la-journee', 0)->nextSibling();
-        $elementsDom = $ulDom->children;
-
-        if ($elementsDom && count($elementsDom) === 3) {
-            // price per kWh is same for all powers
-            foreach ($elementsDom as $elementDom) {
-                $item = [];
-
-                $matches = [];
-                preg_match_all(
-                    '/Jour (.*) :.*?Heures (.*) : (.*).*?€.*?Heures (.*) : (.*).*?€/um',
-                    $this->removeEmojisAndSpecialSpaces($elementDom->plaintext),
-                    $matches,
-                    PREG_SET_ORDER,
-                    0
-                );
-
-                // for tempo contract we have 2x3 colors
-                if ($matches && count($matches[0]) === 6) {
-                    for ($i = 0; $i < 2; $i++) {
-                        $text = 'Jour ' . $matches[0][1] . ' - Heures ' . $matches[0][2 + 2 * $i] . ' : ' . $matches[0][3 + 2 * $i] . '€';
-                        $item['uri'] = self::URI . $contractUri;
-                        $item['title'] = $text;
-                        $item['author'] = self::MAINTAINER;
-                        $item['content'] = $text;
-                        $item['uid'] = hash('sha256', $item['title']);
-
-                        $this->items[] = $item;
-                    }
-                }
-            }
-        }
-
-        // add subscription power info
-        $tablePrices = $ulDom->nextSibling()->nextSibling();
-        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 7);
-    }
-
-    /**
-     * @param simple_html_dom $html
-     * @param string $contractUri
-     * @return void
-     */
-    private function base(simple_html_dom $html, string $contractUri, int $power): void
-    {
-        $tablePrices = $html
-                            ->find('#grille-tarifaire-et-prix-du-kwh-du-tarif-reglemente-edf-en-option-base', 0)
-                            ->nextSibling()
-                            ->nextSibling();
-
-        $prices = $tablePrices->find('.table tbody tr');
-
-        // price per kWh is same for all powers
-        if ($prices && count($prices) === 9) {
-            $item = [];
-
-            $text = 'Base : ' . $prices[0]->children(2);
-            $item['uri'] = self::URI . $contractUri;
-            $item['title'] = $text;
-            $item['author'] = self::MAINTAINER;
-            $item['content'] = $text;
-            $item['uid'] = hash('sha256', $item['title']);
-
-            $this->items[] = $item;
-        }
-
-        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 9);
-    }
-
-    /**
-     * @param simple_html_dom $html
-     * @param string $contractUri
-     * @return void
-     */
-    private function hphc(simple_html_dom $html, string $contractUri, int $power): void
-    {
-        $tablePrices = $html
-                            ->find('#grille-tarifaire-et-prix-du-kwh-du-tarif-reglemente-edf-en-option-heures-pleines-heures-creuses', 0)
-                            ->nextSibling()
-                            ->nextSibling();
-
-        $prices = $tablePrices->find('.table tbody tr');
-
-        // price per kWh is same for all powers
-        if ($prices && count($prices) === 8) {
-            $values = ['HC', 'HP'];
-            foreach ($values as $key => $value) {
-                $i++;
-                $item = [];
-
-                $text = $values[$key] . ' : ' . $prices[0]->children($key + 2);
-                $item['uri'] = self::URI . $contractUri;
-                $item['title'] = $text;
-                $item['author'] = self::MAINTAINER;
-                $item['content'] = $text;
-                $item['uid'] = hash('sha256', $item['title']);
-
-                $this->items[] = $item;
-            }
-        }
-
-        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 8);
-    }
-
-    /**
-     * @param simple_html_dom $html
-     * @param string $contractUri
-     * @return void
-     */
-    private function ejp(simple_html_dom $html, string $contractUri, int $power): void
-    {
-        $tablePrices = $html
-                            ->find('#ejp', 0)
-                            ->nextSibling()
-                            ->nextSibling()
-                            ->nextSibling()
-                            ->nextSibling()
-                            ->nextSibling();
-
-        $prices = $tablePrices->find('.table tbody tr');
-
-        // price per kWh is same for all powers
-        if ($prices && count($prices) === 5) {
-            $values = ['Non EJP', 'EJP'];
-            foreach ($values as $key => $value) {
-                $i++;
-                $item = [];
-
-                $text = $values[$key] . ' : ' . $prices[0]->children($key + 2);
-                $item['uri'] = self::URI . $contractUri;
-                $item['title'] = $text;
-                $item['author'] = self::MAINTAINER;
-                $item['content'] = $text;
-                $item['uid'] = hash('sha256', $item['title']);
-
-                $this->items[] = $item;
-            }
-        }
-
-        $this->addSubscriptionPowerInfo($tablePrices, $contractUri, $power, 5);
-    }
-
-    private function addSubscriptionPowerInfo(simple_html_dom_node $tablePrices, string $contractUri, int $power, int $numberOfPrices): void
-    {
-        $prices = $tablePrices->find('.table tbody tr');
-
-        // 7 contracts for tempo: 6, 9, 12, 15, 18, 30 and 36 kVA
-        // 9 contracts for base: 3, 6, 9, 12, 15, 18, 24, 30 and 36 kVA
-        // 8 contracts for HPHC: 6, 9, 12, 15, 18, 24, 30 and 36 kVA
-        // 5 contracts for EJP: 9, 12, 15, 18 and 36 kVA
-        if ($prices && count($prices) === $numberOfPrices) {
-            $powerFound = false;
-            foreach ($prices as $price) {
-                $powerText = trim($price->children(0)->innertext);
-                if ($price->children(0)->children(0)) {
-                    $powerText = trim($price->children(0)->children(0)->innertext);
-                }
-                $powerValue = (int)substr($powerText, 0, strpos($powerText, ' kVA'));
-
-                if ($powerValue !== $power) {
-                    continue;
-                }
-
-                $item = [];
-
-                $text = $powerText . ' : ' . $price->children(1) . '/an';
-                $item['uri'] = self::URI . $contractUri;
-                $item['title'] = $text;
-                $item['author'] = self::MAINTAINER;
-                $item['content'] = $text;
-                $item['uid'] = hash('sha256', $item['title']);
-
-                $this->items[] = $item;
-                $powerFound = true;
-                break;
-            }
-
-            if (!$powerFound) {
-                $item = [];
-
-                $text = 'Pas de tarif abonnement pour cette puissance et ce contrat';
-                $item['uri'] = self::URI . $contractUri;
-                $item['title'] = $text;
-                $item['author'] = self::MAINTAINER;
-                $item['content'] = $text;
-                $item['uid'] = hash('sha256', $item['title']);
-
-                $this->items[] = $item;
-            }
-        }
-    }
+    // The header label used for the subscription (yearly) column, as opposed to
+    // the per-kWh rate columns (whose count and labels vary per contract).
+    const SUBSCRIPTION_LABEL = 'Abonnement';
 
     public function collectData()
     {
-        $contract = $this->getKey('contract');
-        $contractUri = $this->getInput('contract');
-        $power = $this->getInput('power');
-        $html = getSimpleHTMLDOM(self::URI . $contractUri);
+        $rawContract = $this->getInput('contract');
+        $power = (int) $this->getInput('power');
 
-        if ($contract === 'Tempo') {
-            $this->tempo($html, $contractUri, $power);
+        if (isset(self::CONTRACTS[$rawContract])) {
+            $contractKey = $rawContract;
+        } else {
+            $contractKey = self::LEGACY_CONTRACTS[$rawContract] ?? null;
+        }
+        $contract = $contractKey ? self::CONTRACTS[$contractKey] : null;
+
+        if (!$contract) {
+            throwServerException('Contrat EDF inconnu: "' . $rawContract . '".');
         }
 
-        if ($contract === 'Base') {
-            $this->base($html, $contractUri, $power);
+        $contractUri = $contract['path'] . '#' . $contract['heading'];
+        $html = getSimpleHTMLDOM(self::URI . $contract['path']);
+
+        $headingDom = $html->find('#' . $contract['heading'], 0);
+        if (!$headingDom) {
+            throwServerException(
+                sprintf(
+                    'Impossible de trouver la section "%s" sur la page EDF. Le site a probablement encore changé de structure.',
+                    $contract['label']
+                )
+            );
         }
 
-        if ($contract === 'HPHC') {
-            $this->hphc($html, $contractUri, $power);
+        $tableDom = $this->findPriceTableAfter($html, $headingDom);
+        if (!$tableDom) {
+            throwServerException(
+                sprintf(
+                    'Impossible de trouver le tableau de tarifs pour "%s" sur la page EDF. Le site a probablement encore changé de structure.',
+                    $contract['label']
+                )
+            );
         }
 
-        if ($contract === 'EJP') {
-            $this->ejp($html, $contractUri, $power);
+        $this->addItemsFromTable($tableDom, $contractUri, $power);
+    }
+
+    /**
+     * Finds the first <table> appearing after $headingDom (in document order)
+     * whose first column header is "Puissance". Locating it this way, instead of
+     * hard-coding a number of DOM hops from the heading, survives changes to the
+     * markup nesting around the table.
+     */
+    private function findPriceTableAfter(simple_html_dom $html, simple_html_dom_node $headingDom): ?simple_html_dom_node
+    {
+        foreach ($html->find('table') as $tableDom) {
+            if ($tableDom->tag_start <= $headingDom->tag_start) {
+                continue;
+            }
+            $firstHeader = $tableDom->find('thead th', 0);
+            if ($firstHeader && trim($firstHeader->plaintext) === 'Puissance') {
+                return $tableDom;
+            }
         }
+        return null;
+    }
+
+    private function addItemsFromTable(simple_html_dom_node $tableDom, string $contractUri, int $power): void
+    {
+        $headers = array_map(fn($th) => trim($th->plaintext), $tableDom->find('thead th'));
+
+        foreach ($tableDom->find('tbody tr') as $row) {
+            $cells = $row->find('td');
+            if (!$cells) {
+                continue;
+            }
+
+            if ((int) $this->cellText($cells[0]) !== $power) {
+                continue;
+            }
+
+            foreach ($cells as $i => $cell) {
+                if ($i === 0 || !isset($headers[$i])) {
+                    continue;
+                }
+
+                $label = $headers[$i];
+                $value = $this->cellText($cell);
+                if ($value === '') {
+                    continue;
+                }
+                if ($label === self::SUBSCRIPTION_LABEL) {
+                    $value .= '/an';
+                }
+
+                $this->addItem($label . ' : ' . $value, $contractUri);
+            }
+
+            return;
+        }
+
+        $this->addItem('Pas de tarif disponible pour cette puissance et ce contrat', $contractUri);
+    }
+
+    // Cells hold a value span (e.g. "144,36 €" or "6") optionally followed by
+    // extra decorative markup (units, tooltips). Reading only the first span
+    // avoids picking up that extra content.
+    private function cellText(simple_html_dom_node $cell): string
+    {
+        $span = $cell->find('span', 0);
+        $text = $span ? $span->plaintext : $cell->plaintext;
+        return trim(str_replace("\xc2\xa0", ' ', html_entity_decode($text, ENT_QUOTES)));
+    }
+
+    private function addItem(string $text, string $contractUri): void
+    {
+        $item = [];
+        $item['uri'] = self::URI . $contractUri;
+        $item['title'] = $text;
+        $item['author'] = self::MAINTAINER;
+        $item['content'] = $text;
+        $item['uid'] = hash('sha256', $item['title']);
+
+        $this->items[] = $item;
     }
 }
