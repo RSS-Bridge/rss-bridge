@@ -70,7 +70,7 @@ class NintendoBridge extends XPathAbstract
         'tlozla' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
         'tlozss' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
         'tloztotk' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
-        'xc2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/Xenoblade-Chronicles-2-Update-History-1482911.html',
+        'xc2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Xenoblade-Chronicles-2-1482905.html',
     ];
     const XPATH_EXPRESSION_ITEM = '//div[@class="col-xs-12 content"]/div[starts-with(@id,"v") and @class="collapse"]';
     const XPATH_EXPRESSION_ITEM_FIRMWARE = '//div[@id="latest" and @class="collapse" and @rel="1"]';
@@ -93,18 +93,18 @@ class NintendoBridge extends XPathAbstract
             'de' => 'eröffentlicht am ',
             'es' => 'isponible desde el ',
             'fr' => 'atée du ',
-            'it' => 'ubblicata il ',
+            'it' => 'ilasciata il ',
             'nl' => 'itgebracht op ',
-            'pt' => 'ançada no dia ',
+            'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
         's2' => [
             'de' => 'eröffentlicht am ',
             'es' => 'isponible desde el ',
             'fr' => 'atée du ',
-            'it' => 'ubblicata il ',
+            'it' => 'istribuita il ',
             'nl' => 'itgebracht op ',
-            'pt' => 'ançada a ',
+            'pt' => 'ançada no dia ',
             'en' => 'eleased ',
         ],
         'sm3as' => [
@@ -118,11 +118,11 @@ class NintendoBridge extends XPathAbstract
         ],
         'sm3wbf' => [
             'de' => 'eröffentlicht am ',
-            'es' => 'isponible desde el ',
+            'es' => ' el ',
             'fr' => 'atée du ',
             'it' => 'istribuita il ',
             'nl' => 'itgebracht op ',
-            'pt' => 'ançada no dia ',
+            'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
         'smbw' => [
@@ -149,7 +149,7 @@ class NintendoBridge extends XPathAbstract
             'fr' => 'atée du ',
             'it' => 'istribuita il ',
             'nl' => 'itgebracht op ',
-            'pt' => 'ançada no dia ',
+            'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
         'ssbu' => [
@@ -158,21 +158,21 @@ class NintendoBridge extends XPathAbstract
             'fr' => 'atée du ',
             'it' => 'istribuita il ',
             'nl' => 'itgebracht op ',
-            'pt' => 'ançada no dia ',
+            'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
         'sf' => [
             'de' => 'eröffentlicht am ',
             'es' => 'isponible desde el ',
-            'fr' => 'ise en ligne le ',
-            'it' => 'ubblicata il ',
+            'fr' => 'atée du ',
+            'it' => 'istribuita il ',
             'nl' => 'itgebracht op ',
-            'pt' => 'ançada no dia ',
-            'en' => 'istributed ',
+            'pt' => 'ançada a ',
+            'en' => 'eleased ',
         ],
         'tlozla' => [
             'de' => 'eröffentlicht ',
-            'es' => 'ublicada el ',
+            'es' => 'isponible desde el ',
             'fr' => 'atée du ',
             'it' => 'istribuita il ',
             'nl' => 'itgegeven op ',
@@ -191,15 +191,15 @@ class NintendoBridge extends XPathAbstract
         'tloztotk' => [
             'de' => 'eröffentlicht am ',
             'es' => 'isponible desde el ',
-            'fr' => 'ubliée le ',
-            'it' => 'ubblicata il ',
-            'nl' => 'erschenen op ',
+            'fr' => 'atée du ',
+            'it' => 'ubblicata ',
+            'nl' => 'itgebracht op ',
             'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
         'xc2' => [
             'de' => 'eröffentlicht am ',
-            'es' => 'isponible desde el ',
+            'es' => 'istribuida el ',
             'fr' => 'atée du ',
             'it' => 'istribuita il ',
             'nl' => 'itgebracht op ',
@@ -341,6 +341,8 @@ class NintendoBridge extends XPathAbstract
             '09' => 'settembre', '10' => 'ottobre', '11' => 'novembre', '12' => 'dicembre'],
         'pt' => ['01' => 'janeiro', '02' => 'fevereiro', '03' => 'março', '04' => 'abril', '05' => 'maio', '06' => 'junho', '07' => 'julho', '08' => 'agosto',
             '09' => 'setembro', '10' => 'outubro', '11' => 'novembro', '12' => 'dezembro'],
+        'en' => ['01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April', '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August',
+            '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December'],
     ];
     const LANGUAGE_REWRITE = ['co.uk' => 'en', 'co.za' => 'en', 'at' => 'de'];
 
@@ -471,6 +473,13 @@ class NintendoBridge extends XPathAbstract
         $value = str_replace('--', '-', $value);
 
         $date = \DateTime::createFromFormat(self::GAME_COUNTRY_DATE_FORMAT[$category][$language], $value);
+        if ((false === $date || (int) $date->format('Y') < 1000) && preg_match('~(\d{1,2})\D+(\d{1,2})\D+(\d{2,4})~', $value, $matches)) {
+            $year = (int) $matches[3];
+            $year += $year < 100 ? 2000 : 0;
+            if (checkdate((int) $matches[2], (int) $matches[1], $year)) {
+                $date = (new \DateTime())->setDate($year, (int) $matches[2], (int) $matches[1]);
+            }
+        }
         if (false === $date) {
             $date = new \DateTime('now');
         }
