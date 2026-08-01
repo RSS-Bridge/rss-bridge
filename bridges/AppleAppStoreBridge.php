@@ -109,12 +109,19 @@ class AppleAppStoreBridge extends BridgeAbstract
         $this->debugLog(sprintf('Fetching HTML page for serialized data extraction: %s', $url));
         $content = getContents($url, $this->getHtmlRequestHeaders());
 
-        $matches = [];
-        if (!preg_match('#<script[^>]*id="serialized-server-data"[^>]*>(.*?)</script>#s', $content, $matches)) {
+        $startTag = '<script type="application/json" id="serialized-server-data">';
+        $startPos = strpos($content, $startTag);
+        if ($startPos === false) {
             throw new \Exception('Failed to locate serialized server data in HTML page');
         }
 
-        $serializedServerData = html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5);
+        $jsonStart = $startPos + strlen($startTag);
+        $endPos = strpos($content, '</script>', $jsonStart);
+        if ($endPos === false) {
+            throw new \Exception('Failed to locate end of serialized server data');
+        }
+
+        $serializedServerData = html_entity_decode(substr($content, $jsonStart, $endPos - $jsonStart), ENT_QUOTES | ENT_HTML5);
 
         try {
             $json = Json::decode($serializedServerData);
