@@ -168,8 +168,15 @@ class YoutubeBridge extends BridgeAbstract
                 // playlist probably doesnt exists
                 throw new \Exception('Unable to find playlist: ' . $url_listing);
             }
-            $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
-            $jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
+
+            // Keeping the old JSON paths just in case YouTube is using them for some pages
+            if (isset($jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer->contents[0]->playlistVideoListRenderer)) {
+                $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
+                $jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
+            } elseif (isset($jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer->contents)) {
+                $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer->contents;
+            }
+
             $item_count = count($jsonData);
 
             if ($item_count > 15 || $filterByDuration) {
@@ -423,8 +430,13 @@ class YoutubeBridge extends BridgeAbstract
 
     private function extractJsonFromHtml($html)
     {
+        // The JSON payload now has the potential to exceed 1 million characters.
+        // This hits the default PCRE backtracking limit. Bypassing this by temporarily upping the limit.
+        $previousBacktrackLimit = ini_get('pcre.backtrack_limit');
+        ini_set('pcre.backtrack_limit', '10000000');
         $scriptRegex = '/var ytInitialData = (.*?);<\/script>/';
         $result = preg_match($scriptRegex, $html, $matches);
+        ini_set('pcre.backtrack_limit', $previousBacktrackLimit);
         if (! $result) {
             $this->logger->debug('Could not find ytInitialData');
             return null;
@@ -451,6 +463,12 @@ class YoutubeBridge extends BridgeAbstract
             } elseif (isset($item->richItemRenderer->content->lockupViewModel)) {
                 // Newer YouTube layout: richItemRenderer can wrap a lockupViewModel rather than a videoRenderer.
                 $wrapper = $this->wrapLockupViewModel($item->richItemRenderer->content->lockupViewModel);
+                if ($wrapper === null) {
+                    continue;
+                }
+            } elseif (isset($item->lockupViewModel)) {
+                // Newer YouTube layout: lockupViewModel can also be a direct child of itemSectionRenderer->contents.
+                $wrapper = $this->wrapLockupViewModel($item->lockupViewModel);
                 if ($wrapper === null) {
                     continue;
                 }
