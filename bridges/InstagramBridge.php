@@ -233,11 +233,12 @@ class InstagramBridge extends BridgeAbstract
         foreach ($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
             $singleMedia = $singleMedia->node;
             if ($singleMedia->is_video) {
-                if (in_array($singleMedia->video_url, $enclosures)) {
+                $videoUrl = $singleMedia->video_url ?? '';
+                if (in_array($videoUrl, $enclosures)) {
                     continue; // check if not added yet
                 }
-                $content .= '<video controls><source src="' . $singleMedia->video_url . '" type="video/mp4"></video><br>';
-                array_push($enclosures, $singleMedia->video_url);
+                $content .= '<video controls><source src="' . $videoUrl . '" type="video/mp4"></video><br>';
+                $enclosures[] = $videoUrl;
             } else {
                 if (in_array($singleMedia->display_url, $enclosures)) {
                     continue; // check if not added yet
@@ -245,7 +246,7 @@ class InstagramBridge extends BridgeAbstract
                 $content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
                 $content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
                 $content .= '</a><br>';
-                array_push($enclosures, $singleMedia->display_url);
+                $enclosures[] = $singleMedia->display_url;
             }
         }
         $content .= '<br>' . nl2br(htmlentities($textContent));
@@ -256,13 +257,15 @@ class InstagramBridge extends BridgeAbstract
     // returns Video post's contents and enclosures
     protected function getInstagramVideoData($uri, $mediaURI, $mediaInfo, $textContent)
     {
+        $videoUrl = $mediaInfo->video_url ?? '';
+
         $content = '<video controls>';
-        $content .= '<source src="' . $mediaInfo->video_url . '" poster="' . $mediaURI . '" type="video/mp4">';
+        $content .= '<source src="' . $videoUrl . '" poster="' . $mediaURI . '" type="video/mp4">';
         $content .= '<img src="' . $mediaURI . '" alt="">';
         $content .= '</video><br>';
         $content .= '<br>' . nl2br(htmlentities($textContent));
 
-        return [$content, [$mediaInfo->video_url]];
+        return [$content, [$videoUrl]];
     }
 
     protected function getTextContent($media)
@@ -338,12 +341,14 @@ class InstagramBridge extends BridgeAbstract
 
         // Extract the content needed by our bridge of the whole Javascript content
         $regex = '#"contextJSON":"(.*)"}\]\],\["NavigationMetrics"#m';
-        preg_match($regex, $jsCode, $matches);
-        $jsVariable = $matches[1];
-        $data = stripcslashes($jsVariable);
-        // stripcslashes remove Javascript unicode escaping : add it back to the string so json_decode can handle it
-        $data = preg_replace('/(?<!\\\\)u[0-9A-Fa-f]{4}/', '\\\\$0', $data);
-        return $data;
+        if (preg_match($regex, $jsCode, $matches)) {
+            $jsVariable = $matches[1];
+            $data = stripcslashes($jsVariable);
+            // stripcslashes remove Javascript unicode escaping : add it back to the string so json_decode can handle it
+            $data = preg_replace('/(?<!\\\\)u[0-9A-Fa-f]{4}/', '\\\\$0', $data);
+            return $data;
+        }
+        return '';
     }
 
     public function getName()
