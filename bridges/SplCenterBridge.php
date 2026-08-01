@@ -32,7 +32,7 @@ class SplCenterBridge extends FeedExpander
                     'uri' => $a->href,
                     'author' => $li->find('p.wp-block-splc-authors__name', 0)->plaintext,
                     'content' => $li->find('p.wp-block-post-excerpt__excerpt', 0)->plaintext,
-                    'timestamp' => date("U",strtotime($li->find('time', 0)->getAttribute('datetime'))),
+                    'timestamp' => date('U', strtotime($li->find('time', 0)->getAttribute('datetime'))),
                 ];
             }
         }

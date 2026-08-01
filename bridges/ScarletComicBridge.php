@@ -27,7 +27,7 @@ class ScarletComicBridge extends FeedExpander
     protected function parseItem($item)
     {
         $html = getSimpleHTMLDOMCached($item['uri']);
-	$comicImage = $html->find('div[id="spliced-comic"]', 0);	
+        $comicImage = $html->find('div[id="spliced-comic"]', 0);
         $item['content'] = $comicImage;
 
         return $item;
