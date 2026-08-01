@@ -154,13 +154,16 @@ final class FeedParser
             'timestamp'     => '',
             'author'        => '',
             //'uid'           => null,
-            //'categories'    => [],
+            'categories'    => [],
             //'enclosures'    => [],
         ];
 
         foreach ($feedItem as $k => $v) {
             $hasChildren = count($v) !== 0;
             if (!$hasChildren) {
+                if ($k === 'category') {
+                    $item['categories'][] = (string) $v;
+                }
                 $item[$k] = (string) $v;
             }
         }
@@ -231,6 +234,7 @@ final class FeedParser
 
     public function parseRss1Item(\SimpleXMLElement $feedItem): array
     {
+        // TODO: parse categories
         $item = [
             'uri'           => '',
             'title'         => '',
@@ -238,7 +242,7 @@ final class FeedParser
             'timestamp'     => '',
             'author'        => '',
             //'uid'           => null,
-            //'categories'    => [],
+            'categories'    => [],
             //'enclosures'    => [],
         ];
         if (isset($feedItem->link)) {
