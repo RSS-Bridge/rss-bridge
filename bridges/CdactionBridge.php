@@ -28,6 +28,7 @@ class CdactionBridge extends BridgeAbstract
                 ],
                 'Na luzie' => [
                     'Nadgodziny' => 'nadgodziny',
+                    'Szpile' => 'szpile',
                 ]
             ]
         ]]
