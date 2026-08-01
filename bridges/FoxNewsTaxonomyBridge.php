@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
-class FoxNewsTaxonomyBridge extends FeedExpander {
+class FoxNewsTaxonomyBridge extends FeedExpander
+{
     const MAINTAINER = 'Scott';
     const NAME = 'Fox News Taxonomy Filter';
     const URI = 'https://www.foxnews.com/';
@@ -26,24 +28,25 @@ class FoxNewsTaxonomyBridge extends FeedExpander {
         ]
     ];
 
-    public function collectData() {
+    public function collectData()
+    {
         $feedUrl = 'https://moxie.foxnews.com/google-publisher/latest.xml';
-        
+
         $this->collectExpandableDatas($feedUrl);
-        
+
         $includes = $this->parseInputList($this->getInput('include'));
         $excludes = $this->parseInputList($this->getInput('exclude'));
-        
+
         $filteredItems = [];
-        
+
         foreach ($this->items as $item) {
             $categories = $item['categories'] ?? [];
             $uri = strtolower($item['uri'] ?? '');
-            
+
             // Include
             $shouldKeep = true;
             if (!empty($includes)) {
-                $shouldKeep = false; 
+                $shouldKeep = false;
                 if ($this->matchesRules($categories, $uri, $includes)) {
                     $shouldKeep = true;
                 }
@@ -55,36 +58,37 @@ class FoxNewsTaxonomyBridge extends FeedExpander {
                     $shouldKeep = false;
                 }
             }
-            
+
             if ($shouldKeep) {
                 $filteredItems[] = $item;
             }
         }
-        
+
         $this->items = $filteredItems;
     }
 
-    private function parseInputList(?string $input): array {
+    private function parseInputList(?string $input): array
+    {
         if (empty(trim($input ?? ''))) {
             return [];
         }
-        
+
         $parts = explode(',', $input);
         $cleanParts = [];
-        
+
         foreach ($parts as $part) {
             $part = trim($part);
             if ($part !== '') {
                 $cleanParts[] = strtolower($part);
             }
         }
-        
+
         return $cleanParts;
     }
 
-    private function matchesRules(array $categories, string $uri, array $rules): bool {
+    private function matchesRules(array $categories, string $uri, array $rules): bool
+    {
         foreach ($rules as $rule) {
-            
             // Check category
             foreach ($categories as $category) {
                 $category = strtolower(trim($category));
@@ -96,9 +100,9 @@ class FoxNewsTaxonomyBridge extends FeedExpander {
                     return true;
                 }
             }
-            
+
             // Check URL
-            $urlFragment = str_replace('fox-news/', '', $rule); 
+            $urlFragment = str_replace('fox-news/', '', $rule);
             if (str_contains($uri, '/' . $urlFragment . '/') || str_ends_with($uri, '/' . $urlFragment)) {
                 return true;
             }
