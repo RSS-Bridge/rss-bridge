@@ -22,7 +22,7 @@ abstract class FeedExpander extends BridgeAbstract
         if ($xmlString === '') {
             throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url), 10);
         }
-        $xmlString = $this->prepareXml($xmlString);
+
         $feedParser = new FeedParser();
         try {
             $this->feed = $feedParser->parseFeed($xmlString);
@@ -52,22 +52,6 @@ abstract class FeedExpander extends BridgeAbstract
         return $item;
     }
 
-    /**
-    * Prepare XML document to make it more acceptable by the parser
-    * This method can be overriden by bridges to change this behavior
-    *
-    * @return string
-    */
-    protected function prepareXml(string $xmlString): string
-    {
-        // Remove problematic escape sequences
-        $problematicStrings = [
-            '&nbsp;',
-            '&raquo;',
-            '&rsquo;',
-        ];
-        return str_replace($problematicStrings, '', $xmlString);
-    }
 
     public function getURI()
     {
