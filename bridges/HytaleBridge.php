@@ -9,7 +9,7 @@ class HytaleBridge extends BridgeAbstract
 
     const _CLASS_WITH_ARTICLES = 'space-y-0';
     const _DESCRIPTION_ELEMENT = 'span.line-clamp-4';
-    const _FOOTER_ELEMENT = 'span.flex.flex-row.gap-2 span';
+    const _AUTHOR_ELEMENT = 'span.text-right';
 
     public function collectData()
     {
@@ -18,51 +18,56 @@ class HytaleBridge extends BridgeAbstract
         if (!$articlesContainer) {
             return;
         }
-        $articles = $articlesContainer->find('article');
-        foreach ($articles as $article) {
+        foreach ($articlesContainer->find('article') as $article) {
             $this->addBlogPost($article);
         }
     }
 
     private function addBlogPost($blogPost)
     {
-        $link = $blogPost->find('a', 0);
+        $item = [];
+
+        $link = $blogPost->find('h4 a', 0);
         if (!$link) {
             return;
         }
 
-        $item = [];
-
         $articlePath = $link->getAttribute('href');
         $item['uri'] = 'https://hytale.com' . $articlePath;
+        $item['title'] = trim($link->plaintext);
 
-        $titleElement = $link->find('h4', 0);
-        if ($titleElement) {
-            $item['title'] = trim($titleElement->plaintext);
-        }
-
-        $descriptionElement = $link->find(self::_DESCRIPTION_ELEMENT, 0);
+        $descriptionElement = $blogPost->find(self::_DESCRIPTION_ELEMENT, 0);
         if ($descriptionElement) {
             $item['content'] = trim($descriptionElement->plaintext);
         }
 
-        $imgElement = $link->find('img', 0);
+        $imgElement = $blogPost->find('img', 0);
         if ($imgElement) {
             $imageUrl = $imgElement->getAttribute('src');
-            if ($imageUrl && isset($item['content'])) {
-                $item['content'] = '<img src="' . $imageUrl . '" alt="Article thumbnail" /><br />' . $item['content'];
-            } elseif ($imageUrl) {
-                $item['content'] = '<img src="' . $imageUrl . '" alt="Article thumbnail" />';
+
+            if ($imageUrl) {
+                $imageHtml = '<img src="' . $imageUrl . '" alt="Article thumbnail" />';
+
+                if (isset($item['content'])) {
+                    $item['content'] = $imageHtml . '<br />' . $item['content'];
+                } else {
+                    $item['content'] = $imageHtml;
+                }
             }
         }
 
-        $footerSpans = $link->find(self::_FOOTER_ELEMENT);
-        if (count($footerSpans) >= 2) {
+        $footerSpans = $blogPost->find('span.flex.flex-row.gap-2 > span');
+
+        if (count($footerSpans) >= 1) {
             $dateText = trim($footerSpans[0]->plaintext);
             $item['timestamp'] = strtotime($dateText);
+        }
 
-            $authorText = trim($footerSpans[1]->plaintext);
-            if (preg_match('/Posted by (.+)/', $authorText, $matches)) {
+        $authorElement = $blogPost->find(self::_AUTHOR_ELEMENT, 0);
+        if ($authorElement) {
+            $authorText = trim($authorElement->plaintext);
+
+            if (preg_match('/Posted by\s+(.+)/i', $authorText, $matches)) {
                 $item['author'] = trim($matches[1]);
             }
         }
