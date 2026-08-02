@@ -197,9 +197,17 @@ Use the same PHP-FPM pool configuration shown above, then create the following C
 example.com {
     root * /var/www/rss-bridge
 
-    php_fastcgi unix//run/php/rss-bridge.sock
+    handle /static/* {
+        file_server
+    }
 
-    file_server
+    handle / {
+        php_fastcgi unix//run/php/rss-bridge.sock
+    }
+
+    handle {
+        respond 404
+    }
 }
 ```
 
