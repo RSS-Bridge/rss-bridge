@@ -9,16 +9,7 @@ class BlueskyBridge extends BridgeAbstract
     const DESCRIPTION = 'Fetches posts from Bluesky';
     const MAINTAINER = 'mruac';
     const PARAMETERS = [
-        [
-            'data_source' => [
-                'name' => 'Bluesky Data Source',
-                'type' => 'list',
-                'defaultValue' => 'Profile',
-                'values' => [
-                    'Profile' => 'getAuthorFeed',
-                ],
-                'title' => 'Select the type of data source to fetch from Bluesky.'
-            ],
+        'Posts from a user' => [
             'user_id' => [
                 'name' => 'User Handle or DID',
                 'type' => 'text',
@@ -31,8 +22,8 @@ class BlueskyBridge extends BridgeAbstract
                 'type' => 'list',
                 'defaultValue' => 'posts_and_author_threads',
                 'values' => [
-                    'Posts feed' => 'posts_and_author_threads',
-                    'All posts and replies' => 'posts_with_replies',
+                    'Authored posts / threads and reposts' => 'posts_and_author_threads',
+                    'All posts, replies and reposts' => 'posts_with_replies',
                     'Root posts only' => 'posts_no_replies',
                     'Media only' => 'posts_with_media',
                 ]
@@ -205,13 +196,14 @@ class BlueskyBridge extends BridgeAbstract
 
                 //post images
                 if (
+                    $postRecord['embed']['$type'] === 'app.bsky.embed.gallery' || // new in v1.123; hard limit 20 img, vid incl TBD
                     $postRecord['embed']['$type'] === 'app.bsky.embed.images' ||
                     (
-                        $postRecord['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
-                        $postRecord['embed']['media']['$type'] === 'app.bsky.embed.images'
+                    $postRecord['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
+                    $postRecord['embed']['media']['$type'] === 'app.bsky.embed.images'
                     )
                 ) {
-                    $images = $post['post']['embed']['images'] ?? $post['post']['embed']['media']['images'];
+                    $images = $post['post']['embed']['items'] ?? $post['post']['embed']['images'] ?? $post['post']['embed']['media']['images'];
                     foreach ($images as $image) {
                         $description .= $this->getPostImageDescription($image);
                     }
@@ -304,18 +296,20 @@ class BlueskyBridge extends BridgeAbstract
 
                         //quoted post - post images
                         if (
+                            $quotedRecord['value']['embed']['$type'] === 'app.bsky.embed.gallery' ||
                             $quotedRecord['value']['embed']['$type'] === 'app.bsky.embed.images' ||
                             (
-                                $quotedRecord['value']['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
-                                $quotedRecord['value']['embed']['media']['$type'] === 'app.bsky.embed.images'
+                            $quotedRecord['value']['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
+                            $quotedRecord['value']['embed']['media']['$type'] === 'app.bsky.embed.images'
                             )
                         ) {
                             foreach ($quotedRecord['embeds'] as $embed) {
                                 if (
-                                    $embed['$type'] === 'app.bsky.embed.images#view' ||
-                                    ($embed['$type'] === 'app.bsky.embed.recordWithMedia#view' && $embed['media']['$type'] === 'app.bsky.embed.images#view')
+                                    $embed['$type'] === 'app.bsky.embed.gallery#view' || // ['items']
+                                    $embed['$type'] === 'app.bsky.embed.images#view' || // ['images']
+                                    ($embed['$type'] === 'app.bsky.embed.recordWithMedia#view' && $embed['media']['$type'] === 'app.bsky.embed.images#view') // ['media']['images']
                                 ) {
-                                    $images = $embed['images'] ?? $embed['media']['images'];
+                                    $images = $embed['items'] ?? $embed['images'] ?? $embed['media']['images'];
                                     foreach ($images as $image) {
                                         $description .= $this->getPostImageDescription($image);
                                     }
@@ -367,13 +361,14 @@ class BlueskyBridge extends BridgeAbstract
 
                         //post images
                         if (
+                            $replyPostRecord['embed']['$type'] === 'app.bsky.embed.gallery' ||
                             $replyPostRecord['embed']['$type'] === 'app.bsky.embed.images' ||
                             (
-                                $replyPostRecord['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
-                                $replyPostRecord['embed']['media']['$type'] === 'app.bsky.embed.images'
+                            $replyPostRecord['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
+                            $replyPostRecord['embed']['media']['$type'] === 'app.bsky.embed.images'
                             )
                         ) {
-                            $images = $replyPost['embed']['images'] ?? $replyPost['embed']['media']['images'];
+                            $images = $replyPost['embed']['items'] ?? $replyPost['embed']['images'] ?? $replyPost['embed']['media']['images'];
                             foreach ($images as $image) {
                                 $description .= $this->getPostImageDescription($image);
                             }
@@ -463,18 +458,20 @@ class BlueskyBridge extends BridgeAbstract
 
                                 //quoted post - post images
                                 if (
+                                    $replyQuotedRecord['value']['embed']['$type'] === 'app.bsky.embed.gallery' ||
                                     $replyQuotedRecord['value']['embed']['$type'] === 'app.bsky.embed.images' ||
                                     (
-                                        $replyQuotedRecord['value']['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
-                                        $replyQuotedRecord['value']['embed']['media']['$type'] === 'app.bsky.embed.images'
+                                    $replyQuotedRecord['value']['embed']['$type'] === 'app.bsky.embed.recordWithMedia' &&
+                                    $replyQuotedRecord['value']['embed']['media']['$type'] === 'app.bsky.embed.images'
                                     )
                                 ) {
                                     foreach ($replyQuotedRecord['embeds'] as $embed) {
                                         if (
+                                            $embed['$type'] === 'app.bsky.embed.gallery#view' ||
                                             $embed['$type'] === 'app.bsky.embed.images#view' ||
                                             ($embed['$type'] === 'app.bsky.embed.recordWithMedia#view' && $embed['media']['$type'] === 'app.bsky.embed.images#view')
                                         ) {
-                                            $images = $embed['images'] ?? $embed['media']['images'];
+                                            $images = $embed['items'] ?? $embed['images'] ?? $embed['media']['images'];
                                             foreach ($images as $image) {
                                                 $description .= $this->getPostImageDescription($image);
                                             }
@@ -505,7 +502,7 @@ class BlueskyBridge extends BridgeAbstract
 
     private function getPostImageDescription(array $image)
     {
-        $thumbnailUrl = $image['thumb'];
+        $thumbnailUrl = $image['thumb'] ?? $image['thumbnail'];
         $fullsizeUrl = $image['fullsize'];
         $alt = strlen($image['alt']) > 0 ? '<figcaption>' . e($image['alt']) . '</figcaption>' : '';
         return "<figure><a href=\"$fullsizeUrl\"><img src=\"$thumbnailUrl\"></a>$alt</figure>";
