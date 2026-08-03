@@ -187,7 +187,36 @@ composer create-project -v --no-dev --no-scripts rss-bridge/rss-bridge
 
 ### How to install with Caddy
 
-TODO. See https://github.com/RSS-Bridge/rss-bridge/issues/3785
+Follow the Debian installation steps above, but install and configure Caddy instead of nginx.
+
+Use the same PHP-FPM pool configuration shown above, then create the following Caddy configuration:
+
+```caddyfile
+# /etc/caddy/Caddyfile
+
+example.com {
+    root * /var/www/rss-bridge
+
+    handle /static/* {
+        file_server
+    }
+
+    handle / {
+        php_fastcgi unix//run/php/rss-bridge.sock
+    }
+
+    handle {
+        respond 404
+    }
+}
+```
+
+Validate the configuration, then restart both services:
+
+```bash
+php-fpm8.2 -t && systemctl restart php8.2-fpm
+caddy validate --config /etc/caddy/Caddyfile && systemctl restart caddy
+```
 
 ### Install from Docker Hub:
 
