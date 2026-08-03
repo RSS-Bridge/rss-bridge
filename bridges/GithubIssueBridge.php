@@ -38,7 +38,7 @@ class GithubIssueBridge extends BridgeAbstract
             ]
         ],
         'Issue comments' => [
-			'e' => [
+            'e' => [
                 'name' => 'Show Events',
                 'type' => 'checkbox'
             ],
@@ -107,11 +107,11 @@ class GithubIssueBridge extends BridgeAbstract
         $json = getContents($url, $this->apiHeaders());
         $data = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            returnServerError('Unable to parse GitHub API response for ' . $url);
+            throwServerException('Unable to parse GitHub API response for ' . $url);
         }
         if (isset($data['message']) && !isset($data['html_url']) && array_key_exists('documentation_url', $data)) {
             // Looks like an API error payload, e.g. rate limiting or not found
-            returnServerError('GitHub API error for ' . $url . ': ' . $data['message']);
+            throwServerException('GitHub API error for ' . $url . ': ' . $data['message']);
         }
         return $data;
     }
@@ -347,11 +347,11 @@ class GithubIssueBridge extends BridgeAbstract
         $item['timestamp'] = strtotime($timestamp);
         $item['content'] = $description;
         $item['uid'] = (string)($event['id'] ?? $event['node_id'] ?? md5(implode('|', [
-			$issueNbr,
-			$event['event'] ?? '',
-			$timestamp,
-			$event['source']['issue']['id'] ?? $event['actor']['login'] ?? '',
-		])));
+            $issueNbr,
+            $event['event'] ?? '',
+            $timestamp,
+            $event['source']['issue']['id'] ?? $event['actor']['login'] ?? '',
+        ])));
         return $item;
     }
 
