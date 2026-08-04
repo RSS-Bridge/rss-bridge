@@ -15,7 +15,7 @@
 | ![](https://iplookup.flagfox.net/images/h16/IN.png) | https://rss-bridge.bb8.fun | ![](https://img.shields.io/website/https/rss-bridge.bb8.fun.svg) | [@captn3m0](https://github.com/captn3m0) | Hosted in Bengaluru, India |
 | ![](https://iplookup.flagfox.net/images/h16/RU.png) | https://ololbu.ru/rss-bridge | ![](https://img.shields.io/website/https/ololbu.ru) | [@Ololbu](https://github.com/Ololbu) | Hosted in Moscow, Russia |
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://bridge.suumitsu.eu | ![](https://img.shields.io/website/https/bridge.suumitsu.eu.svg) | [@mitsukarenai](https://github.com/mitsukarenai) | Hosted in Paris, France |
-| ![](https://iplookup.flagfox.net/images/h16/NL.png) | https://feed.eugenemolotov.ru | ![](https://img.shields.io/website/https/feed.eugenemolotov.ru.svg) | [@em92](https://github.com/em92) | Hosted in Amsterdam, Netherlands |
+| ![](https://iplookup.flagfox.net/images/h16/NL.png) | https://feed.eugene2molotov.ru | ![](https://img.shields.io/website/https/feed.eugene2molotov.ru.svg) | [@em92](https://github.com/em92) | Hosted in Amsterdam, Netherlands |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss-bridge.mediani.de | ![](https://img.shields.io/website/https/rss-bridge.mediani.de.svg) | [@sokai](https://github.com/sokai) | Hosted with Netcup, Germany |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rb.ash.fail | ![](https://img.shields.io/website/https/rb.ash.fail.svg) | [@ash](https://ash.fail/contact.html) | Hosted with Hostaris, Germany
 | ![](https://iplookup.flagfox.net/images/h16/UA.png) | https://rss.noleron.com | ![](https://img.shields.io/website/https/rss.noleron.com) | [@ihor](https://noleron.com/about) | Hosted with Hosting Ukraine, Ukraine
