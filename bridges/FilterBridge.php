@@ -55,6 +55,11 @@ class FilterBridge extends FeedExpander
             'type' => 'checkbox',
             'required' => false,
         ],
+        'target_category' => [
+            'name' => 'Apply filter on category',
+            'type' => 'checkbox',
+            'required' => false,
+        ],
         'target_title' => [
             'name' => 'Apply filter on title',
             'type' => 'checkbox',
@@ -126,6 +131,9 @@ class FilterBridge extends FeedExpander
         }
         if ($this->getInput('target_content')) {
             $filter_fields[] = $item['content'] ?? null;
+        }
+        if ($this->getInput('target_category')) {
+            $filter_fields[] = $item['category'] ?? null;
         }
         if ($this->getInput('target_title')) {
             $filter_fields[] = $item['title'] ?? null;
