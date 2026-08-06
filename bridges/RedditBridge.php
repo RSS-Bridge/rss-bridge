@@ -3,7 +3,10 @@
 /**
  * This bridge does NOT use reddit's official rss feeds.
  *
- * This bridge uses reddit's json api: https://old.reddit.com/search.json?q=
+ * This bridge uses Reddit's JSON API via OAuth2: https://oauth.reddit.com/search.json?q=
+ *
+ * Requires a Reddit "script" app and its "ID" and "secret".
+ * `app_id` and `app_secret` parameters must be set in the configuration for this bridge.
  */
 class RedditBridge extends BridgeAbstract
 {
@@ -12,6 +15,18 @@ class RedditBridge extends BridgeAbstract
     const URI = 'https://old.reddit.com';
     const CACHE_TIMEOUT = 60 * 60 * 2; // 2h
     const DESCRIPTION = 'Return hot submissions from Reddit';
+    const VERSION = 'v0.0.3';
+    const USER_AGENT = 'rss-bridge ' . self::VERSION . ' (https://github.com/RSS-Bridge/rss-bridge)';
+    const REDDIT_OAUTH_TOKEN_KEY = 'reddit_oauth_token';
+
+    const CONFIGURATION = [
+        'app_id' => [
+            'required' => false,
+        ],
+        'app_secret' => [
+            'required' => false,
+        ],
+    ];
 
     const PARAMETERS = [
         'global' => [
@@ -167,17 +182,33 @@ class RedditBridge extends BridgeAbstract
 
         $search = $this->getInput('search');
         $flareInput = $this->getInput('f');
+        $min_score = $this->getInput('score');
+        $min_comments = $this->getInput('min_comments');
+
+        $headers = [
+            'User-Agent: ' . self::USER_AGENT,
+            'Authorization: Bearer ' . $this->getAccessToken(),
+        ];
 
         foreach ($subreddits as $subreddit) {
-            $version = 'v0.0.2';
-            $useragent = "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)";
             $url = self::createUrl($search, $flareInput, $subreddit, $user, $section, $time, $this->queriedContext);
 
-            $response = getContents($url, ['User-Agent: ' . $useragent], [], true);
+            try {
+                $response = getContents($url, $headers, [], true);
+            } catch (HttpException $e) {
+                if ($e->getCode() === 401 || $e->getCode() === 403) {
+                    // Token might've been rejected, or expired earlier than expected.
+                    // Clear cached token and try one more time with a fresh one.
+                    $this->cache->set(self::REDDIT_OAUTH_TOKEN_KEY, null, 0);
+                    $accessToken = $this->getAccessToken();
+                    $headers[1] = 'Authorization: Bearer ' . $accessToken;
+                    $response = getContents($url, $headers, [], true);
+                } else {
+                    throw $e;
+                }
+            }
 
-            $json = $response->getBody();
-
-            $parsedJson = Json::decode($json, false);
+            $parsedJson = Json::decode($response->getBody(), false);
 
             foreach ($parsedJson->data->children as $post) {
                 if ($post->kind == 't1' && !$comments) {
@@ -186,8 +217,6 @@ class RedditBridge extends BridgeAbstract
 
                 $data = $post->data;
 
-                $min_score = $this->getInput('score');
-                $min_comments = $this->getInput('min_comments');
                 if ($min_score >= 0 && $min_comments >= 0) {
                     if ($data->num_comments < $min_comments || $data->score < $min_score) {
                         continue;
@@ -299,6 +328,37 @@ class RedditBridge extends BridgeAbstract
         });
     }
 
+    private function getAccessToken(): string
+    {
+        $cachedToken = $this->cache->get(self::REDDIT_OAUTH_TOKEN_KEY);
+        if ($cachedToken) {
+            return $cachedToken;
+        }
+
+        $headers = [
+            'User-Agent: ' . self::USER_AGENT,
+            'Authorization: Basic ' . base64_encode($this->getOption('app_id') . ':' . $this->getOption('app_secret')),
+        ];
+        $data = [
+            'grant_type' => 'client_credentials',
+            'scope' => 'read',
+        ];
+        $curlopts = [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($data),
+        ];
+        $response = getContents('https://www.reddit.com/api/v1/access_token', $headers, $curlopts);
+
+        $data = Json::decode($response, false);
+        $token = $data->access_token;
+        if (!isset($token)) {
+            throw new \Exception('Failed to obtain Reddit OAuth access token: ' . $response);
+        }
+        $expiresIn = $data->expires_in ?? 3600;
+        $this->cache->set(self::REDDIT_OAUTH_TOKEN_KEY, $token, $expiresIn - 60);
+        return $token;
+    }
+
     public static function createUrl($search, $flareInput, $subreddit, bool $user, $section, $time, $queriedContext): string
     {
         $keywords = '';
@@ -322,7 +382,7 @@ class RedditBridge extends BridgeAbstract
             'include_over_18' => 'on',
             't' => $time
         ];
-        return 'https://old.reddit.com/search.json?' . http_build_query($query);
+        return 'https://oauth.reddit.com/search.json?' . http_build_query($query);
     }
 
     public function getIcon()
