@@ -150,11 +150,15 @@ class BlueskyBridge extends BridgeAbstract
 
         $filter = $this->getInput('feed_filter') ?: 'posts_and_author_threads';
         $replyContext = $this->getInput('include_reply_context');
+        $includeReposts = $this->getInput('include_reposts');
 
         $this->profile = $this->getProfile($did);
         $authorFeed = $this->getAuthorFeed($did, $filter);
 
         foreach ($authorFeed['feed'] as $post) {
+            if (!$includeReposts && isset($post['reason']) && str_contains($post['reason']['$type'], 'reasonRepost')) {
+                continue;
+            }
             $postRecord = $post['post']['record'];
 
             $item = [];
