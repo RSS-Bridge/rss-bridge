@@ -190,7 +190,7 @@ class AnnasArchiveBridge extends BridgeAbstract
                     'Internet Archive' => 'ia',
                     'Libgen.li' => 'lgli',
                     'Libgen.rs' => 'lgrs',
-                    'MagzDB' => 'magzdb'
+                    'MagzDB' => 'magzdb',
                     'Nexus/STC' => 'nexusstc',
                     'Sci‑Hub' => 'scihub',
                     'Upload to AA' => 'upload',
