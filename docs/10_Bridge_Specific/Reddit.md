@@ -7,7 +7,10 @@ https://www.reddit.com/r/modnews/comments/1tq9vxo/protecting_communities_from_sc
 Unfortunately, Reddit also blocked "easy" setup for developer apps:
 https://old.reddit.com/wiki/api#wiki_read_the_full_api_terms_and_sign_up_for_usage
 
-So currently, to get the bridge to work you need to either:
+The bridge uses Reddit's legacy unauthenticated endpoint by default.
+To use Reddit's OAuth2 API instead, configure both credentials below.
+
+If you want to use the OAuth2 API, you need to either:
 
  - Submit a request for an app using Reddit's Data API **and somehow get it approved by Reddit**.
 
@@ -28,4 +31,5 @@ app_id = "<ID>"
 app_secret = "<secret>"
 ```
 
-The bridge will handle OAuth, refresh bearer, etc.
+The bridge will handle OAuth, refresh bearer, etc., if both `app_id` and `app_secret` are configured.
+If either, or both, are missing, then the bridge falls back to legacy unauthenticated access.
