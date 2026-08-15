@@ -13,7 +13,8 @@ class FacebookBridge extends BridgeAbstract
         'User' => [
             'u' => [
                 'name' => 'Username',
-                'required' => true
+                'required' => true,
+                'exampleValue' => 'zuck'
             ],
             'media_type' => [
                 'name' => 'Media type',
