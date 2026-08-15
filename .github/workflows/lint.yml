@@ -17,6 +17,8 @@ jobs:
         php-versions: ['7.4']
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
@@ -30,6 +32,8 @@ jobs:
         php-versions: ['7.4']
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
@@ -41,6 +45,8 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - run: |
           if find -name "*.php" -executable -type f -print -exec false {} +
           then
