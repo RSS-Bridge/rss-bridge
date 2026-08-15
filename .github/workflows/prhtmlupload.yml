@@ -49,7 +49,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Download test results
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: test-results
           run-id: ${{ github.event.workflow_run.id }}
@@ -80,7 +80,7 @@ jobs:
     needs: get-pr-number
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           repository: "${{ github.repository_owner }}/${{ vars.ARTIFACTS_REPO || 'rss-bridge-tests' }}"
           ref: 'main'
@@ -90,7 +90,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "<>"
       - name: Download test results
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: test-results
           run-id: ${{ github.event.workflow_run.id }}
