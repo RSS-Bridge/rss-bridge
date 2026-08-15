@@ -25,7 +25,7 @@ jobs:
 
       - name: Checkout - PR
         if: steps.configuration.outputs.number_bridges > 0
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           path: pr
       - name: Build docker image - PR
@@ -37,7 +37,7 @@ jobs:
 
       - name: Checkout - Current
         if: steps.configuration.outputs.number_bridges > 0
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: ${{github.event.pull_request.base.ref}}
           repository: ${{github.event.pull_request.base.repo.full_name}}
@@ -51,9 +51,9 @@ jobs:
 
       - name: Setup python
         if: steps.configuration.outputs.number_bridges > 0
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.13'
+          python-version: '3.14'
           cache: 'pip'
           cache-dependency-path: '**/*requirements*.txt'
       - name: Install python requirements
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload test results as artifacts
         if: steps.configuration.outputs.number_bridges > 0 && steps.run-tests.outputs.bodylength > 130
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: test-results
           path: |
