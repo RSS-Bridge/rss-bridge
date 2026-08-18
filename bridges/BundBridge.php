@@ -47,13 +47,9 @@ class BundBridge extends BridgeAbstract
         $categoryUrl = self::URI . $categoryPath;
         $categoryHtml = getSimpleHTMLDOM($categoryUrl, $headers);
 
-        if (!$categoryHtml) {
-            returnServerError('Could not load the category listing page.');
-        }
-
         $articles = $categoryHtml->find('article.m-content-dashboardbox');
         if (empty($articles)) {
-            returnServerError('No articles found on the listing page.');
+            throwServerException('No articles found on the listing page.');
         }
 
         $count = 0;
