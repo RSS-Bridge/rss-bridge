@@ -677,7 +677,7 @@ END;
         $starterpackRecord = $record['record'];
         $starterpackName = e($starterpackRecord['name']);
         $starterpackDescription = e($starterpackRecord['description']);
-        $creatorDisplayName = e($record['creator']['displayName']);
+        $creatorDisplayName = e($record['creator']['displayName'] ?? '');
         $creatorHandle = e($record['creator']['handle']);
         preg_match('/\/([^\/]+)$/', $starterpackRecord['list'], $matches);
         $uri = e('https://bsky.app/starter-pack/' . $record['creator']['did'] . '/' . $matches[1]);
