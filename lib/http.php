@@ -195,7 +195,12 @@ final class CurlHttpClient implements HttpClient
         }
 
         $statusCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        curl_close($ch);
+        if (PHP_VERSION_ID >= 80000) {
+            unset($ch);
+        } else {
+            // TODO: remove after PHP minimum version >= 8
+            curl_close($ch);
+        }
         return new Response($body, $statusCode, $responseHeaders);
     }
 }
