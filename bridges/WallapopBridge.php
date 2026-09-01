@@ -14,23 +14,31 @@ class WallapopBridge extends BridgeAbstract
                 'exampleValue' => 'Playstation 2',
                 'required' => true
             ],
-            'p' => [
-                'name' => 'price',
+            'maxPrice' => [
+                'name' => 'Maximum price',
                 'exampleValue' => 100,
                 'type' => 'number',
                 'required'=> false
+            ],
+            'minPrice' => [
+                'name' => 'Minimum price',
+                'exampleValue' => 10,
+                'type' => 'number',
+                'required'=> false
             ]
+
         ],
     ];
     public function collectData()
     {
         $search = $this->getInput('s');
-        $price = $this->getInput('p');
+        $maxPrice = $this->getInput('maxPrice');
+        $minPrice = $this->getInput('minPrice');
 
         $this->feedName = 'Search: ' . $search;
 
         $url = 'https://api.wallapop.com/api/v3/search/section?keywords=' . urlencode($search) .
-             '&source=search_box&order_by=newest&search_country=ES&section_type=vector_search_results';
+            '&source=search_box&order_by=newest&search_country=ES&section_type=vector_search_results';
 
         $headers = [
             'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:154.0) Gecko/20100101 Firefox/154.0',
@@ -49,7 +57,9 @@ class WallapopBridge extends BridgeAbstract
 
         foreach ($items as $entry) {
             $itemPrice = $entry['price']['amount'];
-            if ($price ==! null && $itemPrice > $price) continue;
+
+            if ($maxPrice !== null && $itemPrice > $maxPrice) continue;
+            if ($minPrice !== null && $itemPrice < $minPrice) continue;
 
             $item = [];
 
