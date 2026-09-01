@@ -13,12 +13,20 @@ class WallapopBridge extends BridgeAbstract
                 'name' => 'search',
                 'exampleValue' => 'Playstation 2',
                 'required' => true
+            ],
+            'p' => [
+                'name' => 'price',
+                'exampleValue' => 100,
+                'type' => 'number',
+                'required'=> false
             ]
         ],
     ];
     public function collectData()
     {
         $search = $this->getInput('s');
+        $price = $this->getInput('p');
+
         $this->feedName = 'Search: ' . $search;
 
         $url = 'https://api.wallapop.com/api/v3/search/section?keywords=' . urlencode($search) .
@@ -40,16 +48,19 @@ class WallapopBridge extends BridgeAbstract
         $items = $json['data']['section']['items'] ?? [];
 
         foreach ($items as $entry) {
+            $itemPrice = $entry['price']['amount'];
+            if ($price ==! null && $itemPrice > $price) continue;
+
             $item = [];
 
             $title = $entry['title'] ?? $search;
-            $price = $entry['price']['amount'];
-            $date = intdiv($entry['created_at'], 1000);
-            $image_url = $entry['images'][0]['urls']['small'];
-            $full_desc = "<img src=\"{$image_url}\"><br>" . $entry['description'];
 
-            $item['title'] = "$title - $price EUR";
-            $item['description'] = $item['summary'] = $item['content'] = $full_desc;
+            $date = intdiv($entry['created_at'], 1000);
+            $imageUrl = $entry['images'][0]['urls']['small'];
+            $fullDesc = "<img src=\"{$imageUrl}\"><br>" . $entry['description'];
+
+            $item['title'] = "$title - $itemPrice EUR";
+            $item['description'] = $item['summary'] = $item['content'] = $fullDesc;
             $item['timestamp'] = $item['published'] = $date;
             $item['link'] = $item['uri'] = "https://es.wallapop.com/item/{$entry['web_slug']}";
             $item['enclosures'] = [$entry['images'][0]['urls']['medium'] ?? $entry['images'][0]['url'] ?? ''];
