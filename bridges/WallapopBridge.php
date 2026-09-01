@@ -21,12 +21,8 @@ class WallapopBridge extends BridgeAbstract
         $search = $this->getInput('s');
         $this->feedName = 'Search: ' . $search;
 
-        $url = 'https://api.wallapop.com/api/v3/search/section?'
-             . 'keywords=' . urlencode($search)
-             . '&source=search_box'
-             . '&order_by=newest'
-             . '&search_country=ES'
-             . '&section_type=vector_search_results';
+        $url = 'https://api.wallapop.com/api/v3/search/section?keywords=' . urlencode($search) .
+             '&source=search_box&order_by=newest&search_country=ES&section_type=vector_search_results';
 
         $headers = [
             'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:154.0) Gecko/20100101 Firefox/154.0',
@@ -63,6 +59,6 @@ class WallapopBridge extends BridgeAbstract
     }
     public function getName()
     {
-        return self::NAME . " " . $this->getInput("s");
+        return self::NAME . ' ' . $this->getInput('s');
     }
 }
