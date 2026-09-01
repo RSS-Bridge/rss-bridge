@@ -126,12 +126,23 @@ class YoutubeBridge extends BridgeAbstract
             // user, channel or custom
             $this->feeduri = $url_listing;
             if ($custom) {
-                // Extract the feed url for the custom name
-                $html = $this->fetch($url_listing);
-                $jsonData = $this->extractJsonFromHtml($html);
-                // Pluck out the rss feed url
-                $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
-                $this->feedIconUrl = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
+                // Check if RSS feed data is already available in cache
+                $customFeedCacheKey = 'youtube_custom_feed_' . strtolower($custom);
+                $customFeedRssData = $this->cache->get($customFeedCacheKey);
+                if (is_array($customFeedRssData) && !$filterByDuration) {
+                    // Only use the cached feed if not filtering by duration
+                    $url_feed = $customFeedRssData['url_feed'];
+                    $this->feedIconUrl = $customFeedRssData['feed_icon_url'];
+                } else {
+                    // Extract the feed url for the custom name
+                    $html = $this->fetch($url_listing);
+                    $jsonData = $this->extractJsonFromHtml($html);
+                    // Pluck out the rss feed url
+                    $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
+                    $this->feedIconUrl = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
+                    $customFeedRssData = ['url_feed' => $url_feed, 'feed_icon_url' => $this->feedIconUrl];
+                    $this->cache->set($customFeedCacheKey, $customFeedRssData, 30 * 24 * 60 * 60);
+                }
             }
             if ($filterByDuration) {
                 if (!$custom) {
