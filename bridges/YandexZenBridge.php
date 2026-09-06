@@ -27,8 +27,8 @@ class YandexZenBridge extends BridgeAbstract
     ];
 
     # credit: https://github.com/teromene see #1032
-    const _BASE_API_URL_WITH_CHANNEL_NAME = 'https://dzen.ru/api/v3/launcher/more?channel_name=';
-    const _BASE_API_URL_WITH_CHANNEL_ID = 'https://dzen.ru/api/v3/launcher/more?channel_id=';
+    const _BASE_API_URL_WITH_CHANNEL_NAME = 'https://dzen.ru/api/v3/launcher/export?country_code=ru&clid=1400&lang=ru&referrer_place=more&channel_name=';
+    const _CHANNEL_LOOKUP_API_URL_WITH_CHANNEL_ID = 'https://dzen.ru/api/v3/launcher/more?channel_id=';
 
     const _ACCOUNT_URL_WITH_CHANNEL_ID_REGEX = '#^https?://dzen\.ru/id/(?<channelID>[a-z0-9]{24})#';
     const _ACCOUNT_URL_WITH_CHANNEL_NAME_REGEX = '#^https?://dzen\.ru/(?<channelName>[\w\.]+)#';
@@ -42,10 +42,15 @@ class YandexZenBridge extends BridgeAbstract
 
         if (preg_match(self::_ACCOUNT_URL_WITH_CHANNEL_ID_REGEX, $channelURL, $matches)) {
             $channelID = $matches['channelID'];
-            $channelAPIURL = self::_BASE_API_URL_WITH_CHANNEL_ID . $channelID;
+            $channelLookupResponse = json_decode(getContents(self::_CHANNEL_LOOKUP_API_URL_WITH_CHANNEL_ID . $channelID));
+            $channelName = $channelLookupResponse->channel->source->url ?? null;
+            if ($channelName === null) {
+                throwClientException('Dzen did not return a channel name for this channel ID.');
+            }
+            $channelAPIURL = self::_BASE_API_URL_WITH_CHANNEL_NAME . rawurlencode($channelName);
         } elseif (preg_match(self::_ACCOUNT_URL_WITH_CHANNEL_NAME_REGEX, $channelURL, $matches)) {
             $channelName = $matches['channelName'];
-            $channelAPIURL = self::_BASE_API_URL_WITH_CHANNEL_NAME . $channelName;
+            $channelAPIURL = self::_BASE_API_URL_WITH_CHANNEL_NAME . rawurlencode($channelName);
         } else {
             throwClientException(<<<EOT
 Invalid channel URL provided.
@@ -57,7 +62,7 @@ EOT);
 
         $APIResponse = json_decode(getContents($channelAPIURL));
 
-        $this->channelRealName = $APIResponse->header->title;
+        $this->channelRealName = $APIResponse->channel->source->title ?? $channelName;
 
         $limit = $this->getInput('limit');
 
