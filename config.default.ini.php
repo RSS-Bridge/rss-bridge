@@ -181,6 +181,17 @@ port = 11211
 ; Max pages to fetch (1 page => 20 messages), min=1 max=100
 max_pages = 1
 
+[LiveTennisApiBridge]
+
+; Sets the Live Tennis API key the bridge authenticates with. Without one the
+; bridge reports a configuration error instead of producing a feed.
+;
+; Keys are issued at https://livetennisapi.com/. The free tier allows 100
+; requests a day, which the bridge's 15 minute cache timeout stays inside.
+;
+; "" = no key, bridge disabled (default)
+api_key = ""
+
 [DiscogsBridge]
 
 ; Sets the personal access token for interactions with Discogs. When
