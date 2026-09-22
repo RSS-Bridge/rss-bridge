@@ -140,8 +140,12 @@ class YoutubeBridge extends BridgeAbstract
                     // Pluck out the rss feed url
                     $url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
                     $this->feedIconUrl = $jsonData->metadata->channelMetadataRenderer->avatar->thumbnails[0]->url;
-                    $customFeedRssData = ['url_feed' => $url_feed, 'feed_icon_url' => $this->feedIconUrl];
-                    $this->cache->set($customFeedCacheKey, $customFeedRssData, 30 * 24 * 60 * 60);
+                    // Only cache the data if it was successfully extracted
+                    // Otherwise a single unexpected response could block future attempts to fetch the feed
+                    if ($url_feed && $this->feedIconUrl) {
+                        $customFeedRssData = ['url_feed' => $url_feed, 'feed_icon_url' => $this->feedIconUrl];
+                        $this->cache->set($customFeedCacheKey, $customFeedRssData, 30 * 24 * 60 * 60);
+                    }
                 }
             }
             if ($filterByDuration) {
