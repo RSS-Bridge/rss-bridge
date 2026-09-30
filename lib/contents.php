@@ -47,7 +47,11 @@ function getContents(
     /** @var CacheInterface $cache */
     $cache = $container['cache'];
 
-    // TODO: consider url validation at this point
+    if (! Url::validate($url)) {
+        throw new \Exception(sprintf('Invalid URL: %s', $url));
+    }
+    $urlObject = Url::fromString($url);
+    $urlNormalized = $urlObject->normalize();
 
     $config = [
         'useragent'     => Configuration::getConfig('http', 'useragent'),
@@ -101,7 +105,7 @@ function getContents(
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
 
-    $response = $httpClient->request($url, $config);
+    $response = $httpClient->request($urlNormalized, $config);
 
     switch ($response->getCode()) {
         case 200:
