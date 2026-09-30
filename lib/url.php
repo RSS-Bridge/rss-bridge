@@ -40,12 +40,12 @@ final class Url
             ->withPort($parts['port'] ?? 80)
             ->withPath($parts['path'] ?? '/')
             ->withQueryString($parts['query'] ?? null);
-            // todo: add fragment
+            // Intentionally ignoring fragment
     }
 
     public static function validate(string $url): bool
     {
-        if (strlen($url) > 1500) {
+        if (strlen($url) > 2500) {
             return false;
         }
         $pattern = '#^https?://'   // scheme
@@ -112,7 +112,7 @@ final class Url
             throw new UrlException(sprintf('Path must start with forward slash: %s', $path));
         }
         if (str_starts_with($path, '//')) {
-            throw new UrlException(sprintf('Illegal path (too many forward slashes): %s', $path));
+            $path = '/' . ltrim($path, '/');
         }
         $clone = clone $this;
         $clone->path = $path;
@@ -124,6 +124,11 @@ final class Url
         $clone = clone $this;
         $clone->queryString = $queryString;
         return $clone;
+    }
+
+    public function normalize(): string
+    {
+        return $this->__toString();
     }
 
     public function __toString()
