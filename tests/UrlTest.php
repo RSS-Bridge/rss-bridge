@@ -27,6 +27,8 @@ class UrlTest extends TestCase
     {
         $urls = [
             'http://example.com' => 'http://example.com/',
+            'http://example.com//' => 'http://example.com/',
+            'http://example.com///' => 'http://example.com/',
             'https://example.com/?' => 'https://example.com/',
             'https://example.com/foo?' => 'https://example.com/foo',
             'http://example.com:80/' => 'http://example.com/',
@@ -34,12 +36,6 @@ class UrlTest extends TestCase
         foreach ($urls as $from => $to) {
             $this->assertSame($to, Url::fromString($from)->__toString());
         }
-    }
-
-    public function testIllegalPath()
-    {
-        $this->expectException(\UrlException::class);
-        Url::fromString('https://example.com//foo');
     }
 
     public function testMutation()
