@@ -32,6 +32,8 @@ class HeiseBridge extends FeedExpander
                 // → https://www.heise.de/thema
                 'heise online > Thema > Open Source'
                 => 'https://www.heise.de/thema/Open-Source.xml',
+                'heise online > Thema > Raumfahrt'
+                => 'https://www.heise.de/thema/Raumfahrt.xml',
                 'heise online Top-News'
                 => 'https://www.heise.de/rss/heise-top-atom.xml',
                 //'iMonitor – Internet-Störungen'
