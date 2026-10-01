@@ -3,7 +3,7 @@
 class FeedMergeBridge extends FeedExpander
 {
     const MAINTAINER = 'dvikan';
-    const NAME = 'FeedMerge';
+    const NAME = 'FeedMergeAdvanced';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge';
     const DESCRIPTION = <<<'TEXT'
         This bridge merges two or more feeds into a single feed. <br>
@@ -34,6 +34,16 @@ class FeedMergeBridge extends FeedExpander
             'feed_9' => ['name' => 'Feed url', 'type' => 'text'],
             'feed_10' => ['name' => 'Feed url', 'type' => 'text'],
             'limit' => self::LIMIT,
+            'validate_base_href' => [
+                'name' => 'Duplicates by url should validate base href',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ],
+            'validate_title' => [
+                'name' => 'Remove duplicates by title',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ],
         ]
     ];
 
@@ -42,6 +52,8 @@ class FeedMergeBridge extends FeedExpander
      */
     public function collectData()
     {
+        $validateBaseHref = (bool)($this->getInput('validate_base_href') ?: false);
+        $validateTitle = (bool)($this->getInput('validate_title') ?: false);
         $limit = (int)($this->getInput('limit') ?: 99);
         $feeds = [
             $this->getInput('feed_1'),
@@ -99,7 +111,23 @@ class FeedMergeBridge extends FeedExpander
         $items = [];
         foreach ($this->items as $item) {
             $uri = $item['uri'] ?? null;
+
             if ($uri) {
+                // exclude the base href from the uri when validating duplicates
+                if (!$validateBaseHref) {
+                    $parts = parse_url($uri);
+
+                    $uri = $parts['path'] ?? '/';
+
+                    if (isset($parts['query'])) {
+                        $uri .= '?' . $parts['query'];
+                    }
+
+                    if (isset($parts['fragment'])) {
+                        $uri .= '#' . $parts['fragment'];
+                    }
+                }
+
                 // Insert or override the existing duplicate
                 $items[$uri] = $item;
             } else {
@@ -109,16 +137,18 @@ class FeedMergeBridge extends FeedExpander
         }
         $this->items = array_values($items);
 
-        // Remove duplicates by title
-        $items = [];
-        foreach ($this->items as $item) {
-            $title = $item['title'] ?? null;
-            if ($title) {
-                // Insert or override the existing duplicate
-                $items[$title] = $item;
-            } else {
-                // The item doesn't have a title!
-                $items[] = $item;
+        if ($validateTitle) {
+            // Remove duplicates by title
+            $items = [];
+            foreach ($this->items as $item) {
+                $title = $item['title'] ?? null;
+                if ($title) {
+                    // Insert or override the existing duplicate
+                    $items[$title] = $item;
+                } else {
+                    // The item doesn't have a title!
+                    $items[] = $item;
+                }
             }
         }
         $this->items = array_values($items);
