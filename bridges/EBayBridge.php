@@ -76,6 +76,11 @@ class EBayBridge extends BridgeAbstract
             $new_listing_label->remove();
         }
 
+        // Remove screen-reader notices from listing titles.
+        foreach ($html->find('.s-card__title .clipped') as $notice) {
+            $notice->remove();
+        }
+
         $results = $html->find('ul.srp-results > li.s-card');
         foreach ($results as $listing) {
             $item = [];
