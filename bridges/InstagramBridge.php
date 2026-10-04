@@ -72,6 +72,8 @@ class InstagramBridge extends BridgeAbstract
     const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
     const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
+    private bool $fallbackMode = false;
+
     public function getCacheTimeout()
     {
         $customTimeout = $this->getOption('cache_timeout');
