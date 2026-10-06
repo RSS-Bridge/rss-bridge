@@ -570,13 +570,9 @@ function handleYoutube(string $string)
         } else {
             $embedUri = 'https://www.youtube.com/embed/' . $videoID;
         }
-
-        return sprintf(<<<EOD
-<iframe width="560" height="315" src="%s" title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin" allowfullscreen></iframe>'
-EOD
-         , $embedUri);
+        return render_template(__DIR__ . '/../templates/youtube-iframe.html.php', [
+            'url' => $embedUri,
+        ]);
     } else {
         $videoUri = 'https://www.youtube.com/watch?v=' . $videoID;
 
@@ -594,16 +590,11 @@ EOD
 
         $fallbackUri = $thumbnailJpegBaseUri . '/maxresdefault.jpg';
 
-        return sprintf(<<<EOD
-<a href="%s">
-    <picture>
-        <source srcset="%s" type="image/webp" referrerpolicy="no-referrer" />
-        <img srcset="%s" src="%s" alt="Video thumbnail" title="YouTube video thumbnail" referrerpolicy="no-referrer" />
-    </picture>
-</a>
-<p>
-<a href="%s">%s</a>
-</p>
-EOD, $videoUri, $webpSrcset, $jpegSrcset, $fallbackUri, $videoUri, $videoUri);
+        return render_template(__DIR__ . '/../templates/youtube-picture.html.php', [
+            'videoUri'      => $videoUri,
+            'webpSrcset'    => $webpSrcset,
+            'jpegSrcset'    => $jpegSrcset,
+            'fallbackUri'   => $fallbackUri,
+        ]);
     }
 }
