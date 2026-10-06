@@ -1,0 +1,4 @@
+#EXTM3U
+
+#EXTINF:Atom draft-07 snapshot
+http://example.org/audio/ph34r_my_podcast.mp3
