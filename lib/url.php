@@ -23,6 +23,14 @@ final class Url
     {
     }
 
+    public static function normalizeScheme(string $url): string
+    {
+        if (preg_match('#^https?://#', $url)) {
+            return $url;
+        }
+        return 'http://' . $url;
+    }
+
     public static function fromString(string $url): self
     {
         if (!self::validate($url)) {

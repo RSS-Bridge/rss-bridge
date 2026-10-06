@@ -372,3 +372,11 @@ $result = handleYoutube($iframe);
 ```
 
 [Defined in lib/html.php](https://github.com/RSS-Bridge/rss-bridge/blob/master/lib/html.php)
+
+## Url::normalizeScheme(string $url): string
+
+Prepend 'http://' scheme if absent.
+
+```php
+$url = Url::normalizeScheme($url);
+```
