@@ -46,4 +46,10 @@ class UrlTest extends TestCase
         $this->assertSame('http://example.com/qqq?foo=bar', (Url::fromString('http://example.com/qqq'))->withQueryString('foo=bar')->__toString());
         $this->assertSame('http://example.net/qqq?foo=bar', (Url::fromString('http://example.com/qqq?foo=bar'))->withHost('example.net')->__toString());
     }
+
+    public function testNormalizeScheme()
+    {
+        $this->assertSame('http://example.com', Url::normalizeScheme('http://example.com'));
+        $this->assertSame('http://example.com', Url::normalizeScheme('example.com'));
+    }
 }

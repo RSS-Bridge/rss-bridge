@@ -47,9 +47,12 @@ function getContents(
     /** @var CacheInterface $cache */
     $cache = $container['cache'];
 
+    $url = Url::normalizeScheme($url);
+
     if (! Url::validate($url)) {
         throw new \Exception(sprintf('Invalid URL: %s', $url));
     }
+
     $urlObject = Url::fromString($url);
     $urlNormalized = $urlObject->normalize();
 
