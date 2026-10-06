@@ -141,7 +141,8 @@ class MarktplaatsBridge extends BridgeAbstract
         }
         $url = 'https://www.marktplaats.nl/lrp/api/search?query=' . urlencode($this->getInput('q')) . $query;
         $jsonString = getSimpleHTMLDOM($url);
-        $jsonObj = json_decode($jsonString);
+        $jsonObj = Json::decode($jsonString, false);
+
         foreach ($jsonObj->listings as $listing) {
             if (!$excludeGlobal || $listing->location->distanceMeters >= 0) {
                 $item = [];
@@ -164,7 +165,7 @@ class MarktplaatsBridge extends BridgeAbstract
                 }
                 if (!is_null($this->getInput('r'))) {
                     if ($this->getInput('r')) {
-                        $item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing) . "<br />$url";
+                        $item['content'] .= "<br />\n<br />\n<br />\n<pre>" . Json::encode($listing) . "</pre><br />$url";
                     }
                 }
                 $item['content'] .= "<br>\n<br>\nPrice: " . $listing->priceInfo->priceCents / 100;
@@ -174,7 +175,7 @@ class MarktplaatsBridge extends BridgeAbstract
                 }
                 if (!is_null($this->getInput('r'))) {
                     if ($this->getInput('r')) {
-                        $item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing);
+                        $item['content'] .= "<br />\n<br />\n<br />\n<pre>" . Json::encode($listing) . "</pre>\n";
                     }
                 }
                 $this->items[] = $item;
