@@ -39,7 +39,12 @@ class GithubClient
         return array_map([$this, 'map'], $pulls);
     }
 
-    public function fetchComments(string $owner, string $repo, int $id): array
+    public function fetchPullRequestComments(string $owner, string $repo, int $id): array
+    {
+        return $this->fetchIssueComments($owner, $repo, $id);
+    }
+
+    public function fetchIssueComments(string $owner, string $repo, int $id): array
     {
         $comments = $this->fetch(sprintf('/repos/%s/%s/issues/%s/comments', $owner, $repo, $id));
 
