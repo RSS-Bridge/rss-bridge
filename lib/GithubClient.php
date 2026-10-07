@@ -55,11 +55,11 @@ class GithubClient
     {
         $cacheKey = 'github_rate_limit';
         if ($this->cache->get($cacheKey)) {
-            $this->logger->info(sprintf('Internal github rate limit'));
+            $this->logger->info(sprintf('github: Internal github rate limit'));
             throwRateLimitException(sprintf('Internal github rate limit'));
         }
 
-        $this->logger->debug(sprintf('github_client->fetch(%s)', $url));
+        $this->logger->info(sprintf('github: github_client->fetch(%s)', $url));
 
         try {
             $response = getContents(self::BASE . $url, [], [], true);
@@ -70,10 +70,10 @@ class GithubClient
             $reset      = $response->getHeader('x-ratelimit-reset');
             $resource   = $response->getHeader('x-ratelimit-resource');
 
-            $this->logger->info(sprintf('limit=%s, remaining=%s, used=%s, reset=%s', $limit, $remaining, $used, $reset));
+            $this->logger->info(sprintf('github: limit=%s, remaining=%s, used=%s, reset=%s', $limit, $remaining, $used, $reset));
         } catch (HttpException $e) {
             if (in_array($e->getCode(), [403, 429])) {
-                $this->logger->debug(sprintf('REAL github rate limit'));
+                $this->logger->info(sprintf('github: REAL github rate limit'));
                 $this->cache->set($cacheKey, true, 60 * 60);
                 throwRateLimitException(sprintf('REAL github rate limit'));
             }
