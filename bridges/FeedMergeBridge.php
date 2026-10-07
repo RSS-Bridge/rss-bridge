@@ -3,7 +3,7 @@
 class FeedMergeBridge extends FeedExpander
 {
     const MAINTAINER = 'dvikan';
-    const NAME = 'FeedMergeAdvanced';
+    const NAME = 'FeedMerge';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge';
     const DESCRIPTION = <<<'TEXT'
         This bridge merges two or more feeds into a single feed. <br>
