@@ -39,11 +39,6 @@ class FeedMergeBridge extends FeedExpander
                 'type' => 'checkbox',
                 'defaultValue' => false,
             ],
-            'validate_title' => [
-                'name' => 'Remove duplicates by title',
-                'type' => 'checkbox',
-                'defaultValue' => false,
-            ],
         ]
     ];
 
@@ -53,7 +48,6 @@ class FeedMergeBridge extends FeedExpander
     public function collectData()
     {
         $validateBaseHref = (bool)($this->getInput('validate_base_href') ?: false);
-        $validateTitle = (bool)($this->getInput('validate_title') ?: false);
         $limit = (int)($this->getInput('limit') ?: 99);
         $feeds = [
             $this->getInput('feed_1'),
@@ -137,20 +131,19 @@ class FeedMergeBridge extends FeedExpander
         }
         $this->items = array_values($items);
 
-        if ($validateTitle) {
-            // Remove duplicates by title
-            $items = [];
-            foreach ($this->items as $item) {
-                $title = $item['title'] ?? null;
-                if ($title) {
-                    // Insert or override the existing duplicate
-                    $items[$title] = $item;
-                } else {
-                    // The item doesn't have a title!
-                    $items[] = $item;
-                }
+        // Remove duplicates by title
+        $items = [];
+        foreach ($this->items as $item) {
+            $title = $item['title'] ?? null;
+            if ($title) {
+                // Insert or override the existing duplicate
+                $items[$title] = $item;
+            } else {
+                // The item doesn't have a title!
+                $items[] = $item;
             }
         }
+    
         $this->items = array_values($items);
 
         $this->items = array_slice($this->items, 0, $limit);
