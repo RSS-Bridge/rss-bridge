@@ -49,10 +49,18 @@ class GitHubPullRequestBridge extends BridgeAbstract
 
         $owner = $this->getInput('u');
         $repo = $this->getInput('p');
+        $id = $this->getInput('i');
+
+        if (! $repo) {
+            return;
+        }
 
         switch ($this->queriedContext) {
             case 'Project Pull Requests':
                 $this->items = $client->fetchPullRequests($owner, $repo);
+                break;
+            case 'Pull Request comments':
+                $this->items = $client->fetchPullRequestComments($owner, $repo, $id);
                 break;
         }
     }

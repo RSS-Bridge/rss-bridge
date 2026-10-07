@@ -56,7 +56,7 @@ class GithubIssueBridge extends BridgeAbstract
                 $this->items = $client->fetchIssues($owner, $repo);
                 break;
             case 'Issue comments':
-                $this->items = $client->fetchComments($owner, $repo, $id);
+                $this->items = $client->fetchIssueComments($owner, $repo, $id);
                 break;
         }
     }
