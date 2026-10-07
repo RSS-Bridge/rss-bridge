@@ -82,7 +82,7 @@ class GithubClient
         return Json::decode($response->getBody());
     }
 
-    private static function map(array $issue): array
+    private function map(array $issue): array
     {
         return [
             'uri'           => $issue['html_url'],

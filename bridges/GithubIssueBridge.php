@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class GithubIssueBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'Pierre Mazière';
+    const MAINTAINER = 'dvikan';
     const NAME = 'Github Issue';
     const URI = 'https://github.com/';
     const CACHE_TIMEOUT = 3600 * 24; // 24h
