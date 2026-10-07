@@ -1,9 +1,12 @@
 <?php
 
-class GitHubPullRequestBridge extends GithubIssueBridge
+declare(strict_types=1);
+
+class GitHubPullRequestBridge extends BridgeAbstract
 {
     const NAME = 'GitHub Pull Request';
     const DESCRIPTION = 'Returns the pull request or comments of a pull request of a GitHub project';
+    const CACHE_TIMEOUT = 3600; // 1h
 
     const PARAMETERS = [
         'global' => [
@@ -24,9 +27,8 @@ class GitHubPullRequestBridge extends GithubIssueBridge
                 'type' => 'checkbox'
             ],
             'q' => [
-                'name' => 'Search Query',
-                'defaultValue' => 'is:pr is:open sort:created-desc',
-                'required' => true
+                'name' => 'NOT IN USE',
+                'required' => false,
             ]
         ],
         'Pull Request comments' => [
@@ -39,7 +41,17 @@ class GitHubPullRequestBridge extends GithubIssueBridge
         ]
     ];
 
-    const BRIDGE_OPTIONS = [0 => 'Project Pull Requests', 1 => 'Pull Request comments'];
-    const URL_PATH = 'pull';
-    const SEARCH_QUERY_PATH = 'pulls';
+    public function collectData()
+    {
+        $client = new GithubClient($this->cache, $this->logger);
+
+        $owner = $this->getInput('u');
+        $repo = $this->getInput('p');
+
+        switch ($this->queriedContext) {
+            case 'Project Pull Requests':
+                $this->items = $client->fetchPullRequests($owner, $repo);
+                break;
+        }
+    }
 }
