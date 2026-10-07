@@ -176,6 +176,14 @@ port = 11211
 
 ; --- Bridge specific configuration ------
 
+[GithubIssueBridge]
+; Personal access token (fine-grained or classic)
+token = ""
+
+[GitHubPullRequestBridge]
+; Personal access token (fine-grained or classic)
+token = ""
+
 [TelegramBridge]
 
 ; Max pages to fetch (1 page => 20 messages), min=1 max=100

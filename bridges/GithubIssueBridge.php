@@ -9,6 +9,11 @@ class GithubIssueBridge extends BridgeAbstract
     const URI = 'https://github.com/';
     const CACHE_TIMEOUT = 3600 * 24; // 24h
     const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
+    const CONFIGURATION = [
+        'token' => [
+            'required' => false,
+        ],
+    ];
 
     const PARAMETERS = [
         'global' => [
@@ -45,7 +50,7 @@ class GithubIssueBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $client = new GithubClient($this->cache, $this->logger);
+        $client = new GithubClient($this->cache, $this->logger, $this->getOption('token'));
 
         $owner = $this->getInput('u');
         $repo = $this->getInput('p');
