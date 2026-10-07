@@ -49,10 +49,14 @@ class GithubIssueBridge extends BridgeAbstract
 
         $owner = $this->getInput('u');
         $repo = $this->getInput('p');
+        $id = $this->getInput('i');
 
         switch ($this->queriedContext) {
             case 'Project Issues':
                 $this->items = $client->fetchIssues($owner, $repo);
+                break;
+            case 'Issue comments':
+                $this->items = $client->fetchComments($owner, $repo, $id);
                 break;
         }
     }
@@ -61,10 +65,14 @@ class GithubIssueBridge extends BridgeAbstract
     {
         $owner = $this->getInput('u');
         $repo = $this->getInput('p');
+        $id = $this->getInput('i');
 
         switch ($this->queriedContext) {
             case 'Project Issues':
                 return 'Project issues: github.com/' . $owner . '/' . $repo;
+
+            case 'Issue comments':
+                return 'Issue comments: github.com/' . $owner . '/' . $repo . '/issues/' . $id;
 
             default:
                 return parent::getName();
@@ -75,10 +83,14 @@ class GithubIssueBridge extends BridgeAbstract
     {
         $owner = $this->getInput('u');
         $repo = $this->getInput('p');
+        $id = $this->getInput('i');
 
         switch ($this->queriedContext) {
             case 'Project Issues':
                 return sprintf('https://github.com/%s/%s/issues', $owner, $repo);
+
+            case 'Issue comments':
+                return sprintf('https://github.com/%s/%s/issues/%s', $owner, $repo, $id);
 
             default:
                 return parent::getURI();

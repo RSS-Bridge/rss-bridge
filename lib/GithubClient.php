@@ -39,6 +39,13 @@ class GithubClient
         return array_map([$this, 'map'], $pulls);
     }
 
+    public function fetchComments(string $owner, string $repo, int $id): array
+    {
+        $comments = $this->fetch(sprintf('/repos/%s/%s/issues/%s/comments', $owner, $repo, $id));
+
+        return array_reverse(array_map([$this, 'map'], $comments));
+    }
+
     public function fetchRateLimit(): array
     {
         return $this->fetch('/rate_limit');
@@ -79,7 +86,7 @@ class GithubClient
     {
         return [
             'uri'           => $issue['html_url'],
-            'title'         => $issue['title'],
+            'title'         => $issue['title'] ?? null,
             'author'        => $issue['user']['login'],
             'timestamp'     => $issue['created_at'],
             'content'       => $issue['body'],
