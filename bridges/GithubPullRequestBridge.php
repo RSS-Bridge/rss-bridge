@@ -5,6 +5,7 @@ declare(strict_types=1);
 class GitHubPullRequestBridge extends BridgeAbstract
 {
     const NAME = 'GitHub Pull Request';
+    const URI = 'https://github.com/';
     const DESCRIPTION = 'Returns the pull request or comments of a pull request of a GitHub project';
     const CACHE_TIMEOUT = 3600; // 1h
 
