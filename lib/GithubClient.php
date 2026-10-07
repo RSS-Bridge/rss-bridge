@@ -13,11 +13,16 @@ class GithubClient
 
     private CacheInterface $cache;
     private Logger $logger;
+    private ?string $token;
 
-    public function __construct(CacheInterface $cache, Logger $logger)
-    {
+    public function __construct(
+        CacheInterface $cache,
+        Logger $logger,
+        ?string $token = null
+    ) {
         $this->cache = $cache;
         $this->logger = $logger;
+        $this->token = $token;
     }
 
     public function fetchIssues(string $owner, string $repo): array
@@ -66,8 +71,13 @@ class GithubClient
 
         $this->logger->info(sprintf('github: github_client->fetch(%s)', $url));
 
+        $headers = [];
+        if ($this->token) {
+            $headers[] = 'Authorization: Bearer ' . $this->token;
+        }
+
         try {
-            $response = getContents(self::BASE . $url, [], [], true);
+            $response = getContents(self::BASE . $url, $headers, [], true);
 
             $limit      = $response->getHeader('x-ratelimit-limit');
             $remaining  = $response->getHeader('x-ratelimit-remaining');
