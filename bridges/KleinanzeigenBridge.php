@@ -100,7 +100,7 @@ class KleinanzeigenBridge extends BridgeAbstract
                 $html = getSimpleHTMLDOM($this->getURI() . '/s-bestandsliste.html?userId=' . $this->getInput('userid') . '&pageNum=' . $i . '&sortingField=SORTING_DATE');
 
                 $foundItem = false;
-                foreach ($html->find('article.aditem') as $element) {
+                foreach ($html->find('article[data-adid]') as $element) {
                     $this->addItem($element);
                     $foundItem = true;
                 }
@@ -128,16 +128,26 @@ class KleinanzeigenBridge extends BridgeAbstract
 
                 $html = getSimpleHTMLDOM($searchUrl);
 
-                // end of list if returned page is not the expected one
-                if ($html->find('.pagination-current', 0)->plaintext != $page) {
+                if (!$this->collectSearchPage($html, $page)) {
                     break;
-                }
-
-                foreach ($html->find('ul#srchrslt-adtable article.aditem') as $element) {
-                    $this->addItem($element);
                 }
             }
         }
+    }
+
+    private function collectSearchPage($html, $page)
+    {
+        $currentPage = $html->find('.pagination-current, #pagination-container .cursor-default', 0);
+        // A single page of results has no pagination controls.
+        if (($currentPage && trim($currentPage->plaintext) != $page) || (!$currentPage && $page > 1)) {
+            return false;
+        }
+
+        $elements = $html->find('#srchrslt-adtable article[data-adid]');
+        foreach ($elements as $element) {
+            $this->addItem($element);
+        }
+        return count($elements) > 0;
     }
 
     private function addItem($element)
@@ -146,14 +156,39 @@ class KleinanzeigenBridge extends BridgeAbstract
 
         $item['content'] = '';
 
-        $json = $element->find('.aditem-image > script', 0);
+        $json = $element->find('script[type="application/ld+json"]', 0);
         if ($json) {
             $data = json_decode($json->innertext, true);
             $item['title'] = $data['title'];
-            $item['content'] .= '<div><p>' . $data['description'] . '</div></p></br>';
+            $item['content'] .= '<p>' . $data['description'] . '</p>';
         } else {
-            $item['title'] = $element->find('h2', 0)->plaintext;
-            $item['content'] .= $element->find('.aditem-main--middle--description');
+            $item['title'] = $element->find('h2, h3', 0)->plaintext;
+            $item['content'] .= $element->find('.aditem-main--middle--description', 0);
+        }
+
+        $calendar = $element->find('svg[data-title="calendarOutline"]', 0);
+        if ($element->find('h3', 0)) {
+            $location = $element->find('svg[data-title="locationOutline"]', 0);
+            if ($location) {
+                $item['content'] .= '<p>' . $location->parent()->plaintext . '</p>';
+            }
+            if ($calendar) {
+                $item['content'] .= '<p>' . $calendar->parent()->plaintext . '</p>';
+            }
+            foreach ($element->find('p') as $index => $paragraph) {
+                // The first paragraph is the short version of the JSON description.
+                if ($json && $index === 0) {
+                    continue;
+                }
+                foreach ($paragraph->find('.line-through') as $oldPrice) {
+                    $oldPrice->outertext = '<s>' . $oldPrice->innertext . '</s>';
+                }
+                if (str_contains(' ' . $paragraph->class . ' ', ' line-through ')) {
+                    $item['content'] .= '<s>' . $paragraph . '</s>';
+                } else {
+                    $item['content'] .= $paragraph;
+                }
+            }
         }
 
         if ($element->find('.aditem-main--top', 0)) {
@@ -172,12 +207,13 @@ class KleinanzeigenBridge extends BridgeAbstract
             $item['content'] .= $element->find('.aditem-main--bottom', 0);
         }
 
-        $item['content'] = sanitize($item['content']);
+        $item['content'] = sanitize($item['content'], ['script', 'iframe', 'input', 'form', 'svg']);
 
         $item['uid'] = $element->getAttribute('data-adid');
         $item['uri'] = urljoin($this->getURI(), $element->getAttribute('data-href'));
 
-        $dateString = trim($element->find('div.aditem-main--top--right', 0)->plaintext);
+        $date = $element->find('div.aditem-main--top--right', 0);
+        $dateString = trim($calendar ? $calendar->parent()->plaintext : ($date ? $date->plaintext : ''));
         if ($dateString) {
                 $dateString = str_ireplace(
                     ['Gestern', 'Heute'],
