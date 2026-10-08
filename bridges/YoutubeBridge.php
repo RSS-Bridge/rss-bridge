@@ -166,7 +166,10 @@ class YoutubeBridge extends BridgeAbstract
                 }
             } else {
                 // Fetch the xml feed
-                $html = $this->fetch($url_feed);
+                $html = $this->fetchFeed($url_feed);
+                if (!$html) {
+                    return;
+                }
                 $this->extractItemsFromXmlFeed($html);
             }
             $this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
@@ -197,8 +200,10 @@ class YoutubeBridge extends BridgeAbstract
             if ($item_count > 15 || $filterByDuration) {
                 $this->fetchItemsFromFromJsonData($jsonData);
             } else {
-                $xml = $this->fetch($url_feed);
-                $this->extractItemsFromXmlFeed($xml);
+                $xml = $this->fetchFeed($url_feed);
+                if ($xml) {
+                    $this->extractItemsFromXmlFeed($xml);
+                }
             }
             $this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
             usort($this->items, function ($item1, $item2) {
@@ -441,6 +446,19 @@ class YoutubeBridge extends BridgeAbstract
             return getSimpleHTMLDOMCached($url, $ttl, $header, [], true, true, DEFAULT_TARGET_CHARSET, $stripNewlines);
         }
         return getSimpleHTMLDOM($url, $header, [], true, true, DEFAULT_TARGET_CHARSET, $stripNewlines);
+    }
+
+    private function fetchFeed($url)
+    {
+        try {
+            return $this->fetch($url);
+        } catch (HttpException $e) {
+            // The feeds/videos.xml endpoint returns 404 intermittently, so return no items instead of an error
+            if ($e->getCode() === 404) {
+                return null;
+            }
+            throw $e;
+        }
     }
 
     private function extractJsonFromHtml($html)
