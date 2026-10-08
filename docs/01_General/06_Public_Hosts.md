@@ -23,6 +23,7 @@
 | ![](https://iplookup.flagfox.net/images/h16/US.png) | https://rb.vern.cc | ![](https://img.shields.io/website/https/rb.vern.cc.svg) | [@vern.cc](https://vern.cc/en/admin) | Hosted with Hetzner, US |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss.bloat.cat | ![](https://img.shields.io/website/https/rss.bloat.cat) | [@vlnst](https://bloat.cat/contact) | Hosted with Datalix, Germany |
 | ![](https://iplookup.flagfox.net/images/h16/CZ.png) | https://rssbridge.prenghy.org | ![](https://img.shields.io/website/https/rssbridge.prenghy.org.svg) | [@pprenghy](https://github.com/pprenghy) | Hosted with vpsFree, The Czech Republic |
+| ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://bridge.utilibre.org | ![](https://img.shields.io/website/https/bridge.utilibre.org) | [@mycelibre](https://github.com/mycelibre) | Hetzner, Germany; Cloudflare; curated bridges: Ars Technica, The Guardian, GitHub Trending |
 
 
 ## Inactive instances
