@@ -34,6 +34,11 @@ class FeedMergeBridge extends FeedExpander
             'feed_9' => ['name' => 'Feed url', 'type' => 'text'],
             'feed_10' => ['name' => 'Feed url', 'type' => 'text'],
             'limit' => self::LIMIT,
+            'validate_base_href' => [
+                'name' => 'Duplicates by url should validate base href',
+                'type' => 'checkbox',
+                'defaultValue' => false,
+            ],
         ]
     ];
 
@@ -42,6 +47,7 @@ class FeedMergeBridge extends FeedExpander
      */
     public function collectData()
     {
+        $validateBaseHref = (bool)($this->getInput('validate_base_href') ?: false);
         $limit = (int)($this->getInput('limit') ?: 99);
         $feeds = [
             $this->getInput('feed_1'),
@@ -99,7 +105,23 @@ class FeedMergeBridge extends FeedExpander
         $items = [];
         foreach ($this->items as $item) {
             $uri = $item['uri'] ?? null;
+
             if ($uri) {
+                // exclude the base href from the uri when validating duplicates
+                if (!$validateBaseHref) {
+                    $parts = parse_url($uri);
+
+                    $uri = $parts['path'] ?? '/';
+
+                    if (isset($parts['query'])) {
+                        $uri .= '?' . $parts['query'];
+                    }
+
+                    if (isset($parts['fragment'])) {
+                        $uri .= '#' . $parts['fragment'];
+                    }
+                }
+
                 // Insert or override the existing duplicate
                 $items[$uri] = $item;
             } else {
@@ -121,6 +143,7 @@ class FeedMergeBridge extends FeedExpander
                 $items[] = $item;
             }
         }
+    
         $this->items = array_values($items);
 
         $this->items = array_slice($this->items, 0, $limit);
