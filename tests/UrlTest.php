@@ -9,18 +9,17 @@ use Url;
 
 class UrlTest extends TestCase
 {
-    public function testBasicUsages()
+    public function testBasicUsage()
     {
-        $urls = [
-            'http://example.com/',
-            'http://example.com:9000/',
-            'https://example.com/',
-            'https://example.com/?foo',
-            'https://example.com/?foo=bar',
-        ];
-        foreach ($urls as $url) {
-            $this->assertSame($url, Url::fromString($url)->__toString());
-        }
+        $sut = Url::fromString('http://example.com/qqq?foo=bar');
+
+        $this->assertSame('http', $sut->getScheme());
+        $this->assertSame('example.com', $sut->getHost());
+        $this->assertSame('/qqq', $sut->getPath());
+        $this->assertSame('foo=bar', $sut->getQueryString());
+
+        $sut = Url::fromString('http://example.com/qqq');
+        $this->assertNull($sut->getQueryString());
     }
 
     public function testNormalization()
@@ -34,7 +33,7 @@ class UrlTest extends TestCase
             'http://example.com:80/' => 'http://example.com/',
         ];
         foreach ($urls as $from => $to) {
-            $this->assertSame($to, Url::fromString($from)->__toString());
+            $this->assertSame($to, Url::fromString($from)->normalize());
         }
     }
 

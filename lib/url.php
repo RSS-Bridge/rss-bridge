@@ -85,7 +85,7 @@ final class Url
         return $this->path;
     }
 
-    public function getQueryString(): string
+    public function getQueryString(): ?string
     {
         return $this->queryString;
     }
