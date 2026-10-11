@@ -109,16 +109,10 @@ class FeedMergeBridge extends FeedExpander
             if ($uri) {
                 // exclude the base href from the uri when validating duplicates
                 if (!$validateBaseHref) {
-                    $parts = parse_url($uri);
-
-                    $uri = $parts['path'] ?? '/';
-
-                    if (isset($parts['query'])) {
-                        $uri .= '?' . $parts['query'];
-                    }
-
-                    if (isset($parts['fragment'])) {
-                        $uri .= '#' . $parts['fragment'];
+                    $url = Url::fromString($uri);
+                    $uri = $url->getPath();
+                    if (($query = $url->getQueryString()) !== null) {
+                        $uri .= '?' . $query;
                     }
                 }
 
@@ -145,7 +139,6 @@ class FeedMergeBridge extends FeedExpander
         }
     
         $this->items = array_values($items);
-
         $this->items = array_slice($this->items, 0, $limit);
     }
 
