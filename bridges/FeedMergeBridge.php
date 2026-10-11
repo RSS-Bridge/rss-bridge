@@ -137,7 +137,6 @@ class FeedMergeBridge extends FeedExpander
                 $items[] = $item;
             }
         }
-    
         $this->items = array_values($items);
         $this->items = array_slice($this->items, 0, $limit);
     }
