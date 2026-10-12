@@ -37,8 +37,7 @@ class SQLiteCache implements CacheInterface
             $this->db = new \SQLite3($config['file']);
             $this->db->enableExceptions(true);
             $this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
-            // Consider uncommenting this to add an index on expiration
-            //$this->db->exec('CREATE INDEX idx_storage_updated ON storage (updated)');
+            $this->db->exec('CREATE INDEX idx_storage_updated ON storage (updated)');
         }
         $this->db->busyTimeout($config['timeout']);
 
@@ -53,7 +52,7 @@ class SQLiteCache implements CacheInterface
     {
         $cacheKey = $this->createCacheKey($key);
         $stmt = $this->db->prepare('SELECT value, updated FROM storage WHERE key = :key');
-        $stmt->bindValue(':key', $cacheKey);
+        $stmt->bindValue(':key', $cacheKey, \SQLITE3_BLOB);
         $result = $stmt->execute();
         if (!$result) {
             return $default;
@@ -79,16 +78,19 @@ class SQLiteCache implements CacheInterface
 
     public function set(string $key, $value, ?int $ttl = null): void
     {
+        if ($ttl === 0) {
+            return; // ttl is 0, do nothing
+        }
+
         $cacheKey = $this->createCacheKey($key);
         $blob = serialize($value);
-        $expiration = $ttl === null ? 0 : time() + $ttl;
+        $expiration = $ttl === null ? 0 : time() + $ttl; // if ttl not provided, store forever
         $stmt = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
-        $stmt->bindValue(':key', $cacheKey);
+        $stmt->bindValue(':key', $cacheKey, \SQLITE3_BLOB);
         $stmt->bindValue(':value', $blob, \SQLITE3_BLOB);
-        $stmt->bindValue(':updated', $expiration);
+        $stmt->bindValue(':updated', $expiration, \SQLITE3_INTEGER);
         try {
-            $result = $stmt->execute();
-            // Should $result->finalize() be called here?
+            $stmt->execute();
         } catch (\Exception $e) {
             $this->logger->warning(create_sane_exception_message($e));
             // Intentionally not rethrowing exception
@@ -97,10 +99,14 @@ class SQLiteCache implements CacheInterface
 
     public function delete(string $key): void
     {
-        $key = $this->createCacheKey($key);
+        $cacheKey = $this->createCacheKey($key);
         $stmt = $this->db->prepare('DELETE FROM storage WHERE key = :key');
-        $stmt->bindValue(':key', $key);
-        $result = $stmt->execute();
+        $stmt->bindValue(':key', $cacheKey, \SQLITE3_BLOB);
+        try {
+            $stmt->execute();
+        } catch (\Exception $e) {
+            $this->logger->warning(create_sane_exception_message($e));
+        }
     }
 
     public function prune(): void
@@ -108,9 +114,13 @@ class SQLiteCache implements CacheInterface
         if (!$this->config['enable_purge']) {
             return;
         }
-        $stmt = $this->db->prepare('DELETE FROM storage WHERE updated <= :now');
-        $stmt->bindValue(':now', time());
-        $result = $stmt->execute();
+        $stmt = $this->db->prepare('DELETE FROM storage WHERE updated > 0 AND updated <= :now');
+        $stmt->bindValue(':now', time(), \SQLITE3_INTEGER);
+        try {
+            $stmt->execute();
+        } catch (\Exception $e) {
+            $this->logger->warning(create_sane_exception_message($e));
+        }
     }
 
     public function clear(): void

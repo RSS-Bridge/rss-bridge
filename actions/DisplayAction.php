@@ -55,7 +55,7 @@ class DisplayAction implements ActionInterface
 
         if ($response->getCode() === 200) {
             $ttl = $request->get('_cache_timeout');
-            if (Configuration::getConfig('cache', 'custom_timeout') && $ttl) {
+            if (Configuration::getConfig('cache', 'custom_timeout') && isset($ttl)) {
                 $ttl = (int) $ttl;
             } else {
                 $ttl = $bridge->getCacheTimeout();

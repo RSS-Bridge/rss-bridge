@@ -68,7 +68,7 @@ const URI           // URI to the target website of the bridge (default: empty)
 const DESCRIPTION   // A brief description of the Bridge (default: "No description provided")
 const MAINTAINER    // Name of the maintainer, i.e. your name on GitHub (default: "No maintainer")
 const PARAMETERS    // (optional) Definition of additional parameters (default: empty)
-const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in seconds (default: 3600)
+const CACHE_TIMEOUT // (optional) Defines the maximum duration for storing the cached feed result in seconds (default: 3600). 0 disables caching altogether. Note that this pertains to the feed itself, not the individual items you may want to save to/load from the cache using saveCacheValue()/loadCacheValue() helpers.
 ```
 
 <details><summary>Show example</summary><div>
@@ -528,6 +528,7 @@ Use these methods whenever possible instead of writing your own.
 ## saveCacheValue
 
 Within the context of the current bridge, stores a value by key in the cache.
+Optionally specifies the cache duration in seconds for the key.
 The value can later be retrieved with [loadCacheValue](#loadcachevalue).
 
 ```php
@@ -546,7 +547,6 @@ public function collectData()
 ## loadCacheValue
 
 Within the context of the current bridge, loads a value by key from cache.
-Optionally specifies the cache duration for the key.
 Returns `null` if the key doesn't exist or the value is expired.
 
 ```php

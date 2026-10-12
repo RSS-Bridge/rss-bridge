@@ -2,7 +2,7 @@
 
 class AppleAppStoreBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'captn3m0';
+    const MAINTAINER = 'NohamR';
     const NAME = 'Apple App Store';
     const URI = 'https://apps.apple.com/';
     const CACHE_TIMEOUT = 3600; // 1h
@@ -27,7 +27,7 @@ class AppleAppStoreBridge extends BridgeAbstract
                 'Web'   => 'web',
                 'Apple TV'  => 'appletv',
             ],
-            'defaultValue'  => 'iphone',
+            'defaultValue'  => 'mac',
         ],
         'country'   => [
             'name'  => 'Store Country',
@@ -106,52 +106,49 @@ class AppleAppStoreBridge extends BridgeAbstract
         }
     }
 
-    private function getHtml()
-    {
-        $url = $this->makeHtmlUrl();
-        $this->debugLog(sprintf('Fetching HTML from: %s', $url));
-
-        return getSimpleHTMLDOM($url);
-    }
-
-    private function getJWTToken()
-    {
-        $html = $this->getHtml();
-        $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
-
-        if (!$meta || !isset($meta->content)) {
-            throw new \Exception('JWT token not found in page content');
-        }
-
-        $decoded_content = urldecode($meta->content);
-        $this->debugLog('Found meta tag content');
-
-        try {
-            $decoded_json = Json::decode($decoded_content);
-        } catch (\Exception $e) {
-            throw new \Exception(sprintf('Failed to parse JSON from meta tag: %s', $e->getMessage()));
-        }
-
-        if (!isset($decoded_json['MEDIA_API']['token'])) {
-            throw new \Exception('Token field not found in JSON structure');
-        }
-
-        $token = $decoded_json['MEDIA_API']['token'];
-        $this->debugLog('Successfully extracted JWT token');
-        return $token;
-    }
-
     private function getAppData()
     {
-        $token = $this->getJWTToken();
+        // Fetch the HTML page to find the JS bundle URL
+        $url = $this->makeHtmlUrl();
+        $this->debugLog(sprintf('Fetching HTML page for token extraction: %s', $url));
+        $content = getContents($url);
+
+        // Extract the JS bundle path, e.g. /assets/index~BMeKnrDH8T.js
+        $matches = [];
+        if (!preg_match('#<script type="module" crossorigin src="(/assets/index~[^"]+\.js)"></script>#', $content, $matches)) {
+            throw new \Exception('Failed to locate JS bundle tag for token extraction');
+        }
+
+        $jsPath = $matches[1];
+        $jsUrl = 'https://apps.apple.com' . $jsPath;
+        $this->debugLog(sprintf('Fetching JS bundle for token extraction: %s', $jsUrl));
+
+        // Fetch the JS bundle where the JWT is embedded
+        $jsContent = getContents($jsUrl);
+
+        // Find the JWT inside a const assignment, e.g.
+        // const SOME_NAME = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6.XXXX.YYYY";
+        // Match a const assignment that looks like a JWT
+        // eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6 decodes to '{"alg":"ES256","typ":"JWT","kid"'
+        $tokenMatches = [];
+        // phpcs:disable Generic.Files.LineLength
+        if (!preg_match('~const\s+\w+\s*=\s*[\'\"](eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)[\'\"]~', $jsContent, $tokenMatches)) {
+            throw new \Exception('Failed to extract JWT token from JS bundle');
+        }
+        // phpcs:enable Generic.Files.LineLength
+        $token = $tokenMatches[1];
+        $this->debugLog('Successfully extracted JWT token from JS bundle: ' . $token);
 
         $url = $this->makeJsonUrl();
         $this->debugLog(sprintf('Fetching data from API: %s', $url));
 
         $headers = [
+            'accept: */*',
             'Authorization: Bearer ' . $token,
+            'cache-control: no-cache',
             'Origin: https://apps.apple.com',
-            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer: https://apps.apple.com/',
+            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36w',
         ];
 
         $content = getContents($url, $headers);
