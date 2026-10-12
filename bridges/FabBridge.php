@@ -10,7 +10,7 @@ class FabBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = static::URI . '/i/listings/search?is_discounted=1&is_free=1';
+        $url = static::URI . '/i/blades/free_content_blade';
 
         $header = [
             'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0',
@@ -23,20 +23,16 @@ class FabBridge extends BridgeAbstract
         $json = getContents($url, $header);
         $json = json_decode($json);
 
-        foreach ($json->results as $item) {
-            $thumbnail = $item->thumbnails[0]->mediaUrl;
-            $itemurl = static::URI . '/listings/' . $item->uid;
-
-            $itemapiurl = static::URI . '/i/listings/' . $item->uid;
-            $itemjson = getContents($itemapiurl, $header);
-            $itemjson = json_decode($itemjson);
+        foreach ($json->tiles as $item) {
+            $thumbnail = $item->listing->thumbnails[0]->mediaUrl;
+            $itemurl = static::URI . '/listings/' . $item->listing->uid;
 
             $this->items[] = [
-                'title' => $item->title,
-                'author' => $item->user->sellerName,
+                'title' => $item->listing->title,
+                'author' => $item->listing->user->sellerName,
                 'uri' => $itemurl,
-                'timestamp' => strtotime($item->lastUpdatedAt),
-                'content' => '<a href="' . $itemurl . '"><img src="' . $thumbnail . '"></a>' . $itemjson->description,
+                'timestamp' => strtotime($item->listing->lastUpdatedAt),
+                'content' => '<a href="' . $itemurl . '"><img src="' . $thumbnail . '"></a>' . $item->listing->description,
             ];
         }
     }

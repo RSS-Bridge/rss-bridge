@@ -31,11 +31,16 @@ class MemcachedCache implements CacheInterface
 
     public function set(string $key, $value, $ttl = null): void
     {
-        $expiration = $ttl === null ? 0 : time() + $ttl;
+        if ($ttl === 0) {
+            return; // TTL is 0, do nothing
+        }
+
+        $expiration = $ttl === null ? 0 : time() + $ttl; // if ttl not provided, store forever
         $result = $this->conn->set($key, $value, $expiration);
         if ($result === false) {
             $this->logger->warning('Failed to store an item in memcached', [
                 'key'           => $key,
+                'resultCode'    => $this->conn->getResultCode(),
                 'code'          => $this->conn->getLastErrorCode(),
                 'message'       => $this->conn->getLastErrorMessage(),
                 'number'        => $this->conn->getLastErrorErrno(),

@@ -9,6 +9,7 @@ than the bridge maintainer intended.
 In these cases the client may specify a custom cache timeout to prevent loading contents
 from cache earlier (or later).
 
-This option can be activated by setting the [`cache.custom_timeout`](08_Custom_Configuration.md#custom_timeout) option to `true`.
-When enabled each bridge receives an additional parameter `Cache timeout in seconds`
-that can be set to any value.
+This option can be activated by setting the [`cache.custom_timeout`](08_Custom_Configuration.md#custom_timeout)
+option to `true`. When enabled each bridge receives an additional parameter
+`Cache timeout in seconds` that can be set to any value. Setting the value to
+0 will altogether disable caching of that feed.
