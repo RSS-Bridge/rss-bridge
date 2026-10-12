@@ -11,17 +11,17 @@ class CMetropolitanaBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = getContents('https://api.carrismetropolitana.pt/v2/alerts');
+        $json = getContents('https://go.tmlmobilidade.pt/hub/api/v1/alerts');
 
         $data = Json::decode($json);
 
-        foreach ($data as $entry) {
+        foreach ($data['data'] as $entry) {
             $item = [];
 
-            $item['uri'] = self::URI . '/alerts/' . $entry['alert_id'];
-            $item['title'] = $entry['header_text']['translation'][0]['text'];
-            $item['timestamp'] = $entry['active_period'][0]['start'];
-            $item['content'] = $entry['description_text']['translation'][0]['text'];
+            $item['uri'] = self::URI . '/alerts/' . $entry['_id'];
+            $item['title'] = $entry['title'];
+            $item['timestamp'] = (int) ($entry['active_period_start_date'] / 1000);
+            $item['content'] = $entry['description'];
 
             $this->items[] = $item;
         }
