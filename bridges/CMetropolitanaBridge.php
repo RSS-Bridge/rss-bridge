@@ -21,7 +21,7 @@ class CMetropolitanaBridge extends BridgeAbstract
             $item['uri'] = self::URI . '/alerts/' . $entry['_id'];
             $item['title'] = $entry['title'];
             $item['timestamp'] = (int) ($entry['active_period_start_date'] / 1000);
-            $item['content'] = $entry['description_text'];
+            $item['content'] = $entry['description'];
 
             $this->items[] = $item;
         }
