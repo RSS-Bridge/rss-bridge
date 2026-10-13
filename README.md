@@ -283,6 +283,7 @@ Browse http://localhost:3000/
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 [![Deploy to Cloudron](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/com.rssbridgeapp.cloudronapp.html)
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=rssbridge)
+[![Deploy to ZopDay](https://zop.dev/deploytozopday-inkhard.svg)](https://zop.dev/zopday/app/deploy?image=rssbridge/rss-bridge:latest&port=80&name=rss-bridge&utm_source=github&utm_medium=one_click&utm_content=rss-bridge)
 
 The Heroku quick deploy currently does not work. It might work if you fork this repo and
 modify the `repository` in `scalingo.json`. See https://github.com/RSS-Bridge/rss-bridge/issues/2688
