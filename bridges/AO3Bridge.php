@@ -6,7 +6,7 @@ class AO3Bridge extends BridgeAbstract
     const URI = 'https://archiveofourown.org/';
     const CACHE_TIMEOUT = 1800;
     const DESCRIPTION = 'Returns works or chapters from Archive of Our Own';
-    const MAINTAINER = 'Obsidienne';
+    const MAINTAINER = 'Phantop';
     const PARAMETERS = [
         'List' => [
             'url' => [
@@ -55,6 +55,43 @@ class AO3Bridge extends BridgeAbstract
     ];
     private $title;
 
+    private function getContentsWithFallback($url, $headers)
+    {
+        $mirrors = [
+            'https://insecure.archiveofourown.org/',
+            'https://staging.archiveofourown.org/',
+            'https://archive.transformativeworks.org',
+            'https://archiveofourown.gay',
+            'https://secure.ao3.org/',
+            'https://ao3-mirror.cc/',
+            'https://dry-water-e911.ao365.workers.dev/',
+            'https://mute-disk-cf7e.ao33.workers.dev/',
+        ];
+        $urls = [$url];
+        foreach ($mirrors as $mirror) {
+            $urls[] = preg_replace(
+                '#^https?://archiveofourown\.org#',
+                $mirror,
+                $url
+            );
+        }
+
+        $lastException = null;
+        foreach ($urls as $url) {
+            try {
+                return getContents($url, $headers);
+            } catch (HttpException $e) {
+                $lastException = $e;
+            }
+        }
+
+        if ($lastException) {
+            throw $lastException;
+        }
+
+        throw new \Exception('Failed to fetch URL');
+    }
+
     public function collectData()
     {
         switch ($this->queriedContext) {
@@ -80,7 +117,7 @@ class AO3Bridge extends BridgeAbstract
         $headers = [
             "useragent: rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"
         ];
-        $response = getContents($url, $headers);
+        $response = $this->getContentsWithFallback($url, $headers);
 
         $html = \str_get_html($response);
         $html = defaultLinkTo($html, self::URI);
@@ -150,7 +187,10 @@ class AO3Bridge extends BridgeAbstract
                         $url = $html->find('ol.index.group > li > a', -1)->href;
                         break;
                 }
-                $response = getContents($url, $headers);
+                try {
+                    $response = $this->getContentsWithFallback($url, $headers);
+                } catch (HttpException $e) {
+                }
 
                 $html = \str_get_html($response);
                 $html = defaultLinkTo($html, self::URI);
