@@ -46,15 +46,6 @@ class YouTubeFeedExpanderBridge extends FeedExpander
             return $icon;
         }
 
-        if ($this->getInput('channel') != null) {
-            $html = getSimpleHTMLDOMCached($this->getURI());
-            $thumbnail = $html->find('[itemprop="thumbnailUrl"]', 0);
-            if ($thumbnail) {
-                $this->saveCacheValue($cacheKey, $thumbnail->href);
-                return $thumbnail->href;
-            }
-        }
-
         return parent::getIcon();
     }
 
