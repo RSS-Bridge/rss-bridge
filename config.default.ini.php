@@ -43,10 +43,10 @@ max_file_size = 10000000
 [http]
 
 ; Operation timeout in seconds
-timeout = 5
+timeout = 3
 
 ; Operation retry count in case of curl error
-retries = 1
+retries = 0
 
 ; Curl user agent
 ; This is already set by curl-impersonate, which comes included as default 
@@ -56,6 +56,12 @@ retries = 1
 
 ; Max http response size in MB
 max_filesize = 20
+
+; 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+allow_private_addresses = false
+
+; 0.0.0.0/8, 169.254.0.0/16, 127.0.0.0/8, 240.0.0.0/4
+allow_reserved_addresses = false
 
 [cache]
 

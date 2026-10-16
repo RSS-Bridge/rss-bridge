@@ -61,6 +61,7 @@ function getContents(
         'timeout'       => Configuration::getConfig('http', 'timeout'),
         'retries'       => Configuration::getConfig('http', 'retries'),
         'curl_options'  => $curlOptions,
+        'dns'           => [],
     ];
 
     $httpHeadersNormalized = [];
@@ -108,6 +109,28 @@ function getContents(
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
 
+    $host = $urlObject->getHost();
+    if (Ipv4Address::validate($host)) {
+        $ip = Ipv4Address::fromString($host);
+    } else {
+        // Prevent DNS-rebinding
+        $records = fetch_dns_record($host);
+        $record = $records[array_rand($records)];
+        $ip = $record['ip'];
+        $ip = Ipv4Address::fromString($ip);
+        $config['dns'] = [
+            sprintf('%s:%s:%s', $host, $urlObject->getPort(), $ip),
+        ];
+    }
+
+    if (! Configuration::getConfig('http', 'allow_private_addresses') && $ip->isPrivate()) {
+        throw new Exception(sprintf('Private addresses disallowed: %s (%s)', $ip, $host));
+    }
+
+    if (! Configuration::getConfig('http', 'allow_reserved_addresses') && $ip->isReserved()) {
+        throw new Exception(sprintf('Reserved addresses disallowed: %s (%s)', $ip, $host));
+    }
+
     $response = $httpClient->request($urlNormalized, $config);
 
     switch ($response->getCode()) {
@@ -128,8 +151,7 @@ function getContents(
         case 301:
         case 302:
         case 303:
-            // todo: cache
-            break;
+            throw HttpException::fromResponse($response, $url);
         case 304:
             // Not Modified
             $response = $response->withBody($cachedResponse->getBody());
