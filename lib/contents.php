@@ -128,8 +128,7 @@ function getContents(
         case 301:
         case 302:
         case 303:
-            // todo: cache
-            break;
+            throw HttpException::fromResponse($response, $url);
         case 304:
             // Not Modified
             $response = $response->withBody($cachedResponse->getBody());

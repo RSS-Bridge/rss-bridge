@@ -78,7 +78,6 @@ final class CurlHttpClient implements HttpClient
             'if_not_modified_since' => null,
             'retries' => 0,
             'max_filesize' => null,
-            'max_redirections' => 5,
         ];
 
         // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
@@ -98,7 +97,7 @@ final class CurlHttpClient implements HttpClient
         } else {
             $defaultConfig['useragent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0';
             curl_setopt($ch, CURLOPT_HEADER, false);
-            $headers = array_merge($defaultHeaders, $config['headers']);
+            $headers = array_merge($defaultHeaders, $config['headers'] ?? []);
             $config = array_merge($defaultConfig, $config);
             $config['headers'] = $headers;
         }
@@ -113,8 +112,7 @@ final class CurlHttpClient implements HttpClient
             curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, $config['max_redirections']);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
         curl_setopt($ch, CURLOPT_ENCODING, '');
         curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
