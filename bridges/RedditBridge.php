@@ -3,7 +3,10 @@
 /**
  * This bridge does NOT use reddit's official rss feeds.
  *
- * This bridge uses reddit's json api: https://old.reddit.com/search.json?q=
+ * This bridge uses Reddit's JSON API.
+ *
+ * It uses the legacy unauthenticated API by default.
+ * Configure both `app_id` and `app_secret` to use OAuth2 instead.
  */
 class RedditBridge extends BridgeAbstract
 {
@@ -12,6 +15,15 @@ class RedditBridge extends BridgeAbstract
     const URI = 'https://old.reddit.com';
     const CACHE_TIMEOUT = 60 * 60 * 2; // 2h
     const DESCRIPTION = 'Return hot submissions from Reddit';
+
+    const CONFIGURATION = [
+        'app_id' => [
+            'required' => false,
+        ],
+        'app_secret' => [
+            'required' => false,
+        ],
+    ];
 
     const PARAMETERS = [
         'global' => [
@@ -112,6 +124,8 @@ class RedditBridge extends BridgeAbstract
         ]
     ];
 
+    private ?RedditClient $redditClient = null;
+
     public function collectData()
     {
         $forbiddenKey = 'reddit_forbidden';
@@ -167,17 +181,14 @@ class RedditBridge extends BridgeAbstract
 
         $search = $this->getInput('search');
         $flareInput = $this->getInput('f');
+        $min_score = $this->getInput('score');
+        $min_comments = $this->getInput('min_comments');
 
         foreach ($subreddits as $subreddit) {
-            $version = 'v0.0.2';
-            $useragent = "rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)";
-            $url = self::createUrl($search, $flareInput, $subreddit, $user, $section, $time, $this->queriedContext);
+            $parameters = self::createSearchParameters($search, $flareInput, $subreddit, $user, $section, $time, $this->queriedContext);
+            $response = $this->getRedditClient()->search($parameters);
 
-            $response = getContents($url, ['User-Agent: ' . $useragent], [], true);
-
-            $json = $response->getBody();
-
-            $parsedJson = Json::decode($json, false);
+            $parsedJson = Json::decode($response->getBody(), false);
 
             foreach ($parsedJson->data->children as $post) {
                 if ($post->kind == 't1' && !$comments) {
@@ -186,8 +197,6 @@ class RedditBridge extends BridgeAbstract
 
                 $data = $post->data;
 
-                $min_score = $this->getInput('score');
-                $min_comments = $this->getInput('min_comments');
                 if ($min_score >= 0 && $min_comments >= 0) {
                     if ($data->num_comments < $min_comments || $data->score < $min_score) {
                         continue;
@@ -299,7 +308,7 @@ class RedditBridge extends BridgeAbstract
         });
     }
 
-    public static function createUrl($search, $flareInput, $subreddit, bool $user, $section, $time, $queriedContext): string
+    private static function createSearchParameters($search, $flareInput, $subreddit, bool $user, $section, $time, $queriedContext): array
     {
         $keywords = '';
 
@@ -316,13 +325,12 @@ class RedditBridge extends BridgeAbstract
             $flair = '';
         }
         $name = trim($subreddit);
-        $query = [
+        return [
             'q' => $keywords . $flair . ($user ? 'author:' : 'subreddit:') . $name,
             'sort' => $section,
             'include_over_18' => 'on',
             't' => $time
         ];
-        return 'https://old.reddit.com/search.json?' . http_build_query($query);
     }
 
     public function getIcon()
@@ -396,5 +404,17 @@ class RedditBridge extends BridgeAbstract
         } else {
             return null;
         }
+    }
+
+    private function getRedditClient(): RedditClient
+    {
+        if ($this->redditClient === null) {
+            $this->redditClient = new RedditClient(
+                $this->cache,
+                $this->getOption('app_id'),
+                $this->getOption('app_secret')
+            );
+        }
+        return $this->redditClient;
     }
 }
