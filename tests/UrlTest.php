@@ -15,11 +15,15 @@ class UrlTest extends TestCase
 
         $this->assertSame('http', $sut->getScheme());
         $this->assertSame('example.com', $sut->getHost());
+        $this->assertSame(80, $sut->getPort());
         $this->assertSame('/qqq', $sut->getPath());
         $this->assertSame('foo=bar', $sut->getQueryString());
 
         $sut = Url::fromString('http://example.com/qqq');
         $this->assertNull($sut->getQueryString());
+
+        $sut = Url::fromString('https://example.com/qqq?foo=bar');
+        $this->assertSame(443, $sut->getPort());
     }
 
     public function testNormalization()

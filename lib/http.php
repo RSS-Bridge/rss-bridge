@@ -71,13 +71,14 @@ final class CurlHttpClient implements HttpClient
 
         $defaultConfig = [
             'useragent' => null,
-            'timeout' => 5,
+            'timeout' => 3,
             'headers' => [],
             'proxy' => null,
             'curl_options' => [],
             'if_not_modified_since' => null,
             'retries' => 0,
             'max_filesize' => null,
+            'dns' => [],
         ];
 
         // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
@@ -113,9 +114,14 @@ final class CurlHttpClient implements HttpClient
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
         curl_setopt($ch, CURLOPT_ENCODING, '');
         curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+        if ($config['dns']) {
+            curl_setopt($ch, CURLOPT_RESOLVE, $config['dns']);
+        }
 
         if ($config['max_filesize']) {
             // This option inspects the Content-Length header

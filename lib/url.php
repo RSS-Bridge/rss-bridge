@@ -43,9 +43,9 @@ final class Url
         }
 
         return (new self())
-            ->withScheme($parts['scheme'] ?? '')
+            ->withScheme($parts['scheme'])
             ->withHost($parts['host'])
-            ->withPort($parts['port'] ?? 80)
+            ->withPort($parts['port'] ?? ($parts['scheme'] === 'http' ? 80 : 443))
             ->withPath($parts['path'] ?? '/')
             ->withQueryString($parts['query'] ?? null);
             // Intentionally ignoring fragment
@@ -141,7 +141,7 @@ final class Url
 
     public function __toString()
     {
-        if ($this->port === 80) {
+        if (in_array($this->port, [80, 443])) {
             $port = '';
         } else {
             $port = ':' . $this->port;
