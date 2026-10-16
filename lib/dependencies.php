@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 $container = new Container();
 
+$container[TestAction::class] = function () {
+    return new TestAction();
+};
+
 $container[ConnectivityAction::class] = function ($c) {
     return new ConnectivityAction($c['bridge_factory']);
 };
