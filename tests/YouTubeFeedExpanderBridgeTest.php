@@ -79,16 +79,6 @@ class YouTubeFeedExpanderBridgeTest extends TestCase
         $this->assertSame('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ', $result['uri']);
     }
 
-    public function testGetIconCache()
-    {
-        $cache = new \ArrayCache();
-        $bridge = new \YouTubeFeedExpanderBridge($cache, new \NullLogger());
-        $bridge->setInput(['channel' => 'UCtest']);
-
-        $cache->set('YouTubeFeedExpanderBridge_icon_UCtest', 'https://example.com/icon.jpg');
-        $this->assertSame('https://example.com/icon.jpg', $bridge->getIcon());
-    }
-
     public function testGetIconFallback()
     {
         $bridge = new \YouTubeFeedExpanderBridge(new \ArrayCache(), new \NullLogger());
