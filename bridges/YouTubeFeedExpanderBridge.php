@@ -40,12 +40,6 @@ class YouTubeFeedExpanderBridge extends FeedExpander
 
     public function getIcon()
     {
-        $cacheKey = 'icon_' . $this->getInput('channel');
-        $icon = $this->loadCacheValue($cacheKey);
-        if ($icon) {
-            return $icon;
-        }
-
         return parent::getIcon();
     }
 
