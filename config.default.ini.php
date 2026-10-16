@@ -46,7 +46,7 @@ max_file_size = 10000000
 timeout = 5
 
 ; Operation retry count in case of curl error
-retries = 1
+retries = 0
 
 ; Curl user agent
 ; This is already set by curl-impersonate, which comes included as default 

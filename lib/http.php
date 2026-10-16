@@ -76,7 +76,7 @@ final class CurlHttpClient implements HttpClient
             'proxy' => null,
             'curl_options' => [],
             'if_not_modified_since' => null,
-            'retries' => 2,
+            'retries' => 0,
             'max_filesize' => null,
             'max_redirections' => 5,
         ];
