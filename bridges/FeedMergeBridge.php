@@ -34,6 +34,11 @@ class FeedMergeBridge extends FeedExpander
             'feed_9' => ['name' => 'Feed url', 'type' => 'text'],
             'feed_10' => ['name' => 'Feed url', 'type' => 'text'],
             'limit' => self::LIMIT,
+
+            'dedup_exclude_host' => [
+                'name' => 'Exclude URL host when de-duplicating',
+                'type' => 'checkbox',
+            ],
         ]
     ];
 
@@ -43,6 +48,8 @@ class FeedMergeBridge extends FeedExpander
     public function collectData()
     {
         $limit = (int)($this->getInput('limit') ?: 99);
+        $excludeHost = $this->getInput('dedup_exclude_host');
+
         $feeds = [
             $this->getInput('feed_1'),
             $this->getInput('feed_2'),
@@ -60,33 +67,12 @@ class FeedMergeBridge extends FeedExpander
         $feeds = array_filter($feeds);
 
         foreach ($feeds as $feed) {
-            if (count($feeds) > 1) {
-                // Allow one or more feeds to fail
-                try {
-                    $this->collectExpandableDatas($feed, 10);
-                } catch (HttpException $e) {
-                    $this->logger->warning(sprintf('Exception in FeedMergeBridge: %s', create_sane_exception_message($e)));
-                    // This feed item might be spammy. Considering dropping it.
-                    $this->items[] = [
-                        'title' => 'RSS-Bridge: ' . $e->getMessage(),
-                        // Give current time so it sorts to the top
-                        'timestamp' => time(),
-                    ];
-                    continue;
-                } catch (\Exception $e) {
-                    if (str_starts_with($e->getMessage(), 'Failed to parse xml')) {
-                        // Allow this particular exception from FeedExpander
-                        $this->logger->warning(sprintf('Exception in FeedMergeBridge: %s', create_sane_exception_message($e)));
-                        continue;
-                    }
-                    throw $e;
-                }
-            } else {
-                $this->collectExpandableDatas($feed, 10);
-            }
+            $this->collectExpandableDatas($feed, 10);
         }
 
-        // If $this->items is empty we should consider throw exception here
+        if (!$this->items) {
+            throw new Exception('Found zero items');
+        }
 
         // Sort by timestamp, uri, title in descending order
         usort($this->items, function ($a, $b) {
@@ -98,28 +84,20 @@ class FeedMergeBridge extends FeedExpander
         // Remove duplicates by url
         $items = [];
         foreach ($this->items as $item) {
-            $uri = $item['uri'] ?? null;
-            if ($uri) {
-                // Insert or override the existing duplicate
-                $items[$uri] = $item;
+            $url = Url::fromString($item['uri']);
+            if ($excludeHost) {
+                $key = $url->getPath() . $url->getQueryString();
             } else {
-                // The item doesn't have a uri!
-                $items[] = $item;
+                $key = $url->normalize();
             }
+            $items[$key] = $item;
         }
         $this->items = array_values($items);
 
-        // Remove duplicates by title
         $items = [];
+        // Remove duplicates by title
         foreach ($this->items as $item) {
-            $title = $item['title'] ?? null;
-            if ($title) {
-                // Insert or override the existing duplicate
-                $items[$title] = $item;
-            } else {
-                // The item doesn't have a title!
-                $items[] = $item;
-            }
+            $items[$item['title']] = $item;
         }
         $this->items = array_values($items);
 
