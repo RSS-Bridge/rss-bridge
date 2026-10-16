@@ -51,8 +51,6 @@ class TikTokBridge extends BridgeAbstract
                     $json = getContents('https://www.tiktok.com/oembed?url=' . $url);
                 } catch (HttpException $e) {
                     $attempts++;
-                    // Sleep 0.1s
-                    usleep(100000);
                     continue;
                 }
                 break;
