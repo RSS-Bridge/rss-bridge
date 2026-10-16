@@ -9,6 +9,9 @@ function fetch_dns_record(string $host): array
     if ($record === false) {
         throw new \Exception(sprintf('Failed to fetch dns record: %s', $host));
     }
+    if ($record === []) {
+        throw new \Exception(sprintf('Could not resolve host: %s', $host));
+    }
 
     return $record;
 }
