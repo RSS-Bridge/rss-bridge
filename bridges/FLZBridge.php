@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class FLZBridge extends BridgeAbstract
 {
     const NAME = 'Fränkische Landeszeitung';
@@ -266,30 +268,60 @@ class FLZBridge extends BridgeAbstract
     const LOGON_STATUS_URI = 'https://sso.flz.de/auth/logonstatus';
 
     /**
-     * The site throttles the RSS endpoint at about 6.5 requests per second
-     * with HTTP 429 and sends no Retry-After header. 5 requests per second
-     * ran 64 feeds in a row without a single 429.
+     * Requests to the RSS endpoint per refresh. The site throttles it with
+     * HTTP 429 and no Retry-After header; requests in quick succession were
+     * answered with 429 after 27 to 31 requests (October 2026). Feeds that do
+     * not fit wait for the next refresh, and after a 429 no further feed is
+     * requested in this refresh. There is no waiting, so a refresh takes a
+     * few seconds.
      */
-    const REQUEST_INTERVAL_S = 0.2;
-    const RATE_LIMIT_RETRIES = 3;
-    const RATE_LIMIT_BACKOFF_S = 1;
+    const MAX_FEED_REQUESTS = 25;
+
+    /**
+     * Article pages fetched per refresh for full text. An article that does
+     * not fit is left out of this refresh and comes complete with the next
+     * one, instead of appearing as a teaser first.
+     */
+    const MAX_ARTICLE_REQUESTS = 10;
+
+    /**
+     * Every feed is cached and fetched again after an interval that follows
+     * how often it gets new articles: an eighth of the average gap between
+     * them, between MIN_FEED_INTERVAL_S and MAX_FEED_INTERVAL_S. Most place
+     * feeds are quiet (October 2026: 66 of 104 places had at most one article
+     * a week), so they are fetched every few hours instead of at every
+     * refresh. The cache is shared by all feed URLs of an instance.
+     */
+    const MIN_FEED_INTERVAL_S = 1800;
+    const MAX_FEED_INTERVAL_S = 10800;
+    const FEED_CACHE_TTL = 259200;
+
+    /**
+     * Advertorial ids are remembered for a week, so an advertorial stays
+     * filtered after it has left the overview pages. The overview pages are
+     * checked at most every AD_CHECK_INTERVAL_S.
+     */
+    const AD_MEMORY_S = 604800;
+    const AD_CHECK_INTERVAL_S = 1800;
 
     /**
      * The response should be complete after DEADLINE_S, ahead of the 45 s
-     * fastcgi_read_timeout of the Docker image: an incomplete feed is better
-     * than a timeout. A request is only started with at least MIN_REQUEST_S
-     * left, and its curl timeout is capped to the time that is left. Feeds
-     * may use FEED_SHARE of the time, so that full text still gets some.
+     * fastcgi_read_timeout of the Docker image. A request is only started
+     * with at least MIN_REQUEST_S left, and its curl timeout is capped to the
+     * time that is left. Feeds may use FEED_SHARE of the time. With the
+     * request limits above the deadline only matters when flz.de is slow.
      */
     const DEADLINE_S = 42;
     const MIN_REQUEST_S = 3;
     const FEED_SHARE = 0.8;
 
     /**
-     * Complete article texts are kept this long, so that a refresh only
-     * fetches the article pages it has not seen yet.
+     * Complete article texts are kept for ARTICLE_CACHE_TTL. A teaser (FLZ+
+     * without entitlement, page not available) is kept for ARTICLE_RETRY_S
+     * and then tried again, so that a repaired login takes effect soon.
      */
-    const ARTICLE_CACHE_TTL = 21600;
+    const ARTICLE_CACHE_TTL = 259200;
+    const ARTICLE_RETRY_S = 3600;
 
     /**
      * After a failed login, no new attempt is made for this many seconds.
@@ -300,41 +332,47 @@ class FLZBridge extends BridgeAbstract
     const LOGIN_LOCK_TTL = 21600;
 
     private string $cookie = '';
+    private bool $loginTried = false;
 
     /** Why FLZ+ articles stay teasers. Empty if the login is confirmed. */
     private string $loginProblem = '';
 
     private float $started = 0.0;
     private float $runtime = 0.0;
-    private float $lastRequest = 0.0;
 
-    /** Feeds that stayed throttled or were skipped for lack of time. */
-    private array $skippedFeeds = [];
+    private int $feedRequests = 0;
+    private int $articleRequests = 0;
+    private bool $throttled = false;
+
+    /** Feeds that were due but have to wait for the next refresh. */
+    private array $postponedFeeds = [];
+    private int $postponedArticles = 0;
 
     public function collectData()
     {
         $this->started = microtime(true);
         $this->runtime = $this->availableRuntime();
 
-        $fulltext = (bool)$this->getInput('fulltext');
-        if ($fulltext) {
-            $this->login();
-        }
-
-        $ads = $this->getInput('filter_ads') ? $this->collectAds() : [];
         $feeds = $this->getFeeds();
+        $filterAds = (bool)$this->getInput('filter_ads');
+        $paths = array_keys($feeds);
+        if ($filterAds) {
+            array_unshift($paths, self::AD_SECTION);
+        }
+        $states = $this->refreshFeeds($paths);
+        $ads = $filterAds ? $this->collectAds($states[self::AD_SECTION]['items'] ?? []) : [];
 
         // An article usually appears in several feeds. Instead of dropping
         // the duplicate, its origin is added as another category.
         $items = [];
-        $fetched = 0;
+        $available = 0;
         foreach ($feeds as $path => $label) {
-            $entries = $this->collectFeed($path);
-            if ($entries === null) {
+            $state = $states[$path] ?? null;
+            if ($state === null || !$state['ok']) {
                 continue;
             }
-            $fetched++;
-            foreach ($entries as $item) {
+            $available++;
+            foreach ($state['items'] as $item) {
                 $id = $item['uid'];
                 if (isset($ads[$id])) {
                     continue;
@@ -348,7 +386,7 @@ class FLZBridge extends BridgeAbstract
             }
         }
 
-        if ($fetched === 0) {
+        if ($available === 0) {
             // An empty feed would look like a quiet day on flz.de.
             throwServerException(sprintf('None of the %d selected flz.de feeds could be fetched', count($feeds)));
         }
@@ -357,20 +395,30 @@ class FLZBridge extends BridgeAbstract
         $limit = (int)$this->getInput('limit');
         $items = array_slice($items, 0, $limit > 0 ? $limit : 50);
 
+        $fulltext = (bool)$this->getInput('fulltext');
         foreach ($items as $item) {
             if ($fulltext) {
-                $item['content'] = $this->collectFullContent($item);
+                $content = $this->collectFullContent($item);
+                if ($content === null) {
+                    continue;
+                }
+                $item['content'] = $content;
             }
             $this->items[] = $item;
         }
 
-        if ($this->skippedFeeds !== []) {
+        if ($this->throttled) {
             $this->logger->warning(sprintf(
-                'FLZ: %d of %d feeds are incomplete (throttled, or out of time after %.1f s): %s',
-                count($this->skippedFeeds),
-                count($feeds),
-                microtime(true) - $this->started,
-                implode(', ', $this->skippedFeeds)
+                'FLZ: throttled by flz.de (HTTP 429) after %d feed requests, %d due feeds stay on cached data',
+                $this->feedRequests,
+                count($this->postponedFeeds)
+            ));
+        } elseif ($this->postponedFeeds !== [] || $this->postponedArticles > 0) {
+            $this->logger->info(sprintf(
+                'FLZ: %d due feeds and %d articles wait for the next refresh: %s',
+                count($this->postponedFeeds),
+                $this->postponedArticles,
+                implode(', ', $this->postponedFeeds)
             ));
         }
     }
@@ -401,13 +449,15 @@ class FLZBridge extends BridgeAbstract
 
     public function detectParameters($url)
     {
-        $host = parse_url($url, PHP_URL_HOST);
-        $path = parse_url($url, PHP_URL_PATH);
-        if (!in_array($host, ['flz.de', 'www.flz.de'], true) || !is_string($path)) {
+        if (!Url::validate($url)) {
+            return null;
+        }
+        $url = Url::fromString($url);
+        if (!in_array(strtolower($url->getHost()), ['flz.de', 'www.flz.de'], true)) {
             return null;
         }
 
-        $segments = explode('/', trim($path, '/'));
+        $segments = explode('/', trim($url->getPath(), '/'));
         if (count($segments) === 1) {
             $field = array_search(strtolower($segments[0]), self::SECTIONS, true);
             return $field === false ? null : ['context' => self::CONTEXT, $field => 'on'];
@@ -419,7 +469,7 @@ class FLZBridge extends BridgeAbstract
     }
 
     /**
-     * Turns the form into the feeds to fetch, as path => display name. The
+     * Turns the form into the feeds to show, as path => display name. The
      * name ends up as a category on the article. If nothing is selected, all
      * sections are used, so that the feed does not stay empty unnoticed.
      */
@@ -507,18 +557,91 @@ class FLZBridge extends BridgeAbstract
     }
 
     /**
+     * Brings the cached feeds up to date as far as the request limit allows,
+     * the most overdue first. A feed state holds the items of the last
+     * successful fetch, the time of the last attempt and whether the feed
+     * ever answered.
+     *
+     * @return array path => state, or null for a feed that was never fetched
+     */
+    private function refreshFeeds(array $paths): array
+    {
+        $now = time();
+        $states = [];
+        $overdue = [];
+        foreach ($paths as $path) {
+            $state = $this->loadCacheValue($this->feedCacheKey($path));
+            $states[$path] = is_array($state) ? $state : null;
+            $overdue[$path] = INF;
+            if ($states[$path] !== null) {
+                $overdue[$path] = ($now - $state['fetched']) / $this->feedInterval($state['items'], $now);
+            }
+        }
+        // Sorting is stable: feeds never fetched keep the order of the form.
+        arsort($overdue);
+
+        foreach ($overdue as $path => $ratio) {
+            if ($ratio < 1) {
+                break;
+            }
+            if ($this->throttled || $this->feedRequests >= self::MAX_FEED_REQUESTS || !$this->hasTimeLeft(self::FEED_SHARE)) {
+                $this->postponedFeeds[] = $path;
+                continue;
+            }
+            $items = $this->collectFeed($path);
+            if ($items === null && $this->throttled) {
+                $this->postponedFeeds[] = $path;
+                continue;
+            }
+            $old = $states[$path];
+            $states[$path] = [
+                'fetched' => $now,
+                'ok' => $items !== null || ($old['ok'] ?? false),
+                'items' => $items ?? ($old['items'] ?? []),
+            ];
+            $this->saveCacheValue($this->feedCacheKey($path), $states[$path], self::FEED_CACHE_TTL);
+        }
+        return $states;
+    }
+
+    private function feedCacheKey(string $path): string
+    {
+        return 'feed_' . md5($path);
+    }
+
+    /**
+     * Seconds until a feed is due again, from the average gap between its
+     * articles up to now. A feed without articles is fetched rarely.
+     */
+    private function feedInterval(array $items, int $now): float
+    {
+        $timestamps = array_filter(array_column($items, 'timestamp'));
+        if ($timestamps === []) {
+            return (float)self::MAX_FEED_INTERVAL_S;
+        }
+        $gap = ($now - min($timestamps)) / count($timestamps);
+        return (float)min(self::MAX_FEED_INTERVAL_S, max(self::MIN_FEED_INTERVAL_S, $gap / 8));
+    }
+
+    /**
+     * Fetches and parses one feed. Errors are only logged: a single unknown
+     * place must not break the whole feed. HTTP 429 stops all further feed
+     * requests of this refresh.
+     *
      * @return array|null Items, or null if the feed could not be fetched
      */
     private function collectFeed(string $path): ?array
     {
-        $xml = $this->fetchFeed($path);
-        if ($xml === null) {
-            return null;
-        }
+        $this->feedRequests++;
         try {
+            $xml = $this->fetch(self::RSS_ENDPOINT . rawurlencode(base64_encode($path)));
             $feed = (new FeedParser())->parseFeed($xml);
         } catch (Exception $e) {
-            $this->logger->info(sprintf('FLZ: feed %s is not valid: %s', $path, $e->getMessage()));
+            if ($e instanceof HttpException && $e->getCode() === 429) {
+                $this->throttled = true;
+                return null;
+            }
+            $this->logger->info(sprintf('FLZ: feed %s not available: %s', $path, $e->getMessage()));
             return null;
         }
 
@@ -552,36 +675,6 @@ class FLZBridge extends BridgeAbstract
     }
 
     /**
-     * Fetches a feed. On HTTP 429 it retries with growing waits (1 s, 2 s,
-     * 4 s) as long as the time allows. Any other error is only logged: a
-     * single unknown place must not break the whole feed.
-     *
-     * @return string|null Raw XML, or null if the feed did not arrive
-     */
-    private function fetchFeed(string $path): ?string
-    {
-        $url = self::RSS_ENDPOINT . rawurlencode(base64_encode($path));
-        for ($attempt = 0; $this->hasTimeLeft(self::FEED_SHARE); $attempt++) {
-            try {
-                return $this->fetch($url);
-            } catch (Exception $e) {
-                $throttled = $e instanceof HttpException && $e->getCode() === 429;
-                if (!$throttled) {
-                    $this->logger->info(sprintf('FLZ: feed %s not available: %s', $path, $e->getMessage()));
-                    return null;
-                }
-            }
-            $backoff = self::RATE_LIMIT_BACKOFF_S * 2 ** $attempt;
-            if ($attempt === self::RATE_LIMIT_RETRIES || $this->secondsLeft(self::FEED_SHARE) - $backoff < self::MIN_REQUEST_S) {
-                break;
-            }
-            sleep($backoff);
-        }
-        $this->skippedFeeds[] = $path;
-        return null;
-    }
-
-    /**
      * Article links start with the title, which the site may still change,
      * and end with the id of the article. The id keeps an article
      * recognisable across feeds, overview pages and refreshes.
@@ -597,41 +690,51 @@ class FLZBridge extends BridgeAbstract
      * the class cat-ad-labeling or the label "PR-Veröffentlichung". The
      * article itself looks like editorial text.
      *
+     * @param array $adFeedItems Items of the feed sonderthemen
      * @return array Article id as key
      */
-    private function collectAds(): array
+    private function collectAds(array $adFeedItems): array
     {
-        $ads = [];
-        foreach ($this->collectFeed(self::AD_SECTION) ?? [] as $item) {
-            $ads[$item['uid']] = true;
+        $now = time();
+        $known = $this->loadCacheValue('ads');
+        if (!is_array($known)) {
+            $known = ['checked' => 0, 'ids' => []];
+        }
+        foreach ($adFeedItems as $item) {
+            $known['ids'][$item['uid']] = $now;
         }
 
-        foreach ([self::URI, self::URI . 'orte'] as $url) {
-            if (!$this->hasTimeLeft(self::FEED_SHARE)) {
-                break;
-            }
-            try {
-                $dom = str_get_html($this->fetch($url));
-            } catch (Exception $e) {
-                $this->logger->info(sprintf('FLZ: overview %s not available: %s', $url, $e->getMessage()));
-                continue;
-            }
-
-            foreach ($dom->find('*') as $node) {
-                if (!str_ends_with($node->tag, '-article-preview')) {
+        if ($now - $known['checked'] >= self::AD_CHECK_INTERVAL_S) {
+            foreach ([self::URI, self::URI . 'orte'] as $url) {
+                if (!$this->hasTimeLeft(self::FEED_SHARE)) {
+                    break;
+                }
+                try {
+                    $dom = str_get_html($this->fetch($url));
+                } catch (Exception $e) {
+                    $this->logger->info(sprintf('FLZ: overview %s not available: %s', $url, $e->getMessage()));
                     continue;
                 }
-                $html = $node->innertext;
-                if (!str_contains($html, 'cat-ad-labeling') && !str_contains($html, 'PR-Ver')) {
-                    continue;
-                }
-                $link = $node->find('a[href*=/cnt-id-]', 0);
-                if ($link) {
-                    $ads[$this->articleId(urljoin(self::URI, $link->href))] = true;
+                $known['checked'] = $now;
+                foreach ($dom->find('*') as $node) {
+                    if (!str_ends_with($node->tag, '-article-preview')) {
+                        continue;
+                    }
+                    $html = $node->innertext;
+                    if (!str_contains($html, 'cat-ad-labeling') && !str_contains($html, 'PR-Ver')) {
+                        continue;
+                    }
+                    $link = $node->find('a[href*=/cnt-id-]', 0);
+                    if ($link) {
+                        $known['ids'][$this->articleId(urljoin(self::URI, (string)$link->href))] = $now;
+                    }
                 }
             }
         }
-        return $ads;
+
+        $known['ids'] = array_filter($known['ids'], fn($seen) => $now - $seen < self::AD_MEMORY_S);
+        $this->saveCacheValue('ads', $known, self::AD_MEMORY_S);
+        return $known['ids'];
     }
 
     /**
@@ -639,22 +742,35 @@ class FLZBridge extends BridgeAbstract
      * cannot be fetched or the paywall is still shown, the teaser stays and a
      * visible notice says so, so that a short text is not mistaken for a
      * short article.
+     *
+     * @return string|null Content, or null if the article has to wait for
+     *                     the next refresh
      */
-    private function collectFullContent(array $item): string
+    private function collectFullContent(array $item): ?string
     {
         $image = $item['enclosures'][0] ?? '';
 
-        // Only complete articles are cached, never a paywall teaser, so that
-        // a repaired login takes effect at the next refresh. An article
-        // republished with a new date gets a new key and is fetched again.
+        // An article republished with a new date gets a new key and is
+        // fetched again.
         $cacheKey = 'article_' . md5($item['uri'] . '|' . ($item['timestamp'] ?? ''));
-        $body = $this->loadCacheValue($cacheKey);
-        if (is_string($body) && $body !== '') {
-            return $this->buildContent($image, $body);
+        $cached = $this->loadCacheValue($cacheKey);
+        if (is_string($cached) && $cached !== '') {
+            return $this->buildContent($image, $cached);
+        }
+        if (is_array($cached) && isset($cached['teaser'])) {
+            return $cached['teaser'];
         }
 
-        if (!$this->hasTimeLeft()) {
-            return $this->buildNotice('Volltext übersprungen, das Zeitbudget ist aufgebraucht.') . $item['content'];
+        if ($this->articleRequests >= self::MAX_ARTICLE_REQUESTS || !$this->hasTimeLeft()) {
+            $this->postponedArticles++;
+            return null;
+        }
+        $this->articleRequests++;
+
+        // The login only pays off once an article page is actually fetched.
+        if (!$this->loginTried) {
+            $this->loginTried = true;
+            $this->login();
         }
 
         try {
@@ -662,11 +778,11 @@ class FLZBridge extends BridgeAbstract
             $body = $this->extractBody(str_get_html($html));
         } catch (Exception $e) {
             $this->logger->info(sprintf('FLZ: article %s not available: %s', $item['uri'], $e->getMessage()));
-            return $this->buildNotice('Volltext konnte nicht abgerufen werden (Artikelseite nicht erreichbar).') . $item['content'];
+            return $this->rememberTeaser($cacheKey, 'Volltext konnte nicht abgerufen werden (Artikelseite nicht erreichbar).', $item['content']);
         }
 
         if ($body === '') {
-            return $this->buildNotice('Volltext auf der Artikelseite nicht gefunden.') . $item['content'];
+            return $this->rememberTeaser($cacheKey, 'Volltext auf der Artikelseite nicht gefunden.', $item['content']);
         }
 
         if (!$this->isPaywalled($html)) {
@@ -675,7 +791,18 @@ class FLZBridge extends BridgeAbstract
         }
 
         $reason = $this->loginProblem ?: 'Die Anmeldung ist aktiv, flz.de liefert den Artikel dennoch nicht frei (Abo abgelaufen oder Artikel nicht im Abo enthalten).';
-        return $this->buildNotice('FLZ+-Artikel nur als Teaser: ' . $reason) . $this->buildContent($image, $body);
+        return $this->rememberTeaser($cacheKey, 'FLZ+-Artikel nur als Teaser: ' . $reason, $this->buildContent($image, $body));
+    }
+
+    /**
+     * Keeps a teaser with its notice for ARTICLE_RETRY_S, so that the article
+     * page is not requested again at every refresh.
+     */
+    private function rememberTeaser(string $cacheKey, string $notice, string $content): string
+    {
+        $teaser = $this->buildNotice($notice) . $content;
+        $this->saveCacheValue($cacheKey, ['teaser' => $teaser], self::ARTICLE_RETRY_S);
+        return $teaser;
     }
 
     /**
@@ -744,7 +871,7 @@ class FLZBridge extends BridgeAbstract
         if ($this->loadCacheValue('login_failed') !== null) {
             $this->loginProblem = sprintf(
                 'Die letzte FLZ+-Anmeldung schlug fehl, weitere Versuche sind für bis zu %d Stunden ausgesetzt. Zugangsdaten und Abo prüfen.',
-                self::LOGIN_LOCK_TTL / 3600
+                intdiv(self::LOGIN_LOCK_TTL, 3600)
             );
             return;
         }
@@ -774,7 +901,7 @@ class FLZBridge extends BridgeAbstract
         }
 
         $reason = !empty($status['message']) ? (string)$status['message'] : 'Sitzung nicht angemeldet';
-        $this->logger->warning(sprintf('FLZ: login failed (%s), pausing for %d hours', $reason, self::LOGIN_LOCK_TTL / 3600));
+        $this->logger->warning(sprintf('FLZ: login failed (%s), pausing for %d hours', $reason, intdiv(self::LOGIN_LOCK_TTL, 3600)));
         $this->saveCacheValue('login_failed', time(), self::LOGIN_LOCK_TTL);
         $this->loginProblem = sprintf('FLZ+-Anmeldung fehlgeschlagen (%s). Zugangsdaten und Abo prüfen.', $reason);
         $this->cookie = '';
@@ -789,10 +916,10 @@ class FLZBridge extends BridgeAbstract
     private function postLogin(string $username, string $password): string
     {
         // The form sets the cookies HASSOSESSID and __sso_csrf and posts to itself.
-        $response = getContents(self::SSO_URI, [], [CURLOPT_FOLLOWLOCATION => false] + $this->requestOptions(), true);
+        $response = $this->fetchWithoutRedirect(self::SSO_URI, []);
         $jar = $this->mergeCookies($response);
 
-        $response = getContents(self::SSO_URI, [
+        $response = $this->fetchWithoutRedirect(self::SSO_URI, [
             'Content-Type: application/x-www-form-urlencoded',
             'Origin: https://sso.flz.de',
             'Referer: ' . self::SSO_URI,
@@ -806,8 +933,7 @@ class FLZBridge extends BridgeAbstract
                 // Without the named submit button the SSO reports a generic failure.
                 'logon' => 'Anmeldung',
             ]),
-            CURLOPT_FOLLOWLOCATION => false,
-        ] + $this->requestOptions(), true);
+        ]);
         $jar = $this->mergeCookies($response, $jar);
 
         $url = self::SSO_URI;
@@ -817,11 +943,29 @@ class FLZBridge extends BridgeAbstract
             if (!$this->isFlzHost($url)) {
                 break;
             }
-            $response = getContents($url, ['Cookie: ' . $jar], [CURLOPT_FOLLOWLOCATION => false] + $this->requestOptions(), true);
+            $response = $this->fetchWithoutRedirect($url, ['Cookie: ' . $jar]);
             $jar = $this->mergeCookies($response, $jar);
             $location = $response->getHeader('location');
         }
         return $jar;
+    }
+
+    /**
+     * Request that stops at a redirect and returns it, because the login
+     * needs the cookies of every step. Since October 2026 getContents()
+     * throws on 3xx; the HttpException still carries the response.
+     */
+    private function fetchWithoutRedirect(string $url, array $headers, array $curlOptions = []): Response
+    {
+        try {
+            return getContents($url, $headers, [CURLOPT_FOLLOWLOCATION => false] + $curlOptions + $this->requestOptions(), true);
+        } catch (HttpException $e) {
+            $response = $e->response ?? null;
+            if ($response instanceof Response && in_array($e->getCode(), [301, 302, 303, 307, 308], true)) {
+                return $response;
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -858,17 +1002,10 @@ class FLZBridge extends BridgeAbstract
     }
 
     /**
-     * GET request that keeps the minimum distance to the previous request
-     * and sends the session cookie only to flz.de.
+     * GET request that sends the session cookie only to flz.de.
      */
     private function fetch(string $url): string
     {
-        $wait = self::REQUEST_INTERVAL_S - (microtime(true) - $this->lastRequest);
-        if ($wait > 0) {
-            usleep((int)($wait * 1000000));
-        }
-        $this->lastRequest = microtime(true);
-
         $headers = [
             'Accept-Language: de-DE,de;q=0.9',
             'Referer: ' . self::URI,
@@ -881,7 +1018,9 @@ class FLZBridge extends BridgeAbstract
 
     /**
      * Caps the curl timeout so that a request ends before the deadline,
-     * including the retry the HTTP client makes after a network error.
+     * including the retries the HTTP client makes after a network error.
+     * The connect timeout gets the same value: the HTTP client allows only
+     * 1 s, and connecting to flz.de sometimes takes longer.
      */
     private function requestOptions(): array
     {
@@ -891,7 +1030,8 @@ class FLZBridge extends BridgeAbstract
         if ($configured > 0) {
             $timeout = min($timeout, $configured);
         }
-        return [CURLOPT_TIMEOUT => max(1, $timeout)];
+        $timeout = max(1, $timeout);
+        return [CURLOPT_TIMEOUT => $timeout, CURLOPT_CONNECTTIMEOUT => $timeout];
     }
 
     /**
@@ -901,8 +1041,11 @@ class FLZBridge extends BridgeAbstract
      */
     private function isFlzHost(string $url): bool
     {
-        $host = parse_url($url, PHP_URL_HOST);
-        return is_string($host) && ($host === 'flz.de' || str_ends_with($host, '.flz.de'));
+        if (!Url::validate($url)) {
+            return false;
+        }
+        $host = strtolower(Url::fromString($url)->getHost());
+        return $host === 'flz.de' || str_ends_with($host, '.flz.de');
     }
 
     /**
