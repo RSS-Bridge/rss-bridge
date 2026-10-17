@@ -57,6 +57,9 @@ retries = 0
 ; Max http response size in MB
 max_filesize = 20
 
+; Whether to follow location (careful: enabling this allows SSRF attack)
+follow = false;
+
 ; 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
 allow_private_addresses = false
 

@@ -61,6 +61,7 @@ function getContents(
         'timeout'       => Configuration::getConfig('http', 'timeout'),
         'retries'       => Configuration::getConfig('http', 'retries'),
         'curl_options'  => $curlOptions,
+        'follow'        => Configuration::getConfig('http', 'follow'),
         'dns'           => [],
     ];
 
