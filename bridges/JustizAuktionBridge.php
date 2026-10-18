@@ -15,7 +15,7 @@ class JustizAuktionBridge extends BridgeAbstract
         $dom = getSimpleHTMLDOM(self::URI);
         foreach ($dom->find('ul.auktionen li[id^="rlaid"]') as $entry) {
             $this->items[] = [
-                'title' => $entry->find('h5 a', 0)->plaintext,
+                'title' => html_entity_decode($entry->find('h5 a', 0)->plaintext, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
                 'uri' => self::URI_LINKS . $entry->find('h5 a', 0)->href,
                 'content' => '<img src="' . self::URI_LINKS . $entry->find('li.image img', 0)->src . '"><br>'
                     . $entry->find('div.paddingRight1em p', 0)->plaintext
