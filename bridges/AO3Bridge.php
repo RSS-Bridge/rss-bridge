@@ -113,9 +113,8 @@ class AO3Bridge extends BridgeAbstract
      */
     private function collectList($url)
     {
-        $version = 'v0.0.1';
         $headers = [
-            "useragent: rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"
+            "User-Agent: rss-bridge bot (https://github.com/RSS-Bridge/rss-bridge)"
         ];
         $response = $this->getContentsWithFallback($url, $headers);
 
@@ -216,9 +215,8 @@ class AO3Bridge extends BridgeAbstract
      */
     private function collectWork($url)
     {
-        $version = 'v0.0.1';
         $headers = [
-            "useragent: rss-bridge $version (https://github.com/RSS-Bridge/rss-bridge)"
+            "User-Agent: rss-bridge bot (https://github.com/RSS-Bridge/rss-bridge)"
         ];
         $response = getContents($url . '/navigate', $headers);
 
