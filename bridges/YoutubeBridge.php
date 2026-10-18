@@ -439,7 +439,8 @@ class YoutubeBridge extends BridgeAbstract
 
     private function fetch($url, bool $cache = false)
     {
-        $header = ['Accept-Language: en-US'];
+        // "SOCS=CAI" pre-accepts all cookies to avoid redirects to "consent.youtube.com".
+        $header = ['Accept-Language: en-US', 'Cookie: SOCS=CAI'];
         $ttl = 86400 * 3; // 3d
         $stripNewlines = false;
         if ($cache) {
