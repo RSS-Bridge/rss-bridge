@@ -76,6 +76,28 @@ class AppleAppStoreBridge extends BridgeAbstract
         return sprintf('https://apps.apple.com/%s/app/id%s', $country, $id);
     }
 
+    // Apple answers /{country}/app/id{id} with a 301 to the slugged URL,
+    // which getContents() does not follow. The lookup API returns that URL.
+    private function resolveHtmlUrl()
+    {
+        $id = $this->getInput('id');
+        $country = strtolower($this->getInput('country'));
+        $lookupUrl = sprintf('https://itunes.apple.com/lookup?id=%s&country=%s', urlencode($id), urlencode($country));
+
+        try {
+            $json = Json::decode(getContents($lookupUrl));
+            $url = $json['results'][0]['trackViewUrl'] ?? null;
+            if ($url) {
+                $this->debugLog(sprintf('Resolved canonical URL via lookup API: %s', $url));
+                return $url;
+            }
+        } catch (\Exception $e) {
+            $this->debugLog(sprintf('Lookup API failed: %s', $e->getMessage()));
+        }
+
+        return $this->makeHtmlUrl();
+    }
+
     private function getHtmlRequestHeaders()
     {
         return [
@@ -105,7 +127,7 @@ class AppleAppStoreBridge extends BridgeAbstract
 
     private function getAppData()
     {
-        $url = $this->makeHtmlUrl();
+        $url = $this->resolveHtmlUrl();
         $this->debugLog(sprintf('Fetching HTML page for serialized data extraction: %s', $url));
         $content = getContents($url, $this->getHtmlRequestHeaders());
 
