@@ -28,6 +28,11 @@ RUN set -xe && \
       # for patching libcurl-impersonate
       patchelf \
       && \
+    # pull in security updates for packages already in the base image
+    apt-get upgrade --yes && \
+    # refuse to build with a PHP vulnerable to CVE-2026-109618 / CVE-2026-109619 (fixed in DLA-4848-1)
+    php_version=$(dpkg-query --showformat='${Version}' --show php8.2-fpm) && \
+    dpkg --compare-versions "$php_version" ge 8.2.35-1~deb12u1 && \
     # install curl-impersonate library
     curlimpersonate_version=1.2.5 && \
     { \
