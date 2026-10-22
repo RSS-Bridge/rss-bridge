@@ -6,6 +6,11 @@ class HtmlFormat extends FormatAbstract
 
     public function render(): string
     {
+        // Defense in depth for the raw item content rendered below:
+        // same-origin scripts must never run even if a bridge output slips
+        // past break_annoying_html_tags().
+        header("Content-Security-Policy: default-src 'none'; img-src * data:; media-src *; frame-src *; object-src *; style-src 'unsafe-inline'");
+
         // This query string is url encoded
         $queryString = $_SERVER['QUERY_STRING'];
 
