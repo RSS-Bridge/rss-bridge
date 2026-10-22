@@ -65,6 +65,8 @@ class FLZBridge extends BridgeAbstract
     ];
 
     const AD_FEED = '/sonderthemen';
+    // Links start with the title, which may change, and end with the article id.
+    const ARTICLE_ID = '~/cnt-id-([\w-]+)~';
     const RSS_ENDPOINT = 'https://www.flz.de/api/content/public/rss?path=';
     const SSO_URI = 'https://sso.flz.de/auth/authorize?client_id=pscontent-portal&redirect_uri=https://www.flz.de/abo_service';
     const LOGON_STATUS_URI = 'https://sso.flz.de/auth/logonstatus';
@@ -227,8 +229,7 @@ class FLZBridge extends BridgeAbstract
             $teaser = trim($entry['content']);
             $items[] = array_filter([
                 'uri' => trim($entry['uri']),
-                // Links start with the title, which may change, and end with the article id.
-                'uid' => preg_match('~/cnt-id-([\w-]+)~', $entry['uri'], $match) ? $match[1] : trim($entry['uri']),
+                'uid' => preg_match(self::ARTICLE_ID, $entry['uri'], $match) ? $match[1] : trim($entry['uri']),
                 'title' => trim($entry['title']),
                 'content' => $this->withImage($image, $teaser === '' ? '' : '<p>' . e($teaser) . '</p>'),
                 'enclosures' => $image === '' ? null : [$image],
@@ -238,11 +239,16 @@ class FLZBridge extends BridgeAbstract
         return $items;
     }
 
-    // Advertorials are listed in the feed sonderthemen or labelled on the overview pages.
+    /**
+     * Advertorials are listed in the feed sonderthemen or labelled on the overview pages.
+     * Labelled ones are remembered for 30 days: "Anzeige" is not in sonderthemen and leaves
+     * the overview pages long before the article leaves the place feeds.
+     */
     private function collectAds(array $adFeedItems): array
     {
-        $ads = array_fill_keys(array_column($adFeedItems, 'uid'), true);
-        foreach ([self::URI, self::URI . 'orte'] as $url) {
+        $ads = array_filter((array)$this->loadCacheValue('ads'), fn($seen) => $seen > time() - 30 * 86400);
+        // New articles only come with refreshed feeds; otherwise the overview pages can wait.
+        foreach ($this->feedRequests ? [self::URI, self::URI . 'orte'] : [] as $url) {
             try {
                 $dom = str_get_html($this->fetch($url));
             } catch (Exception $e) {
@@ -252,13 +258,14 @@ class FLZBridge extends BridgeAbstract
             foreach ($dom->find('*') as $node) {
                 if (str_ends_with($node->tag, '-article-preview') && preg_match('~cat-ad-labeling|PR-Ver~', $node->innertext)) {
                     $link = $node->find('a[href*=/cnt-id-]', 0);
-                    if ($link && preg_match('~/cnt-id-([\w-]+)~', (string)$link->href, $match)) {
-                        $ads[$match[1]] = true;
+                    if ($link && preg_match(self::ARTICLE_ID, (string)$link->href, $match)) {
+                        $ads[$match[1]] = time();
                     }
                 }
             }
         }
-        return $ads;
+        $this->saveCacheValue('ads', $ads, 30 * 86400);
+        return $ads + array_fill_keys(array_column($adFeedItems, 'uid'), time());
     }
 
     /**
