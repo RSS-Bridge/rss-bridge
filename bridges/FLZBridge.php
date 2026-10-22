@@ -90,7 +90,7 @@ class FLZBridge extends BridgeAbstract
         $states = $this->refreshFeeds(array_merge($filterAds ? [self::AD_FEED] : [], array_keys($feeds)));
         $ads = $filterAds ? $this->collectAds($states[self::AD_FEED]['items'] ?? []) : [];
 
-        if (!array_filter(array_intersect_key($states, $feeds), fn($state) => $state['ok'] ?? false)) {
+        if (!array_filter(array_intersect_key($states, $feeds))) {
             throwServerException(sprintf('None of the %d selected flz.de feeds could be fetched', count($feeds)));
         }
 
@@ -183,17 +183,13 @@ class FLZBridge extends BridgeAbstract
             if ($ratio < 1) {
                 break;
             }
-            if ($this->throttled || $this->feedRequests >= self::MAX_FEED_REQUESTS) {
+            $items = $this->throttled || $this->feedRequests >= self::MAX_FEED_REQUESTS ? null : $this->collectFeed($path);
+            // A feed that was not fetched or failed stays due and is tried again next time.
+            if ($items === null) {
                 $this->postponedFeeds++;
                 continue;
             }
-            $items = $this->collectFeed($path);
-            if ($this->throttled) {
-                $this->postponedFeeds++;
-                continue;
-            }
-            $old = $states[$path];
-            $states[$path] = ['fetched' => time(), 'ok' => $items !== null || ($old['ok'] ?? false), 'items' => $items ?? $old['items'] ?? []];
+            $states[$path] = ['fetched' => time(), 'items' => $items];
             $this->saveCacheValue('feed_' . md5($path), $states[$path], 3 * 86400);
         }
         return $states;
