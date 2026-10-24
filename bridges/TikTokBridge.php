@@ -32,8 +32,6 @@ class TikTokBridge extends BridgeAbstract
 
         $videos = $html->find('div[data-e2e=common-videoList-VideoContainer]');
 
-        // The embed page contains the video details (description, cover, author) as JSON state.
-        // The oEmbed API no longer returns title, thumbnail_url or author_unique_id.
         $embeddedVideos = [];
         $stateScript = $html->find('script[id=__FRONTITY_CONNECT_STATE__]', 0);
         if ($stateScript) {
@@ -49,8 +47,7 @@ class TikTokBridge extends BridgeAbstract
 
         foreach ($videos as $video) {
             $item = [];
-
-            // Omit query string (remove tracking parameters)
+            
             $a = $video->find('a', 0);
             $href = $a->href;
             $parsedUrl = parse_url($href);
