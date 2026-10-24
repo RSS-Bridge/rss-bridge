@@ -56,9 +56,10 @@ class TikTokBridge extends BridgeAbstract
                 break;
             } while ($attempts < 3);
 
-            if ($json) {
-                $videoEmbedData = json_decode($json);
-            } else {
+            $videoEmbedData = $json ? json_decode($json) : null;
+
+            // The API can return an error payload (no title) instead of video data
+            if (!is_object($videoEmbedData) || !isset($videoEmbedData->title)) {
                 $videoEmbedData = new \stdClass();
                 $videoEmbedData->title = $url;
                 $videoEmbedData->thumbnail_url = '';
@@ -66,14 +67,14 @@ class TikTokBridge extends BridgeAbstract
             }
 
             $title = $videoEmbedData->title;
-            $image = $videoEmbedData->thumbnail_url;
+            $image = $videoEmbedData->thumbnail_url ?? '';
             $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
 
             $enclosures = [$image, $authorProfilePicture];
 
             $item['uri'] = $url;
             $item['title'] = $title;
-            $item['author'] = '@' . $videoEmbedData->author_unique_id;
+            $item['author'] = '@' . ($videoEmbedData->author_unique_id ?? '');
             $item['enclosures'] = $enclosures;
             $item['content'] = <<<EOD
 <p>$title</p>
