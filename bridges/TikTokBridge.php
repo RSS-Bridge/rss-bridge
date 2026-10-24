@@ -32,33 +32,57 @@ class TikTokBridge extends BridgeAbstract
 
         $videos = $html->find('div[data-e2e=common-videoList-VideoContainer]');
 
+        $embeddedVideos = [];
+        $stateScript = $html->find('script[id=__FRONTITY_CONNECT_STATE__]', 0);
+        if ($stateScript) {
+            $state = json_decode($stateScript->innertext, true);
+            foreach (($state['source']['data'] ?? []) as $page) {
+                foreach ((is_array($page) ? ($page['videoList'] ?? []) : []) as $embeddedVideo) {
+                    if (isset($embeddedVideo['id'])) {
+                        $embeddedVideos[$embeddedVideo['id']] = $embeddedVideo;
+                    }
+                }
+            }
+        }
+
         foreach ($videos as $video) {
             $item = [];
-
-            // Omit query string (remove tracking parameters)
+            
             $a = $video->find('a', 0);
             $href = $a->href;
             $parsedUrl = parse_url($href);
             $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
-            $json = null;
+            $videoEmbedData = null;
+            $videoId = preg_match('#/video/(\d+)#', $url, $idMatch) ? $idMatch[1] : '';
 
-            // Sometimes the API fails to return data for a second, so try a few times
-            $attempts = 0;
-            do {
-                try {
-                    // Fetch the video embed data from the OEmbed API
-                    $json = getContents('https://www.tiktok.com/oembed?url=' . $url);
-                } catch (HttpException $e) {
-                    $attempts++;
-                    continue;
-                }
-                break;
-            } while ($attempts < 3);
-
-            if ($json) {
-                $videoEmbedData = json_decode($json);
+            if (isset($embeddedVideos[$videoId])) {
+                $embeddedVideo = $embeddedVideos[$videoId];
+                $videoEmbedData = new \stdClass();
+                $videoEmbedData->title = ($embeddedVideo['desc'] ?? '') !== '' ? $embeddedVideo['desc'] : $url;
+                $videoEmbedData->thumbnail_url = $embeddedVideo['coverUrl'] ?? '';
+                $videoEmbedData->author_unique_id = $embeddedVideo['authorUniqueId'] ?? '';
             } else {
+                $json = null;
+
+                // Sometimes the API fails to return data for a second, so try a few times
+                $attempts = 0;
+                do {
+                    try {
+                        // Fetch the video embed data from the OEmbed API
+                        $json = getContents('https://www.tiktok.com/oembed?url=' . $url);
+                    } catch (HttpException $e) {
+                        $attempts++;
+                        continue;
+                    }
+                    break;
+                } while ($attempts < 3);
+
+                $videoEmbedData = $json ? json_decode($json) : null;
+            }
+
+            // The API can return an error payload (no title) instead of video data
+            if (!is_object($videoEmbedData) || !isset($videoEmbedData->title)) {
                 $videoEmbedData = new \stdClass();
                 $videoEmbedData->title = $url;
                 $videoEmbedData->thumbnail_url = '';
@@ -66,17 +90,18 @@ class TikTokBridge extends BridgeAbstract
             }
 
             $title = $videoEmbedData->title;
-            $image = $videoEmbedData->thumbnail_url;
+            $titleHtml = htmlspecialchars($title);
+            $image = $videoEmbedData->thumbnail_url ?? '';
             $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
 
             $enclosures = [$image, $authorProfilePicture];
 
             $item['uri'] = $url;
             $item['title'] = $title;
-            $item['author'] = '@' . $videoEmbedData->author_unique_id;
+            $item['author'] = '@' . ($videoEmbedData->author_unique_id ?? '');
             $item['enclosures'] = $enclosures;
             $item['content'] = <<<EOD
-<p>$title</p>
+<p>{$titleHtml}</p>
 <a href="{$url}"><img src="{$image}"/></a>
 <p>{$views} views<p><br/>
 EOD;
