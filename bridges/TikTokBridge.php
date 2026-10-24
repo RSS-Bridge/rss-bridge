@@ -32,6 +32,21 @@ class TikTokBridge extends BridgeAbstract
 
         $videos = $html->find('div[data-e2e=common-videoList-VideoContainer]');
 
+        // The embed page contains the video details (description, cover, author) as JSON state.
+        // The oEmbed API no longer returns title, thumbnail_url or author_unique_id.
+        $embeddedVideos = [];
+        $stateScript = $html->find('script[id=__FRONTITY_CONNECT_STATE__]', 0);
+        if ($stateScript) {
+            $state = json_decode($stateScript->innertext, true);
+            foreach (($state['source']['data'] ?? []) as $page) {
+                foreach ((is_array($page) ? ($page['videoList'] ?? []) : []) as $embeddedVideo) {
+                    if (isset($embeddedVideo['id'])) {
+                        $embeddedVideos[$embeddedVideo['id']] = $embeddedVideo;
+                    }
+                }
+            }
+        }
+
         foreach ($videos as $video) {
             $item = [];
 
@@ -41,22 +56,33 @@ class TikTokBridge extends BridgeAbstract
             $parsedUrl = parse_url($href);
             $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($parsedUrl['path'], '/');
 
-            $json = null;
+            $videoEmbedData = null;
+            $videoId = preg_match('#/video/(\d+)#', $url, $idMatch) ? $idMatch[1] : '';
 
-            // Sometimes the API fails to return data for a second, so try a few times
-            $attempts = 0;
-            do {
-                try {
-                    // Fetch the video embed data from the OEmbed API
-                    $json = getContents('https://www.tiktok.com/oembed?url=' . $url);
-                } catch (HttpException $e) {
-                    $attempts++;
-                    continue;
-                }
-                break;
-            } while ($attempts < 3);
+            if (isset($embeddedVideos[$videoId])) {
+                $embeddedVideo = $embeddedVideos[$videoId];
+                $videoEmbedData = new \stdClass();
+                $videoEmbedData->title = ($embeddedVideo['desc'] ?? '') !== '' ? $embeddedVideo['desc'] : $url;
+                $videoEmbedData->thumbnail_url = $embeddedVideo['coverUrl'] ?? '';
+                $videoEmbedData->author_unique_id = $embeddedVideo['authorUniqueId'] ?? '';
+            } else {
+                $json = null;
 
-            $videoEmbedData = $json ? json_decode($json) : null;
+                // Sometimes the API fails to return data for a second, so try a few times
+                $attempts = 0;
+                do {
+                    try {
+                        // Fetch the video embed data from the OEmbed API
+                        $json = getContents('https://www.tiktok.com/oembed?url=' . $url);
+                    } catch (HttpException $e) {
+                        $attempts++;
+                        continue;
+                    }
+                    break;
+                } while ($attempts < 3);
+
+                $videoEmbedData = $json ? json_decode($json) : null;
+            }
 
             // The API can return an error payload (no title) instead of video data
             if (!is_object($videoEmbedData) || !isset($videoEmbedData->title)) {
@@ -67,6 +93,7 @@ class TikTokBridge extends BridgeAbstract
             }
 
             $title = $videoEmbedData->title;
+            $titleHtml = htmlspecialchars($title);
             $image = $videoEmbedData->thumbnail_url ?? '';
             $views = $video->find('div[data-e2e=common-Video-Count]', 0)->plaintext;
 
@@ -77,7 +104,7 @@ class TikTokBridge extends BridgeAbstract
             $item['author'] = '@' . ($videoEmbedData->author_unique_id ?? '');
             $item['enclosures'] = $enclosures;
             $item['content'] = <<<EOD
-<p>$title</p>
+<p>{$titleHtml}</p>
 <a href="{$url}"><img src="{$image}"/></a>
 <p>{$views} views<p><br/>
 EOD;
