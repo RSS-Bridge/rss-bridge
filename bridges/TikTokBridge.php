@@ -44,10 +44,10 @@ class TikTokBridge extends BridgeAbstract
                 }
             }
         }
-
+        
         foreach ($videos as $video) {
             $item = [];
-            
+
             $a = $video->find('a', 0);
             $href = $a->href;
             $parsedUrl = parse_url($href);
@@ -65,11 +65,9 @@ class TikTokBridge extends BridgeAbstract
             } else {
                 $json = null;
 
-                // Sometimes the API fails to return data for a second, so try a few times
                 $attempts = 0;
                 do {
                     try {
-                        // Fetch the video embed data from the OEmbed API
                         $json = getContents('https://www.tiktok.com/oembed?url=' . $url);
                     } catch (HttpException $e) {
                         $attempts++;
@@ -80,8 +78,7 @@ class TikTokBridge extends BridgeAbstract
 
                 $videoEmbedData = $json ? json_decode($json) : null;
             }
-
-            // The API can return an error payload (no title) instead of video data
+            
             if (!is_object($videoEmbedData) || !isset($videoEmbedData->title)) {
                 $videoEmbedData = new \stdClass();
                 $videoEmbedData->title = $url;
