@@ -44,7 +44,7 @@ class TikTokBridge extends BridgeAbstract
                 }
             }
         }
-        
+
         foreach ($videos as $video) {
             $item = [];
 
@@ -78,7 +78,7 @@ class TikTokBridge extends BridgeAbstract
 
                 $videoEmbedData = $json ? json_decode($json) : null;
             }
-            
+
             if (!is_object($videoEmbedData) || !isset($videoEmbedData->title)) {
                 $videoEmbedData = new \stdClass();
                 $videoEmbedData->title = $url;
