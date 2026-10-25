@@ -263,15 +263,31 @@ class YoutubeBridge extends BridgeAbstract
         if (!$jsonData) {
             throw new \Exception('Unable to find json data');
         }
+        $videoPrimaryInfo = null;
         $videoSecondaryInfo = null;
         foreach ($jsonData as $item) {
+            if (isset($item->videoPrimaryInfoRenderer)) {
+                $videoPrimaryInfo = $item->videoPrimaryInfoRenderer;
+            }
             if (isset($item->videoSecondaryInfoRenderer)) {
                 $videoSecondaryInfo = $item->videoSecondaryInfoRenderer;
-                break;
             }
         }
         if (!$videoSecondaryInfo) {
             throwServerException('Could not find videoSecondaryInfoRenderer. Error at: ' . $videoId);
+        }
+
+        // Some watch page variants lack the microdata, fall back to ytInitialData
+        if (!$author) {
+            $author = $videoSecondaryInfo->owner->videoOwnerRenderer->title->runs[0]->text ?? null;
+        }
+        if (!$timestamp) {
+            // Contains date only, no exact time
+            // Examples: Oct 22, 2026 | Premiered Oct 22, 2026 | Streamed live on Oct 22, 2026
+            $dateText = $videoPrimaryInfo->dateText->simpleText ?? '';
+            if (preg_match('/[A-Z][a-z]{2} \d{1,2}, \d{4}/', $dateText, $matches)) {
+                $timestamp = strtotime($matches[0]);
+            }
         }
 
         $description = $videoSecondaryInfo->attributedDescription->content ?? '';

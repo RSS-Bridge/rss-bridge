@@ -2,7 +2,7 @@
 
 class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
 {
-    private const BASE_URI = 'https://www.nak-sued.de';
+    private const BASE_URI = 'https://nak-sued.de';
 
     const NAME = 'NAK Süd Mediathek';
     const DESCRIPTION = 'RSS Feed für die Runkfunkbeiträge der NAK Süd auf Bayern 2 und SWR 1.
@@ -85,7 +85,7 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
 
         foreach ($page->find('div.flex-columns.entry') as $parent) {
             # Find title
-            $title = trim($parent->find('h2')[0]->innertext);
+            $title = trim($parent->find('h2', 0)->find('text', 0)->plaintext);
 
             # Find content
             $contentBlock = $parent->find('div')[2];
