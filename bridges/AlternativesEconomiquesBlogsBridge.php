@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class AlternativesEconomiquesBlogsBridge extends BridgeAbstract
 {
     const MAINTAINER = 'simounet';
