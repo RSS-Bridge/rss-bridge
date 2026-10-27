@@ -186,9 +186,15 @@ function sanitize(
 
 function break_annoying_html_tags(string $html): string
 {
-    $html = str_replace('<script', '<&zwnj;script', $html); // Disable scripts, but leave them visible.
-    $html = str_replace('<iframe', '<&zwnj;iframe', $html);
-    $html = str_replace('<link', '<&zwnj;link', $html);
+    // Disable scripts, but leave them visible.
+    // Case-insensitive so <SCRIPT>/<ScRiPt> can't slip past the filter.
+    $html = preg_replace('/<(script|iframe|link)\b/i', '<&zwnj;$1', $html);
+    // <svg> and <math> can smuggle event handlers past tag filters.
+    $html = preg_replace('/<(svg|math)\b/i', '<&zwnj;$1', $html);
+    // Strip inline event handlers (onerror=, onload=, ...) on any remaining element.
+    $html = preg_replace('/\son\w+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html);
+    // Neutralize javascript: URLs in href/src attributes.
+    $html = preg_replace('/(\s(?:href|src)\s*=\s*)(["\']?)\s*javascript:[^"\'>\s]*\2/i', '$1$2#$2', $html);
     // We leave alone object and embed so that videos can play in RSS readers.
     return $html;
 }
