@@ -3,7 +3,7 @@
 class ThreadsBridge extends BridgeAbstract
 {
     const NAME = 'Threads';
-    const URI = 'https://www.threads.net/';
+    const URI = 'https://www.threads.com/';
     const DESCRIPTION = 'Say more with Threads &#x2014; Instagram&#039;s new text app.';
     const MAINTAINER = 'mdemoss';
     const CACHE_TIMEOUT = 3600;
@@ -35,7 +35,7 @@ class ThreadsBridge extends BridgeAbstract
     public function detectParameters($url)
     {
         // By username
-        $regex = '/^(https?:\/\/)?(www\.)?threads\.net\/(@)?([^\/?\n]+)/';
+        $regex = '/^(https?:\/\/)?(www\.)?threads\.com\/(@)?([^\/?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
             $params['context'] = 'By username';
             $params['u'] = urldecode($matches[3]);
@@ -104,7 +104,7 @@ class ThreadsBridge extends BridgeAbstract
 
         foreach ($gatheredPosts as $postData) {
             $item = [];
-            // post URL is like: https://www.threads.net/@zuck/post/Czrr520PZfh
+            // post URL is like: https://www.threads.com/@zuck/post/Czrr520PZfh
             $item['uri'] = $this->getURI() . '/post/' . $postData['code'];
             $articleHtml = getSimpleHTMLDOMCached($item['uri'], 15778800); // cache time: six months
 
