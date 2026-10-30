@@ -15,6 +15,7 @@ class NautilusBridge extends FeedExpander
                 'name' => 'Feed Item Limit',
                 'required' => true,
                 'type' => 'number',
+                'exampleValue' => 10,
                 'defaultValue' => 10,
                 'title' => 'Maximum number of returned feed items. Default 10'
             ],
@@ -90,7 +91,7 @@ class NautilusBridge extends FeedExpander
 
     protected function parseItem(array $item)
     {
-        $dom = getSimpleHTMLDOMCached($item['uri'], 7 * 24 * 60 * 60);
+        $dom = getSimpleHTMLDOMCached(rtrim($item['uri'], '/'), 7 * 24 * 60 * 60);
         $next_data = $this->extractNextData($dom);
         if ($next_data !== null) {
             $content = $this->parseNextDataContent($next_data);
