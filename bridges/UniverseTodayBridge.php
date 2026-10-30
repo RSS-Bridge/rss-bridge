@@ -14,6 +14,7 @@ class UniverseTodayBridge extends FeedExpander
                 'required' => true,
                 'type' => 'number',
                 'defaultValue' => 10,
+                'exampleValue' => 10,
                 'title' => 'Maximum number of returned feed items. Default 10'
             ],
         ],
@@ -21,7 +22,7 @@ class UniverseTodayBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas(self::URI . 'feed', (int)$this->getInput('limit'));
+        $this->collectExpandableDatas(self::URI . 'rss.xml', (int)$this->getInput('limit'));
     }
 
     protected function parseItem(array $item)
