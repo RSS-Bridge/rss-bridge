@@ -21,7 +21,7 @@ class UniverseTodayBridge extends FeedExpander
 
     public function collectData()
     {
-        $this->collectExpandableDatas(self::URI . 'feed', (int)$this->getInput('limit'));
+        $this->collectExpandableDatas(self::URI . 'rss.xml', (int)$this->getInput('limit'));
     }
 
     protected function parseItem(array $item)
