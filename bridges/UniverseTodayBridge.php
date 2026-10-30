@@ -14,6 +14,7 @@ class UniverseTodayBridge extends FeedExpander
                 'required' => true,
                 'type' => 'number',
                 'defaultValue' => 10,
+                'exampleValue' => 10,
                 'title' => 'Maximum number of returned feed items. Default 10'
             ],
         ],
