@@ -15,6 +15,7 @@ class TldrTechBridge extends BridgeAbstract
                 'name' => 'Maximum number of articles to return',
                 'type' => 'number',
                 'required' => true,
+                'exampleValue' => 10,
                 'defaultValue' => 10
             ],
             'topic' => [
