@@ -4,7 +4,7 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
     const NAME = 'Institute for the Study of War';
-    const URI = 'https://www.understandingwar.org';
+    const URI = 'https://understandingwar.org';
 
     const CACHE_TIMEOUT = 3600; // 1 hour
     const DESCRIPTION = 'Recent publications of the ISW.';
@@ -20,7 +20,8 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => true,
-                'defaultValue' => 5
+                'defaultValue' => 5,
+                'exampleValue' => 5
             ]
         ]
     ];
