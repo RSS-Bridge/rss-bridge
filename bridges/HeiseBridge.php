@@ -43,59 +43,39 @@ class HeiseBridge extends FeedExpander
                 'Alle Inhalte von heise+'
                 => 'https://www.heise.de/rss/heiseplus-atom.xml',
                 'heise Autos News'
-                => 'https://www.heise.de/autos/rss/news-atom.xml',
+                => 'https://www.heise.de/autos/feed.xml',
                 'heise Developer - Neueste Meldungen'
-                => 'https://www.heise.de/developer/rss/news-atom.xml',
+                => 'https://www.heise.de/developer/feed.xml',
                 'Der Dotnet-Doktor'
-                => 'https://www.heise.de/developer/rss/dotnet-doktor-blog-atom.xml',
+                => 'https://www.heise.de/thema/Der-Dotnet-Doktor.xml',
                 'the next big thing'
-                => 'https://www.heise.de/developer/rss/next-big-thing-blog-atom.xml',
-                'Tales from the Web side'
-                => 'https://www.heise.de/developer/rss/tales-from-the-web-side-blog-atom.xml',
+                => 'https://www.heise.de/thema/the-next-big-thing.xml',
                 'Continuous Architecture'
-                => 'https://www.heise.de/developer/rss/continuous-architecture-blog-atom.xml',
+                => 'https://www.heise.de/thema/Continuous-Architecture.xml',
                 'Der Pragmatische Architekt'
-                => 'https://www.heise.de/developer/rss/der-pragmatische-architekt-blog-atom.xml',
+                => 'https://www.heise.de/thema/Der-Pragmatische-Architekt.xml',
                 'Modernes C++'
-                => 'https://www.heise.de/developer/rss/modernes-cplusplus-blog-atom.xml',
-                'colspan'
-                => 'https://www.heise.de/developer/rss/colspan-dev-blog-atom.xml',
+                => 'https://www.heise.de/thema/Modernes-Cplusplus.xml',
                 '"Ich roll\' dann mal aus"'
-                => 'https://www.heise.de/developer/rss/ich-roll-dann-mal-aus-atom.xml',
-                'Well Organized'
-                => 'https://www.heise.de/developer/rss/well-organized-blog-atom.xml',
+                => 'https://www.heise.de/thema/Ich-roll-dann-mal-aus.xml',
                 'Neuigkeiten von der Insel'
-                => 'https://www.heise.de/developer/rss/neuigkeiten-von-der-insel-blog-atom.xml',
-                'Von Menschen und Maschinen'
-                => 'https://www.heise.de/developer/rss/von-menschen-und-maschinen-blog-atom.xml',
+                => 'https://www.heise.de/thema/Neuigkeiten-von-der-Insel.xml',
                 'heise Foto'
-                => 'https://www.heise.de/foto/rss/news-atom.xml',
+                => 'https://www.heise.de/foto/feed.xml',
                 //'Top-Programme bei heise Download'
                 //=> 'https://www.heise.de/download/feed/top',
                 'heise Security'
-                => 'https://www.heise.de/security/rss/news-atom.xml',
+                => 'https://www.heise.de/security/feed.xml',
                 'Security-Alert Meldungen'
-                => 'https://www.heise.de/security/rss/alert-news-atom.xml',
-                'c\'t-Blog'
-                => 'https://www.heise.de/ct/blog/blog-atom.xml',
-                'c\'t-Blog Labs'
-                => 'https://www.heise.de/ct/blog/blog-ctlabs-atom.xml',
-                'c\'t-Blog Fair & Green IT'
-                => 'https://www.heise.de/ct/blog/blog-fgit-atom.xml',
-                'c\'t-Blog RTFM'
-                => 'https://www.heise.de/ct/blog/blog-rtfm-atom.xml',
+                => 'https://www.heise.de/security/Alerts/feed.xml',
                 'c\'t-Themen'
-                => 'https://www.heise.de/ct/rss/artikel-atom.xml',
+                => 'https://www.heise.de/ct/feed.xml',
                 'Make - Neueste Meldungen'
-                => 'https://www.heise.de/make/rss/hardware-hacks-atom.xml',
+                => 'https://www.heise.de/make/feed.xml',
                 'iX News'
-                => 'https://www.heise.de/ix/rss/news-atom.xml',
+                => 'https://www.heise.de/ix/feed.xml',
                 'Mac & i'
-                => 'https://www.heise.de/mac-and-i/news-atom.xml',
-                'MIT Technology Review'
-                => 'https://www.heise.de/tr/rss/news-atom.xml',
-                'MIT Technology Review Blog'
-                => 'https://www.heise.de/tr/rss/blog-atom.xml',
+                => 'https://www.heise.de/mac-and-i/feed.xml',
                 //'Telepolis'
                 //=> 'https://www.heise.de/tp/news-atom.xml',
                 //'Aktuelle News von TechStage'
@@ -121,6 +101,54 @@ class HeiseBridge extends FeedExpander
         ]
     ]];
     const LIMIT = 5;
+
+    public function setInput(array $input)
+    {
+        // Reject discontinued feeds before validation can fall back to the default category.
+        $discontinuedFeeds = [
+            'https://www.heise.de/developer/rss/tales-from-the-web-side-blog-atom.xml' => 'Tales from the Web side',
+            'https://www.heise.de/developer/rss/colspan-dev-blog-atom.xml' => 'colspan',
+            'https://www.heise.de/developer/rss/well-organized-blog-atom.xml' => 'Well Organized',
+            'https://www.heise.de/developer/rss/von-menschen-und-maschinen-blog-atom.xml' => 'Von Menschen und Maschinen',
+            'https://www.heise.de/ct/blog/blog-atom.xml' => 'c\'t-Blog',
+            'https://www.heise.de/ct/blog/blog-ctlabs-atom.xml' => 'c\'t-Blog Labs',
+            'https://www.heise.de/ct/blog/blog-fgit-atom.xml' => 'c\'t-Blog Fair & Green IT',
+            'https://www.heise.de/ct/blog/blog-rtfm-atom.xml' => 'c\'t-Blog RTFM',
+            'https://www.heise.de/tr/rss/news-atom.xml' => 'MIT Technology Review',
+            'https://www.heise.de/tr/rss/blog-atom.xml' => 'MIT Technology Review Blog',
+        ];
+        $category = $input['category'] ?? '';
+        if (is_string($category) && isset($discontinuedFeeds[$category])) {
+            throwServerException(sprintf(
+                'Heise no longer provides the "%s" feed. Please remove this subscription.',
+                $discontinuedFeeds[$category]
+            ));
+        }
+
+        // Translate legacy category URLs before validating the current category values.
+        $legacyFeedUrls = [
+            'https://www.heise.de/autos/rss/news-atom.xml' => 'https://www.heise.de/autos/feed.xml',
+            'https://www.heise.de/developer/rss/news-atom.xml' => 'https://www.heise.de/developer/feed.xml',
+            'https://www.heise.de/developer/rss/dotnet-doktor-blog-atom.xml' => 'https://www.heise.de/thema/Der-Dotnet-Doktor.xml',
+            'https://www.heise.de/developer/rss/next-big-thing-blog-atom.xml' => 'https://www.heise.de/thema/the-next-big-thing.xml',
+            'https://www.heise.de/developer/rss/continuous-architecture-blog-atom.xml' => 'https://www.heise.de/thema/Continuous-Architecture.xml',
+            'https://www.heise.de/developer/rss/der-pragmatische-architekt-blog-atom.xml' => 'https://www.heise.de/thema/Der-Pragmatische-Architekt.xml',
+            'https://www.heise.de/developer/rss/modernes-cplusplus-blog-atom.xml' => 'https://www.heise.de/thema/Modernes-Cplusplus.xml',
+            'https://www.heise.de/developer/rss/ich-roll-dann-mal-aus-atom.xml' => 'https://www.heise.de/thema/Ich-roll-dann-mal-aus.xml',
+            'https://www.heise.de/developer/rss/neuigkeiten-von-der-insel-blog-atom.xml' => 'https://www.heise.de/thema/Neuigkeiten-von-der-Insel.xml',
+            'https://www.heise.de/foto/rss/news-atom.xml' => 'https://www.heise.de/foto/feed.xml',
+            'https://www.heise.de/security/rss/news-atom.xml' => 'https://www.heise.de/security/feed.xml',
+            'https://www.heise.de/security/rss/alert-news-atom.xml' => 'https://www.heise.de/security/Alerts/feed.xml',
+            'https://www.heise.de/ct/rss/artikel-atom.xml' => 'https://www.heise.de/ct/feed.xml',
+            'https://www.heise.de/make/rss/hardware-hacks-atom.xml' => 'https://www.heise.de/make/feed.xml',
+            'https://www.heise.de/ix/rss/news-atom.xml' => 'https://www.heise.de/ix/feed.xml',
+            'https://www.heise.de/mac-and-i/news-atom.xml' => 'https://www.heise.de/mac-and-i/feed.xml',
+        ];
+        if (is_string($category) && isset($legacyFeedUrls[$category])) {
+            $input['category'] = $legacyFeedUrls[$category];
+        }
+        parent::setInput($input);
+    }
 
     public function collectData()
     {
