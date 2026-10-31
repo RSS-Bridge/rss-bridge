@@ -57,6 +57,11 @@ class TldrTechBridge extends BridgeAbstract
             }
         }
         $location = $response->getHeader('Location');
+        if (!str_starts_with($location, self::URI)) {
+            throw new \Exception(
+                'tldr.tech has tried redirecting away from the site: ' . $location
+            );
+        }
         $locationUrl = Url::fromString($location);
 
         $this->extractItem($locationUrl);
