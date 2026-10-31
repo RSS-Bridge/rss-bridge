@@ -15,6 +15,7 @@ class TldrTechBridge extends BridgeAbstract
                 'name' => 'Maximum number of articles to return',
                 'type' => 'number',
                 'required' => true,
+                'exampleValue' => 10,
                 'defaultValue' => 10
             ],
             'topic' => [
@@ -47,11 +48,26 @@ class TldrTechBridge extends BridgeAbstract
         $limit = $this->getInput('limit');
 
         $url = self::URI . 'api/latest/' . $topic;
-        $response = getContents($url, [], [], true);
+        try {
+            $response = getContents($url, [], [], true);
+        } catch (HttpException $e) {
+            $response = $e->response;
+            if (!$response || $response->getCode() != 307) {
+                throw $e;
+            }
+        }
         $location = $response->getHeader('Location');
+        if (!str_starts_with($location, self::URI)) {
+            throw new \Exception(
+                'tldr.tech has tried redirecting away from the site: ' . $location
+            );
+        }
         $locationUrl = Url::fromString($location);
 
         $this->extractItem($locationUrl);
+        if (count($this->items) >= $limit) {
+            return;
+        }
 
         $archives_url = self::URI . $topic . '/archives';
         $archives_html = getSimpleHTMLDOM($archives_url);
@@ -97,16 +113,23 @@ class TldrTechBridge extends BridgeAbstract
         if (!$content) {
             throw new \Exception('Could not find content');
         }
-        $subscribe_form = $content->find('div.mt-5 > div > form', 0);
+        $subscribe_form = $content->find('div.mt-5 form', 0);
         if ($subscribe_form) {
-            $content->removeChild($subscribe_form->parent->parent);
+            $subscribe_root = $subscribe_form;
+            while ($subscribe_root->parent !== $content) {
+                $subscribe_root = $subscribe_root->parent;
+            }
+            $content->removeChild($subscribe_root);
         }
         $privacy_link = $content->find("a[href='/privacy']", 0);
         if ($privacy_link) {
             $content->removeChild($privacy_link->parent->parent);
         }
-        $headers = $content->find('h6.text-center.font-bold');
+        $headers = $content->find('h3.text-center.font-bold, h6.text-center.font-bold');
         foreach ($headers as $header) {
+            if (trim($header->plaintext) === '') {
+                continue;
+            }
             $elem = $html->createElement('h3', $header->parent->plaintext);
             $elem->style = 'margin-top: 1.2em; margin-bottom: 0.5em;';
             $header_root = $header->parent;
@@ -121,6 +144,9 @@ class TldrTechBridge extends BridgeAbstract
             $elem = $html->createElement('b', $a->plaintext);
             $a->removeChild($a->firstChild());
             $a->appendChild($elem);
+        }
+        foreach ($content->find('article') as $article) {
+            $article->style = 'margin-bottom: 12px;';
         }
         foreach ($content->children() as $child) {
             if ($child->tag != 'div') {
