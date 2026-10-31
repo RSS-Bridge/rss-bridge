@@ -48,7 +48,14 @@ class TldrTechBridge extends BridgeAbstract
         $limit = $this->getInput('limit');
 
         $url = self::URI . 'api/latest/' . $topic;
-        $response = getContents($url, [], [CURLOPT_FOLLOWLOCATION => true], true);
+        try {
+            $response = getContents($url, [], [], true);
+        } catch (HttpException $e) {
+            $response = $e->response;
+            if (!$response || $response->getCode() != 307) {
+                throw $e;
+            }
+        }
         $location = $response->getHeader('Location');
         $locationUrl = Url::fromString($location);
 
