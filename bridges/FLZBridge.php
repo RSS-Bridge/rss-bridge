@@ -286,9 +286,11 @@ class FLZBridge extends BridgeAbstract
         try {
             $html = $this->fetch($item['uri']);
             $body = '';
-            foreach (str_get_html($html)->find('p.article-text, h3.article-subtitle-h3') as $element) {
+            // Interviews have their own part, with the questions in div.question.
+            foreach (str_get_html($html)->find('p.article-text, h3.article-subtitle-h3, app-interview-content-part p') as $element) {
                 $text = trim(preg_replace('~\s+~u', ' ', html_entity_decode($element->plaintext, ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?? '');
-                $body .= $text === '' ? '' : sprintf('<%1$s>%2$s</%1$s>', $element->tag, e($text));
+                $format = $element->parent()->class === 'question' ? '<p><strong>%2$s</strong></p>' : '<%1$s>%2$s</%1$s>';
+                $body .= $text === '' ? '' : sprintf($format, $element->tag, e($text));
             }
         } catch (Exception $e) {
             $this->logger->info(sprintf('FLZ: article %s not available: %s', $item['uri'], $e->getMessage()));
