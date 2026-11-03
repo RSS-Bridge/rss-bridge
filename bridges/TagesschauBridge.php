@@ -88,7 +88,17 @@ class TagesschauBridge extends FeedExpander
             }
         }
 
-        $article = getSimpleHTMLDOM($item['uri']);
+        try {
+            $article = getSimpleHTMLDOM($item['uri']);
+        } catch (HttpException $e) {
+            // Some items are teasers that redirect (301) to external sites
+            $location = $e->response->getHeader('location');
+            if (in_array($e->getCode(), [301, 302, 303], true) && $location) {
+                $item['uri'] = urljoin($item['uri'], $location);
+                return $this->parseRegionalARDSite($item, $titleImage);
+            }
+            return $item;
+        }
         if (!$article) {
             return $item;
         }
@@ -135,6 +145,47 @@ class TagesschauBridge extends FeedExpander
             }
         }
         $item['content'] = $html;
+
+        return $item;
+    }
+
+    private function getSimpleHTMLDOMFollowingRedirects(string $url): simple_html_dom
+    {
+        for ($hops = 0; $hops < 3; $hops++) {
+            try {
+                return getSimpleHTMLDOM($url);
+            } catch (HttpException $e) {
+                $location = $e->response->getHeader('location');
+                if (!in_array($e->getCode(), [301, 302, 303], true) || !$location) {
+                    throw $e;
+                }
+                $url = urljoin($url, $location);
+            }
+        }
+        throw new \Exception('Followed more than three redirects');
+    }
+
+    /**
+     * Some media items aren't hosted on taggesshow.de directly.
+     * Instead, they are hosted by the regional ARD entities, like BR or NDR.
+     * They need to be handled separately.
+     */
+    private function parseRegionalARDSite(array $item, string $titleImage): array
+    {
+        try {
+            $page = $this->getSimpleHTMLDOMFollowingRedirects($item['uri']);
+        } catch (\Exception $e) {
+            return $item;
+        }
+
+        $description = $page->find('meta[property=og:description]', 0) ?? $page->find('meta[name=description]', 0);
+        $text = $description ? $description->content : null;
+        if (!is_string($text) || trim($text) === '') {
+            return $item;
+        }
+
+        $text = htmlspecialchars(trim($text), ENT_QUOTES, 'UTF-8', false);
+        $item['content'] = $titleImage . '<p>' . $text . '</p>';
 
         return $item;
     }
