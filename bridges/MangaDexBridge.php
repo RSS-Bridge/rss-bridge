@@ -80,6 +80,21 @@ class MangaDexBridge extends BridgeAbstract
         // https://api.mangadex.org/docs/get-covers/
     ];
 
+    // MangaDex asked us to identify as a bot rather than imitate a browser (#5175)
+    private const HEADERS = [
+        'User-Agent: rss-bridge bot (https://github.com/RSS-Bridge/rss-bridge)',
+        // Empty values make curl drop curl-impersonate's browser-only headers
+        'Sec-Ch-Ua:',
+        'Sec-Ch-Ua-Mobile:',
+        'Sec-Ch-Ua-Platform:',
+        'Sec-Fetch-Dest:',
+        'Sec-Fetch-Mode:',
+        'Sec-Fetch-Site:',
+        'Sec-Fetch-User:',
+        'Upgrade-Insecure-Requests:',
+        'Priority:',
+    ];
+
     const TITLE_REGEX = '#title/(?<uuid>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})#';
 
     protected $feedName = '';
@@ -173,9 +188,9 @@ class MangaDexBridge extends BridgeAbstract
     public function collectData()
     {
         $api_uri = $this->getAPI();
-        $header = [
+        $header = array_merge(self::HEADERS, [
             'Content-Type: application/json'
-        ];
+        ]);
         $content = json_decode(getContents($api_uri, $header), true);
         if ($content['result'] == 'ok') {
             $content = $content['data'];
@@ -254,7 +269,9 @@ class MangaDexBridge extends BridgeAbstract
             // Fetch chapter page images if desired and add to content
             if ($this->getInput('images') !== 'no') {
                 $api_uri = self::API_ROOT . 'at-home/server/' . $item['uid'];
-                $header = [ 'Content-Type: application/json' ];
+                $header = array_merge(self::HEADERS, [
+                    'Content-Type: application/json'
+                ]);
                 $pages = json_decode(getContents($api_uri, $header), true);
                 if ($pages['result'] != 'ok') {
                     throwServerException('Could not retrieve API results');
