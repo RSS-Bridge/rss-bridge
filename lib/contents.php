@@ -115,12 +115,10 @@ function getContents(
         $ip = Ipv4Address::fromString($host);
     } else {
         // Prevent DNS-rebinding
-        $records = fetch_dns_record($host);
-        $record = $records[array_rand($records)];
-        $ip = $record['ip'];
-        $ip = Ipv4Address::fromString($ip);
+        $ip = pick_dns_address(fetch_dns_record($host));
         $config['dns'] = [
-            sprintf('%s:%s:%s', $host, $urlObject->getPort(), $ip),
+            // Ipv6 addresses must be enclosed in brackets
+            sprintf('%s:%s:%s', $host, $urlObject->getPort(), $ip instanceof Ipv6Address ? '[' . $ip . ']' : $ip),
         ];
     }
 
