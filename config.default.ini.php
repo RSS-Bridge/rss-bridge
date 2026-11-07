@@ -60,10 +60,10 @@ max_filesize = 20
 ; Whether to follow location (careful: enabling this allows SSRF attack)
 follow = false;
 
-; 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+; 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00::/7
 allow_private_addresses = false
 
-; 0.0.0.0/8, 169.254.0.0/16, 127.0.0.0/8, 240.0.0.0/4
+; 0.0.0.0/8, 169.254.0.0/16, 127.0.0.0/8, 240.0.0.0/4, ::1/128, fe80::/10
 allow_reserved_addresses = false
 
 [cache]
