@@ -40,17 +40,22 @@ class FallGuysBridge extends BridgeAbstract
         $newsData = self::requestJsonData(self::getURI(), false);
 
         foreach ($newsData->props->pageProps->newsList as $newsItem) {
-            $newsItemUrl = self::getURI() . '/' . $newsItem->slug;
+            $newsItemUrl = self::buildNewsUri($newsItem->slug);
             $newsItemTitle = $newsItem->header->title;
 
             $headerDescription = property_exists($newsItem->header, 'description') ? $newsItem->header->description : '';
-            $headerImage = $newsItem->newsLandingConfig->options[0]->image->src->url;
+            $headerImage = $newsItem->newsLandingConfig->options[0]->image;
+            if (property_exists($headerImage, 'imageAsset')) {
+                $headerImageUrl = $headerImage->imageAsset->url;
+            } else {
+                $headerImageUrl = $headerImage->src->url;
+            }
 
-            $contentImages = [$headerImage];
+            $contentImages = [$headerImageUrl];
 
             $content = <<<HTML
             <p>{$headerDescription}</p>
-            <p><img src="{$headerImage}"></p>
+            <p><img src="{$headerImageUrl}"></p>
             HTML;
 
             try {
@@ -80,7 +85,7 @@ class FallGuysBridge extends BridgeAbstract
                     } elseif (property_exists($contentItem, 'articleImage')) {
                         $image = $contentItem->articleImage->imageSrc;
 
-                        if ($image != $headerImage) {
+                        if ($image != $headerImageUrl) {
                             $contentImages[] = $image;
 
                             $content .= <<<HTML
@@ -100,7 +105,7 @@ class FallGuysBridge extends BridgeAbstract
                                     $content .= '<p>' . $videoHtml;
 
                                     $image = $mainContentOptions[$i]->image->src ?? '';
-                                    if ($image != $headerImage) {
+                                    if ($image != $headerImageUrl) {
                                         $contentImages[] = $image;
 
                                         $content .= '<img src="{$image}"><br>';
@@ -131,13 +136,22 @@ class FallGuysBridge extends BridgeAbstract
 
     public function getURI()
     {
-        $locale = $this->getInput('locale') ?? self::DEFAULT_LOCALE;
-        return self::BASE_URI . '/' . $locale . '/news';
+        return self::buildNewsUri('');
     }
 
     public function getIcon()
     {
         return self::BASE_URI . '/favicon.ico';
+    }
+
+    private function buildNewsUri(string $slug)
+    {
+        $locale = $this->getInput('locale') ?? self::DEFAULT_LOCALE;
+        $uri = self::BASE_URI . '/news';
+        if ($slug) {
+            $uri = $uri . '/' . $slug;
+        }
+        return $uri . '?lang=' . $locale;
     }
 
     private function requestJsonData(string $url, bool $useCache)
