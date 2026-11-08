@@ -44,13 +44,18 @@ class FallGuysBridge extends BridgeAbstract
             $newsItemTitle = $newsItem->header->title;
 
             $headerDescription = property_exists($newsItem->header, 'description') ? $newsItem->header->description : '';
-            $headerImage = $newsItem->newsLandingConfig->options[0]->image->src->url;
+            $headerImage = $newsItem->newsLandingConfig->options[0]->image;
+            if (property_exists($headerImage, 'imageAsset')) {
+                $headerImageUrl = $headerImage->imageAsset->url;
+            } else {
+                $headerImageUrl = $headerImage->src->url;
+            }
 
-            $contentImages = [$headerImage];
+            $contentImages = [$headerImageUrl];
 
             $content = <<<HTML
             <p>{$headerDescription}</p>
-            <p><img src="{$headerImage}"></p>
+            <p><img src="{$headerImageUrl}"></p>
             HTML;
 
             try {
@@ -80,7 +85,7 @@ class FallGuysBridge extends BridgeAbstract
                     } elseif (property_exists($contentItem, 'articleImage')) {
                         $image = $contentItem->articleImage->imageSrc;
 
-                        if ($image != $headerImage) {
+                        if ($image != $headerImageUrl) {
                             $contentImages[] = $image;
 
                             $content .= <<<HTML
@@ -100,7 +105,7 @@ class FallGuysBridge extends BridgeAbstract
                                     $content .= '<p>' . $videoHtml;
 
                                     $image = $mainContentOptions[$i]->image->src ?? '';
-                                    if ($image != $headerImage) {
+                                    if ($image != $headerImageUrl) {
                                         $contentImages[] = $image;
 
                                         $content .= '<img src="{$image}"><br>';
