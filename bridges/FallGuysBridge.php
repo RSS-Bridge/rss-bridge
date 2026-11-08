@@ -40,7 +40,7 @@ class FallGuysBridge extends BridgeAbstract
         $newsData = self::requestJsonData(self::getURI(), false);
 
         foreach ($newsData->props->pageProps->newsList as $newsItem) {
-            $newsItemUrl = self::getURI() . '/' . $newsItem->slug;
+            $newsItemUrl = self::buildNewsUri($newsItem->slug);
             $newsItemTitle = $newsItem->header->title;
 
             $headerDescription = property_exists($newsItem->header, 'description') ? $newsItem->header->description : '';
@@ -131,13 +131,22 @@ class FallGuysBridge extends BridgeAbstract
 
     public function getURI()
     {
-        $locale = $this->getInput('locale') ?? self::DEFAULT_LOCALE;
-        return self::BASE_URI . '/' . $locale . '/news';
+        return self::buildNewsUri('');
     }
 
     public function getIcon()
     {
         return self::BASE_URI . '/favicon.ico';
+    }
+
+    private function buildNewsUri(string $slug)
+    {
+        $locale = $this->getInput('locale') ?? self::DEFAULT_LOCALE;
+        $uri = self::BASE_URI . '/news';
+        if ($slug) {
+            $uri = $uri . '/' . $slug;
+        }
+        return $uri . '?lang=' . $locale;
     }
 
     private function requestJsonData(string $url, bool $useCache)
