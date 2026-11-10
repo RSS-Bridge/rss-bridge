@@ -21,6 +21,12 @@ class MangaDexBridge extends BridgeAbstract
                 'exampleValue' => 'en,jp',
                 'required' => false
             ],
+            'contentRating' => [
+                'name' => 'Content Ratings (default=safe,suggestive,erotica)',
+                'title' => 'comma-separated: safe, suggestive, erotica, pornographic',
+                'exampleValue' => 'safe,suggestive,erotica',
+                'required' => false
+            ],
             'images' => [
                 'name' => 'Fetch chapter page images',
                 'type' => 'list',
@@ -118,6 +124,9 @@ class MangaDexBridge extends BridgeAbstract
         $array_params = [];
         if (!empty($this->getInput('lang'))) {
             $array_params['translatedLanguage[]'] = explode(',', $this->getInput('lang'));
+        }
+        if (!empty($this->getInput('contentRating'))) {
+            $array_params['contentRating[]'] = explode(',', $this->getInput('contentRating'));
         }
 
         switch ($this->queriedContext) {
