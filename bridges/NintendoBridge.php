@@ -3,7 +3,7 @@
 class NintendoBridge extends XPathAbstract
 {
     const NAME = 'Nintendo Software Updates';
-    const URI = 'https://www.nintendo.co.uk/Support/Welcome-to-Nintendo-Support-11593.html';
+    const URI = 'https://www.nintendo.com/en-gb/Support/Welcome-to-Nintendo-Support-11593.html';
     const DESCRIPTION = self::NAME;
     const MAINTAINER = 'Niehztog';
     const PARAMETERS = [
@@ -46,8 +46,7 @@ class NintendoBridge extends XPathAbstract
                     'Schweiz' => 'ch/de',
                     'Suisse' => 'ch/fr',
                     'Svizzera' => 'ch/it',
-                    'UK & Ireland' => 'co.uk',
-                    'South Africa' => 'co.za'
+                    'UK & Ireland' => 'co.uk'
                 ],
                 'defaultValue' => 'co.uk',
                 'title' => 'Select your country'
@@ -57,20 +56,121 @@ class NintendoBridge extends XPathAbstract
 
     const CACHE_TIMEOUT = 3600;
 
+    // Page paths per language, relative to https://www.nintendo.com/<locale>/
     const FEED_SOURCE_URL = [
-        'mk8d' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Mario-Kart-8-Deluxe-1482895.html',
-        's2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Splatoon-2-1482897.html',
-        'sm3as' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-All-Stars-1844226.html',
-        'sm3wbf' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-World-Bowser-s-Fury-1920668.html',
-        'smbw' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Bros-Wonder-2485410.html',
-        'smm2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Maker-2-1586745.html',
-        'smo' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Odyssey-1482901.html',
-        'ssbu' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Smash-Bros-Ultimate-1484130.html',
-        'sf' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/System-Updates/Nintendo-Switch-System-Updates-and-Change-History-1445507.html',
-        'tlozla' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
-        'tlozss' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
-        'tloztotk' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
-        'xc2' => 'https://www.nintendo.co.uk/Support/Nintendo-Switch/Game-Updates/How-to-Update-Xenoblade-Chronicles-2-1482905.html',
+        'mk8d' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-Mario-Kart-8-Deluxe-1482895.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Mario-Kart-8-Deluxe-1482895.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Mario-Kart-8-Deluxe-1482895.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Mario-Kart-8-Deluxe-1482895.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-voer-je-een-update-voor-Mario-Kart-8-Deluxe-uit-1482895.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Mario-Kart-8-Deluxe-1482895.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Mario-Kart-8-Deluxe-1482895.html',
+        ],
+        's2' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Software-Updates-fur-Splatoon-2-1482897.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Splatoon-2-1482897.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Splatoon-2-1482897.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Splatoon-2-1482897.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-Splatoon-2-bij-1482897.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Splatoon-2-1482897.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Splatoon-2-1482897.html',
+        ],
+        'sm3as' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-Super-Mario-3D-All-Stars--1844226.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Super-Mario-3D-All-Stars-1844226.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Super-Mario-3D-All-Stars-1844226.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Super-Mario-3D-All-Stars-1844226.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-Update-Super-Mario-3D-All-Stars-bij-1844226.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Super-Mario-3D-All-Stars-1844226.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-All-Stars-1844226.html',
+        ],
+        'sm3wbf' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-Super-Mario-3D-World-Bowser-s-Fury--1920668.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Super-Mario-3D-World-Bowser-s-Fury-1920668.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Super-Mario-3D-World-Bowser-s-Fury-1920668.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-3D-World-Bowser-s-Fury-1920668.html',
+        ],
+        'smbw' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-Super-Mario-Bros-Wonder--2485410.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Super-Mario-Bros-Wonder-2485410.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Super-Mario-Bros-Wonder--2485410.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Super-Mario-Bros-Wonder-2485410.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-Super-Mario-Bros-Wonder-bij-2485410.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Super-Mario-Bros-Wonder-2485410.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Bros-Wonder-2485410.html',
+        ],
+        'smm2' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Software-Updates-fur-Super-Mario-Maker-2-1586745.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Super-Mario-Maker-2-1586745.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Super-Mario-Maker-2-1586745.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Super-Mario-Maker-2-1586745.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-Super-Mario-Maker-2-bij-1586745.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Super-Mario-Maker-2-1586745.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Maker-2-1586745.html',
+        ],
+        'smo' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-Super-Mario-Odyssey--1482901.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Super-Mario-Odyssey-1482901.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Super-Mario-Odyssey-1482901.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Super-Mario-Odyssey-1482901.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-Super-Mario-Odyssey-bij-1482901.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Super-Mario-Odyssey-1482901.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Mario-Odyssey-1482901.html',
+        ],
+        'ssbu' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/So-fuhren-Sie-ein-Update-fur-Super-Smash-Bros-Ultimate-durch-1484130.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Super-Smash-Bros-Ultimate-1484130.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Super-Smash-Bros-Ultimate-1484130.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Super-Smash-Bros-Ultimate-1484130.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-Super-Smash-Bros-Ultimate-bij-1484130.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-Super-Smash-Bros-Ultimate-1484130.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Super-Smash-Bros-Ultimate-1484130.html',
+        ],
+        'sf' => [
+            'de' => 'Support/Fehlersuche/Informationen-zu-System-Updates-fur-Nintendo-Switch-1445507.html',
+            'es' => 'Ayuda/Localizacion-y-resolucion-de-problemas/Historial-de-actualizaciones-de-Nintendo-Switch-1445507.html',
+            'fr' => 'Assistance/Depannage/Informations-sur-la-mise-a-jour-de-la-console-Nintendo-Switch-1445507.html',
+            'it' => 'Assistenza/Risoluzione-dei-problemi/Informazioni-sugli-aggiornamenti-della-console-Nintendo-Switch-1445507.html',
+            'nl' => 'Support/Problemen-oplossen/Informatie-over-systeemupdates-voor-de-Nintendo-Switch-1445507.html',
+            'pt' => 'Assistencia/Resolucao-de-problemas/Informacoes-sobre-as-atualizacoes-da-Nintendo-Switch-1445507.html',
+            'en' => 'Support/Troubleshooting/Nintendo-Switch-System-Update-Information-1445507.html',
+        ],
+        'tlozla' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-The-Legend-of-Zelda-Link-s-Awakening--1666739.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-The-Legend-of-Zelda-Link-s-Awakening-bij-1666739.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Link-s-Awakening-1666739.html',
+        ],
+        'tlozss' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Aktualisierung-von-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-voer-je-een-update-uit-voor-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Skyward-Sword-HD-2022801.html',
+        ],
+        'tloztotk' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-The-Legend-of-Zelda-Tears-of-the-Kingdom--2388231.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-The-Legend-of-Zelda-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-The-Legend-of-Zelda-The-Legend-of-Zelda-Tears-of-the-Kingdom-bij-2388231.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-atualizar-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-The-Legend-of-Zelda-Tears-of-the-Kingdom-2388231.html',
+        ],
+        'xc2' => [
+            'de' => 'Support/Nintendo-Switch/Spiele-Updates/Das-Aktualisieren-von-Xenoblade-Chronicles-2--1482905.html',
+            'es' => 'Ayuda/Nintendo-Switch/Actualizaciones-de-juegos/Como-actualizar-Xenoblade-Chronicles-2-1482905.html',
+            'fr' => 'Assistance/Nintendo-Switch/Mises-a-jour-des-logiciels/Comment-mettre-a-jour-Xenoblade-Chronicles-2-1482905.html',
+            'it' => 'Assistenza/Nintendo-Switch/Aggiornamenti-dei-giochi/Come-aggiornare-Xenoblade-Chronicles-2-1482905.html',
+            'nl' => 'Support/Nintendo-Switch/Software-updates/Zo-werk-je-Xenoblade-Chronicles-2-bij-1482905.html',
+            'pt' => 'Assistencia/Nintendo-Switch/Atualizacoes-para-jogos/Como-Atualizar-Xenoblade-Chronicles-2-1482905.html',
+            'en' => 'Support/Nintendo-Switch/Game-Updates/How-to-Update-Xenoblade-Chronicles-2-1482905.html',
+        ],
     ];
     const XPATH_EXPRESSION_ITEM = '//div[@class="col-xs-12 content"]/div[starts-with(@id,"v") and @class="collapse"]';
     const XPATH_EXPRESSION_ITEM_FIRMWARE = '//div[@id="latest" and @class="collapse" and @rel="1"]';
@@ -119,9 +219,6 @@ class NintendoBridge extends XPathAbstract
         'sm3wbf' => [
             'de' => 'eröffentlicht am ',
             'es' => ' el ',
-            'fr' => 'atée du ',
-            'it' => 'istribuita il ',
-            'nl' => 'itgebracht op ',
             'pt' => 'ançada a ',
             'en' => 'eleased ',
         ],
@@ -182,7 +279,6 @@ class NintendoBridge extends XPathAbstract
         'tlozss' => [
             'de' => 'eröffentlicht am ',
             'es' => 'isponible desde el ',
-            'fr' => 'atée du ',
             'it' => 'ubblicata l\'',
             'nl' => 'itgebracht op ',
             'pt' => 'ançada a ',
@@ -239,11 +335,8 @@ class NintendoBridge extends XPathAbstract
         'sm3wbf' => [
             'de' => 'd.m.y',
             'es' => 'd-m-y',
-            'fr' => 'd/m/y',
-            'it' => 'd/m/y',
-            'nl' => 'd m Y',
             'pt' => 'd/m/y',
-            'en' => 'F j, Y',
+            'en' => 'm j, Y',
         ],
         'smbw' => [
             'de' => 'd. m Y',
@@ -302,7 +395,6 @@ class NintendoBridge extends XPathAbstract
         'tlozss' => [
             'de' => 'd. m Y',
             'es' => 'j \d\e m \d\e Y',
-            'fr' => 'd/m/y',
             'it' => 'j m Y',
             'nl' => 'd m Y',
             'pt' => 'j \d\e m \d\e Y',
@@ -344,7 +436,26 @@ class NintendoBridge extends XPathAbstract
         'en' => ['01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April', '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August',
             '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December'],
     ];
-    const LANGUAGE_REWRITE = ['co.uk' => 'en', 'co.za' => 'en', 'at' => 'de'];
+    private const COUNTRY_LOCALE = [
+        'be/nl' => 'nl-be',
+        'be/fr' => 'fr-be',
+        'de' => 'de-de',
+        'es' => 'es-es',
+        'fr' => 'fr-fr',
+        'it' => 'it-it',
+        'nl' => 'nl-nl',
+        'at' => 'de-at',
+        'pt' => 'pt-pt',
+        'ch/de' => 'de-ch',
+        'ch/fr' => 'fr-ch',
+        'ch/it' => 'it-ch',
+        'co.uk' => 'en-gb',
+    ];
+
+    // Locale to use instead where a page is missing from just one locale of its language
+    private const LOCALE_FALLBACK = [
+        'tlozss' => ['de-ch' => 'de-de'],
+    ];
 
     private string $lastId = '';
     private ?string $currentCategory = '';
@@ -360,7 +471,7 @@ class NintendoBridge extends XPathAbstract
 
     public function getIcon()
     {
-        return 'https://www.nintendo.co.uk/favicon.ico';
+        return 'https://www.nintendo.com/eu/media/images/01_website_elements/icons/favicon.ico';
     }
 
     public function getURI()
@@ -382,9 +493,8 @@ class NintendoBridge extends XPathAbstract
 
     protected function getSourceUrl()
     {
-        $country = $this->getInput('country') ?? '';
         $category = $this->getCurrentCategory();
-        return str_replace(self::PARAMETERS['']['country']['defaultValue'], $country, self::FEED_SOURCE_URL[$category]);
+        return 'https://www.nintendo.com/' . $this->getLocale() . '/' . self::FEED_SOURCE_URL[$category][$this->getLanguage()];
     }
 
     protected function getExpressionItem()
@@ -398,9 +508,8 @@ class NintendoBridge extends XPathAbstract
         if (empty($this->lastId)) {
             return null;
         }
-        $country = $this->getInput('country');
         $category = $this->getCurrentCategory();
-        $language = $this->getLanguageFromCountry($country);
+        $language = $this->getLanguage();
         return str_replace(
             ['{{id_here}}', '{{label_here}}'],
             [$this->lastId, static::GAME_COUNTRY_DATE_SUBSTRING_PART[$category][$language]],
@@ -438,9 +547,8 @@ class NintendoBridge extends XPathAbstract
 
     protected function formatItemTitle($value)
     {
-        if (false !== strpos($value, ' (')) {
-            $value = substr($value, 0, strpos($value, ' ('));
-        }
+        // Strip release date, e.g. "Ver. 1.2.1 (Released 16 April 2026)" or "Versão 3.0.3 [Lançada no dia 07/02/24]"
+        $value = preg_replace('~ [(\[].*~s', '', $value);
         if ('all' === $this->getInput('category')) {
             $category = $this->getCurrentCategory();
             $categoryName = array_search($category, self::PARAMETERS['']['category']['values']);
@@ -461,9 +569,8 @@ class NintendoBridge extends XPathAbstract
 
     protected function formatItemTimestamp($value)
     {
-        $country = $this->getInput('country');
         $category = $this->getCurrentCategory();
-        $language = $this->getLanguageFromCountry($country);
+        $language = $this->getLanguage();
 
         $aMonthNames = self::FOREIGN_MONTH_NAMES[$language] ?? null;
         if (null !== $aMonthNames) {
@@ -491,8 +598,20 @@ class NintendoBridge extends XPathAbstract
         return $this->getCurrentCategory() . '-' . $this->lastId;
     }
 
-    private function getLanguageFromCountry($country)
+    /**
+     * nintendo.com locale of the current category's page, e.g. de-ch
+     */
+    private function getLocale(): string
     {
-        return (strpos($country, '/') !== false) ? substr($country, strpos($country, '/') + 1) : (self::LANGUAGE_REWRITE[$country] ?? $country);
+        $category = $this->getCurrentCategory();
+        $locale = self::COUNTRY_LOCALE[$this->getInput('country') ?? ''] ?? 'en-gb';
+        $locale = self::LOCALE_FALLBACK[$category][$locale] ?? $locale;
+        // Not every page is translated into every language
+        return isset(self::FEED_SOURCE_URL[$category][substr($locale, 0, 2)]) ? $locale : 'en-gb';
+    }
+
+    private function getLanguage(): string
+    {
+        return substr($this->getLocale(), 0, 2);
     }
 }
