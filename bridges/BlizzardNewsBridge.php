@@ -79,7 +79,8 @@ class BlizzardNewsBridge extends BridgeAbstract
             $item['uri'] = $properties['newsUrl'];
             $item['author'] = $this->filterChars($properties['author']);
             $item['timestamp'] = strtotime($properties['lastUpdated']);
-            $item['enclosures'] = [$properties['staticAsset']['imageUrl']];
+            // The API returns protocol-relative image URLs (//host/path), which FeedItem discards as invalid
+            $item['enclosures'] = [urljoin(self::URI, $properties['staticAsset']['imageUrl'])];
             $item['categories'] = [$this->filterChars($properties['cxpProduct']['title'])];
 
             $this->items[] = $item;
