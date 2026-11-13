@@ -49,11 +49,13 @@ function getContents(
 
     $url = Url::normalizeScheme($url);
 
-    if (! Url::validate($url)) {
+    $ipv6 = (bool) Configuration::getConfig('http', 'enable_ipv6');
+
+    if (! Url::validate($url, $ipv6)) {
         throw new \Exception(sprintf('Invalid URL: %s', $url));
     }
 
-    $urlObject = Url::fromString($url);
+    $urlObject = Url::fromString($url, $ipv6);
     $urlNormalized = $urlObject->normalize();
 
     $config = [
@@ -113,9 +115,12 @@ function getContents(
     $host = $urlObject->getHost();
     if (Ipv4Address::validate($host)) {
         $ip = Ipv4Address::fromString($host);
+    } elseif ($ipv6 && str_starts_with($host, '[')) {
+        // Literal ipv6 address, e.g. http://[2001:db8::1]/
+        $ip = Ipv6Address::fromString(trim($host, '[]'));
     } else {
         // Prevent DNS-rebinding
-        $ip = pick_dns_address(fetch_dns_record($host));
+        $ip = pick_dns_address(fetch_dns_record($host, $ipv6), $ipv6);
         $config['dns'] = [
             // Ipv6 addresses must be enclosed in brackets
             sprintf('%s:%s:%s', $host, $urlObject->getPort(), $ip instanceof Ipv6Address ? '[' . $ip . ']' : $ip),

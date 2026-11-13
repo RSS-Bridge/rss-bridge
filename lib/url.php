@@ -31,9 +31,12 @@ final class Url
         return 'http://' . $url;
     }
 
-    public static function fromString(string $url): self
+    /**
+     * @param bool $allowIpv6 Also accept a literal ipv6 address as host, e.g. http://[2001:db8::1]/
+     */
+    public static function fromString(string $url, bool $allowIpv6 = false): self
     {
-        if (!self::validate($url)) {
+        if (!self::validate($url, $allowIpv6)) {
             throw new UrlException(sprintf('Illegal url: "%s"', $url));
         }
 
@@ -51,10 +54,22 @@ final class Url
             // Intentionally ignoring fragment
     }
 
-    public static function validate(string $url): bool
+    /**
+     * @param bool $allowIpv6 Also accept a literal ipv6 address as host, e.g. http://[2001:db8::1]/
+     */
+    public static function validate(string $url, bool $allowIpv6 = false): bool
     {
         if (strlen($url) > 2500) {
             return false;
+        }
+        if ($allowIpv6) {
+            $ipv6Pattern = '#^https?://'   // scheme
+                . '\[([0-9a-f:.]+)\]'      // literal ipv6 address in brackets
+                . '(:\d+)?'                // optional port
+                . '($|/|\?)#i';            // end of string or slash or question mark
+            if (preg_match($ipv6Pattern, $url, $matches) === 1) {
+                return filter_var($matches[1], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
+            }
         }
         $pattern = '#^https?://'   // scheme
             . '([a-z0-9-]+\.?)+'   // one or more domain names

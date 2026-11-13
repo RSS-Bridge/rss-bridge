@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-function fetch_dns_record(string $host): array
+/**
+ * AAAA records are only looked up when $ipv6 is true (http.enable_ipv6).
+ */
+function fetch_dns_record(string $host, bool $ipv6 = false): array
 {
-    $record = \dns_get_record($host, DNS_A | DNS_AAAA);
+    $record = \dns_get_record($host, $ipv6 ? DNS_A | DNS_AAAA : DNS_A);
 
     if ($record === false) {
         throw new \Exception(sprintf('Failed to fetch dns record: %s', $host));
@@ -19,9 +22,9 @@ function fetch_dns_record(string $host): array
 /**
  * Pick the address to connect to from the records returned by dns_get_record().
  *
- * Ipv4 is preferred. Ipv6 is only used for hosts which have no A records.
+ * Ipv4 is preferred. Ipv6 is only used when $allowIpv6 is true and the host has no A records.
  */
-function pick_dns_address(array $records): IpAddress
+function pick_dns_address(array $records, bool $allowIpv6 = false): IpAddress
 {
     $ipv4 = [];
     $ipv6 = [];
@@ -36,11 +39,11 @@ function pick_dns_address(array $records): IpAddress
     if ($ipv4) {
         return Ipv4Address::fromString($ipv4[array_rand($ipv4)]);
     }
-    if ($ipv6) {
+    if ($ipv6 && $allowIpv6) {
         return Ipv6Address::fromString($ipv6[array_rand($ipv6)]);
     }
 
-    throw new \Exception('No A or AAAA records found');
+    throw new \Exception($allowIpv6 ? 'No A or AAAA records found' : 'No A records found');
 }
 
 abstract class IpAddress

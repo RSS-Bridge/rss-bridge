@@ -66,6 +66,11 @@ allow_private_addresses = false
 ; 0.0.0.0/8, 169.254.0.0/16, 127.0.0.0/8, 240.0.0.0/4, ::1/128, fe80::/10
 allow_reserved_addresses = false
 
+; Whether to support ipv6: look up AAAA records for hosts without A records
+; and accept urls with a literal ipv6 address (e.g. http://[2001:db8::1]/).
+; The two settings above apply to ipv6 addresses too.
+enable_ipv6 = false
+
 [cache]
 
 ; Cache type: file, sqlite, memcached, array, null
