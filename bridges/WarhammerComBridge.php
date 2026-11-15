@@ -28,10 +28,19 @@ class WarhammerComBridge extends BridgeAbstract
         $json = json_decode($json);
 
         foreach ($json->news as $article) {
-            $articleurl = static::URI . $article->uri;
+            $articleurl = $this->getArticleUrl($article);
 
-            $fullarticle = getSimpleHTMLDOMCached($articleurl);
-            $content = $fullarticle->find('.article-content', 0);
+            $content = null;
+            try {
+                $fullarticle = getSimpleHTMLDOMCached($articleurl);
+                $content = $fullarticle->find('.article-content', 0);
+            } catch (\Exception $e) {
+                // Fall back to the excerpt below if the article page can't be fetched
+            }
+
+            if (!$content && !empty($article->excerpt)) {
+                $content = $article->excerpt;
+            }
 
             $categories = [];
             foreach ($article->topics as $topic) {
@@ -40,12 +49,29 @@ class WarhammerComBridge extends BridgeAbstract
 
             $this->items[] = [
                 'title' => $article->title,
-                'uri' => static::URI . $article->uri,
-                'timestamp' => strtotime($article->date),
+                'uri' => $articleurl,
+                'timestamp' => strtotime($article->date_universal ?? $article->date),
                 'content' => $content,
                 'uid' => $article->uuid,
                 'categories' => $categories
             ];
         }
+    }
+
+    /**
+     * The API returns locale-less URIs like /articles/{uuid}/{slug}, which the
+     * site 308-redirects to /{locale}/articles/{uuid}/{slug}/. Build the final
+     * URL directly so the article fetch doesn't fail on the redirect.
+     */
+    private function getArticleUrl($article)
+    {
+        $path = '/' . trim($article->uri, '/') . '/';
+        $locale = $article->site ?? 'en-gb';
+
+        if (!preg_match('#^/[a-z]{2}-[a-z]{2}/#', $path)) {
+            $path = '/' . $locale . $path;
+        }
+
+        return static::URI . $path;
     }
 }
