@@ -152,7 +152,7 @@ class GolemBridge extends FeedExpander
         foreach (
             $article->find('div[id*="adtile"], #job-market, #seminars, iframe, .go-article-header__title, .go-article-header__kicker, .go-label--sponsored,
                         .gbox_affiliate, div.toc, .go-button-bar, .go-alink-list, .go-teaser-block, .go-vh, .go-paywall, .go-index, .go-pagination__list,
-                        .go-gallery .[data-active="false"], .go-article-header__series') as $bad
+                        .go-gallery .[data-active="false"], .go-article-header__series, .go-info-box-container') as $bad
         ) {
             $bad->remove();
         }
