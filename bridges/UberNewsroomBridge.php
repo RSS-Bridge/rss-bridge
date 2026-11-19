@@ -2,7 +2,7 @@
 
 class UberNewsroomBridge extends BridgeAbstract
 {
-    const NAME = 'Uber Newsroom Bridge';
+    const NAME = 'Uber Newsroom';
     const URI = 'https://www.uber.com';
     const URI_API_DATA = 'https://newsroomapi.uber.com/wp-json/newsroom/v1/data?locale=';
     const URI_API_POST = 'https://newsroomapi.uber.com/wp-json/wp/v2/posts/';

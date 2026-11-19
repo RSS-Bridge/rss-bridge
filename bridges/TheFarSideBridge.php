@@ -2,7 +2,7 @@
 
 class TheFarSideBridge extends BridgeAbstract
 {
-    const NAME = 'The Far Side Bridge';
+    const NAME = 'The Far Side';
     const URI = 'https://www.thefarside.com';
     const DESCRIPTION = 'Returns the daily dose';
     const MAINTAINER = 'VerifiedJoseph';

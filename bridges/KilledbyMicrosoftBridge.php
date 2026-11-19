@@ -2,7 +2,7 @@
 
 class KilledbyMicrosoftBridge extends BridgeAbstract
 {
-    const NAME = 'Killed by Microsoft Bridge';
+    const NAME = 'Killed by Microsoft';
     const URI = 'https://killedbymicrosoft.info';
     const DESCRIPTION = 'Lists recently discontinued Microsoft products';
     const MAINTAINER = 'tillcash';

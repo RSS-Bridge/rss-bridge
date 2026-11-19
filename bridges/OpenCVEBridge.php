@@ -3,7 +3,7 @@
 class OpenCVEBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sqrtminusone';
-    const NAME = 'OpenCVE Bridge';
+    const NAME = 'OpenCVE';
     const URI = 'https://opencve.io';
 
     const CACHE_TIMEOUT = 3600; // 1 hour

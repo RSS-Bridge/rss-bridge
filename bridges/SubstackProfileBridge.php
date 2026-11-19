@@ -18,8 +18,10 @@ class SubstackProfileBridge extends BridgeAbstract
     public function collectData()
     {
         $html = getSimpleHTMLDOMCached($this->getURI());
-        preg_match('/<script>window\._preloads\s*= JSON\.parse\("(.+?)"\)\s*<\/script>/', $html, $preg);
-        $json = stripcslashes($preg[1]);
+        if (preg_match('/<script [^>]*id="preloads-json"[^>]*>(.+?)<\/script>/', $html, $preg) !== 1) {
+            throwServerException('Site structure has changed, please review');
+        }
+        $json = $preg[1];
         $profile = json_decode($json, true)['profile'];
 
         $this->name = $profile['name'];

@@ -2,7 +2,7 @@
 
 class DealabsBridge extends PepperBridgeAbstract
 {
-    const NAME = 'Dealabs Bridge';
+    const NAME = 'Dealabs';
     const URI = 'https://www.dealabs.com/';
     const DESCRIPTION = 'Affiche les Deals de Dealabs';
     const MAINTAINER = 'sysadminstory';

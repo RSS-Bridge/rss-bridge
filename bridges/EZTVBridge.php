@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/**
+ * api docs: https://eztv1.xyz/api/
+ */
 class EZTVBridge extends BridgeAbstract
 {
     const MAINTAINER = 'alexAubin';
@@ -97,20 +100,34 @@ class EZTVBridge extends BridgeAbstract
 
     protected function getItemFromTorrent($torrent)
     {
+        $episode_url = $torrent->episode_url ?? null;
+        $torrent_url = $torrent->torrent_url ?? null;
+        $magnet_url = $torrent->magnet_url ?? null;
+
         $item = [];
-        $item['uri'] = $torrent->episode_url ?? $torrent->torrent_url;
+
+        $item['uri'] = $episode_url ?? $torrent_url;
         $item['author'] = $torrent->imdb_id;
         $item['timestamp'] = $torrent->date_released_unix;
         $item['title'] = $torrent->title;
-        $item['enclosures'][] = $torrent->torrent_url;
 
         $thumbnailUri = 'https:' . $torrent->small_screenshot;
         $torrentSize = format_bytes((int) $torrent->size_bytes);
 
-        $item['content'] = $torrent->filename . '<br>File size: '
-        . $torrentSize . '<br><a href="' . $torrent->magnet_url
-        . '">magnet link</a><br><a href="' . $torrent->torrent_url
-        . '">torrent link</a><br><img src="' . $thumbnailUri . '" />';
+        $content = $torrent->filename . '<br>File size: ' . $torrentSize;
+
+        if ($magnet_url) {
+            $content .= '<br><a href="' . $magnet_url . '">magnet link</a>';
+        }
+
+        if ($torrent_url) {
+            $item['enclosures'][] = $torrent_url;
+            $content .= '<br><a href="' . $torrent_url . '">torrent link</a>';
+        }
+
+        $content .= '<br><img src="' . $thumbnailUri . '" />';
+
+        $item['content'] = $content;
 
         return $item;
     }

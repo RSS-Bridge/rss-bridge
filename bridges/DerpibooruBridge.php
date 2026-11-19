@@ -2,7 +2,7 @@
 
 class DerpibooruBridge extends BridgeAbstract
 {
-    const NAME = 'Derpibooru Bridge';
+    const NAME = 'Derpibooru';
     const URI = 'https://derpibooru.org/';
     const DESCRIPTION = 'Returns newest images from a Derpibooru search';
     const CACHE_TIMEOUT = 300; // 5min

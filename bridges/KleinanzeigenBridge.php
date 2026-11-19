@@ -3,7 +3,7 @@
 class KleinanzeigenBridge extends BridgeAbstract
 {
     const MAINTAINER = 'knrdl';
-    const NAME = 'Kleinanzeigen Bridge';
+    const NAME = 'Kleinanzeigen';
     const URI = 'https://www.kleinanzeigen.de';
     const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = '(ebay) Kleinanzeigen';
@@ -50,6 +50,13 @@ class KleinanzeigenBridge extends BridgeAbstract
                 'type' => 'number',
                 'title' => 'how many pages to fetch',
                 'defaultValue' => 2,
+            ],
+            'buyNowEnabled' => [
+                'name' => 'buyItNow',
+                'required' => false,
+                'type' => 'checkbox',
+                'title' => 'whether Buy It Now is offered',
+                'defaultValue' => 'unchecked',
             ]
         ],
         'By profile' => [
@@ -91,10 +98,9 @@ class KleinanzeigenBridge extends BridgeAbstract
         if ($this->queriedContext === 'By profile') {
             for ($i = 1; $i <= $this->getInput('pages'); $i++) {
                 $html = getSimpleHTMLDOM($this->getURI() . '/s-bestandsliste.html?userId=' . $this->getInput('userid') . '&pageNum=' . $i . '&sortingField=SORTING_DATE');
-                $html = defaultLinkTo($html, $this->getURI());
 
                 $foundItem = false;
-                foreach ($html->find('article.aditem') as $element) {
+                foreach ($html->find('article[data-adid]') as $element) {
                     $this->addItem($element);
                     $foundItem = true;
                 }
@@ -116,44 +122,114 @@ class KleinanzeigenBridge extends BridgeAbstract
                     'categoryId' => $categoryId,
                     'pageNum' => $page,
                     'maxPrice' => $this->getInput('maxprice'),
-                    'minPrice' => $this->getInput('minprice')
+                    'minPrice' => $this->getInput('minprice'),
+                    'buyNowEnabled' => $this->getInput('buyNowEnabled'),
                 ]);
 
                 $html = getSimpleHTMLDOM($searchUrl);
-                $html = defaultLinkTo($html, $this->getURI());
 
-                // end of list if returned page is not the expected one
-                if ($html->find('.pagination-current', 0)->plaintext != $page) {
+                if (!$this->collectSearchPage($html, $page)) {
                     break;
-                }
-
-                foreach ($html->find('ul#srchrslt-adtable article.aditem') as $element) {
-                    $this->addItem($element);
                 }
             }
         }
+    }
+
+    private function collectSearchPage($html, $page)
+    {
+        $currentPage = $html->find('.pagination-current, #pagination-container .cursor-default', 0);
+        // A single page of results has no pagination controls.
+        if (($currentPage && trim($currentPage->plaintext) != $page) || (!$currentPage && $page > 1)) {
+            return false;
+        }
+
+        $elements = $html->find('#srchrslt-adtable article[data-adid]');
+        foreach ($elements as $element) {
+            $this->addItem($element);
+        }
+        return count($elements) > 0;
     }
 
     private function addItem($element)
     {
         $item = [];
 
+        $item['content'] = '';
+
+        $json = $element->find('script[type="application/ld+json"]', 0);
+        if ($json) {
+            $data = Json::decode($json->innertext);
+            $item['title'] = $data['title'];
+            $item['content'] .= '<p>' . e($data['description']) . '</p>';
+        } else {
+            $item['title'] = $element->find('h2, h3', 0)->plaintext;
+            $item['content'] .= $element->find('.aditem-main--middle--description', 0);
+        }
+
+        $calendar = $element->find('svg[data-title="calendarOutline"]', 0);
+        if ($element->find('h3', 0)) {
+            $location = $element->find('svg[data-title="locationOutline"]', 0);
+            if ($location) {
+                $item['content'] .= '<p>' . $location->parent()->plaintext . '</p>';
+            }
+            if ($calendar) {
+                $item['content'] .= '<p>' . $calendar->parent()->plaintext . '</p>';
+            }
+            foreach ($element->find('p') as $index => $paragraph) {
+                // The first paragraph is the short version of the JSON description.
+                if ($json && $index === 0) {
+                    continue;
+                }
+                foreach ($paragraph->find('.line-through') as $oldPrice) {
+                    $oldPrice->outertext = '<s>' . $oldPrice->innertext . '</s>';
+                }
+                if ($paragraph->hasClass('line-through')) {
+                    $item['content'] .= '<s>' . $paragraph . '</s>';
+                } else {
+                    $item['content'] .= $paragraph;
+                }
+            }
+        }
+
+        if ($element->find('.aditem-main--top', 0)) {
+            $item['content'] .= $element->find('.aditem-main--top', 0);
+        }
+
+        if ($element->find('.aditem-main--middle--price-shipping', 0)) {
+            $item['content'] .= preg_replace(
+                '#(<p\s+class="aditem-main--middle--price-shipping--old-price"[^>]*>.*?</p>)#si',
+                '<s>$1</s>',
+                $element->find('.aditem-main--middle--price-shipping', 0)
+            );
+        }
+
+        if ($element->find('.aditem-main--bottom', 0)) {
+            $item['content'] .= $element->find('.aditem-main--bottom', 0);
+        }
+
+        $item['content'] = sanitize($item['content'], ['script', 'iframe', 'input', 'form', 'svg']);
+
         $item['uid'] = $element->getAttribute('data-adid');
-        $item['uri'] = $element->getAttribute('data-href');
+        $item['uri'] = urljoin($this->getURI(), $element->getAttribute('data-href'));
 
-        $item['title'] = $element->find('h2', 0)->plaintext;
-        $item['timestamp'] = $element->find('div.aditem-main--top--right', 0)->plaintext;
-        $imgUrl = str_replace(
-            'rule=$_2.JPG',
-            'rule=$_57.JPG',
-            str_replace(
-                'rule=$_35.JPG',
-                'rule=$_57.JPG',
-                $element->find('img', 0) ? $element->find('img', 0)->getAttribute('src') : ''
-            )
-        ); //enhance img quality
+        $date = $element->find('div.aditem-main--top--right', 0);
+        $dateString = trim($calendar ? $calendar->parent()->plaintext : ($date ? $date->plaintext : ''));
+        if ($dateString) {
+                $dateString = str_ireplace(
+                    ['Gestern', 'Heute'],
+                    ['yesterday', 'today'],
+                    $dateString
+                );
 
-        $item['content'] = '<img src="' . $imgUrl . '"/>' . $element->find('div.aditem-main', 0)->outertext;
+                $item['timestamp'] = strtotime($dateString);
+        } else {
+            $item['timestamp']  = time();
+        }
+
+        if ($element->find('img', 0)) {
+            //enhance img quality. Cannot use convertLazyLoading() here due to non-standard URI suffix in srcset.
+            $item['enclosures'] = [preg_replace('/rule=\$_\d+\.AUTO/i', 'rule=$_57.AUTO', $element->find('img', 0)->getAttribute('src')) . '#.image'];
+        };
 
         $this->items[] = $item;
     }

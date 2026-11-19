@@ -64,18 +64,22 @@ final class CurlHttpClient implements HttpClient
 {
     public function request(string $url, array $config = []): Response
     {
+        // Remove null values
+        $config = array_filter($config, fn ($value) => $value !== null);
+
         $ch = curl_init($url);
 
         $defaultConfig = [
             'useragent' => null,
-            'timeout' => 5,
+            'timeout' => 3,
             'headers' => [],
             'proxy' => null,
             'curl_options' => [],
             'if_not_modified_since' => null,
-            'retries' => 2,
+            'retries' => 0,
             'max_filesize' => null,
-            'max_redirections' => 5,
+            'follow' => false,
+            'dns' => [],
         ];
 
         // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
@@ -95,7 +99,7 @@ final class CurlHttpClient implements HttpClient
         } else {
             $defaultConfig['useragent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0';
             curl_setopt($ch, CURLOPT_HEADER, false);
-            $headers = array_merge($defaultHeaders, $config['headers']);
+            $headers = array_merge($defaultHeaders, $config['headers'] ?? []);
             $config = array_merge($defaultConfig, $config);
             $config['headers'] = $headers;
         }
@@ -110,11 +114,16 @@ final class CurlHttpClient implements HttpClient
             curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, $config['max_redirections']);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $config['follow']);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
         curl_setopt($ch, CURLOPT_ENCODING, '');
         curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+        if ($config['dns']) {
+            curl_setopt($ch, CURLOPT_RESOLVE, $config['dns']);
+        }
 
         if ($config['max_filesize']) {
             // This option inspects the Content-Length header
@@ -192,7 +201,12 @@ final class CurlHttpClient implements HttpClient
         }
 
         $statusCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        curl_close($ch);
+        if (PHP_VERSION_ID >= 80000) {
+            unset($ch);
+        } else {
+            // TODO: remove after PHP minimum version >= 8
+            curl_close($ch);
+        }
         return new Response($body, $statusCode, $responseHeaders);
     }
 }

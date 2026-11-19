@@ -59,22 +59,29 @@
                     ><?= strip_tags($item['title']) ?></a>
                 </h2>
 
-                <?php if ($item['timestamp']): ?>
-                    <time datetime="<?= date('Y-m-d H:i:s', $item['timestamp']) ?>">
-                        <?= date('Y-m-d H:i:s', $item['timestamp']) ?>
-                    </time>
-                    <p></p>
-                <?php endif; ?>
+                <div class="item-meta">
+                    <?php if ($item['timestamp']): ?>
+                        <p>
+                            <time datetime="<?= date('Y-m-d H:i:s', $item['timestamp']) ?>">
+                                <?= date('Y-m-d H:i:s', $item['timestamp']) ?>
+                            </time>
+                        </p>
+                    <?php endif; ?>
 
-                <?php if ($item['author']): ?>
-                    <p class="author">by: <?= e($item['author']) ?></p>
-                <?php endif; ?>
+                    <?php if ($item['author']): ?>
+                        <p class="author">
+                            by: <?= e($item['author']) ?>
+                        </p>
+                    <?php endif; ?>
+                </div>
 
-                <!-- Intentionally not escaping for html context -->
-                <?= break_annoying_html_tags($item['content']) ?>
+                <div class="item-content">
+                    <!-- Intentionally not escaping for html context -->
+                    <?= break_annoying_html_tags($item['content']) ?>
+                </div>
 
                 <?php if ($item['enclosures']): ?>
-                    <div class="attachments">
+                    <div class="item-attachments">
                         <p>Attachments:</p>
                         <?php foreach ($item['enclosures'] as $enclosure): ?>
                             <li class="enclosure">
@@ -87,7 +94,7 @@
                 <?php endif; ?>
 
                 <?php if ($item['categories']): ?>
-                    <div class="categories">
+                    <div class="item-categories">
                         <p>Categories:</p>
                         <?php foreach ($item['categories'] as $category): ?>
                             <li class="category"><?= e($category) ?></li>

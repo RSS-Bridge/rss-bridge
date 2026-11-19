@@ -6,7 +6,7 @@ You must fix those issues before the pull request will be merged.
 Refer to [phpcs.xml](https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml) for a complete list of policies enforced by Travis-CI.
 
 If you want to run the checks locally, make sure you have
-[`phpcs`](https://github.com/squizlabs/PHP_CodeSniffer) and
+[`phpcs`](https://github.com/PHPCSStandards/PHP_CodeSniffer) and
 [`phpunit`](https://phpunit.de/) installed on your machine and run following commands in the root directory of RSS-Bridge (tested on Debian):
 
 ```console
@@ -43,7 +43,7 @@ Each PHP/CSS/HTML file must end with a new line at the end of a file.
 
 </div></details><br>
 
-_Reference_: [`PSR2.Files.EndFileNewline`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/Files/EndFileNewlineSniff.php)
+_Reference_: [`PSR2.Files.EndFileNewline`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/Files/EndFileNewlineSniff.php)
 
 ## Do not add a whitespace before a semicolon
 
@@ -65,13 +65,13 @@ echo 'Hello World!';
 
 </div></details><br>
 
-_Reference_: [`Squiz.WhiteSpace.SemicolonSpacing`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/SemicolonSpacingSniff.php)
+_Reference_: [`Squiz.WhiteSpace.SemicolonSpacing`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/SemicolonSpacingSniff.php)
 
 ## Do not add whitespace at start or end of a file or end of a line
 
 Whitespace at the end of lines or at the start or end of a file is invisible to the reader and absolutely unnecessary. Thus it must be removed.
 
-_Reference_: [`Squiz.WhiteSpace.SuperfluousWhitespace`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/SuperfluousWhitespaceSniff.php)
+_Reference_: [`Squiz.WhiteSpace.SuperfluousWhitespace`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/SuperfluousWhitespaceSniff.php)
 
 # Indentation
 ## Use spaces indentation
@@ -102,7 +102,7 @@ echo 'Hello World!';
 
 </div></details><br>
 
-_Reference_: [`Squiz.Strings.DoubleQuoteUsage`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/Strings/DoubleQuoteUsageSniff.php)
+_Reference_: [`Squiz.Strings.DoubleQuoteUsage`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/Strings/DoubleQuoteUsageSniff.php)
 
 ## Add spaces around the concatenation operator
 
@@ -145,7 +145,7 @@ $text = $greeting
 
 </div></details><br>
 
-_Reference_: [`Squiz.Strings.ConcatenationSpacing`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/Strings/ConcatenationSpacingSniff.php)
+_Reference_: [`Squiz.Strings.ConcatenationSpacing`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/Strings/ConcatenationSpacingSniff.php)
 
 ## Use a single string instead of concatenating
 
@@ -167,7 +167,7 @@ $text = 'This is a good idea!';
 
 </div></details><br>
 
-_Reference_: [`Generic.Strings.UnnecessaryStringConcat`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Strings/UnnecessaryStringConcatSniff.php)
+_Reference_: [`Generic.Strings.UnnecessaryStringConcat`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Strings/UnnecessaryStringConcatSniff.php)
 
 # Constants
 
@@ -193,7 +193,7 @@ const PI = 3.14;
 
 </div></details><br>
 
-_Reference_: [`Generic.NamingConventions.UpperCaseConstantName`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/NamingConventions/UpperCaseConstantNameSniff.php)
+_Reference_: [`Generic.NamingConventions.UpperCaseConstantName`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/NamingConventions/UpperCaseConstantNameSniff.php)
 
 # Keywords
 ## Use lowercase for `true`, `false` and `null`
@@ -220,7 +220,7 @@ if($condition === true && $error === false) {
 
 </div></details><br>
 
-_Reference_: [`Generic.PHP.LowerCaseConstant`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/PHP/LowerCaseConstantSniff.php)
+_Reference_: [`Generic.PHP.LowerCaseConstant`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/PHP/LowerCaseConstantSniff.php)
 
 # Operators
 ## Operators must have a space around them
@@ -243,7 +243,7 @@ $text = 'Hello ' . $name . '!';
 
 </div></details><br>
 
-_Reference_: [`Squiz.WhiteSpace.OperatorSpacing`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/OperatorSpacingSniff.php)
+_Reference_: [`Squiz.WhiteSpace.OperatorSpacing`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/OperatorSpacingSniff.php)
 
 # Functions
 ## Parameters with default values must appear last in functions
@@ -266,7 +266,7 @@ function showTitle($title, $duration = 60000) { ... }
 
 </div></details><br>
 
-_Reference_: [`PEAR.Functions.ValidDefaultValue`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/PEAR/Sniffs/Functions/ValidDefaultValueSniff.php)
+_Reference_: [`PEAR.Functions.ValidDefaultValue`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/PEAR/Sniffs/Functions/ValidDefaultValueSniff.php)
 
 ## Calling functions
 
@@ -362,7 +362,7 @@ $result = my_function($param1, $param2);
 
 </div></details><br>
 
-_Reference_: [`Generic.Functions.FunctionCallArgumentSpacing`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Functions/FunctionCallArgumentSpacingSniff.php)
+_Reference_: [`Generic.Functions.FunctionCallArgumentSpacing`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Functions/FunctionCallArgumentSpacingSniff.php)
 
 ## Do not add spaces after opening or before closing bracket
 
@@ -384,7 +384,7 @@ if($condition) { ... }
 
 </div></details><br>
 
-_Reference_: [`PSR2.ControlStructures.ControlStructureSpacing`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/ControlStructures/ControlStructureSpacingSniff.php)
+_Reference_: [`PSR2.ControlStructures.ControlStructureSpacing`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/ControlStructures/ControlStructureSpacingSniff.php)
 
 # Structures
 ## Structures must always be formatted as multi-line blocks
@@ -454,7 +454,7 @@ if($condition) {
 
 </div></details><br>
 
-_Reference_: [`Squiz.ControlStructures.ControlSignature`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/ControlStructures/ControlSignatureSniff.php)
+_Reference_: [`Squiz.ControlStructures.ControlSignature`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/ControlStructures/ControlSignatureSniff.php)
 
 # If-Statements
 ## Use `elseif` instead of `else if`
@@ -485,7 +485,7 @@ if($conditionA) {
 
 </div></details><br>
 
-_Reference_: [`PSR2.ControlStructures.ElseIfDeclaration`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/ControlStructures/ElseIfDeclarationSniff.php)
+_Reference_: [`PSR2.ControlStructures.ElseIfDeclaration`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/ControlStructures/ElseIfDeclarationSniff.php)
 
 ## Do not write empty statements
 
@@ -513,7 +513,7 @@ if(!$condition) {
 
 </div></details><br>
 
-_Reference_: [`Generic.CodeAnalysis.EmptyStatement`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/EmptyStatementSniff.php)
+_Reference_: [`Generic.CodeAnalysis.EmptyStatement`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/EmptyStatementSniff.php)
 
 ## Do not write unconditional if-statements
 
@@ -529,7 +529,7 @@ if(true) {
 
 </div></details><br>
 
-_Reference_: [`Generic.CodeAnalysis.UnconditionalIfStatement`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/UnconditionalIfStatementSniff.php)
+_Reference_: [`Generic.CodeAnalysis.UnconditionalIfStatement`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/UnconditionalIfStatementSniff.php)
 
 # Classes
 ## Use PascalCase for class names
@@ -552,7 +552,7 @@ class MySuperClass { ... }
 
 </div></details><br>
 
-_Reference_: [`PEAR.NamingConventions.ValidClassName`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/PEAR/Sniffs/NamingConventions/ValidClassNameSniff.php)
+_Reference_: [`PEAR.NamingConventions.ValidClassName`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/PEAR/Sniffs/NamingConventions/ValidClassNameSniff.php)
 
 ## Do not use final statements inside final classes
 
@@ -582,7 +582,7 @@ final class MyClass {
 
 </div></details><br>
 
-_Reference_: [`Generic.CodeAnalysis.UnnecessaryFinalModifier`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/UnnecessaryFinalModifierSniff.php)
+_Reference_: [`Generic.CodeAnalysis.UnnecessaryFinalModifier`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/UnnecessaryFinalModifierSniff.php)
 
 ## Do not override methods to call their parent
 
@@ -610,7 +610,7 @@ class MyClass extends BaseClass {
 
 </div></details><br>
 
-_Reference_: [`Generic.CodeAnalysis.UselessOverridingMethod`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/UselessOverridingMethodSniff.php)
+_Reference_: [`Generic.CodeAnalysis.UselessOverridingMethod`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/CodeAnalysis/UselessOverridingMethodSniff.php)
 
 ## abstract and final declarations MUST precede the visibility declaration
 
@@ -638,7 +638,7 @@ class MyClass extends BaseClass {
 
 </div></details><br>
 
-_Reference_: [`PSR2.Methods.MethodDeclaration`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/Methods/MethodDeclarationSniff.php)
+_Reference_: [`PSR2.Methods.MethodDeclaration`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/Methods/MethodDeclarationSniff.php)
 
 ## static declaration MUST come after the visibility declaration
 
@@ -664,7 +664,7 @@ class MyClass extends BaseClass {
 
 </div></details><br>
 
-_Reference_: [`PSR2.Methods.MethodDeclaration`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/Methods/MethodDeclarationSniff.php)
+_Reference_: [`PSR2.Methods.MethodDeclaration`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/PSR2/Sniffs/Methods/MethodDeclarationSniff.php)
 
 # Casting
 ## Do not add spaces when casting
@@ -687,7 +687,7 @@ $text = (string)$number;
 
 </div></details><br>
 
-_Reference_: [`Squiz.WhiteSpace.CastSpacing`](https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/CastSpacingSniff.php)
+_Reference_: [`Squiz.WhiteSpace.CastSpacing`](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/CastSpacingSniff.php)
 
 # Arrays
 ## Always use the short array syntax

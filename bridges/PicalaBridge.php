@@ -8,7 +8,7 @@ class PicalaBridge extends BridgeAbstract
         'Tests'      => 'tests',
         'Pratique'   => 'pratique',
     ];
-    const NAME          = 'Picala Bridge';
+    const NAME          = 'Picala';
     const URI           = 'https://www.picala.fr';
     const DESCRIPTION   = 'Dernière nouvelles du média indépendant sur le vélo électrique';
     const MAINTAINER    = 'Chouchen';

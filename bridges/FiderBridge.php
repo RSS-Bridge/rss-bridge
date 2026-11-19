@@ -2,7 +2,7 @@
 
 class FiderBridge extends BridgeAbstract
 {
-    const NAME = 'Fider Bridge';
+    const NAME = 'Fider';
     const URI = 'https://fider.io/';
     const DESCRIPTION = 'Bridge for any Fider instance';
     const MAINTAINER = 'Oliver Nutter';

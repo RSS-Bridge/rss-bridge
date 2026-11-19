@@ -2,7 +2,7 @@
 
 class ItakuBridge extends BridgeAbstract
 {
-    const NAME = 'Itaku.ee Bridge';
+    const NAME = 'Itaku.ee';
     const URI = 'https://itaku.ee';
     const CACHE_TIMEOUT = 900; // 15mn
     const MAINTAINER = 'mruac';

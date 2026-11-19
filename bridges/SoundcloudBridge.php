@@ -3,7 +3,7 @@
 class SoundCloudBridge extends BridgeAbstract
 {
     const MAINTAINER = 'kranack, Roliga';
-    const NAME = 'Soundcloud Bridge';
+    const NAME = 'Soundcloud';
     const URI = 'https://soundcloud.com/';
     const CACHE_TIMEOUT = 600; // 10min
     const DESCRIPTION = 'Returns 10 newest music from user profile';

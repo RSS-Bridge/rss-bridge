@@ -3,7 +3,7 @@
 class FindACrewBridge extends BridgeAbstract
 {
     const MAINTAINER = 'couraudt';
-    const NAME = 'Find A Crew Bridge';
+    const NAME = 'Find A Crew';
     const URI = 'https://www.findacrew.net';
     const DESCRIPTION = 'Returns the newest sailing offers.';
     const PARAMETERS = [

@@ -2,7 +2,7 @@
 
 class BazarakiBridge extends BridgeAbstract
 {
-    const NAME = 'Bazaraki Bridge';
+    const NAME = 'Bazaraki';
     const URI = 'https://bazaraki.com';
     const DESCRIPTION = 'Fetch adverts from Bazaraki, a Cyprus-based classifieds website.';
     const MAINTAINER = 'danwain';

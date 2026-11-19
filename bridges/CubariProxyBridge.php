@@ -12,9 +12,14 @@ class CubariProxyBridge extends BridgeAbstract
             'type' => 'list',
             'defaultValue' => 'mangadex',
             'values' => [
+                'GitHub Gist' => 'gist',
+                'Guya' => 'guya',
+                'Image Chest' => 'imgchest',
+                'Imgur' => 'imgur',
                 'MangAventure' => 'mangadventure',
                 'MangaDex' => 'mangadex',
                 'MangaKatana' => 'mangakatana',
+                'NHentai' => 'nhentai',
                 'WeebCentral' => 'weebcentral',
             ]
         ],
@@ -44,6 +49,9 @@ class CubariProxyBridge extends BridgeAbstract
         $limit = $this->getInput('limit') ?? 10;
 
         $url = parent::getURI() . '/read/api/' . $this->getInput('service') . '/series/' . $this->getInput('series');
+        if ($this->getInput('service') == 'guya') {
+            $url = str_replace('/read/manga/', '/api/series/', $this->getinput('series'));
+        }
         $json = Json::decode(getContents($url));
         $this->title = $json['title'];
 
@@ -68,21 +76,28 @@ class CubariProxyBridge extends BridgeAbstract
                 $item['timestamp'] = $date;
                 $group = array_keys($dates, $date)[0];
             }
-            $page = $element['groups'][$group];
+            $pages = $element['groups'][$group];
             $item['author'] = $json['groups'][$group];
-            $api = parent::getURI() . $page;
-            $item['uid'] = $page;
-            $item['comments'] = $api;
+            $item['uid'] = $pages;
+            if (isset($element['folder'])) {
+                $folder = $element['folder'];
+                $prefix = str_replace('/read/manga/', '/media/manga/', $this->getinput('series')) . "/chapters/$folder/$group/";
+                $pages = array_map(fn($item) => $prefix . $item, $pages);
+                $item['uid'] = $prefix;
+            }
 
             if ($this->getInput('fetch') != 'n') {
-                $pages = [];
-                try {
-                    $jsonp = getContents($api);
-                    $pages = Json::decode($jsonp);
-                } catch (HttpException $e) {
-                    // allow error 500, as it's effectively a 429
-                    if ($e->getCode() != 500) {
-                        throw $e;
+                if (!is_array($pages)) {
+                    $api = parent::getURI() . $pages;
+                    $item['comments'] = $api;
+                    try {
+                        $jsonp = getContents($api);
+                        $pages = Json::decode($jsonp);
+                    } catch (HttpException $e) {
+                        // allow error 500, as it's effectively a 429
+                        if ($e->getCode() != 500) {
+                            throw $e;
+                        }
                     }
                 }
                 if ($this->getInput('fetch') == 'e') {
@@ -91,6 +106,9 @@ class CubariProxyBridge extends BridgeAbstract
                 if ($this->getInput('fetch') == 'c') {
                     $item['content'] = '';
                     foreach ($pages as $img) {
+                        if (isset($img['src'])) {
+                            $img = $img['src'];
+                        }
                         $item['content'] .= '<img src="' . $img . '"/>';
                     }
                 }
@@ -118,6 +136,9 @@ class CubariProxyBridge extends BridgeAbstract
         $uri = parent::getURI();
         if ($this->getInput('service')) {
             $uri .= '/read/' . $this->getInput('service') . '/' . $this->getInput('series');
+            if ($this->getInput('service') == 'guya') {
+                $uri = $this->getinput('series');
+            }
         }
         return $uri;
     }

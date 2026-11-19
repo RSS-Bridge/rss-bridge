@@ -2,7 +2,7 @@
 
 class ABCNewsBridge extends BridgeAbstract
 {
-    const NAME = 'ABC News Bridge';
+    const NAME = 'ABC News';
     const URI = 'https://www.abc.net.au';
     const DESCRIPTION = 'Topics of the Australian Broadcasting Corporation';
     const MAINTAINER = 'yue-dongchen';

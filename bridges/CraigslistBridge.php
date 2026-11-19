@@ -2,7 +2,7 @@
 
 class CraigslistBridge extends BridgeAbstract
 {
-    const NAME = 'Craigslist Bridge';
+    const NAME = 'Craigslist';
     const URI = 'https://craigslist.org/';
     const DESCRIPTION = 'Returns craigslist search results';
 

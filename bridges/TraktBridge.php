@@ -2,7 +2,7 @@
 
 class TraktBridge extends BridgeAbstract
 {
-    const NAME = 'Trakt Bridge';
+    const NAME = 'Trakt';
     const DESCRIPTION = "Returns a user's watch history";
     const URI = 'https://www.trakt.tv';
 

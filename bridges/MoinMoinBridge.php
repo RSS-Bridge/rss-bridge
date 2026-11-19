@@ -3,7 +3,7 @@
 class MoinMoinBridge extends BridgeAbstract
 {
     const MAINTAINER = 'logmanoriginal';
-    const NAME = 'MoinMoin Bridge';
+    const NAME = 'MoinMoin';
     const URI = 'https://moinmo.in';
     const DESCRIPTION = 'Generates feeds for pages of a MoinMoin (compatible) wiki';
     const PARAMETERS = [

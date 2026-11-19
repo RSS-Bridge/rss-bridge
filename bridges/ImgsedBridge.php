@@ -3,7 +3,7 @@
 class ImgsedBridge extends BridgeAbstract
 {
     const MAINTAINER = 'sysadminstory';
-    const NAME = 'Imgsed Bridge';
+    const NAME = 'Imgsed';
     const URI = 'https://imgsed.com/';
     const INSTAGRAMURI = 'https://www.instagram.com/';
     const CACHE_TIMEOUT = 3600; // 1h
@@ -269,7 +269,7 @@ HTML,
                 $typesText .= ' & ' . $types[$i];
             }
 
-            return 'Username ' . $this->getInput('u') . ' - ' . $typesText . ' - Imgsed Bridge';
+            return 'Username ' . $this->getInput('u') . ' - ' . $typesText . ' - Imgsed';
         }
         return parent::getName();
     }

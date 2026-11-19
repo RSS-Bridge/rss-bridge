@@ -105,13 +105,23 @@ class AppleMusicBridge extends BridgeAbstract
             return parent::getIcon();
         }
 
-        // it isn't necessary to set the correct artist name into the url
-        $url = 'https://music.apple.com/us/artist/jon-bellion/' . $this->getInput('artist');
-        $html = getSimpleHTMLDOMCached($url);
-        $image = $html->find('meta[property="og:image"]', 0)->content;
+        try {
+            // Apple redirects (301) if the artist name in the url is wrong, so use the canonical link
+            $lookup = json_decode(getContents('https://itunes.apple.com/lookup?id=' . urlencode($this->getInput('artist'))));
+            $url = strtok($lookup->results[0]->artistLinkUrl ?? '', '?');
+            if (!$url) {
+                return parent::getIcon();
+            }
 
-        $imageUpdatedSize = preg_replace('/\/\d*x\d*cw/i', '/144x144-999', $image);
+            $html = getSimpleHTMLDOMCached($url);
+            $meta = $html->find('meta[property="og:image"]', 0);
+            if (!$meta) {
+                return parent::getIcon();
+            }
 
-        return $imageUpdatedSize;
+            return preg_replace('/\/\d*x\d*cw/i', '/144x144-999', $meta->content);
+        } catch (\Exception $e) {
+            return parent::getIcon();
+        }
     }
 }

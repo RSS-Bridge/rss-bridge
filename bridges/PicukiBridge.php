@@ -3,7 +3,7 @@
 class PicukiBridge extends BridgeAbstract
 {
     const MAINTAINER = 'marcus-at-localhost';
-    const NAME = 'Picuki Bridge';
+    const NAME = 'Picuki';
     const URI = 'https://www.picuki.com/';
     const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = 'Returns Picuki (Instagram viewer) posts by user and by hashtag';
@@ -117,11 +117,11 @@ class PicukiBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('u'))) {
-            return $this->getInput('u') . ' - Picuki Bridge';
+            return $this->getInput('u') . ' - Picuki';
         }
 
         if (!is_null($this->getInput('h'))) {
-            return $this->getInput('h') . ' - Picuki Bridge';
+            return $this->getInput('h') . ' - Picuki';
         }
 
         return parent::getName();

@@ -2,7 +2,7 @@
 
 class YouTubeCommunityTabBridge extends BridgeAbstract
 {
-    const NAME = 'YouTube Posts Tab Bridge';
+    const NAME = 'YouTube Posts Tab';
     const URI = 'https://www.youtube.com';
     const DESCRIPTION = 'Returns posts from a channel\'s posts tab';
     const MAINTAINER = 'VerifiedJoseph';
@@ -238,10 +238,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
                     $this->itemTitle = $this->feedName . ' posted a video';
                 }
 
-                $content = <<<EOD
-<iframe width="100%" height="410" src="https://www.youtube.com/embed/{$attachments->videoRenderer->videoId}" 
-frameborder="0" allow="encrypted-media;" allowfullscreen referrerpolicy="strict-origin"></iframe>
-EOD;
+                $content = handleYoutube($attachments->videoRenderer->videoId);
             } elseif (isset($attachments->backstageImageRenderer)) {
                 // Image
                 if (empty($this->itemTitle)) {

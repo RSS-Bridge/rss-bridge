@@ -193,7 +193,8 @@ class BukowskisBridge extends BridgeAbstract
         $this->title = htmlspecialchars_decode($html->find('title', 0)->innertext);
 
         foreach ($html->find('div.c-lot-index-lot') as $lot) {
-            $title = $lot->find('a.c-lot-index-lot__title', 0)->plaintext;
+            $title = $lot->find('div.c-lot-index-lot__title', 0)->plaintext;
+            $artist = $lot->find('div.c-lot-index-lot__artist', 0)->plaintext;
             $relative_url = $lot->find('a.c-lot-index-lot__link', 0)->href;
             $images = json_decode(
                 htmlspecialchars_decode(
@@ -204,7 +205,7 @@ class BukowskisBridge extends BridgeAbstract
             );
 
             $this->items[] = [
-                'title' => $title,
+                'title' => $title . ' ' . $artist,
                 'uri' => $baseUrl . $relative_url,
                 'uid' => $relative_url,
                 'content' => count($images) > 0 ? "<img src='$images[0]'/><br/>$title" : $title,

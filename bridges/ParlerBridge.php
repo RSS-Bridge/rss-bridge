@@ -2,7 +2,7 @@
 
 final class ParlerBridge extends BridgeAbstract
 {
-    const NAME = 'Parler.com bridge';
+    const NAME = 'Parler.com';
     const URI = 'https://parler.com';
     const DESCRIPTION = 'Fetches the latest posts from a parler user';
     const MAINTAINER = 'dvikan';

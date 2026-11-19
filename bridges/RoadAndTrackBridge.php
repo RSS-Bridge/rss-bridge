@@ -3,7 +3,7 @@
 class RoadAndTrackBridge extends BridgeAbstract
 {
     const MAINTAINER = 'teromene';
-    const NAME = 'Road And Track Bridge';
+    const NAME = 'Road And Track';
     const URI = 'https://www.roadandtrack.com/';
     const CACHE_TIMEOUT = 86400; // 24h
     const DESCRIPTION = 'Returns the latest news from Road & Track.';

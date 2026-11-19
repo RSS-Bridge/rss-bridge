@@ -2,7 +2,7 @@
 
 class InternetArchiveBridge extends BridgeAbstract
 {
-    const NAME = 'Internet Archive Bridge';
+    const NAME = 'Internet Archive';
     const URI = 'https://archive.org';
     const DESCRIPTION = 'Returns newest uploads, posts and more from an account';
     const MAINTAINER = 'VerifiedJoseph';

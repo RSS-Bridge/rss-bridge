@@ -15,6 +15,8 @@ final class FeedParser
 {
     public function parseFeed(string $xmlString): array
     {
+        $xmlString = self::prepareXml($xmlString);
+
         libxml_use_internal_errors(true);
         $xml = simplexml_load_string(trim($xmlString));
         $xmlErrors = libxml_get_errors();
@@ -85,6 +87,20 @@ final class FeedParser
         return $feed;
     }
 
+    private static function prepareXml(string $xmlString): string
+    {
+        // Remove Unicode BOM
+        $bom = pack('H*', 'EFBBBF');
+        $xmlString = preg_replace("/^$bom/", '', $xmlString);
+
+        $problematicStrings = [
+            '&nbsp;',
+            '&raquo;',
+            '&rsquo;',
+        ];
+        return str_replace($problematicStrings, '', $xmlString);
+    }
+
     public function parseAtomItem(\SimpleXMLElement $feedItem): array
     {
         $item = $this->parseRss2Item($feedItem);
@@ -138,13 +154,16 @@ final class FeedParser
             'timestamp'     => '',
             'author'        => '',
             //'uid'           => null,
-            //'categories'    => [],
+            'categories'    => [],
             //'enclosures'    => [],
         ];
 
         foreach ($feedItem as $k => $v) {
             $hasChildren = count($v) !== 0;
             if (!$hasChildren) {
+                if ($k === 'category') {
+                    $item['categories'][] = (string) $v;
+                }
                 $item[$k] = (string) $v;
             }
         }
@@ -215,6 +234,7 @@ final class FeedParser
 
     public function parseRss1Item(\SimpleXMLElement $feedItem): array
     {
+        // TODO: parse categories
         $item = [
             'uri'           => '',
             'title'         => '',
@@ -222,7 +242,7 @@ final class FeedParser
             'timestamp'     => '',
             'author'        => '',
             //'uid'           => null,
-            //'categories'    => [],
+            'categories'    => [],
             //'enclosures'    => [],
         ];
         if (isset($feedItem->link)) {

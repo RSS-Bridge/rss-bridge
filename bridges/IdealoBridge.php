@@ -2,7 +2,7 @@
 
 class IdealoBridge extends BridgeAbstract
 {
-    const NAME = 'idealo.de / idealo.fr / idealo.es Bridge';
+    const NAME = 'idealo.de / idealo.fr / idealo.es';
     const URI = 'https://www.idealo.de';
     const DESCRIPTION = 'Tracks the price for a product on idealo.de / idealo.fr / idealo.es. Pricealarm if specific price is set';
     const MAINTAINER = 'SebLaus';

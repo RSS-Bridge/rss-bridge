@@ -68,23 +68,22 @@ final class SimpleLogger implements Logger
 
     private function log(int $level, string $message, array $context = []): void
     {
-        $ignoredMessages = [
-            'Format name invalid',
-            'Unknown format given',
-            'Unable to find',
-        ];
-        foreach ($ignoredMessages as $ignoredMessage) {
-            if (str_starts_with($message, $ignoredMessage)) {
-                return;
-            }
-        }
-
         if (isset($context['e'])) {
             /** @var \Throwable $e */
             $e = $context['e'];
 
             if ($e instanceof RateLimitException) {
                 return;
+            }
+            $ignoredMessages = [
+                'Format name invalid',
+                'Unknown format given',
+                'Unable to find',
+            ];
+            foreach ($ignoredMessages as $ignoredMessage) {
+                if (str_starts_with($e->getMessage(), $ignoredMessage)) {
+                    return;
+                }
             }
         }
 

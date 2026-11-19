@@ -2,7 +2,7 @@
 
 class OMonlineBridge extends BridgeAbstract
 {
-    const NAME        = 'OM Online Bridge';
+    const NAME        = 'OM Online';
     const URI         = 'https://www.om-online.de';
     const DESCRIPTION = 'RSS feed for OM Online';
     const MAINTAINER  = 'jummo4@yahoo.de';

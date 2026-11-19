@@ -41,7 +41,7 @@ class MySiteBridge extends FeedExpander
 {
 
     const MAINTAINER = 'No maintainer';
-    const NAME = 'Unnamed bridge';
+    const NAME = 'Unnamed';
     const URI = '';
     const DESCRIPTION = 'No description provided';
     const PARAMETERS = [];

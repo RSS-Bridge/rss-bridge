@@ -2,7 +2,7 @@
 
 class IPBBridge extends FeedExpander
 {
-    const NAME = 'IPB Bridge';
+    const NAME = 'IPB';
     const URI = 'https://www.invisionpower.com';
     const DESCRIPTION = 'Returns feeds for forums powered by IPB';
     const MAINTAINER = 'logmanoriginal';

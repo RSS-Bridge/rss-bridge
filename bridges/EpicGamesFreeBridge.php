@@ -69,7 +69,7 @@ class EpicGamesFreeBridge extends BridgeAbstract
             $item = [
                 'author' => $element['seller']['name'],
                 'content' => $element['description'],
-                'enclosures' => array_map(fn($item) => $item['url'], $element['keyImages']),
+                'enclosures' => array_map(fn($item) => $item['url'] . '#.image', $element['keyImages']), // Force image usage.
                 'timestamp' => strtotime($promo['startDate']),
                 'title' => $element['title'],
                 'uri' => $uri,

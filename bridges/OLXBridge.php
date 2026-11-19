@@ -84,6 +84,13 @@ EOF;
         $html = getSimpleHTMLDOM($this->getURI());
         $html = defaultLinkTo($html, $this->getHostname());
 
+        $listingAds = [];
+        // Possessive repeats avoid exhausting PCRE on large JSON-encoded state strings.
+        if (preg_match('/window\.__PRERENDERED_STATE__\s*=\s*("[^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+")/', (string)$html, $matches)) {
+            $state = Json::decode(Json::decode($matches[1]));
+            $listingAds = array_column($state['listing']['listing']['ads'] ?? [], null, 'id');
+        }
+
         $isoLang = $html->find('meta[http-equiv=Content-Language]', 0)->content;
 
         # the second grid, if any, has extended results from additional categories, outside of original search scope
@@ -114,7 +121,7 @@ EOF;
                 $item['title'] = $post->find('h4', 0)->plaintext;
             }
 
-            # ignore the date component, as it is too convoluted — use the deep-crawled one; see below
+            // Ignore the displayed date; prefer the search data's absolute timestamp.
             $locationAndDate = $post->find('p[data-testid="location-date"]', 0)->plaintext;
             $locationAndDateArray = explode(' - ', $locationAndDate, 2);
             $location = trim($locationAndDateArray[0]);
@@ -145,7 +152,8 @@ EOF;
                 $item['enclosures'] = [$img . '#.image'];
             }
 
-            $isoDate = $articleHTMLContent->find('meta[property="og:updated_time"]', 0)->content ?? false;
+            $isoDate = $listingAds[$post->id]['lastRefreshTime'] ?? $listingAds[$post->id]['createdTime'] ?? null;
+            $isoDate ??= $articleHTMLContent->find('meta[property="og:updated_time"]', 0)->content ?? false;
             if ($isoDate) {
                 $item['timestamp'] = strtotime($isoDate);
             } else {

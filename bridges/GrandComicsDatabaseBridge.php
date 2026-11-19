@@ -3,7 +3,7 @@
 class GrandComicsDatabaseBridge extends BridgeAbstract
 {
     const MAINTAINER = 'corenting';
-    const NAME = 'Grand Comics Database Bridge';
+    const NAME = 'Grand Comics Database';
     const URI = 'https://www.comics.org/';
     const CACHE_TIMEOUT = 7200; // 2h
     const DESCRIPTION = 'Returns the latest comics added to a series timeline';

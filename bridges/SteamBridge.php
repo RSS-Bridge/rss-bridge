@@ -2,7 +2,7 @@
 
 class SteamBridge extends BridgeAbstract
 {
-    const NAME = 'Steam Bridge';
+    const NAME = 'Steam';
     const URI = 'https://store.steampowered.com/';
     const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = 'Returns apps list';

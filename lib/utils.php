@@ -243,7 +243,9 @@ function create_random_string(int $bytes = 16): string
 }
 
 /**
- * Thrown by bridges to indicate user failure. Will not be logged.
+ * Mostly thrown by bridges to indicate user failure
+ *
+ * Will only be logged as debug log record
  */
 final class ClientException extends \Exception
 {

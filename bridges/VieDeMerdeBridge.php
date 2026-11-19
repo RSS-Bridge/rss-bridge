@@ -3,7 +3,7 @@
 class VieDeMerdeBridge extends BridgeAbstract
 {
     const MAINTAINER = 'floviolleau';
-    const NAME = 'VieDeMerde Bridge';
+    const NAME = 'VieDeMerde';
     const URI = 'https://www.viedemerde.fr';
     const DESCRIPTION = 'Returns latest quotes from VieDeMerde.';
     const CACHE_TIMEOUT = 7200;

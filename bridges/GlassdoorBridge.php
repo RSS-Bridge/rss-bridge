@@ -23,7 +23,7 @@ class GlassdoorBridge extends BridgeAbstract
     const PARAM_REVIEW_COMPANY = 'company';
 
     const MAINTAINER = 'logmanoriginal';
-    const NAME = 'Glassdoor Bridge';
+    const NAME = 'Glassdoor';
     const URI = 'https://www.glassdoor.com/';
     const DESCRIPTION = 'Returns feeds for blog posts and company reviews';
     const CACHE_TIMEOUT = 86400; // 24 hours

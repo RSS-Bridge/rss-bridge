@@ -83,6 +83,9 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
             }
         }
 
+        // Make relative URLs in content container absolute
+        defaultLinkTo($divContent, self::URI);
+
         $title = $div->find('.c-title', 0)->innertext;
         $teaser = $div->find('.c-teaser', 0)->innertext;
         $content = $divContent->innertext;

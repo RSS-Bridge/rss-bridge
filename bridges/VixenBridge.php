@@ -2,7 +2,7 @@
 
 class VixenBridge extends BridgeAbstract
 {
-    const NAME = 'Vixen Network Bridge';
+    const NAME = 'Vixen Network';
     const URI = 'https://www.vixen.com';
     const DESCRIPTION = 'Latest videos from Vixen Network sites';
     const MAINTAINER = 'pubak42';

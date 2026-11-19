@@ -43,10 +43,10 @@ max_file_size = 10000000
 [http]
 
 ; Operation timeout in seconds
-timeout = 5
+timeout = 3
 
 ; Operation retry count in case of curl error
-retries = 1
+retries = 0
 
 ; Curl user agent
 ; This is already set by curl-impersonate, which comes included as default 
@@ -56,6 +56,15 @@ retries = 1
 
 ; Max http response size in MB
 max_filesize = 20
+
+; Whether to follow location (careful: enabling this allows SSRF attack)
+follow = false;
+
+; 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+allow_private_addresses = false
+
+; 0.0.0.0/8, 169.254.0.0/16, 127.0.0.0/8, 240.0.0.0/4
+allow_reserved_addresses = false
 
 [cache]
 
@@ -138,6 +147,18 @@ output = "feed"
 ; Defines how often an error must occur before it is reported to the user
 report_limit = 1
 
+[youtube]
+
+; Whether to use an iframe to directly embed YouTube videos in feeds.
+; If false, a clickable video thumbnail is used instead. This avoids sending a referrer to YouTube or only getting the error 153 if suppressing the referrer browser-wide.
+iframe = true
+
+; Use the youtube-nocookie.com domain instead of youtube.com for iframe embeds.
+; Only relevant if youtube.iframe is true.
+; See the following for a description:
+; https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode
+nocookie = false
+
 ; --- Cache specific configuration ---------------------------------------------
 
 [FileCache]
@@ -164,10 +185,29 @@ port = 11211
 
 ; --- Bridge specific configuration ------
 
+[GithubIssueBridge]
+; Personal access token (fine-grained or classic)
+token = ""
+
+[GitHubPullRequestBridge]
+; Personal access token (fine-grained or classic)
+token = ""
+
 [TelegramBridge]
 
 ; Max pages to fetch (1 page => 20 messages), min=1 max=100
 max_pages = 1
+
+[LiveTennisApiBridge]
+
+; Sets the Live Tennis API key the bridge authenticates with. Without one the
+; bridge reports a configuration error instead of producing a feed.
+;
+; Keys are issued at https://livetennisapi.com/. The free tier allows 100
+; requests a day, which the bridge's 15 minute cache timeout stays inside.
+;
+; "" = no key, bridge disabled (default)
+api_key = ""
 
 [DiscogsBridge]
 

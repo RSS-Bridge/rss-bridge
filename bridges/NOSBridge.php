@@ -2,7 +2,7 @@
 
 class NOSBridge extends BridgeAbstract
 {
-    const NAME = 'NOS Nieuws & Sport Bridge';
+    const NAME = 'NOS Nieuws & Sport';
     const URI = 'https://www.nos.nl';
     const DESCRIPTION = 'NOS Nieuws & Sport';
     const MAINTAINER = 'wouterkoch';

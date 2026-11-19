@@ -2,7 +2,7 @@
 
 class FurAffinityBridge extends BridgeAbstract
 {
-    const NAME = 'FurAffinity Bridge';
+    const NAME = 'FurAffinity';
     const URI = 'https://www.furaffinity.net';
     const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = 'Returns posts from various sections of FurAffinity';

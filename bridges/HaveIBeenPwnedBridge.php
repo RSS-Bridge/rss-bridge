@@ -9,7 +9,7 @@
  * */
 class HaveIBeenPwnedBridge extends BridgeAbstract
 {
-    const NAME = 'Have I Been Pwned (HIBP) Bridge';
+    const NAME = 'Have I Been Pwned (HIBP)';
     const URI = 'https://haveibeenpwned.com';
     const DESCRIPTION = 'Returns list of Pwned websites';
     const MAINTAINER = 'VerifiedJoseph';

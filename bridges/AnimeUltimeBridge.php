@@ -125,7 +125,7 @@ class AnimeUltimeBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('type'))) {
-            return 'Latest ' . $this->getKey('type') . ' - Anime-Ultime Bridge';
+            return 'Latest ' . $this->getKey('type') . ' - Anime-Ultime';
         }
 
         return parent::getName();

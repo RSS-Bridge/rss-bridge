@@ -54,6 +54,7 @@ class FeedParserTest extends TestCase
         $this->assertSame('XML: A Disruptive Technology', $item['title']);
         $this->assertSame('http://c.moreover.com/click/here.pl?r123', $item['uri']);
         $this->assertSame('desc', $item['content']);
+        $this->assertSame([], $item['categories']);
     }
 
     public function testRss2()
@@ -74,6 +75,8 @@ class FeedParserTest extends TestCase
                     <description>desc2</description>
                     <pubDate>Tue, 26 Apr 2022 00:00:00 +0200</pubDate>
                     <author>root</author>
+                    <category>cat1</category>
+                    <category>cat2</category>
                     <enclosure url="https://example.com/1.png"></enclosure>
                 </item>
             </channel>
@@ -91,6 +94,7 @@ class FeedParserTest extends TestCase
         $this->assertSame('https://example.com/1', $item['uri']);
         $this->assertSame(1650924000, $item['timestamp']);
         $this->assertSame('root', $item['author']);
+        $this->assertSame(['cat1', 'cat2'], $item['categories']);
         $this->assertSame('desc2', $item['content']);
         $this->assertSame(['https://example.com/1.png'], $item['enclosures']);
     }
@@ -127,6 +131,7 @@ class FeedParserTest extends TestCase
         $this->assertSame('https://example.com/1', $item['uri']);
         $this->assertSame(1446730729, $item['timestamp']);
         $this->assertSame('root', $item['author']);
+        $this->assertSame([], $item['categories']);
         $this->assertSame('html', $item['content']);
     }
 
@@ -156,32 +161,19 @@ class FeedParserTest extends TestCase
         XML;
 
         $feed = $this->sut->parseFeed($xml);
+
+        $this->assertSame([], $feed['items'][0]['categories']);
+
         $expected = [
-            'title' => '',
-            'uri' => '',
-            'icon' => '',
-            'items' => [
-                [
-                    'uri' => '',
-                    'title' => '',
-                    'content' => '',
-                    'timestamp' => '',
-                    'author' => '',
-                    'itunes' => [
-                        'duration' => '30:05',
-                    ],
-                    'enclosure' => [
-                        'url' => 'https://example.com/1.mp3',
-                        'length' => '48123248',
-                        'type' => 'audio/mpeg',
-                    ],
-                    'enclosures' => [
-                        'https://example.com/1.mp3',
-                    ],
-                ]
-            ],
+            'url'       => 'https://example.com/1.mp3',
+            'length'    => '48123248',
+            'type'      => 'audio/mpeg',
         ];
-        $this->assertEquals($expected, $feed);
+        $this->assertSame($expected, $feed['items'][0]['enclosure']);
+
+        $this->assertSame(['https://example.com/1.mp3'], $feed['items'][0]['enclosures']);
+
+        $this->assertSame(['duration' => '30:05'], $feed['items'][0]['itunes']);
     }
 
     public function testYoutubeMediaModule()
@@ -226,40 +218,22 @@ class FeedParserTest extends TestCase
         XML;
 
         $feed = $this->sut->parseFeed($xml);
+
+        $this->assertSame([], $feed['items'][0]['categories']);
+
         $expected = [
-            'title' => 'Half as Interesting',
-            'uri' => 'https://www.youtube.com/channel/UCuCkxoKLYO_EQ2GeFtbM_bw',
-            'icon' => null,
-            'items' => [
-                [
-                    'uri' => 'https://www.youtube.com/watch?v=Upjg7F28DJw',
-                    'title' => 'The Nuke-Proof US Military Base in a Mountain',
-                    'content' => '',
-                    'timestamp' => 1737788119,
-                    'author' => 'Half as Interesting',
-                    'id' => 'yt:video:Upjg7F28DJw',
-                    'published' => '2025-01-24T15:44:18+00:00',
-                    'updated' => '2025-01-25T06:55:19+00:00',
-                    'link' => '',
-                    'yt' => [
-                        'videoId' => 'Upjg7F28DJw',
-                        'channelId' => 'UCuCkxoKLYO_EQ2GeFtbM_bw',
-                    ],
-                    'media' => [
-                        'group' => [
-                            'title' => 'The Nuke-Proof US Military Base in a Mountain',
-                            'content' => '',
-                            'thumbnail' => '',
-                            'description' => 'Receive 10% off anything on bellroy.com: https://bit.ly/3HdOWu9',
-                            'community' => [
-                                'starRating' => '',
-                                'statistics' => '',
-                            ],
-                        ],
-                    ],
-                ]
-            ],
+            'group' => [
+                'title' => 'The Nuke-Proof US Military Base in a Mountain',
+                'content' => '',
+                'thumbnail' => '',
+                'description' => 'Receive 10% off anything on bellroy.com: https://bit.ly/3HdOWu9',
+                'community' => [
+                    'starRating' => '',
+                    'statistics' => '',
+                ],
+            ]
         ];
-        $this->assertEquals($expected, $feed);
+        $actual = $feed['items'][0]['media'];
+        $this->assertSame($expected, $actual);
     }
 }

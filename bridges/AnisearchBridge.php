@@ -13,11 +13,11 @@ class AnisearchBridge extends BridgeAbstract
             'type' => 'list',
             'values' => [
                 'DE'
-                => 'https://www.anisearch.de/anime/index/page-1?char=all&synchro=de&sort=date&order=desc&view=4',
+                => 'https://www.anisearch.de/anime/index/page-1?char=all&dubbed=de&sort=newest&order=desc&view=4',
                 'EN'
-                => 'https://www.anisearch.de/anime/index/page-1?char=all&synchro=en&sort=date&order=desc&view=4',
+                => 'https://www.anisearch.de/anime/index/page-1?char=all&dubbed=en&sort=newest&order=desc&view=4',
                 'JP'
-                => 'https://www.anisearch.de/anime/index/page-1?char=all&synchro=ja&sort=date&order=desc&view=4'
+                => 'https://www.anisearch.de/anime/index/page-1?char=all&dubbed=ja&sort=newest&order=desc&view=4'
             ]
         ],
         'trailers' => [

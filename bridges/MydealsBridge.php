@@ -2,7 +2,7 @@
 
 class MydealsBridge extends PepperBridgeAbstract
 {
-    const NAME = 'Mydealz bridge';
+    const NAME = 'Mydealz';
     const URI = 'https://www.mydealz.de/';
     const DESCRIPTION = 'Zeigt die Deals von mydealz.de';
     const MAINTAINER = 'sysadminstory';

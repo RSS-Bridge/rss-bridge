@@ -3,7 +3,7 @@
 class CaschyBridge extends FeedExpander
 {
     const MAINTAINER = 'Tone866';
-    const NAME = 'Caschys Blog Bridge';
+    const NAME = 'Caschys Blog';
     const URI = 'https://stadt-bremerhaven.de/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';
@@ -55,10 +55,20 @@ class CaschyBridge extends FeedExpander
         // remove unwanted stuff
         foreach (
             $article->find('div.aawp, p.aawp-disclaimer, iframe.wp-embedded-content, 
-            div.wp-embed, p.wp-caption-text, script') as $element
+            div.wp-embed, p.wp-caption-text, script, .cb-bookmark-container') as $element
         ) {
             $element->remove();
         }
+
+        foreach ($article->find('.video-container') as &$ytvideo) {
+            if (str_contains($ytvideo->innertext, 'youtube.com')) {
+                $ytResult = handleYoutube($ytvideo->innertext);
+                if ($ytResult) {
+                    $ytvideo->innertext = $ytResult;
+                }
+            }
+        }
+
         // reload html, as remove() is buggy
         $article = str_get_html($article->outertext);
 

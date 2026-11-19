@@ -2,7 +2,7 @@
 
 class GitHubGistBridge extends BridgeAbstract
 {
-    const NAME = 'GitHubGist comment bridge';
+    const NAME = 'GitHubGist comment';
     const URI = 'https://gist.github.com';
     const DESCRIPTION = 'Generates feeds for Gist comments';
     const MAINTAINER = 'logmanoriginal';

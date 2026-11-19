@@ -109,11 +109,10 @@ class SteamCommunityBridge extends BridgeAbstract
             $mediaURI = $media->getAttribute('src');
             $downloadURI = $mediaURI;
 
+            $content = '';
+
             if ($category == 'videos') {
-                preg_match('/.*\/embed\/(.*)\?/', $mediaURI, $result);
-                $youtubeID = $result[1];
-                $mediaURI = 'https://img.youtube.com/vi/' . $youtubeID . '/hqdefault.jpg';
-                $downloadURI = 'https://www.youtube.com/watch?v=' . $youtubeID;
+                $content = handleYoutube($mediaURI);
             }
 
             $desc = '';
@@ -133,8 +132,12 @@ class SteamCommunityBridge extends BridgeAbstract
                 $downloadURI = $htmlCard->find('a.downloadImage', 0)->href;
             }
 
-            $item['content'] = '<p><a href="' . $downloadURI . '"><img src="' . $mediaURI . '"/></a></p>';
-            $item['content'] .= '<p>' . $desc . '</p>';
+            if (empty($content)) {
+                $content = '<p><a href="' . $downloadURI . '"><img src="' . $mediaURI . '"/></a></p>';
+                $content .= '<p>' . $desc . '</p>';
+            }
+
+            $item['content'] = $content;
 
             $this->items[] = $item;
 

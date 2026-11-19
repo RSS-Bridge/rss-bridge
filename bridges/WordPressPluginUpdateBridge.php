@@ -3,7 +3,7 @@
 final class WordPressPluginUpdateBridge extends BridgeAbstract
 {
     const MAINTAINER = 'dvikan';
-    const NAME = 'WordPress Plugins Update Bridge';
+    const NAME = 'WordPress Plugins Update';
     const URI = 'https://wordpress.org/plugins/';
     const DESCRIPTION = 'Returns latest updates of wordpress.org plugins.';
 

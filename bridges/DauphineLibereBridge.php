@@ -3,7 +3,7 @@
 class DauphineLibereBridge extends FeedExpander
 {
     const MAINTAINER = 'qwertygc';
-    const NAME = 'Dauphine Bridge';
+    const NAME = 'Dauphine';
     const URI = 'https://www.ledauphine.com/';
     const CACHE_TIMEOUT = 7200; // 2h
     const DESCRIPTION = 'Returns the newest articles.';

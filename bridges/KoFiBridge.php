@@ -3,7 +3,7 @@
 class KoFiBridge extends BridgeAbstract
 {
     const MAINTAINER = 'walkero';
-    const NAME = 'Ko-Fi Bridge';
+    const NAME = 'Ko-Fi';
     const URI = 'https://ko-fi.com';
     const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = 'Returns the newest articles.';

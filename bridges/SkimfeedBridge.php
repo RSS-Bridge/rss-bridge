@@ -7,7 +7,7 @@ class SkimfeedBridge extends BridgeAbstract
     const CONTEXT_TECH_NEWS = 'Tech news';
     const CONTEXT_CUSTOM = 'Custom feed';
 
-    const NAME = 'Skimfeed Bridge';
+    const NAME = 'Skimfeed';
     const URI = 'https://skimfeed.com';
     const DESCRIPTION = 'Returns feeds from Skimfeed, also supports custom feeds!';
     const MAINTAINER = 'logmanoriginal';

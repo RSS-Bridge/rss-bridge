@@ -6,7 +6,7 @@
  */
 class PixivBridge extends BridgeAbstract
 {
-    const NAME = 'Pixiv Bridge';
+    const NAME = 'Pixiv';
     const URI = 'https://www.pixiv.net/';
     const DESCRIPTION = 'Returns the tag search from pixiv.net';
     const MAINTAINER = 'mruac';

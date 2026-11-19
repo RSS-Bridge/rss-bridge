@@ -9,37 +9,36 @@ use Url;
 
 class UrlTest extends TestCase
 {
-    public function testBasicUsages()
+    public function testBasicUsage()
     {
-        $urls = [
-            'http://example.com/',
-            'http://example.com:9000/',
-            'https://example.com/',
-            'https://example.com/?foo',
-            'https://example.com/?foo=bar',
-        ];
-        foreach ($urls as $url) {
-            $this->assertSame($url, Url::fromString($url)->__toString());
-        }
+        $sut = Url::fromString('http://example.com/qqq?foo=bar');
+
+        $this->assertSame('http', $sut->getScheme());
+        $this->assertSame('example.com', $sut->getHost());
+        $this->assertSame(80, $sut->getPort());
+        $this->assertSame('/qqq', $sut->getPath());
+        $this->assertSame('foo=bar', $sut->getQueryString());
+
+        $sut = Url::fromString('http://example.com/qqq');
+        $this->assertNull($sut->getQueryString());
+
+        $sut = Url::fromString('https://example.com/qqq?foo=bar');
+        $this->assertSame(443, $sut->getPort());
     }
 
     public function testNormalization()
     {
         $urls = [
             'http://example.com' => 'http://example.com/',
+            'http://example.com//' => 'http://example.com/',
+            'http://example.com///' => 'http://example.com/',
             'https://example.com/?' => 'https://example.com/',
             'https://example.com/foo?' => 'https://example.com/foo',
             'http://example.com:80/' => 'http://example.com/',
         ];
         foreach ($urls as $from => $to) {
-            $this->assertSame($to, Url::fromString($from)->__toString());
+            $this->assertSame($to, Url::fromString($from)->normalize());
         }
-    }
-
-    public function testIllegalPath()
-    {
-        $this->expectException(\UrlException::class);
-        Url::fromString('https://example.com//foo');
     }
 
     public function testMutation()
@@ -49,5 +48,11 @@ class UrlTest extends TestCase
         $this->assertSame('http://example.com/', (Url::fromString('http://example.com/'))->withPath('/')->__toString());
         $this->assertSame('http://example.com/qqq?foo=bar', (Url::fromString('http://example.com/qqq'))->withQueryString('foo=bar')->__toString());
         $this->assertSame('http://example.net/qqq?foo=bar', (Url::fromString('http://example.com/qqq?foo=bar'))->withHost('example.net')->__toString());
+    }
+
+    public function testNormalizeScheme()
+    {
+        $this->assertSame('http://example.com', Url::normalizeScheme('http://example.com'));
+        $this->assertSame('http://example.com', Url::normalizeScheme('example.com'));
     }
 }

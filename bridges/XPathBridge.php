@@ -17,8 +17,8 @@ You can specify any website URL which serves data suited for display in RSS feed
 (for example a news blog).
 EOL,
                 'type' => 'text',
-                'exampleValue' => 'https://news.blizzard.com/en-en',
-                'defaultValue' => 'https://news.blizzard.com/en-en',
+                'exampleValue' => 'https://hackaday.com/blog/',
+                'defaultValue' => 'https://hackaday.com/blog/',
                 'required' => true
             ],
 
@@ -31,8 +31,8 @@ be the context nodes for all of the following expressions. This expression usual
 starts with a single forward slash.
 EOL,
                 'type' => 'text',
-                'exampleValue' => '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article',
-                'defaultValue' => '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article',
+                'exampleValue' => '//article[contains(@class, "type-post")]',
+                'defaultValue' => '//article[contains(@class, "type-post")]',
                 'required' => true
             ],
 
@@ -44,8 +44,8 @@ containing the article headline. It should start with a dot followed by two
 forward slashes, referring to any descendant nodes of the article item node.
 EOL,
                 'type' => 'text',
-                'exampleValue' => './/div/div[2]/h2',
-                'defaultValue' => './/div/div[2]/h2',
+                'exampleValue' => './/h1[@class="entry-title"]',
+                'defaultValue' => './/h1[@class="entry-title"]',
                 'required' => true
             ],
 
@@ -58,8 +58,8 @@ followed by two forward slashes, referring to any descendant nodes of the
 article item node.
 EOL,
                 'type' => 'text',
-                'exampleValue' => './/div[@class="ArticleListItem-description"]/div[@class="h6"]',
-                'defaultValue' => './/div[@class="ArticleListItem-description"]/div[@class="h6"]',
+                'exampleValue' => './/div[@class="entry-content"]',
+                'defaultValue' => './/div[@class="entry-content"]',
                 'required' => false
             ],
 
@@ -84,8 +84,8 @@ the article item node. Attributes can be selected by prepending an @ char
 before the attributes name.
 EOL,
                 'type' => 'text',
-                'exampleValue' => './/a[@class="ArticleLink ArticleLink"]/@href',
-                'defaultValue' => './/a[@class="ArticleLink ArticleLink"]/@href',
+                'exampleValue' => './/a[@rel="bookmark"]/@href',
+                'defaultValue' => './/a[@rel="bookmark"]/@href',
                 'required' => false
             ],
 
@@ -111,8 +111,8 @@ any descendant nodes of the article item node. Attributes can be
 selected by prepending an @ char before the attributes name.
 EOL,
                 'type' => 'text',
-                'exampleValue' => './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp',
-                'defaultValue' => './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp',
+                'exampleValue' => './/span[@class="entry-date"]',
+                'defaultValue' => './/span[@class="entry-date"]',
                 'required' => false
             ],
 
@@ -126,8 +126,8 @@ referring to any descendant nodes of the article item node. Attributes
 can be selected by prepending an @ char before the attributes name.
 EOL,
                 'type' => 'text',
-                'exampleValue' => './/div[@class="ArticleListItem-image"]/@style',
-                'defaultValue' => './/div[@class="ArticleListItem-image"]/@style',
+                'exampleValue' => './/img/@src',
+                'defaultValue' => './/img/@src',
                 'required' => false
             ],
 
@@ -143,8 +143,8 @@ item node. Attributes can be selected by prepending an @ char
 before the attributes name.
 EOL,
                 'type' => 'text',
-                'exampleValue' => './/div[@class="ArticleListItem-label"]',
-                'defaultValue' => './/div[@class="ArticleListItem-label"]',
+                'exampleValue' => './/a[@rel="category tag"]',
+                'defaultValue' => './/a[@rel="category tag"]',
                 'required' => false
             ],
 

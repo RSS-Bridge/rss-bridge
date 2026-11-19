@@ -7,7 +7,7 @@ class BundesbankBridge extends BridgeAbstract
     const LANG_EN = 'en';
     const LANG_DE = 'de';
 
-    const NAME = 'Bundesbank Bridge';
+    const NAME = 'Bundesbank';
     const URI = 'https://www.bundesbank.de/';
     const DESCRIPTION = 'Returns the latest studies of the Bundesbank (Germany)';
     const MAINTAINER = 'logmanoriginal';

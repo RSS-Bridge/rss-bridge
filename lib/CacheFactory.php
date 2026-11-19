@@ -59,9 +59,6 @@ class CacheFactory
                 if (!extension_loaded('sqlite3')) {
                     throw new \Exception('"sqlite3" extension not loaded. Please check "php.ini"');
                 }
-                if (!is_writable(PATH_CACHE)) {
-                    throw new \Exception('The cache folder is not writable');
-                }
                 $file = Configuration::getConfig('SQLiteCache', 'file');
                 if (!$file) {
                     throw new \Exception(sprintf('Configuration for %s missing.', 'SQLiteCache'));
@@ -70,6 +67,13 @@ class CacheFactory
                     $file = PATH_CACHE . $file;
                 } elseif (!is_dir(dirname($file))) {
                     throw new \Exception(sprintf('Invalid configuration for %s', 'SQLiteCache'));
+                }
+                $dir = dirname($file);
+                if (!is_writable($dir)) {
+                    throw new \Exception(sprintf('The directory for the SQLiteCache file is not writable: %s', $dir));
+                }
+                if (file_exists($file) && !is_writable($file)) {
+                    throw new \Exception(sprintf('The SQLiteCache file is not writable: %s', $file));
                 }
                 return new SQLiteCache($this->logger, [
                     'file'          => $file,

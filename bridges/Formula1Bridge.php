@@ -2,7 +2,7 @@
 
 class Formula1Bridge extends BridgeAbstract
 {
-    const NAME = 'Formula1 Bridge';
+    const NAME = 'Formula1';
     const URI = 'https://formula1.com/';
     const DESCRIPTION = 'Returns latest official Formula 1 news';
     const MAINTAINER = 'axor-mst';

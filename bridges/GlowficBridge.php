@@ -3,7 +3,7 @@
 class GlowficBridge extends BridgeAbstract
 {
     const MAINTAINER = 'l1n';
-    const NAME = 'Glowfic Bridge';
+    const NAME = 'Glowfic';
     const URI = 'https://www.glowfic.com';
     const CACHE_TIMEOUT = 3600; // 1 hour
     const DESCRIPTION = 'Returns the latest replies on a glowfic post.';

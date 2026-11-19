@@ -2,7 +2,7 @@
 
 class ASRockNewsBridge extends BridgeAbstract
 {
-    const NAME = 'ASRock News Bridge';
+    const NAME = 'ASRock News';
     const URI = 'https://www.asrock.com';
     const DESCRIPTION = 'Returns latest news articles';
     const MAINTAINER = 'VerifiedJoseph';

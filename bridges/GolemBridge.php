@@ -3,7 +3,7 @@
 class GolemBridge extends FeedExpander
 {
     const MAINTAINER = 'Mynacol';
-    const NAME = 'Golem Bridge';
+    const NAME = 'Golem';
     const URI = 'https://www.golem.de/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';
@@ -53,7 +53,7 @@ class GolemBridge extends FeedExpander
         ]
     ]];
     const LIMIT = 5;
-    const HEADERS = ['Cookie: golem_consent20=simple|250101;'];
+    const HEADERS = ['Cookie: golem_consent20=simple|261101;'];
 
     public function collectData()
     {
@@ -133,11 +133,7 @@ class GolemBridge extends FeedExpander
             if (array_key_exists($i, $embedSrcs)) {
                 $src = $embedSrcs[$i];
                 if (preg_match('/youtube(-nocookie)?\.com/', $src, $match)) {
-                    $placeholders[$i]->innertext = <<<EOT
-                    <iframe width="560" height="315" src="$src" title="YouTube video player" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin" allowfullscreen></iframe>';
-                    EOT;
+                    $placeholders[$i]->innertext = handleYoutube($src);
                 }
             }
         }
@@ -182,7 +178,7 @@ class GolemBridge extends FeedExpander
 
         foreach (
             $article->find('div.go-article-header__intro, p, h1, h2, h3, pre, ul, ol, .go-media img[src*="."], .go-media figcaption,
-                    table, iframe, video') as $element
+                    table, iframe, video, img') as $element
         ) {
             if (!str_contains($prevcontent, $element)) {
                 $item .= $element;

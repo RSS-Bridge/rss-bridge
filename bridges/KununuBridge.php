@@ -3,7 +3,7 @@
 class KununuBridge extends BridgeAbstract
 {
     const MAINTAINER = 'logmanoriginal';
-    const NAME = 'Kununu Bridge';
+    const NAME = 'Kununu';
     const URI = 'https://www.kununu.com/';
     const CACHE_TIMEOUT = 86400; // 24h
     const DESCRIPTION = 'Returns the latest reviews for a company and site of your choice.';

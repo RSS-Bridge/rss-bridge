@@ -85,8 +85,8 @@ def testBridges(instance: Instance, bridge_cards: Iterable, with_artifacts: bool
                     context_parameters[parameter_name] = parameter.get('value')
                 if parameter_type == 'number' or parameter_type == 'text':
                     if parameter.has_attr('required'):
-                        if parameter.get('placeholder') == '':
-                            if parameter.get('value') == '':
+                        if not parameter.get('placeholder'):
+                            if not parameter.get('value'):
                                 error_messages.append(f'Missing example or default value for parameter "{parameter_name}"')
                             else:
                                 context_parameters[parameter_name] = parameter.get('value')

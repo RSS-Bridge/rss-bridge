@@ -25,7 +25,6 @@ class BlizzardNewsBridge extends BridgeAbstract
                     'Português (AL)' => 'pt-br',
                     'Русский' => 'ru-ru',
                     'ภาษาไทย' => 'th-th',
-                    '简体中文' => 'zh-cn',
                     '繁體中文' => 'zh-tw'
                 ],
                 'defaultValue' => 'en-us',
@@ -62,14 +61,8 @@ class BlizzardNewsBridge extends BridgeAbstract
     private function getSourceUrl(): string
     {
         $locale = $this->getInput('locale');
-        if ('zh-cn' === $locale) {
-            $baseUrl = 'https://cn.news.blizzard.com' . self::API_PATH;
-        } else {
-            $baseUrl = 'https://news.blizzard.com/' . $locale . self::API_PATH;
-        }
-        return $baseUrl .= http_build_query([
-            'feedCxpProductIds' => self::PRODUCT_IDS
-        ]);
+        $baseUrl = 'https://news.blizzard.com/' . $locale . self::API_PATH;
+        return $baseUrl .= implode('&', array_map(fn($id) => 'feedCxpProductIds[]=' . $id, self::PRODUCT_IDS));
     }
 
     public function collectData()
@@ -86,7 +79,8 @@ class BlizzardNewsBridge extends BridgeAbstract
             $item['uri'] = $properties['newsUrl'];
             $item['author'] = $this->filterChars($properties['author']);
             $item['timestamp'] = strtotime($properties['lastUpdated']);
-            $item['enclosures'] = [$properties['staticAsset']['imageUrl']];
+            // The API returns protocol-relative image URLs (//host/path), which FeedItem discards as invalid
+            $item['enclosures'] = [urljoin(self::URI, $properties['staticAsset']['imageUrl'])];
             $item['categories'] = [$this->filterChars($properties['cxpProduct']['title'])];
 
             $this->items[] = $item;

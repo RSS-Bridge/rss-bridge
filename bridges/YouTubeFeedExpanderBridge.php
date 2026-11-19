@@ -40,10 +40,6 @@ class YouTubeFeedExpanderBridge extends FeedExpander
 
     public function getIcon()
     {
-        if ($this->getInput('channel') != null) {
-            $html = getSimpleHTMLDOMCached($this->getURI());
-            return $html->find('[itemprop="thumbnailUrl"]', 0)->href;
-        }
         return parent::getIcon();
     }
 
@@ -76,8 +72,7 @@ class YouTubeFeedExpanderBridge extends FeedExpander
         }
         $embed = $embedURI . 'embed/' . $id;
         if ($this->getInput('embed')) {
-            $iframe_fmt = '<iframe width="448" height="350" src="%s" title="%s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin" allowfullscreen></iframe>'; //phpcs:ignore
-            $iframe = sprintf($iframe_fmt, $embed, $item['title']) . '<br>';
+            $iframe = handleYoutube($id) . '<br>';
             $item['content'] = $iframe . $item['content'];
         }
         if ($this->getInput('embedurl')) {

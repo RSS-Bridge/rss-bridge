@@ -2,7 +2,7 @@
 
 class GettrBridge extends BridgeAbstract
 {
-    const NAME = 'Gettr.com bridge';
+    const NAME = 'Gettr.com';
     const URI = 'https://gettr.com';
     const DESCRIPTION = 'Fetches the latest posts from a GETTR user';
     const MAINTAINER = 'dvikan';

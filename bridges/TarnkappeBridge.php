@@ -3,7 +3,7 @@
 class TarnkappeBridge extends FeedExpander
 {
     const MAINTAINER = 'Tone866';
-    const NAME = 'tarnkappe Bridge';
+    const NAME = 'tarnkappe';
     const URI = 'https://tarnkappe.info/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';

@@ -13,7 +13,8 @@ class FacebookBridge extends BridgeAbstract
         'User' => [
             'u' => [
                 'name' => 'Username',
-                'required' => true
+                'required' => true,
+                'exampleValue' => 'zuck'
             ],
             'media_type' => [
                 'name' => 'Media type',
@@ -59,7 +60,7 @@ class FacebookBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        return 'https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico';
+        return 'https://static.xx.fbcdn.net/rsrc.php/y1/r/ay1hV6OlegS.ico';
     }
 
     public function getName()
@@ -130,12 +131,12 @@ class FacebookBridge extends BridgeAbstract
                 $user = $this->sanitizeUser($this->getInput('u'));
 
                 if (!strpos($user, '/')) {
-                    $uri .= urlencode($user) . '/posts';
+                    $uri .= urlencode($user) . '/';
                 } else {
                     $uri .= 'pages/' . $user;
                 }
 
-                break;
+                return $uri;
         }
 
         // Request the mobile version to reduce page size (no javascript)
@@ -373,11 +374,31 @@ class FacebookBridge extends BridgeAbstract
                 throwClientException('The URL you provided doesn\'t contain the user name!');
             }
 
-            return explode('/', $urlparts['path'])[1];
+            $path = explode('/', $urlparts['path'])[1];
+
+            // Numeric profiles are addressed as profile.php?id=<id>
+            if ($path === 'profile.php' && isset($urlparts['query'])) {
+                parse_str($urlparts['query'], $query);
+
+                if (isset($query['id'])) {
+                    return $query['id'];
+                }
+            }
+
+            return $path;
         } else {
             // First character cannot be a forward slash
             if (strpos($user, '/') === 0) {
                 throwClientException('Remove leading slash "/" from the username!');
+            }
+
+            // Numeric profiles are addressed as profile.php?id=<id>
+            if (strpos($user, 'profile.php?id=') === 0) {
+                parse_str(parse_url($user, PHP_URL_QUERY) ?? '', $query);
+
+                if (isset($query['id'])) {
+                    return $query['id'];
+                }
             }
 
             return $user;
@@ -385,377 +406,201 @@ class FacebookBridge extends BridgeAbstract
     }
 
     /**
-     * Bypass external link redirection
+     * Returns the HTTP headers of a recent desktop browser.
+     *
+     * Facebook rejects requests that do not look like they originate from a
+     * regular browser with "400 Bad Request". The mobile sites (m, mbasic and
+     * touch) no longer serve static markup, so the desktop site is the only
+     * remaining source of post data without JavaScript.
      */
-    private function unescapeFacebookLink($content)
+    private function getHttpHeaders()
     {
-        return preg_replace_callback('/ href=\"([^"]+)\"/i', function ($matches) {
-            if (is_array($matches) && count($matches) > 1) {
-                $link = $matches[1];
+        $headers = [
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'sec-ch-ua: "Chromium";v="131", "Not_A Brand";v="24"',
+            'sec-ch-ua-mobile: ?0',
+            'sec-ch-ua-platform: "Linux"',
+            'Sec-Fetch-Dest: document',
+            'Sec-Fetch-Mode: navigate',
+            'Sec-Fetch-Site: none',
+            'Sec-Fetch-User: ?1',
+            'Upgrade-Insecure-Requests: 1',
+        ];
 
-                if (strpos($link, 'facebook.com/l.php?u=') !== false) {
-                    $link = urldecode(extractFromDelimiters($link, 'facebook.com/l.php?u=', '&'));
-                }
-
-                return ' href="' . $link . '"';
-            }
-        }, $content);
-    }
-
-    /**
-     * Remove Facebook's tracking code
-     */
-    private function removeTrackingCodes($content)
-    {
-        return preg_replace_callback('/ href=\"([^"]+)\"/i', function ($matches) {
-            if (is_array($matches) && count($matches) > 1) {
-                $link = $matches[1];
-
-                if (strpos($link, 'facebook.com') !== false) {
-                    if (strpos($link, '?') !== false) {
-                        $link = substr($link, 0, strpos($link, '?'));
-                    }
-                }
-                return ' href="' . $link . '"';
-            }
-        }, $content);
-    }
-
-    /**
-     * Convert textual representation of emoticons back to ASCII emoticons.
-     * i.e. "<i><u>smile emoticon</u></i>" => ":)"
-     */
-    private function unescapeFacebookEmote($content)
-    {
-        return preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', function ($matches) {
-            static $facebook_emoticons = [
-                    'smile' => ':)',
-                    'frown' => ':(',
-                    'tongue' => ':P',
-                    'grin' => ':D',
-                    'gasp' => ':O',
-                    'wink' => ';)',
-                    'pacman' => ':<',
-                    'grumpy' => '>_<',
-                    'unsure' => ':/',
-                    'cry' => ':\'(',
-                    'kiki' => '^_^',
-                    'glasses' => '8-)',
-                    'sunglasses' => 'B-)',
-                    'heart' => '<3',
-                    'devil' => ']:D',
-                    'angel' => '0:)',
-                    'squint' => '-_-',
-                    'confused' => 'o_O',
-                    'upset' => 'xD',
-                    'colonthree' => ':3',
-                    'like' => '&#x1F44D;'];
-
-            $len = count($matches);
-
-            if ($len > 1) {
-                for ($i = 1; $i < $len; $i++) {
-                    foreach ($facebook_emoticons as $name => $emote) {
-                        if ($matches[$i] === $name) {
-                            return $emote;
-                        }
-                    }
-                }
-            }
-
-            return $matches[0];
-        }, $content);
-    }
-
-    /**
-     * Returns the captcha message for the given captcha
-     */
-    private function returnCaptchaMessage($captcha)
-    {
-        // Save form for submitting after getting captcha response
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
+        if (getEnv('HTTP_ACCEPT_LANGUAGE')) {
+            $headers[] = 'Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE');
+        } else {
+            $headers[] = 'Accept-Language: en-US,en;q=0.9';
         }
 
-        $captcha_fields = [];
-
-        foreach ($captcha->find('input, button') as $input) {
-            $captcha_fields[$input->name] = $input->value;
-        }
-
-        $_SESSION['captcha_fields'] = $captcha_fields;
-        $_SESSION['captcha_action'] = $captcha->find('form', 0)->action;
-
-        // Show captcha filling form to the viewer, proxying the captcha image
-        $img = base64_encode(getContents($captcha->find('img', 0)->src));
-
-        header('Content-Type: text/html', true, 500);
-
-        $message = <<<EOD
-<form method="post" action="?{$_SERVER['QUERY_STRING']}">
-<h2>Facebook captcha challenge</h2>
-<p>Unfortunately, rss-bridge cannot fetch the requested page.<br />
-Facebook wants rss-bridge to resolve the following captcha:</p>
-<p><img src="data:image/png;base64,{$img}" /></p>
-<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
-<input type="submit" value="Submit!" /></p>
-</form>
-EOD;
-
-        die($message);
+        return $headers;
     }
 
     /**
-     * Checks if a capture response was received and tries to load the contents
-     * @return mixed null if no capture response was received, simplhtmldom document otherwise
+     * Returns the first value stored under $key found anywhere in $data
      */
-    private function handleCaptchaResponse()
+    private function findFirst($data, $key)
     {
-        if (isset($_POST['captcha_response'])) {
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
+        $stack = [$data];
+
+        while ($stack) {
+            $current = array_pop($stack);
+
+            if (!is_array($current)) {
+                continue;
             }
 
-            if (isset($_SESSION['captcha_fields'], $_SESSION['captcha_action'])) {
-                $captcha_action = $_SESSION['captcha_action'];
-                $captcha_fields = $_SESSION['captcha_fields'];
-                $captcha_fields['captcha_response'] = preg_replace('/[^a-zA-Z0-9]+/', '', $_POST['captcha_response']);
-
-                $header = [
-                    'Content-type: application/x-www-form-urlencoded',
-                    'Referer: ' . $captcha_action,
-                    'Cookie: noscript=1'
-                ];
-
-                $opts = [
-                    CURLOPT_POST => 1,
-                    CURLOPT_POSTFIELDS => http_build_query($captcha_fields)
-                ];
-
-                $html = getSimpleHTMLDOM($captcha_action, $header, $opts);
-
-                return $html;
+            if (array_key_exists($key, $current)) {
+                return $current[$key];
             }
 
-            unset($_SESSION['captcha_fields']);
-            unset($_SESSION['captcha_action']);
+            foreach ($current as $value) {
+                if (is_array($value)) {
+                    $stack[] = $value;
+                }
+            }
         }
 
         return null;
     }
 
-    private function collectUserData()
+    /**
+     * Extracts the story nodes embedded in the page as JSON.
+     *
+     * The desktop page ships the most recent post of the timeline inside a
+     * <script type="application/json"> element. Additional posts are loaded
+     * lazily via GraphQL, which requires tokens that are rate limited, so only
+     * the prefetched post is easily available.
+     */
+    private function extractTimelineNodes($html)
     {
-        $html = $this->handleCaptchaResponse();
+        $nodes = [];
 
-        // Retrieve page contents
-        if (is_null($html)) {
-            if (getEnv('HTTP_ACCEPT_LANGUAGE')) {
-                $header = ['Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE')];
-            } else {
-                $header = [];
+        foreach ($html->find('script[type="application/json"]') as $script) {
+            $json = html_entity_decode($script->innertext, ENT_QUOTES, 'UTF-8');
+
+            if (strpos($json, 'timeline_list_feed_units') === false) {
+                continue;
             }
 
-            $url = $this->getURI();
-            $html = getSimpleHTMLDOM($url, $header);
-        }
+            try {
+                $data = Json::decode($json);
+            } catch (\JsonException $e) {
+                continue;
+            }
 
-        // Handle captcha form?
-        $captcha = $html->find('div.captcha_interstitial', 0);
+            $stack = [$data];
 
-        if (!is_null($captcha)) {
-            $this->returnCaptchaMessage($captcha);
-        }
+            while ($stack) {
+                $current = array_pop($stack);
 
-        // No captcha? We can carry on retrieving page contents :)
-        // First, we check whether the page is public or not
-        $loginForm = $html->find('._585r', 0);
-
-        if ($loginForm != null) {
-            throwServerException('You must be logged in to view this page. This is not supported by RSS-Bridge.');
-        }
-
-        $mainColumn = $html->find('#pagelet_timeline_main_column');
-        if (!$mainColumn) {
-            throw new \Exception(sprintf('Unable to find anything useful in %s', $url));
-        }
-
-        $element = $mainColumn[0]
-            ->children(0)
-            ->children(0)
-            ->next_sibling()
-            ->children(0);
-
-        if (isset($element)) {
-            $author = str_replace(' - Posts | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
-
-            $profilePic = $html->find('meta[property="og:image"]', 0)->content;
-
-            $this->authorName = $author;
-
-            foreach ($element->children() as $cell) {
-                // Manage summary posts
-                if (strpos($cell->class, '_3xaf') !== false) {
-                    $posts = $cell->children();
-                } else {
-                    $posts = [$cell];
-                }
-
-                // Optionally skip reviews
-                if (
-                    $this->getInput('skip_reviews')
-                    && !is_null($cell->find('#review_composer_container', 0))
-                ) {
+                if (!is_array($current)) {
                     continue;
                 }
 
-                foreach ($posts as $post) {
-                    // Check media type
-                    switch ($this->getInput('media_type')) {
-                        case 'all':
-                            break;
-                        case 'video':
-                            if (empty($post->find('[aria-label=Video]'))) {
-                                continue 2;
-                            }
-                            break;
-                        case 'novideo':
-                            if (!empty($post->find('[aria-label=Video]'))) {
-                                continue 2;
-                            }
-                            break;
-                        default:
-                            break;
+                if (isset($current['timeline_list_feed_units']['edges'])) {
+                    foreach ($current['timeline_list_feed_units']['edges'] as $edge) {
+                        if (isset($edge['node'])) {
+                            $nodes[] = $edge['node'];
+                        }
                     }
+                }
 
-                    $item = [];
-
-                    if (count($post->find('abbr')) > 0) {
-                        $content = $post->find('.userContentWrapper', 0);
-
-                        // This array specifies filters applied to all posts in order of appearance
-                        $content_filters = [
-                            '._5mly', // Remove embedded videos (the preview image remains)
-                            '._2ezg', // Remove "Views ..."
-                            '.hidden_elem', // Remove hidden elements (they are hidden anyway)
-                            '.timestampContent', // Remove relative timestamp
-                            '._6spk', // Remove redundant separator
-                        ];
-
-                        foreach ($content_filters as $filter) {
-                            foreach ($content->find($filter) as $subject) {
-                                $subject->outertext = '';
-                            }
-                        }
-
-                        // Change origin tag for embedded media from div to paragraph
-                        foreach ($content->find('._59tj') as $subject) {
-                            $subject->outertext = '<p>' . $subject->innertext . '</p>';
-                        }
-
-                        // Change title tag for embedded media from anchor to paragraph
-                        foreach ($content->find('._3n1k a') as $anchor) {
-                            $anchor->outertext = '<p>' . $anchor->innertext . '</p>';
-                        }
-
-                        $content = preg_replace(
-                            '/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i',
-                            '',
-                            $content
-                        );
-
-                        $content = preg_replace(
-                            '/(?i)><div class=\"_4l5([^>]+)>(.+?)<\/div>/i',
-                            '',
-                            $content
-                        );
-
-                        // Remove "SpSonsSoriSsés"
-                        $content = preg_replace(
-                            '/(?iU)<a [^>]+ href="#" role="link" [^>}]+>.+<\/a>/iU',
-                            '',
-                            $content
-                        );
-
-                        // Remove html nodes, keep only img, links, basic formatting
-                        $content = strip_tags($content, '<a><img><i><u><br><p>');
-
-                        $content = $this->unescapeFacebookLink($content);
-
-                        // Clean useless html tag properties and fix link closing tags
-                        foreach (
-                            [
-                            'onmouseover',
-                            'onclick',
-                            'target',
-                            'ajaxify',
-                            'tabindex',
-                            'class',
-                            'style',
-                            'data-[^=]*',
-                            'aria-[^=]*',
-                            'role',
-                            'rel',
-                            'id'] as $property_name
-                        ) {
-                            $content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
-                        }
-
-                        $content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
-
-                        $this->unescapeFacebookEmote($content);
-
-                        // Restore links in the post before further parsing
-                        $post = defaultLinkTo($post, self::URI);
-
-                        // Restore links in the content before adding to the item
-                        $content = defaultLinkTo($content, self::URI);
-
-                        $content = $this->removeTrackingCodes($content);
-
-                        // Retrieve date of the post
-                        $date = $post->find('abbr')[0];
-
-                        if (isset($date) && $date->hasAttribute('data-utime')) {
-                            $date = $date->getAttribute('data-utime');
-                        } else {
-                            $date = 0;
-                        }
-
-                        // Build title from content
-                        $title = strip_tags($post->find('.userContent', 0)->innertext);
-                        if (strlen($title) > 64) {
-                            $title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
-                        }
-
-                        $uri = $post->find('abbr')[0]->parent()->getAttribute('href');
-
-                        // Extract fbid and patch link
-                        if (strpos($uri, '?') !== false) {
-                            $query = substr($uri, strpos($uri, '?') + 1);
-                            parse_str($query, $query_params);
-                            if (isset($query_params['story_fbid'])) {
-                                $uri = self::URI . $query_params['story_fbid'];
-                            } else {
-                                $uri = substr($uri, 0, strpos($uri, '?'));
-                            }
-                        }
-
-                        //Build and add final item
-                        $item['uri'] = htmlspecialchars_decode($uri, ENT_QUOTES);
-                        $item['content'] = htmlspecialchars_decode($content, ENT_QUOTES);
-                        $item['title'] = htmlspecialchars_decode($title, ENT_QUOTES);
-                        $item['author'] = htmlspecialchars_decode($author, ENT_QUOTES);
-                        $item['timestamp'] = $date;
-
-                        if (strpos($item['content'], '<img') === false) {
-                            $item['enclosures'] = [$profilePic];
-                        }
-
-                        $this->items[] = $item;
+                foreach ($current as $value) {
+                    if (is_array($value)) {
+                        $stack[] = $value;
                     }
                 }
             }
+        }
+
+        return $nodes;
+    }
+
+    /**
+     * Converts a story node into a feed item
+     */
+    private function parseTimelineNode($node, $profilePicture)
+    {
+        $story = $node['comet_sections']['content']['story'] ?? [];
+
+        $message = $this->findFirst($story, 'message');
+        $text = is_array($message) ? ($message['text'] ?? '') : '';
+
+        $item = [];
+        $item['uri'] = $this->findFirst($story, 'wwwURL') ?? self::URI;
+        $item['author'] = $this->findFirst($node['feedback'] ?? [], 'name') ?? $this->authorName;
+        $item['timestamp'] = $node['creation_time'] ?? null;
+        $item['uid'] = $node['post_id'] ?? null;
+
+        $content = '';
+        $enclosures = [];
+
+        foreach ($node['attachments'] ?? [] as $attachment) {
+            $image = $this->findFirst($attachment, 'photo_image');
+
+            if (isset($image['uri'])) {
+                $content .= '<p><img src="' . $image['uri'] . '" referrerpolicy="no-referrer" /></p>';
+                $enclosures[] = $image['uri'];
+            }
+        }
+
+        $content = '<p>' . nl2br(htmlspecialchars($text, ENT_QUOTES)) . '</p>' . $content;
+
+        $item['content'] = $content;
+        $item['title'] = $this->generateTitle($text, $item['timestamp']);
+        $item['enclosures'] = $enclosures ?: [$profilePicture];
+
+        return $item;
+    }
+
+    /**
+     * Builds a title from the first line of the post
+     */
+    private function generateTitle($text, $timestamp)
+    {
+        $text = trim(preg_replace('/\s+/', ' ', $text));
+
+        if ($text === '') {
+            return 'Post from ' . gmdate('Y-m-d', (int)$timestamp);
+        }
+
+        if (mb_strlen($text) > 100) {
+            $text = mb_substr($text, 0, 100) . '...';
+        }
+
+        return $text;
+    }
+
+    private function collectUserData()
+    {
+        $url = $this->getURI();
+        $html = getSimpleHTMLDOM($url, $this->getHttpHeaders());
+
+        // Pages that are unavailable or require a login are served without
+        // Open Graph metadata and only contain a login form.
+        $title = $html->find('meta[property="og:title"]', 0);
+
+        if (!$title) {
+            throwServerException(sprintf(
+                'This page is not publicly available. RSS-Bridge only supports public pages: %s',
+                $url
+            ));
+        }
+
+        $this->authorName = html_entity_decode($title->content, ENT_QUOTES, 'UTF-8');
+
+        $image = $html->find('meta[property="og:image"]', 0);
+        $profilePicture = $image ? html_entity_decode($image->content, ENT_QUOTES, 'UTF-8') : '';
+
+        $nodes = $this->extractTimelineNodes($html);
+
+        if (!$nodes) {
+            throw new \Exception(sprintf('Unable to find any post in %s', $url));
+        }
+
+        foreach ($nodes as $node) {
+            $this->items[] = $this->parseTimelineNode($node, $profilePicture);
         }
     }
 

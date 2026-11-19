@@ -3,7 +3,7 @@
 class HeiseBridge extends FeedExpander
 {
     const MAINTAINER = 'Dreckiger-Dan';
-    const NAME = 'Heise Online Bridge';
+    const NAME = 'Heise Online';
     const URI = 'https://heise.de/';
     const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = 'Returns the full articles instead of only the intro';
@@ -29,6 +29,11 @@ class HeiseBridge extends FeedExpander
                 => 'https://www.heise.de/rss/heise-Rubrik-Wirtschaft-atom.xml',
                 'heise online Journal'
                 => 'https://www.heise.de/rss/heise-Rubrik-Journal-atom.xml',
+                // → https://www.heise.de/thema
+                'heise online > Thema > Open Source'
+                => 'https://www.heise.de/thema/Open-Source.xml',
+                'heise online > Thema > Raumfahrt'
+                => 'https://www.heise.de/thema/Raumfahrt.xml',
                 'heise online Top-News'
                 => 'https://www.heise.de/rss/heise-top-atom.xml',
                 //'iMonitor – Internet-Störungen'
@@ -38,59 +43,39 @@ class HeiseBridge extends FeedExpander
                 'Alle Inhalte von heise+'
                 => 'https://www.heise.de/rss/heiseplus-atom.xml',
                 'heise Autos News'
-                => 'https://www.heise.de/autos/rss/news-atom.xml',
+                => 'https://www.heise.de/autos/feed.xml',
                 'heise Developer - Neueste Meldungen'
-                => 'https://www.heise.de/developer/rss/news-atom.xml',
+                => 'https://www.heise.de/developer/feed.xml',
                 'Der Dotnet-Doktor'
-                => 'https://www.heise.de/developer/rss/dotnet-doktor-blog-atom.xml',
+                => 'https://www.heise.de/thema/Der-Dotnet-Doktor.xml',
                 'the next big thing'
-                => 'https://www.heise.de/developer/rss/next-big-thing-blog-atom.xml',
-                'Tales from the Web side'
-                => 'https://www.heise.de/developer/rss/tales-from-the-web-side-blog-atom.xml',
+                => 'https://www.heise.de/thema/the-next-big-thing.xml',
                 'Continuous Architecture'
-                => 'https://www.heise.de/developer/rss/continuous-architecture-blog-atom.xml',
+                => 'https://www.heise.de/thema/Continuous-Architecture.xml',
                 'Der Pragmatische Architekt'
-                => 'https://www.heise.de/developer/rss/der-pragmatische-architekt-blog-atom.xml',
+                => 'https://www.heise.de/thema/Der-Pragmatische-Architekt.xml',
                 'Modernes C++'
-                => 'https://www.heise.de/developer/rss/modernes-cplusplus-blog-atom.xml',
-                'colspan'
-                => 'https://www.heise.de/developer/rss/colspan-dev-blog-atom.xml',
+                => 'https://www.heise.de/thema/Modernes-Cplusplus.xml',
                 '"Ich roll\' dann mal aus"'
-                => 'https://www.heise.de/developer/rss/ich-roll-dann-mal-aus-atom.xml',
-                'Well Organized'
-                => 'https://www.heise.de/developer/rss/well-organized-blog-atom.xml',
+                => 'https://www.heise.de/thema/Ich-roll-dann-mal-aus.xml',
                 'Neuigkeiten von der Insel'
-                => 'https://www.heise.de/developer/rss/neuigkeiten-von-der-insel-blog-atom.xml',
-                'Von Menschen und Maschinen'
-                => 'https://www.heise.de/developer/rss/von-menschen-und-maschinen-blog-atom.xml',
+                => 'https://www.heise.de/thema/Neuigkeiten-von-der-Insel.xml',
                 'heise Foto'
-                => 'https://www.heise.de/foto/rss/news-atom.xml',
+                => 'https://www.heise.de/foto/feed.xml',
                 //'Top-Programme bei heise Download'
                 //=> 'https://www.heise.de/download/feed/top',
                 'heise Security'
-                => 'https://www.heise.de/security/rss/news-atom.xml',
+                => 'https://www.heise.de/security/feed.xml',
                 'Security-Alert Meldungen'
-                => 'https://www.heise.de/security/rss/alert-news-atom.xml',
-                'c\'t-Blog'
-                => 'https://www.heise.de/ct/blog/blog-atom.xml',
-                'c\'t-Blog Labs'
-                => 'https://www.heise.de/ct/blog/blog-ctlabs-atom.xml',
-                'c\'t-Blog Fair & Green IT'
-                => 'https://www.heise.de/ct/blog/blog-fgit-atom.xml',
-                'c\'t-Blog RTFM'
-                => 'https://www.heise.de/ct/blog/blog-rtfm-atom.xml',
+                => 'https://www.heise.de/security/Alerts/feed.xml',
                 'c\'t-Themen'
-                => 'https://www.heise.de/ct/rss/artikel-atom.xml',
+                => 'https://www.heise.de/ct/feed.xml',
                 'Make - Neueste Meldungen'
-                => 'https://www.heise.de/make/rss/hardware-hacks-atom.xml',
+                => 'https://www.heise.de/make/feed.xml',
                 'iX News'
-                => 'https://www.heise.de/ix/rss/news-atom.xml',
+                => 'https://www.heise.de/ix/feed.xml',
                 'Mac & i'
-                => 'https://www.heise.de/mac-and-i/news-atom.xml',
-                'MIT Technology Review'
-                => 'https://www.heise.de/tr/rss/news-atom.xml',
-                'MIT Technology Review Blog'
-                => 'https://www.heise.de/tr/rss/blog-atom.xml',
+                => 'https://www.heise.de/mac-and-i/feed.xml',
                 //'Telepolis'
                 //=> 'https://www.heise.de/tp/news-atom.xml',
                 //'Aktuelle News von TechStage'
@@ -116,6 +101,54 @@ class HeiseBridge extends FeedExpander
         ]
     ]];
     const LIMIT = 5;
+
+    public function setInput(array $input)
+    {
+        // Reject discontinued feeds before validation can fall back to the default category.
+        $discontinuedFeeds = [
+            'https://www.heise.de/developer/rss/tales-from-the-web-side-blog-atom.xml' => 'Tales from the Web side',
+            'https://www.heise.de/developer/rss/colspan-dev-blog-atom.xml' => 'colspan',
+            'https://www.heise.de/developer/rss/well-organized-blog-atom.xml' => 'Well Organized',
+            'https://www.heise.de/developer/rss/von-menschen-und-maschinen-blog-atom.xml' => 'Von Menschen und Maschinen',
+            'https://www.heise.de/ct/blog/blog-atom.xml' => 'c\'t-Blog',
+            'https://www.heise.de/ct/blog/blog-ctlabs-atom.xml' => 'c\'t-Blog Labs',
+            'https://www.heise.de/ct/blog/blog-fgit-atom.xml' => 'c\'t-Blog Fair & Green IT',
+            'https://www.heise.de/ct/blog/blog-rtfm-atom.xml' => 'c\'t-Blog RTFM',
+            'https://www.heise.de/tr/rss/news-atom.xml' => 'MIT Technology Review',
+            'https://www.heise.de/tr/rss/blog-atom.xml' => 'MIT Technology Review Blog',
+        ];
+        $category = $input['category'] ?? '';
+        if (is_string($category) && isset($discontinuedFeeds[$category])) {
+            throwServerException(sprintf(
+                'Heise no longer provides the "%s" feed. Please remove this subscription.',
+                $discontinuedFeeds[$category]
+            ));
+        }
+
+        // Translate legacy category URLs before validating the current category values.
+        $legacyFeedUrls = [
+            'https://www.heise.de/autos/rss/news-atom.xml' => 'https://www.heise.de/autos/feed.xml',
+            'https://www.heise.de/developer/rss/news-atom.xml' => 'https://www.heise.de/developer/feed.xml',
+            'https://www.heise.de/developer/rss/dotnet-doktor-blog-atom.xml' => 'https://www.heise.de/thema/Der-Dotnet-Doktor.xml',
+            'https://www.heise.de/developer/rss/next-big-thing-blog-atom.xml' => 'https://www.heise.de/thema/the-next-big-thing.xml',
+            'https://www.heise.de/developer/rss/continuous-architecture-blog-atom.xml' => 'https://www.heise.de/thema/Continuous-Architecture.xml',
+            'https://www.heise.de/developer/rss/der-pragmatische-architekt-blog-atom.xml' => 'https://www.heise.de/thema/Der-Pragmatische-Architekt.xml',
+            'https://www.heise.de/developer/rss/modernes-cplusplus-blog-atom.xml' => 'https://www.heise.de/thema/Modernes-Cplusplus.xml',
+            'https://www.heise.de/developer/rss/ich-roll-dann-mal-aus-atom.xml' => 'https://www.heise.de/thema/Ich-roll-dann-mal-aus.xml',
+            'https://www.heise.de/developer/rss/neuigkeiten-von-der-insel-blog-atom.xml' => 'https://www.heise.de/thema/Neuigkeiten-von-der-Insel.xml',
+            'https://www.heise.de/foto/rss/news-atom.xml' => 'https://www.heise.de/foto/feed.xml',
+            'https://www.heise.de/security/rss/news-atom.xml' => 'https://www.heise.de/security/feed.xml',
+            'https://www.heise.de/security/rss/alert-news-atom.xml' => 'https://www.heise.de/security/Alerts/feed.xml',
+            'https://www.heise.de/ct/rss/artikel-atom.xml' => 'https://www.heise.de/ct/feed.xml',
+            'https://www.heise.de/make/rss/hardware-hacks-atom.xml' => 'https://www.heise.de/make/feed.xml',
+            'https://www.heise.de/ix/rss/news-atom.xml' => 'https://www.heise.de/ix/feed.xml',
+            'https://www.heise.de/mac-and-i/news-atom.xml' => 'https://www.heise.de/mac-and-i/feed.xml',
+        ];
+        if (is_string($category) && isset($legacyFeedUrls[$category])) {
+            $input['category'] = $legacyFeedUrls[$category];
+        }
+        parent::setInput($input);
+    }
 
     public function collectData()
     {
@@ -207,25 +240,44 @@ class HeiseBridge extends FeedExpander
         //fix for embbedded youtube-videos
         $oldlink = '';
         foreach ($article->find('div.video__yt-container') as &$ytvideo) {
-            if (preg_match('/www.youtube.*?\"/', $ytvideo->innertext, $link) && $link[0] != $oldlink) {
-                //save link to prevent duplicates
-                $oldlink = $link[0];
-                $ytiframe = <<<EOT
-                    <iframe width="560" height="315" src="https://$link[0] title="YouTube video player" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin" allowfullscreen></iframe>
-                EOT;
-                //check if video is in header or article for correct possitioning
-                if (strpos($header->innertext, $link[0])) {
-                    $item['content'] .= $ytiframe;
+            $ytResult = handleYoutube($ytvideo->innertext);
+            if ($ytResult) {
+                //check if video is in header or article for correct positioning
+                if (strpos($header->innertext, $ytvideo)) {
+                    $item['content'] .= $ytResult;
                 } else {
-                    $ytvideo->innertext .= $ytiframe;
+                    $ytvideo->innertext .= $ytResult;
                     $reloadneeded = 1;
                 }
             }
         }
+
+        // strip p tags inside of figcaption to avoid doubling it
+        foreach ($article->find('figcaption p') as $key => $elem) {
+            $elem->outertext = $elem->plaintext;
+            $reloadneeded = 1;
+        }
+
         if (isset($reloadneeded)) {
             $article = str_get_html($article->outertext);
+        }
+
+        // fix mastodon embeds
+        foreach ($article->find('embetty-mastodon') as &$post) {
+            $url = $post->status;
+            $parsedUrl = parse_url($url);
+            $baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+            if (isset($parsedUrl['port'])) {
+                $baseUrl .= ':' . $pasedurl['port'];
+            }
+            $post->innertext = <<<EOD
+<blockquote class='mastodon-embed' data-embed-url='$url/embed'
+    style='background: #FCF8FF; border-radius: 8px; border: 1px solid #C9C4DA;
+    margin: 0; max-width: 540px; min-width: 270px; overflow: hidden; padding: 0;'>
+<a href='$url' target='_blank'>Embedded Mastodon post: $url</a>
+</blockquote>
+<script data-allowed-prefixes='$baseUrl' async src='$baseUrl/embed.js'></script>
+EOD;
         }
 
         $categories = $article->find('.article-footer__topics ul.topics li.topics__item a-topic a');
@@ -236,7 +288,8 @@ class HeiseBridge extends FeedExpander
         $content = $article->find('.article-content', 0);
         if ($content) {
             $contentElements = $content->find(
-                'p, h3, ul, ol, table, pre, noscript img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption, noscript iframe'
+                // phpcs:ignore
+                'p, h3, ul, ol, table, pre, noscript img, noscript iframe, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption, figure figcaption.a-caption div.text, div.update-box__datetime'
             );
             $item['content'] .= implode('', $contentElements);
         }

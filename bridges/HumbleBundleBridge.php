@@ -4,7 +4,7 @@ class HumbleBundleBridge extends BridgeAbstract
 {
     const NAME = 'Humble Bundle';
     const MAINTAINER = 'phantop';
-    const URI = 'https://humblebundle.com/';
+    const URI = 'https://www.humblebundle.com/';
     const DESCRIPTION = 'Returns bundles from Humble Bundle.';
     const PARAMETERS = [[
         'type' => [

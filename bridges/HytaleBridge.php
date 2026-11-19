@@ -2,44 +2,24 @@
 
 class HytaleBridge extends BridgeAbstract
 {
-    const NAME = 'Hytale Bridge';
+    const NAME = 'Hytale';
     const URI = 'https://hytale.com/news';
     const DESCRIPTION = 'All blog posts from Hytale\'s news blog.';
-    const MAINTAINER = 'llamasblade';
+    const MAINTAINER = 'orionblur';
 
-    const _API_URL_PUBLISHED = 'https://hytale.com/api/blog/post/published';
-    const _API_URL_BLOG_POST = 'https://hytale.com/api/blog/post/slug/';
-    const _BLOG_THUMB_URL = 'https://cdn.hytale.com/variants/blog_thumb_';
-    const _BLOG_COVER_URL = 'https://cdn.hytale.com/variants/blog_cover_';
-    const _IMG_REGEX = '#https://cdn\.hytale\.com/\w+\.(?:jpg|png)#';
+    const _CLASS_WITH_ARTICLES = 'space-y-0';
+    const _DESCRIPTION_ELEMENT = 'span.line-clamp-4';
+    const _AUTHOR_ELEMENT = 'span.text-right';
 
     public function collectData()
     {
-        $blogPosts = json_decode(getContents(self::_API_URL_PUBLISHED));
-        $length = count($blogPosts);
-
-        for ($i = 0; $i < $length; $i += 3) {
-            $slug = $blogPosts[$i]->slug;
-
-            $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
-
-            if (property_exists($blogPost, 'next')) {
-                $this->addBlogPost($blogPost->next);
-            }
-
-            $this->addBlogPost($blogPost);
-
-            if (property_exists($blogPost, 'previous')) {
-                $this->addBlogPost($blogPost->previous);
-            }
+        $siteDOM = getSimpleHTMLDOM(self::URI);
+        $articlesContainer = $siteDOM->find('div.' . self::_CLASS_WITH_ARTICLES, 0);
+        if (!$articlesContainer) {
+            return;
         }
-
-        if (($length >= 3) && ($length % 3 == 0)) {
-            $slug = $blogPosts[$length - 1]->slug;
-
-            $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
-
-            $this->addBlogPost($blogPost);
+        foreach ($articlesContainer->find('article') as $article) {
+            $this->addBlogPost($article);
         }
     }
 
@@ -47,29 +27,52 @@ class HytaleBridge extends BridgeAbstract
     {
         $item = [];
 
-        $splittedTimestamp = explode('-', $blogPost->publishedAt);
-        $year = $splittedTimestamp[0];
-        $month = $splittedTimestamp[1];
-        $slug = $blogPost->slug;
-        $uri = 'https://hytale.com/news/' . $year . '/' . $month . '/' . $slug;
-
-        $item['uri'] = $uri;
-        $item['title'] = $blogPost->title;
-        $item['author'] = $blogPost->author;
-        $item['timestamp'] = $blogPost->publishedAt;
-        $item['content'] = $blogPost->body;
-
-        $blogCoverS3Key = $blogPost->coverImage->s3Key;
-        $coverImagesURLs = [
-            self::_BLOG_COVER_URL . $blogCoverS3Key,
-            self::_BLOG_THUMB_URL . $blogCoverS3Key,
-        ];
-
-        if (preg_match_all(self::_IMG_REGEX, $blogPost->body, $bodyImagesURLs)) {
-            $item['enclosures'] = array_merge($coverImagesURLs, $bodyImagesURLs[0]);
-        } else {
-            $item['enclosures'] = $coverImagesURLs;
+        $link = $blogPost->find('h4 a', 0);
+        if (!$link) {
+            return;
         }
+
+        $articlePath = $link->getAttribute('href');
+        $item['uri'] = 'https://hytale.com' . $articlePath;
+        $item['title'] = trim($link->plaintext);
+
+        $descriptionElement = $blogPost->find(self::_DESCRIPTION_ELEMENT, 0);
+        if ($descriptionElement) {
+            $item['content'] = trim($descriptionElement->plaintext);
+        }
+
+        $imgElement = $blogPost->find('img', 0);
+        if ($imgElement) {
+            $imageUrl = $imgElement->getAttribute('src');
+
+            if ($imageUrl) {
+                $imageHtml = '<img src="' . $imageUrl . '" alt="Article thumbnail" />';
+
+                if (isset($item['content'])) {
+                    $item['content'] = $imageHtml . '<br />' . $item['content'];
+                } else {
+                    $item['content'] = $imageHtml;
+                }
+            }
+        }
+
+        $footerSpans = $blogPost->find('span.flex.flex-row.gap-2 > span');
+
+        if (count($footerSpans) >= 1) {
+            $dateText = trim($footerSpans[0]->plaintext);
+            $item['timestamp'] = strtotime($dateText);
+        }
+
+        $authorElement = $blogPost->find(self::_AUTHOR_ELEMENT, 0);
+        if ($authorElement) {
+            $authorText = trim($authorElement->plaintext);
+
+            if (preg_match('/Posted by\s+(.+)/i', $authorText, $matches)) {
+                $item['author'] = trim($matches[1]);
+            }
+        }
+
+        $item['uid'] = md5($articlePath);
 
         $this->items[] = $item;
     }

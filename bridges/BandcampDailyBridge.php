@@ -2,7 +2,7 @@
 
 class BandcampDailyBridge extends BridgeAbstract
 {
-    const NAME = 'Bandcamp Daily Bridge';
+    const NAME = 'Bandcamp Daily';
     const URI = 'https://daily.bandcamp.com';
     const DESCRIPTION = 'Returns newest articles';
     const MAINTAINER = 'VerifiedJoseph';

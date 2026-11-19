@@ -3,7 +3,7 @@
 class DailymotionBridge extends BridgeAbstract
 {
     const MAINTAINER = 'mitsukarenai';
-    const NAME = 'Dailymotion Bridge';
+    const NAME = 'Dailymotion';
     const URI = 'https://www.dailymotion.com/';
     const CACHE_TIMEOUT = 3600; // 1h
     const DESCRIPTION = 'Returns the 5 newest videos by username/playlist or search';

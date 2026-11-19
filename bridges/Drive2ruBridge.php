@@ -173,9 +173,7 @@ class Drive2ruBridge extends BridgeAbstract
             $node->outertext = '';
         }
         foreach ($content->find('iframe') as $node) {
-            preg_match('/embed\/(.*?)\?/', $node->src, $match);
-            $node->outertext = '<a href="https://www.youtube.com/watch?v=' . $match[1] .
-                '">https://www.youtube.com/watch?v=' . $match[1] . '</a>';
+            $node->outertext = handleYoutube($node->src);
         }
         return $content;
     }

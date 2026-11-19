@@ -2,7 +2,7 @@
 
 class MallTvBridge extends BridgeAbstract
 {
-    const NAME = 'MALL.TV Bridge';
+    const NAME = 'MALL.TV';
     const URI = 'https://www.mall.tv';
     const CACHE_TIMEOUT = 3600;
     const DESCRIPTION = 'Return newest videos';

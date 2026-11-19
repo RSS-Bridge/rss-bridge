@@ -3,7 +3,7 @@
 class ScmbBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Astalaseven';
-    const NAME = 'Se Coucher Moins Bête Bridge';
+    const NAME = 'Se Coucher Moins Bête';
     const URI = 'https://secouchermoinsbete.fr';
     const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'Returns the newest anecdotes.';

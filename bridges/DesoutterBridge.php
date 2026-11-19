@@ -5,7 +5,7 @@ class DesoutterBridge extends BridgeAbstract
     const CATEGORY_NEWS = 'News & Events';
     const CATEGORY_INDUSTRY = 'Industry 4.0 News';
 
-    const NAME = 'Desoutter Bridge';
+    const NAME = 'Desoutter';
     const URI = 'https://www.desouttertools.com';
     const DESCRIPTION = 'Returns feeds for news from Desoutter';
     const MAINTAINER = 'logmanoriginal';
