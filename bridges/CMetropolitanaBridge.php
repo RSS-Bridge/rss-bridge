@@ -11,7 +11,7 @@ class CMetropolitanaBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = getContents('https://go.tmlmobilidade.pt/hub/api/v1/alerts');
+        $json = getContents('https://go.tmlmobilidade.pt/hub/api/v1/LA3SO/alerts');
 
         $data = Json::decode($json);
 
