@@ -33,13 +33,13 @@ class GoodreadsBridge extends BridgeAbstract
 
     private function collectAuthorBooks($url)
     {
-        $regex = '/goodreads\.com\/author\/show\/(\d+)/';
+        $regex = '/goodreads\.com\/author\/show\/(\d+[^\/?#]*)/';
 
         preg_match($regex, $url, $matches);
 
-        $authorId = $matches[1];
+        $authorSlug = $matches[1];
 
-        $authorListUrl = "https://www.goodreads.com/author/list/$authorId?sort=original_publication_year";
+        $authorListUrl = "https://www.goodreads.com/author/list/$authorSlug?sort=original_publication_year";
 
         $html = getSimpleHTMLDOMCached($authorListUrl, self::CACHE_TIMEOUT);
 
