@@ -13,6 +13,7 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Desktop' => '',
+                    'Enterprise' => 'enterprise',
                     'Beta' => 'beta',
                     'Nightly' => 'nightly',
                     'Android' => 'android',
@@ -38,7 +39,7 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
             throw new \Exception('Expected a redirect from ' . $url);
         } catch (HttpException $e) {
             $location = $e->response->getHeader('location');
-            if (!preg_match('#^/en-US/firefox/(android/|ios/)?\d+\.[\w.]+/releasenotes/$#', $location ?? '')) {
+            if (!preg_match('#^/en-US/firefox/(android/|ios/|enterprise/)?\d+\.[\w.]+/releasenotes/$#', $location ?? '')) {
                 throw $e;
             }
         }
