@@ -3,7 +3,7 @@
 class FirefoxReleaseNotesBridge extends BridgeAbstract
 {
     const NAME = 'Firefox Release Notes';
-    const URI = 'https://www.mozilla.org/en-US/firefox/';
+    const URI = 'https://www.firefox.com/en-US/firefox/';
     const DESCRIPTION = 'Retrieve the latest Firefox release notes.';
     const MAINTAINER = 'tillcash';
     const PARAMETERS = [
@@ -13,6 +13,7 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Desktop' => '',
+                    'Enterprise' => 'enterprise',
                     'Beta' => 'beta',
                     'Nightly' => 'nightly',
                     'Android' => 'android',
@@ -31,7 +32,18 @@ class FirefoxReleaseNotesBridge extends BridgeAbstract
     public function collectData()
     {
         $platform = $this->getKey('platform');
-        $url = self::URI . $this->getInput('platform') . '/notes/';
+        $input = $this->getInput('platform');
+        $url = self::URI . ($input ? $input . '/' : '') . 'notes/';
+        try {
+            getContents($url, [], [CURLOPT_FOLLOWLOCATION => false]);
+            throw new \Exception('Expected a redirect from ' . $url);
+        } catch (HttpException $e) {
+            $location = $e->response->getHeader('location');
+            if (!preg_match('#^/en-US/firefox/(android/|ios/|enterprise/)?\d+\.[\w.]+/releasenotes/$#', $location ?? '')) {
+                throw $e;
+            }
+        }
+        $url = 'https://www.firefox.com' . $location;
         $dom = getSimpleHTMLDOM($url);
 
         $version = $dom->find('.c-release-version', 0)->innertext;
