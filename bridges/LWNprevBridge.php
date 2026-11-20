@@ -7,6 +7,7 @@ class LWNprevBridge extends BridgeAbstract
     const URI = 'https://lwn.net/';
     const CACHE_TIMEOUT = 604800; // 1 week
     const DESCRIPTION = 'LWN Free Weekly Edition available one week late';
+    const LIMIT = 2;
 
     private $editionTimeStamp;
 
@@ -39,10 +40,19 @@ class LWNprevBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $archives = defaultLinkTo(getSimpleHTMLDOM(self::URI . 'Archives/'), self::URI);
+        $links = $archives->find('a[href$="/bigpage"]');
+        // Skip the first result, as we assume it returns 403 and is not freely available.
+        foreach (array_slice($links, 1, self::LIMIT) as $i => $link) {
+            $content = getContents($link->href);
+            $this->collectEdition($content);
+        }
+    }
+
+    private function collectEdition($content)
+    {
         // Because the LWN page is written in loose HTML and not XHTML,
         // Simple HTML Dom is not accurate enough for the job
-        $content = getContents($this->getURI());
-
         $contents = explode('<b>Page editor</b>', $content);
 
         foreach ($contents as $content) {
