@@ -50,6 +50,13 @@ class GolemBridge extends FeedExpander
             'required' => false,
             'title' => 'Specify number of full articles to return',
             'defaultValue' => 5
+        ],
+        'urlfilter' => [
+            'name' => 'Exclude URLs containing',
+            'type' => 'text',
+            'required' => false,
+            'title' => 'String to filter out articles based on their URL (e.g. exclude adds)',
+            'defaultValue' => '/anzeige-'
         ]
     ]];
     const LIMIT = 5;
@@ -67,6 +74,7 @@ class GolemBridge extends FeedExpander
     {
         $item['content'] ??= '';
         $uri = $item['uri'];
+        $urlFilter = $this->getInput('urlfilter');
 
         $urls = [];
 
@@ -75,6 +83,11 @@ class GolemBridge extends FeedExpander
                 // Prevent loop in navigation links
                 break;
             }
+
+            if ($urlFilter && str_contains($uri, $urlFilter)) {
+                return null;
+            }
+
             $urls[$uri] = true;
 
             $articlePage = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT, static::HEADERS);
