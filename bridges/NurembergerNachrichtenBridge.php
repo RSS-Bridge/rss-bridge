@@ -41,11 +41,7 @@ class NurembergerNachrichtenBridge extends BridgeAbstract
     public function collectData()
     {
         $region = $this->getInput('region');
-        if (
-            $region === 'neustadt-aisch-bad-windsheim' ||
-            $region === 'erlangen-hoechstadt' ||
-            $region === ''
-        ) {
+        if (!in_array($region, ['erlangen', 'fuerth', 'nuernberg'], true)) {
             $region = 'region/' . $region;
         }
         $url = self::URI . '/' . $region;
