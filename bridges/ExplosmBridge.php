@@ -3,7 +3,7 @@
 class ExplosmBridge extends BridgeAbstract
 {
     const NAME = 'Explosm: Cyanide & Happiness';
-    const URI = 'https://explosm.net/';
+    const URI = 'https://explosm.net';
     const DESCRIPTION = 'A Webcomic by Kris Wilson, Rob DenBleyker, and Dave McElfatrick.';
     const MAINTAINER = 'sal0max, bockiii';
     const CACHE_TIMEOUT = 60 * 60 * 2; // 2 hours
@@ -19,18 +19,18 @@ class ExplosmBridge extends BridgeAbstract
 
     public function getIcon()
     {
-        return self::URI . 'favicon-32x32.png';
+        return self::URI . '/favicon-32x32.png';
     }
 
     public function getURI()
     {
-        return self::URI . 'comics/latest#comic';
+        return self::URI;
     }
 
     public function collectData()
     {
         $limit = $this->getInput('limit');
-        $url = $this->getUri();
+        $url = self::URI . '/comics/' . $this->getLatestSlug();
 
         for ($i = 0; $i < $limit; $i++) {
             $html = getSimpleHTMLDOM($url);
@@ -42,7 +42,7 @@ class ExplosmBridge extends BridgeAbstract
             $date    = $element->find('[class^=Author__Right] p', 0)->plaintext;
             $author  = str_replace('by ', '', $element->find('[class^=Author__Right] p', 1)->plaintext);
             $image   = $element->find('img', 0)->src;
-            $link    = $html->find('[rel=canonical]', 0)->href;
+            $link    = explode('#', $url)[0];
 
             $item = [
                 'uid'       => $link,
@@ -57,5 +57,26 @@ class ExplosmBridge extends BridgeAbstract
             // get next url
             $url = self::URI . $html->find('[class*=ComicSelector]>a', 0)->href;
         }
+    }
+
+    private function getLatestSlug(): string
+    {
+        $html = getSimpleHTMLDOM(self::URI);
+        $script = $html->find('script#__NEXT_DATA__', 0);
+        if (!$script) {
+            throwServerException('Could not find latest Explosm comic');
+        }
+        $data = Json::decode($script->innertext);
+        foreach ($data['props']['pageProps']['urqlState'] ?? [] as $entry) {
+            if (!is_string($entry['data'] ?? null)) {
+                continue;
+            }
+            $entryData = Json::decode($entry['data']);
+            $slug = $entryData['latest'][0]['slug'] ?? null;
+            if (is_string($slug) && $slug !== '') {
+                return $slug;
+            }
+        }
+        throwServerException('Could not find latest Explosm comic');
     }
 }
