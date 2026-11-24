@@ -1,4 +1,3 @@
-version: '2'
 services:
   rss-bridge:
     image: rssbridge/rss-bridge:latest
