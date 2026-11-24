@@ -11,7 +11,6 @@ class CdactionBridge extends BridgeAbstract
             'name' => 'Kategoria',
             'type' => 'list',
             'values' => [
-                'Najnowsze (wszystkie)' => 'najnowsze',
                 'Newsy' => 'newsy',
                 'Recenzje' => 'recenzje',
                 'Teksty' => [
@@ -36,7 +35,7 @@ class CdactionBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI() . '/' . $this->getInput('category'));
+        $html = getSimpleHTMLDOM($this->getURI() . '/' . $this->getInput('category') . '/');
 
         $mainArticles = $html->find('ul.news-list .first-item');
         $this->processArticles($mainArticles);
