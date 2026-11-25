@@ -19,8 +19,7 @@ class PatreonBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = $this->getURI();
-        $html = getSimpleHTMLDOMCached($url);
+        $html = $this->getCreatorPage();
         $regex = '#/api/campaigns/([0-9]+)#';
         if (preg_match($regex, $html->save(), $matches) > 0) {
             $campaign_id = $matches[1];
@@ -300,7 +299,7 @@ class PatreonBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('creator'))) {
-            $html = getSimpleHTMLDOMCached($this->getURI());
+            $html = $this->getCreatorPage();
             if ($html) {
                 preg_match('#"name": "(.*)"#', $html->save(), $matches);
                 return 'Patreon posts from ' . stripcslashes($matches[1]);
@@ -310,6 +309,30 @@ class PatreonBridge extends BridgeAbstract
         }
 
         return parent::getName();
+    }
+
+    /**
+     * Patreon redirects creator pages (e.g. /name to /cw/Name) and redirects
+     * are not followed by default, so follow them here, staying on patreon.com.
+     */
+    private function getCreatorPage()
+    {
+        $url = $this->getURI();
+        for ($i = 0; $i < 5; $i++) {
+            try {
+                return getSimpleHTMLDOMCached($url);
+            } catch (HttpException $e) {
+                $location = $e->response->getHeader('location');
+                if (!in_array($e->getCode(), [301, 302, 307, 308], true) || !$location) {
+                    throw $e;
+                }
+                $url = urljoin($url, $location);
+                if (parse_url($url, PHP_URL_HOST) !== parse_url(self::URI, PHP_URL_HOST)) {
+                    throw $e;
+                }
+            }
+        }
+        throwServerException('Too many redirects for ' . $this->getURI());
     }
 
     public function getURI()
@@ -325,8 +348,8 @@ class PatreonBridge extends BridgeAbstract
     {
         $params = [];
 
-        // Matches e.g. https://www.patreon.com/SomeCreator
-        $regex = '/^(https?:\/\/)?(www\.)?patreon\.com\/([^\/&?\n]+)/';
+        // Matches e.g. https://www.patreon.com/SomeCreator and https://www.patreon.com/cw/SomeCreator
+        $regex = '/^(https?:\/\/)?(www\.)?patreon\.com\/(?:cw\/)?([^\/&?\n]+)/';
         if (preg_match($regex, $url, $matches) > 0) {
             $params['creator'] = urldecode($matches[3]);
             return $params;
