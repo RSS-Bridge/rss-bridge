@@ -171,18 +171,12 @@ class GitlabIssueBridge extends BridgeAbstract
         $description_uri = $this->getURI() . '.json';
         $description = getContents($description_uri);
         $description = json_decode($description, false);
-        $description_html = getSimpleHtmlDomCached($this->getURI());
 
         $item = [];
         $item['uri'] = $this->getURI();
         $item['uid'] = $item['uri'];
 
         $item['timestamp'] = $description->created_at ?? $description->updated_at;
-
-        $author = $this->parseAuthor($description_html);
-        if ($author) {
-            $item['author'] = $author;
-        }
 
         $item['title'] = $description->title;
         $item['content'] = markdownToHtml($description->description);
