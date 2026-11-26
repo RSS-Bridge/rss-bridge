@@ -22,100 +22,186 @@ class HumbleBundleBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $page = getSimpleHTMLDOMCached($this->getURI());
-        $json_text = $page->find('#landingPage-json-data', 0)->innertext;
-        $json = json_decode(html_entity_decode($json_text), true)['data'];
-
-        $products = [];
-        $types = ['books', 'games', 'software'];
-        $types = $this->getInput('type') === 'bundles' ? $types : [$this->getInput('type')];
-        foreach ($types as $type) {
-            $products = array_merge($products, $json[$type]['mosaic'][0]['products']);
-        }
-
-        foreach ($products as $element) {
-            $dom = new simple_html_dom();
-            $body = $dom->createElement('div');
-            $item = [
-                'author' => $element['author'],
-                'categories' => $element['hover_highlights'],
-                'content' => $body,
-                'timestamp' => $element['start_date|datetime'],
-                'title' => $element['tile_short_name'],
-                'uid' => $element['machine_name'],
-                'uri' => parent::getURI() . $element['product_url'],
-            ];
-
-            array_unshift($item['categories'], explode(':', $element['tile_name'])[0]);
-            array_unshift($item['categories'], $element['tile_stamp']);
-
-            $this->createChild($dom, $body, 'img', null, ['src' => $element['tile_logo']]);
-            $this->createChild($dom, $body, 'img', null, ['src' => $element['high_res_tile_image']]);
-            $this->createChild($dom, $body, 'h2', $element['short_marketing_blurb']);
-            $this->createChild($dom, $body, 'p', $element['detailed_marketing_blurb']);
-
-            $this->items[] = $this->processBundle($item, $dom, $body);
-        }
-    }
-
-    private function createChild($dom, $body, $name = null, $val = null, $args = [])
-    {
-        if ($name == null) {
-            $elem = $dom->createTextNode($val);
-        } else {
-            $elem = $dom->createElement($name, $val);
-        }
-        foreach ($args as $arg => $val) {
-            $elem->setAttribute($arg, $val);
-        }
-        $body->appendChild($elem);
-        return $elem;
-    }
-
-    private function processBundle($item, $dom, $body)
-    {
-        $page = getSimpleHTMLDOMCached($item['uri']);
-        $json_text = $page->find('#webpack-bundle-page-data', 0)->innertext;
-        $json = json_decode(html_entity_decode($json_text), true)['bundleData'];
-        $tiers = $json['tier_display_data'];
-        ksort($tiers, SORT_NATURAL);
-        # `initial` element gets sorted to the end as bt# (bundle tiers) precede it alphabetically
-        array_unshift($tiers, array_pop($tiers));
-
+        $rows = $this->readRows($this->getURI());
+        $recognized = false;
         $seen = [];
-        $toc = $this->createChild($dom, $body, 'ul');
-        foreach ($tiers as $tiername => $tier) {
-            $this->createChild($dom, $body, 'h2', $tier['header'], ['id' => $tiername]);
-            $li = $this->createChild($dom, $toc, 'li');
-            $this->createChild($dom, $li, 'a', $tier['header'], ['href' => "#$tiername"]);
-            $toc_tier = $this->createChild($dom, $toc, 'ul');
-            foreach ($tier['tier_item_machine_names'] as $name) {
-                if (in_array($name, $seen)) {
+        foreach ($this->objectsWith($rows, 'feedItems') as $section) {
+            if (($section['surface'] ?? null) !== 'bundles-listing' || !is_array($section['feedItems'])) {
+                continue;
+            }
+            if (!$section['feedItems']) {
+                $recognized = true;
+            }
+            foreach ($section['feedItems'] as $entry) {
+                $product = $entry['value'] ?? [];
+                $path = $product['url'] ?? '';
+                if (!preg_match('~^/(books|games|software)/[a-zA-Z0-9_-]+$~D', $path, $matches)) {
                     continue;
                 }
-                array_push($seen, $name);
-
-                $element = $json['tier_item_data'][$name];
-                $head = $this->createChild($dom, $body, 'h3', null, ['id' => $name]);
-                $head_link = $this->createChild($dom, $head, 'a', $element['human_name'], ['id' => $name]);
-                $li = $this->createChild($dom, $toc_tier, 'li');
-                $this->createChild($dom, $li, 'a', $element['human_name'], ['href' => "#$name"]);
-                $this->createChild($dom, $body, 'img', null, ['src' => $element['resolved_paths']['featured_image']]);
-                $this->createChild($dom, $body, 'img', null, ['src' => $element['resolved_paths']['preview_image']]);
-                $this->createChild($dom, $body, 'br');
-                if ($element['description_text']) {
-                    $body->appendChild(str_get_html($element['description_text'])->root);
+                if (empty($product['title'])) {
+                    continue;
                 }
-                if ($element['youtube_link']) {
-                    $head_link->href = 'https://youtu.be/' . $element['youtube_link'];
+                $recognized = true;
+                $type = $this->getInput('type');
+                if ($type !== 'bundles' && $type !== $matches[1]) {
+                    continue;
                 }
-                if ($element['book_preview']) {
-                    $head_link->href = $element['book_preview']['preview_file_link'];
+                $uid = $product['productKey'] ?? $path;
+                if (isset($seen[$uid])) {
+                    continue;
                 }
+                $seen[$uid] = true;
+                $uri = rtrim(self::URI, '/') . $path;
+                $detail = $this->loadCacheValue($uri);
+                if ($detail === null) {
+                    try {
+                        $detail = $this->bundleDetail($this->readRows($uri));
+                        if ($detail) {
+                            $this->saveCacheValue($uri, $detail, $this->getCacheTimeout());
+                        }
+                    } catch (\Exception $e) {
+                        $this->logger->warning($e->getMessage());
+                    }
+                }
+                $content = $this->image($product['thumbnail'] ?? null) . ($detail['content'] ?? '');
+                if (empty($detail['hasItems']) && !empty($product['includedItemTitles'])) {
+                    $content .= '<ul>';
+                    foreach ($product['includedItemTitles'] as $title) {
+                        $content .= '<li>' . htmlspecialchars($title) . '</li>';
+                    }
+                    $content .= '</ul>';
+                }
+                $this->items[] = [
+                    'uid' => $uid,
+                    'uri' => $uri,
+                    'title' => $product['title'],
+                    'categories' => [$matches[1]],
+                    'timestamp' => $detail['timestamp'] ?? null,
+                    'content' => $content,
+                ];
             }
         }
+        if (!$recognized) {
+            throw new \Exception('Unable to find the Humble Bundle listing');
+        }
+    }
 
-        return $item;
+    private function image($url): string
+    {
+        if (!is_string($url) || strpos($url, 'https://') !== 0) {
+            return '';
+        }
+        return '<img src="' . htmlspecialchars($url, ENT_QUOTES) . '" alt="">';
+    }
+
+    protected function fetchPage(string $uri): string
+    {
+        return getContents($uri);
+    }
+
+    // Next.js embeds a stream of newline-delimited JSON records and byte-counted text records.
+    private function readRows(string $uri): array
+    {
+        $html = $this->fetchPage($uri);
+        $stream = '';
+        $prefix = 'self.__next_f.push(';
+        $offset = 0;
+        while (($start = strpos($html, $prefix, $offset)) !== false) {
+            $start += strlen($prefix);
+            $end = strpos($html, '</script>', $start);
+            if ($end === false) {
+                break;
+            }
+            $chunk = json_decode(rtrim(substr($html, $start, $end - $start), "); \t\r\n"), true);
+            if (($chunk[0] ?? null) === 1 && is_string($chunk[1] ?? null)) {
+                $stream .= $chunk[1];
+            }
+            $offset = $end + 9;
+        }
+
+        $rows = [];
+        $offset = 0;
+        while (preg_match('/\G([a-f0-9]*):(?:T([a-f0-9]+),)?/', $stream, $m, 0, $offset)) {
+            $offset += strlen($m[0]);
+            if (isset($m[2])) {
+                $length = hexdec($m[2]);
+                if ($length > strlen($stream) - $offset) {
+                    break;
+                }
+                $rows[$m[1]] = substr($stream, $offset, $length);
+                $offset += $length;
+            } else {
+                $end = strpos($stream, "\n", $offset);
+                if ($end === false) {
+                    break;
+                }
+                $row = json_decode(substr($stream, $offset, $end - $offset), true);
+                if ($row !== null) {
+                    $rows[$m[1]] = $row;
+                }
+                $offset = $end + 1;
+            }
+        }
+        return $rows;
+    }
+
+    private function objectsWith(array $tree, string $key): iterable
+    {
+        if (array_key_exists($key, $tree)) {
+            yield $tree;
+            return;
+        }
+        foreach ($tree as $child) {
+            if (is_array($child)) {
+                yield from $this->objectsWith($child, $key);
+            }
+        }
+    }
+
+    private function description($text, array $rows): string
+    {
+        if (is_string($text) && preg_match('/^\$([a-f0-9]+)$/D', $text, $m)) {
+            $text = $rows[$m[1]] ?? '';
+        }
+        if (!is_string($text) || $text === '' || $text === '$undefined') {
+            return '';
+        }
+        return '<p>' . htmlspecialchars(html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8')) . '</p>';
+    }
+
+    private function bundleDetail(array $rows): array
+    {
+        foreach ($this->objectsWith($rows, 'bundlePage') as $props) {
+            $bundle = $props['bundlePage'];
+            if (!is_array($bundle)) {
+                continue;
+            }
+            $content = $this->description($bundle['description'] ?? $bundle['headline'] ?? null, $rows);
+            $seen = [];
+            foreach ($bundle['tiers'] ?? [] as $index => $tier) {
+                $price = $tier['price'] ?? [];
+                $heading = 'Tier ' . ($index + 1);
+                if (isset($price['amount'], $price['currencyCode'])) {
+                    $heading = $price['amount'] . ' ' . $price['currencyCode'];
+                }
+                $content .= '<h2>' . htmlspecialchars($heading) . '</h2>';
+                foreach ($tier['bundleItems'] ?? [] as $item) {
+                    // Later tiers refer back to items already described in earlier tiers.
+                    if (!is_array($item) || empty($item['title'])) {
+                        continue;
+                    }
+                    $id = $item['key'] ?? $item['title'];
+                    if (!isset($seen[$id])) {
+                        $seen[$id] = true;
+                        $content .= '<h3>' . htmlspecialchars($item['title']) . '</h3>';
+                        $content .= $this->image($item['thumbnailImageUrl'] ?? null);
+                        $content .= $this->description($item['description'] ?? null, $rows);
+                    }
+                }
+            }
+            return ['content' => $content, 'hasItems' => (bool)$seen, 'timestamp' => $bundle['startDate'] ?? null];
+        }
+        return [];
     }
 
     public function getName()
