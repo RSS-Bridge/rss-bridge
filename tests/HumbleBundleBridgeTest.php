@@ -65,6 +65,28 @@ class HumbleBundleBridgeTest extends TestCase
         $this->assertStringContainsString('One book', $fallback['content']);
     }
 
+    public function testSharedItemAppearsAtLowestPrice(): void
+    {
+        $tiers = [
+            ['price' => ['amount' => 10, 'currencyCode' => 'USD'], 'bundleItems' => [
+                ['title' => 'Shared', 'description' => 'Full description'],
+                ['title' => 'Premium'],
+            ]],
+            ['price' => ['amount' => 5, 'currencyCode' => 'USD'], 'bundleItems' => [
+                '$e:props:bundlePage:tiers:0:bundleItems:0',
+            ]],
+        ];
+        $bridge = $this->bridge([
+            '/bundles' => $this->listing([['value' => ['url' => '/games/game', 'title' => 'Game']]]),
+            '/games/game' => $this->page('e:' . json_encode(['bundlePage' => ['tiers' => $tiers]]) . "\n"),
+        ]);
+        $bridge->collectData();
+        $this->assertSame(
+            '<h2>5 USD</h2><h3>Shared</h3><p>Full description</p><h2>10 USD</h2><h3>Premium</h3>',
+            $bridge->getItems()[0]['content']
+        );
+    }
+
     public function testEmptyCategory(): void
     {
         $bridge = $this->bridge(['/games' => $this->listing([])]);

@@ -178,7 +178,15 @@ class HumbleBundleBridge extends BridgeAbstract
             }
             $content = $this->description($bundle['description'] ?? $bundle['headline'] ?? null, $rows);
             $seen = [];
-            foreach ($bundle['tiers'] ?? [] as $index => $tier) {
+            $tiers = $bundle['tiers'] ?? [];
+            $order = array_keys($tiers);
+            usort($order, static function ($a, $b) use ($tiers) {
+                $priceA = $tiers[$a]['price']['amount'] ?? INF;
+                $priceB = $tiers[$b]['price']['amount'] ?? INF;
+                return ($priceA <=> $priceB) ?: ($a <=> $b);
+            });
+            foreach ($order as $index) {
+                $tier = $tiers[$index];
                 $price = $tier['price'] ?? [];
                 $heading = 'Tier ' . ($index + 1);
                 if (isset($price['amount'], $price['currencyCode'])) {
@@ -186,7 +194,10 @@ class HumbleBundleBridge extends BridgeAbstract
                 }
                 $content .= '<h2>' . htmlspecialchars($heading) . '</h2>';
                 foreach ($tier['bundleItems'] ?? [] as $item) {
-                    // Later tiers refer back to items already described in earlier tiers.
+                    // React references use indices in the original, unsorted list of tiers.
+                    if (is_string($item) && preg_match('/(?:^|:)tiers:(\d+):bundleItems:(\d+)$/D', $item, $match)) {
+                        $item = $tiers[$match[1]]['bundleItems'][$match[2]] ?? null;
+                    }
                     if (!is_array($item) || empty($item['title'])) {
                         continue;
                     }
