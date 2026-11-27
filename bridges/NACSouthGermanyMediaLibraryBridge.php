@@ -53,7 +53,9 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
         $item['enclosures'] = [self::BASE_URI . $sourceURI];
 
         # Add time to timestamp
-        $item['timestamp'] .= ' 07:27';
+        if ($item['timestamp'] !== '') {
+            $item['timestamp'] .= ' 07:27';
+        }
 
         # Find author
         if (preg_match('/\((.*?)\)/', html_entity_decode($item['content']), $matches)) {
@@ -74,15 +76,15 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
         }
 
         # Add time to timestamp
-        $item['timestamp'] .= ' 06:45';
+        if ($item['timestamp'] !== '') {
+            $item['timestamp'] .= ' 06:45';
+        }
 
         return $item;
     }
 
-    private function collectDataInList($pageURI, $customizeItemCall)
+    private function collectDataInList($page, $customizeItemCall)
     {
-        $page = getSimpleHTMLDOM($pageURI);
-
         foreach ($page->find('div.flex-columns.entry') as $parent) {
             # Find title
             $title = trim($parent->find('h2', 0)->find('text', 0)->plaintext);
@@ -103,20 +105,38 @@ class NACSouthGermanyMediaLibraryBridge extends BridgeAbstract
         }
     }
 
-    private function collectDataFromAllPages($rootURI, $customizeItemCall)
+    /**
+     * Collect the current broadcasts plus the most recent yearly archive.
+     * Crawling every yearly archive page triggers the site's rate limit (HTTP 429).
+     */
+    private function collectDataFromCurrentAndLastYear($rootURI, $customizeItemCall)
     {
         $rootPage = getSimpleHTMLDOM($rootURI);
-        $pages = $rootPage->find('div.flex-columns.inner_filter', 0);
-        foreach ($pages->find('a') as $page) {
-            self::collectDataInList($page->href, [$this, $customizeItemCall]);
+        $this->collectDataInList($rootPage, $customizeItemCall);
+
+        # Find the newest year in the archive filter (links look like "...?year=2025")
+        $lastYearURI = null;
+        $lastYear = 0;
+        $filter = $rootPage->find('div.flex-columns.inner_filter', 0);
+        if ($filter) {
+            foreach ($filter->find('a') as $link) {
+                if (preg_match('/[?&]year=([0-9]{4})/', $link->href, $matches) && (int) $matches[1] > $lastYear) {
+                    $lastYear = (int) $matches[1];
+                    $lastYearURI = $link->href;
+                }
+            }
+        }
+
+        if ($lastYearURI) {
+            $this->collectDataInList(getSimpleHTMLDOM($lastYearURI), $customizeItemCall);
         }
     }
 
     public function collectData()
     {
         # Collect items
-        self::collectDataFromAllPages(self::BAYERN2_ROOT_URI, 'collectDataForBayern2');
-        self::collectDataFromAllPages(self::SWR1_ROOT_URI, 'collectDataForSWR1');
+        $this->collectDataFromCurrentAndLastYear(self::BAYERN2_ROOT_URI, [$this, 'collectDataForBayern2']);
+        $this->collectDataFromCurrentAndLastYear(self::SWR1_ROOT_URI, [$this, 'collectDataForSWR1']);
 
         # Sort items by decreasing timestamp
         usort($this->items, function ($a, $b) {
