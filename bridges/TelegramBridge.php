@@ -119,12 +119,6 @@ class TelegramBridge extends BridgeAbstract
     {
         $message = '';
 
-        $notSupported = $messageDiv->find('div.message_media_not_supported_wrap', 0);
-        if ($notSupported) {
-            // For unknown reasons, the telegram preview page omits the content of this post
-            $message = (string) $notSupported->innertext;
-        }
-
         if ($messageDiv->find('div.tgme_widget_message_forwarded_from', 0)) {
             $message .= $messageDiv->find('div.tgme_widget_message_forwarded_from', 0)->innertext . '<br><br>';
         }
@@ -132,6 +126,9 @@ class TelegramBridge extends BridgeAbstract
         if ($messageDiv->find('a.tgme_widget_message_reply', 0)) {
             $message .= $this->processReply($messageDiv);
         }
+
+        // The forwarded-from header and the reply quote are not content of this post
+        $headerLength = strlen($message);
 
         if ($messageDiv->find('div.tgme_widget_message_sticker_wrap', 0)) {
             $message .= $this->processSticker($messageDiv);
@@ -171,6 +168,12 @@ class TelegramBridge extends BridgeAbstract
 
         if ($messageDiv->find('a.tgme_widget_message_location_wrap', 0)) {
             $message .= $this->processLocation($messageDiv);
+        }
+
+        $notSupported = $messageDiv->find('div.message_media_not_supported_wrap', 0);
+        if ($notSupported && strlen($message) === $headerLength) {
+            // For unknown reasons, the telegram preview page omits the content of this post
+            $message .= (string) $notSupported->innertext;
         }
 
         return $message;
